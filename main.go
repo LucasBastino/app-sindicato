@@ -15,8 +15,9 @@ func main() {
 		Handler: r,
 	}
 	c := api.Controller{}
-	db := connection.CreateConnection()
-	c.RegisterRoutes(r, db)
+	c.DB = connection.CreateConnection()
+
+	c.RegisterRoutes(r)
 
 	fmt.Println("Listen on port 8085")
 	svr.ListenAndServe()
