@@ -2,8 +2,11 @@ package api
 
 import (
 	"database/sql"
+	"encoding/json"
 	"fmt"
 	"net/http"
+
+	"github.com/LucasBastino/app-sindicato/src/models"
 )
 
 type Controller struct {
@@ -27,6 +30,19 @@ func (c *Controller) insertUser(w http.ResponseWriter, r *http.Request) {
 		panic(err.Error())
 	}
 	insert.Close()
+}
+
+func (c *Controller) updateUser(w http.ResponseWriter, r *http.Request) {
+	id := r.PathValue("id")
+	var afiliado models.Afiliado
+	json.NewDecoder(r.Body).Decode(&afiliado)
+	update, err := c.DB.Query("UPDATE afiliado SET Nombre = '%v', Edad = '%v' WHERE IdAfiliado = '%v' ", afiliado.Nombre, afiliado.Edad, id)
+	if err != nil {
+		fmt.Println("error updating afiliado")
+		panic(err)
+	}
+	update.Close()
+	fmt.Println(afiliado)
 }
 
 func (c *Controller) createTable() {
