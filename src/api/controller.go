@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"encoding/json"
 	"fmt"
+	"html/template"
 	"net/http"
 
 	"github.com/LucasBastino/app-sindicato/src/models"
@@ -18,7 +19,9 @@ func (c *Controller) renderHome(w http.ResponseWriter, r *http.Request) {
 }
 
 func (c *Controller) getUsers(w http.ResponseWriter, r *http.Request) {
-
+	tmpl := template.Must(template.ParseFiles("src/views/index.html"))
+	palabra := "asdasdad"
+	tmpl.Execute(w, palabra)
 }
 
 func (c *Controller) insertUser(w http.ResponseWriter, r *http.Request) {
@@ -36,13 +39,12 @@ func (c *Controller) updateUser(w http.ResponseWriter, r *http.Request) {
 	id := r.PathValue("id")
 	var afiliado models.Afiliado
 	json.NewDecoder(r.Body).Decode(&afiliado)
-	update, err := c.DB.Query("UPDATE afiliado SET Nombre = '%v', Edad = '%v' WHERE IdAfiliado = '%v' ", afiliado.Nombre, afiliado.Edad, id)
+	update, err := c.DB.Query(fmt.Sprintf("UPDATE afiliado SET Nombre = '%v', Edad = '%v' WHERE IdAfiliado = '%v' ", afiliado.Nombre, afiliado.Edad, id))
 	if err != nil {
 		fmt.Println("error updating afiliado")
 		panic(err)
 	}
 	update.Close()
-	fmt.Println(afiliado)
 }
 
 func (c *Controller) createTable() {
