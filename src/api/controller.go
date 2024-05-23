@@ -4,8 +4,8 @@ import (
 	"database/sql"
 	"encoding/json"
 	"fmt"
-	"html/template"
 	"net/http"
+	"text/template"
 
 	"github.com/LucasBastino/app-sindicato/src/models"
 )
@@ -15,13 +15,27 @@ type Controller struct {
 }
 
 func (c *Controller) renderHome(w http.ResponseWriter, r *http.Request) {
-	w.Write([]byte("hola"))
+	tmpl := template.Must(template.ParseFiles("src/views/home.html"))
+	tmpl.Execute(w, nil)
 }
 
 func (c *Controller) getUsers(w http.ResponseWriter, r *http.Request) {
+	var afiliado models.Afiliado
+	var afiliados []models.Afiliado
+	result, err := c.DB.Query("SELECT Nombre, Edad FROM afiliado ")
+	if err != nil {
+		fmt.Println("error getting users")
+	}
+	for result.Next() {
+		err = result.Scan(&afiliado.Nombre, &afiliado.Edad)
+		if err != nil {
+			fmt.Println("error scanning result")
+			panic(err.Error())
+		}
+		afiliados = append(afiliados, afiliado)
+	}
 	tmpl := template.Must(template.ParseFiles("src/views/index.html"))
-	palabra := "asdasdad"
-	tmpl.Execute(w, palabra)
+	tmpl.Execute(w, afiliados)
 }
 
 func (c *Controller) insertUser(w http.ResponseWriter, r *http.Request) {
