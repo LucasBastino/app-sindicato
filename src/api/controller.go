@@ -4,7 +4,9 @@ import (
 	"database/sql"
 	"encoding/json"
 	"fmt"
+	"log"
 	"net/http"
+	"syscall/js"
 	"text/template"
 
 	"github.com/LucasBastino/app-sindicato/src/models"
@@ -37,12 +39,26 @@ func (c *Controller) getUsers(w http.ResponseWriter, r *http.Request) {
 	funcmap := map[string]interface{}{
 		"Imprimir": ImprimirAlgo,
 	}
-	// tmpl := template.Must(template. .ParseFiles("src/views/index.html"))
-	tmpl := template.Must(template.New("funcion").Funcs(funcmap).ParseGlob("src/views/index.html"))
-	tmpl.Execute(w, afiliados)
+	tmpl, err := template.New("asdasd").Funcs(funcmap).ParseFiles("src/views/index.html")
+	if err != nil {
+		fmt.Println("error creating template")
+		log.Panicln(err.Error())
+	}
+	err = tmpl.ExecuteTemplate(w, "index.html", afiliados)
+	if err != nil {
+		fmt.Println("error executing template")
+		log.Panicln(err.Error())
+	}
+	doc := js.Global().Get("document")
+	myElem := doc.Call("getElementById", "elemento-1")
+	fmt.Println(myElem)
+	// elem1 := d.GetElementByID("elemento-1")
+	// fmt.Println(elem1)
 }
-func ImprimirAlgo(palabra string) string {
-	return fmt.Sprint(palabra)
+func ImprimirAlgo() func() {
+	return func() {
+		fmt.Println("holaaaaaa")
+	}
 }
 
 func (c *Controller) insertUser(w http.ResponseWriter, r *http.Request) {
