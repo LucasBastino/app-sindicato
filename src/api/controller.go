@@ -34,8 +34,15 @@ func (c *Controller) getUsers(w http.ResponseWriter, r *http.Request) {
 		}
 		afiliados = append(afiliados, afiliado)
 	}
-	tmpl := template.Must(template.ParseFiles("src/views/index.html"))
+	funcmap := map[string]interface{}{
+		"Imprimir": ImprimirAlgo,
+	}
+	// tmpl := template.Must(template. .ParseFiles("src/views/index.html"))
+	tmpl := template.Must(template.New("funcion").Funcs(funcmap).ParseGlob("src/views/index.html"))
 	tmpl.Execute(w, afiliados)
+}
+func ImprimirAlgo(palabra string) string {
+	return fmt.Sprint(palabra)
 }
 
 func (c *Controller) insertUser(w http.ResponseWriter, r *http.Request) {
