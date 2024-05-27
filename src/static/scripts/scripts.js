@@ -1,5 +1,5 @@
-export function jsFunc(){
-console.log(hsdaasdads);
+function jsFunc(){
+console.log("aaaaaaaaaaaa");
 }
 
 

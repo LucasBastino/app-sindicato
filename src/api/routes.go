@@ -4,14 +4,14 @@ import (
 	"net/http"
 )
 
-func (c *Controller) RegisterRoutes(r *http.ServeMux) {
-	r.HandleFunc("GET /", c.renderHome)
-	r.HandleFunc("GET /users", c.getUsers)
-	r.HandleFunc("GET /users/", c.getUsers)
-	r.HandleFunc("POST /users/insert/{nombre}/{edad}", c.insertUser)
-	r.HandleFunc("PUT /users/edit/{id}", c.updateUser)
-	r.HandleFunc("PUT /users/edit", c.updateUser)
+func (c *Controller) RegisterRoutes(muxer *http.ServeMux) {
+	muxer.HandleFunc("GET /home", c.renderHome)
+	muxer.HandleFunc("GET /users", c.getUsers)
+	muxer.HandleFunc("GET /users/", c.getUsers)
+	muxer.HandleFunc("POST /users/insert/{nombre}/{edad}", c.insertUser)
+	muxer.HandleFunc("PUT /users/edit/{id}", c.updateUser)
+	muxer.HandleFunc("PUT /users/edit", c.updateUser)
 
-	r.HandleFunc("POST /test", c.test)
+	muxer.HandleFunc("POST /test", c.test)
 	// r.HandleFunc("POST /createTable", c.createTable)
 }
