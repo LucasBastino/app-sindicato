@@ -6,7 +6,8 @@ import (
 	"fmt"
 	"log"
 	"net/http"
-	"syscall/js"
+
+	// "syscall/js"
 	"text/template"
 
 	"github.com/LucasBastino/app-sindicato/src/models"
@@ -49,9 +50,13 @@ func (c *Controller) getUsers(w http.ResponseWriter, r *http.Request) {
 		fmt.Println("error executing template")
 		log.Panicln(err.Error())
 	}
-	doc := js.Global().Get("document")
-	myElem := doc.Call("getElementById", "elemento-1")
-	fmt.Println(myElem)
+
+	// time.Sleep(5 * time.Second)
+	// elem1 := dom.GetWindow().Document().GetElementByID("elemento-1")
+	// fmt.Println(elem1)
+	// doc := js.Global().Get("document")
+	// myElem := doc.Call("getElementById", "elemento-1")
+	// fmt.Println(myElem)
 	// elem1 := d.GetElementByID("elemento-1")
 	// fmt.Println(elem1)
 }
@@ -59,6 +64,11 @@ func ImprimirAlgo() func() {
 	return func() {
 		fmt.Println("holaaaaaa")
 	}
+}
+
+func (c *Controller) test(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(200)
+	fmt.Println("testttttttttttttt")
 }
 
 func (c *Controller) insertUser(w http.ResponseWriter, r *http.Request) {

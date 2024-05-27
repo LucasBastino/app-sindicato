@@ -18,6 +18,7 @@ func main() {
 	c.DB = connection.CreateConnection()
 
 	c.RegisterRoutes(r)
+	http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("static"))))
 
 	fmt.Println("Listen on port 8085")
 	svr.ListenAndServe()
