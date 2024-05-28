@@ -23,42 +23,41 @@ func (c *Controller) renderHome(w http.ResponseWriter, r *http.Request) {
 }
 
 func (c *Controller) getUsers(w http.ResponseWriter, r *http.Request) {
-	var afiliado models.Afiliado
-	var afiliados []models.Afiliado
-	result, err := c.DB.Query("SELECT Nombre, Edad FROM afiliado ")
+	var member models.Member
+	var members []models.Member
+	result, err := c.DB.Query("SELECT name, age FROM member ")
 	if err != nil {
 		fmt.Println("error getting users")
 	}
 	for result.Next() {
-		err = result.Scan(&afiliado.Nombre, &afiliado.Edad)
+		err = result.Scan(&member.Name, &member.Age)
 		if err != nil {
 			fmt.Println("error scanning result")
 			panic(err.Error())
 		}
-		afiliados = append(afiliados, afiliado)
-	}
-	funcmap := map[string]interface{}{
-		"Imprimir": ImprimirAlgo,
-	}
-	tmpl, err := template.New("asdasd").Funcs(funcmap).ParseFiles("src/views/index.html")
-	if err != nil {
-		fmt.Println("error creating template")
-		log.Panicln(err.Error())
-	}
-	err = tmpl.ExecuteTemplate(w, "index.html", afiliados)
-	if err != nil {
-		fmt.Println("error executing template")
-		log.Panicln(err.Error())
+		members = append(members, member)
 	}
 
-	// time.Sleep(5 * time.Second)
-	// elem1 := dom.GetWindow().Document().GetElementByID("elemento-1")
-	// fmt.Println(elem1)
-	// doc := js.Global().Get("document")
-	// myElem := doc.Call("getElementById", "elemento-1")
-	// fmt.Println(myElem)
-	// elem1 := d.GetElementByID("elemento-1")
-	// fmt.Println(elem1)
+	tmpl := createTemplate("src/views/index.html")
+	execTemplate(w, members, tmpl, "index.html")
+
+}
+
+func createTemplate(path string) *template.Template {
+	tmpl, err := template.New("newTemplate").ParseFiles(path)
+	if err != nil {
+		fmt.Println("error creating template from", path)
+		log.Panic(err.Error())
+	}
+	return tmpl
+}
+
+func execTemplate(w http.ResponseWriter, data any, tmpl *template.Template, file string) {
+	err := tmpl.ExecuteTemplate(w, file, data)
+	if err != nil {
+		fmt.Println("error executing template")
+		log.Panic(err.Error())
+	}
 }
 func ImprimirAlgo() func() {
 	return func() {
@@ -72,9 +71,9 @@ func (c *Controller) test(w http.ResponseWriter, r *http.Request) {
 }
 
 func (c *Controller) insertUser(w http.ResponseWriter, r *http.Request) {
-	nombre := r.PathValue("nombre")
-	edad := r.PathValue("edad")
-	insert, err := c.DB.Query(fmt.Sprintf("INSERT INTO afiliado (Nombre, Edad) VALUES ('%s', '%s')", nombre, edad))
+	name := r.PathValue("name")
+	age := r.PathValue("age")
+	insert, err := c.DB.Query(fmt.Sprintf("INSERT INTO member (name, age) VALUES ('%s', '%s')", name, age))
 	if err != nil {
 		fmt.Println("error inserting data")
 		panic(err.Error())
@@ -84,11 +83,11 @@ func (c *Controller) insertUser(w http.ResponseWriter, r *http.Request) {
 
 func (c *Controller) updateUser(w http.ResponseWriter, r *http.Request) {
 	id := r.PathValue("id")
-	var afiliado models.Afiliado
-	json.NewDecoder(r.Body).Decode(&afiliado)
-	update, err := c.DB.Query(fmt.Sprintf("UPDATE afiliado SET Nombre = '%v', Edad = '%v' WHERE IdAfiliado = '%v' ", afiliado.Nombre, afiliado.Edad, id))
+	var member models.Member
+	json.NewDecoder(r.Body).Decode(&member)
+	update, err := c.DB.Query(fmt.Sprintf("UPDATE member SET name = '%v', age = '%v' WHERE idMember = '%v' ", member.Name, member.Age, id))
 	if err != nil {
-		fmt.Println("error updating afiliado")
+		fmt.Println("error updating Member")
 		panic(err)
 	}
 	update.Close()
@@ -96,9 +95,18 @@ func (c *Controller) updateUser(w http.ResponseWriter, r *http.Request) {
 
 func (c *Controller) createTable() {
 
-	insert, err := c.DB.Query("CREATE TABLE afiliado(IdAfiliado INT PRIMARY KEY AUTO_INCREMENT,Nombre VARCHAR(45),Edad INT);")
+	insert, err := c.DB.Query("CREATE TABLE member(idMember INT PRIMARY KEY AUTO_INCREMENT,name VARCHAR(45),age INT);")
 	if err != nil {
 		panic(err)
 	}
 	defer insert.Close()
 }
+
+// funcmap := map[string]interface{}{
+// 	"Imprimir": ImprimirAlgo,
+// }
+// tmpl, err := template.New("tmplUsers").Funcs(funcmap).ParseFiles("src/views/index.html")
+// if err != nil {
+// 	fmt.Println("error creating template")
+// 	log.Panicln(err.Error())
+// }

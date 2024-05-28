@@ -1,7 +1,7 @@
 package models
 
-type Afiliado struct {
-	IdAfiliado int
-	Nombre     string
-	Edad       int
+type Member struct {
+	IdMember int
+	Name     string
+	Age      int
 }
