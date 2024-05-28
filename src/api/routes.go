@@ -12,6 +12,9 @@ func (c *Controller) RegisterRoutes(muxer *http.ServeMux) {
 	muxer.HandleFunc("PUT /users/edit/{id}", c.updateUser)
 	muxer.HandleFunc("PUT /users/edit", c.updateUser)
 
+	muxer.HandleFunc("GET /forms/createMember", c.renderCreateMemberForm)
+	muxer.HandleFunc("POST /member/create", c.createMember)
+
 	muxer.HandleFunc("POST /test", c.test)
 	muxer.HandleFunc("POST /createTable", c.createTable)
 }

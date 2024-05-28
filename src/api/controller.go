@@ -30,7 +30,7 @@ func (c *Controller) getUsers(w http.ResponseWriter, r *http.Request) {
 		fmt.Println("error getting users")
 	}
 	for result.Next() {
-		err = result.Scan(&member.Name, &member.Age)
+		err = result.Scan(&member.Name, &member.DNI)
 		if err != nil {
 			fmt.Println("error scanning result")
 			panic(err.Error())
@@ -85,7 +85,7 @@ func (c *Controller) updateUser(w http.ResponseWriter, r *http.Request) {
 	id := r.PathValue("id")
 	var member models.Member
 	json.NewDecoder(r.Body).Decode(&member)
-	update, err := c.DB.Query(fmt.Sprintf("UPDATE member SET name = '%v', age = '%v' WHERE idMember = '%v' ", member.Name, member.Age, id))
+	update, err := c.DB.Query(fmt.Sprintf("UPDATE member SET name = '%v', age = '%v' WHERE idMember = '%v' ", member.Name, member.DNI, id))
 	if err != nil {
 		fmt.Println("error updating Member")
 		panic(err)
@@ -100,6 +100,22 @@ func (c *Controller) createTable(w http.ResponseWriter, r *http.Request) {
 		panic(err)
 	}
 	defer insert.Close()
+}
+
+func (c *Controller) renderCreateMemberForm(w http.ResponseWriter, req *http.Request) {
+	tmpl := createTemplate("src/views/createMemberForm.html")
+	execTemplate(w, nil, tmpl, "createMemberForm.html")
+}
+
+func (c *Controller) createMember(w http.ResponseWriter, req *http.Request) {
+	// var member models.Member
+	// err := json.NewDecoder(req.Body).Decode(&member)
+	// if err != nil {
+	// 	fmt.Println("error decoding member")
+	// 	log.Panic(err.Error())
+	// }
+	w.Write([]byte(req.Body))
+	// insert, err := c.DB.Query(fmt.Sprintf("INSERT INTO MemberTable (Name, DNI) VALUES ('%s', '%d')", member.Name, member.DNI))
 }
 
 // funcmap := map[string]interface{}{
