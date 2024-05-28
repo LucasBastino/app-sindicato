@@ -18,10 +18,10 @@
                 <td>func</td>
                 
             </tr>
-             {{range $_, $afi := .}}
+             {{range $_, $member := .}}
              <tr>
-                <td>{{$afi.Nombre}} </td>
-                <td>{{$afi.Edad}} </td>
+                <td>{{$member.Name}} </td>
+                <td>{{$member.Age}} </td>
             </tr>
             {{end}}
            

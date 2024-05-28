@@ -93,7 +93,7 @@ func (c *Controller) updateUser(w http.ResponseWriter, r *http.Request) {
 	update.Close()
 }
 
-func (c *Controller) createTable() {
+func (c *Controller) createTable(w http.ResponseWriter, r *http.Request) {
 
 	insert, err := c.DB.Query("CREATE TABLE member(idMember INT PRIMARY KEY AUTO_INCREMENT,name VARCHAR(45),age INT);")
 	if err != nil {
