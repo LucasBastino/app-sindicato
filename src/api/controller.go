@@ -2,7 +2,6 @@ package api
 
 import (
 	"database/sql"
-	"encoding/json"
 	"fmt"
 	"io"
 	"log"
@@ -122,39 +121,50 @@ func (c *Controller) renderCreateMemberForm(w http.ResponseWriter, req *http.Req
 // 	DNI      string `json:"dni"`
 // }
 
-func (c *Controller) createMember(w http.ResponseWriter, req *http.Request) {
-	// w.Header().Set("Content-Type", "application/json")
-	// name := req.FormValue("Name")
-	// dni := req.FormValue("DNI")
-	// newMember := models.Member{Name: name, DNI: dni}
-	body, err := io.ReadAll(req.Body)
-	if err != nil {
-		fmt.Println("error reading body")
-		log.Panic(err.Error())
-	}
-	fmt.Println(string(body))
+func (c *Controller) createMember(w http.ResponseWriter, r *http.Request) {
+	newMember := parseMember(r)
 
-	var newMember models.Member
-
-	err = json.Unmarshal(body, &newMember)
-	if err != nil {
-		fmt.Println("error unmarshalling body")
-		panic(err)
-	}
-
-	// err = json.NewDecoder(req.Body).Decode(&newMember)
-	// if err != nil {
-	// 	fmt.Println("error decoding member")
-	// 	log.Panic(err)
-	// }
 	fmt.Println(newMember)
-	// w.Write([]byte(req.Body))
-	// insert, err := c.DB.Query(fmt.Sprintf("INSERT INTO MemberTable (Name, DNI) VALUES ('%s', '%s')", newMember.Name, newMember.DNI))
-	// if err != nil {
-	// 	fmt.Println("error inserting data in database")
-	// 	log.Panic(err.Error())
-	// }
-	// defer insert.Close()
+
+	insert, err := c.DB.Query(fmt.Sprintf("INSERT INTO MemberTable (Name, DNI) VALUES ('%s','%s')", newMember.Name, newMember.DNI))
+	if err != nil {
+		fmt.Println("error inserting data in database")
+		log.Panic(err)
+	}
+	defer insert.Close()
+}
+
+func (c *Controller) renderMemberList(w http.ResponseWriter, r *http.Request) {
+	result, err := c.DB.Query("SELECT Name, DNI FROM MemberTable")
+	if err != nil {
+		fmt.Println("error obtaining data from database")
+		log.Panic(err)
+	}
+
+	var members []models.Member
+	for result.Next() {
+		member := models.Member{}
+		err := result.Scan(&member.Name, &member.DNI)
+		if err != nil {
+			fmt.Println("error scanning data")
+			log.Panic(err)
+		}
+		members = append(members, member)
+	}
+
+	tmpl, err := template.New("randomName").ParseFiles("src/views/memberList.html")
+	if err != nil {
+		fmt.Println("error creating template")
+		log.Panic(err)
+	}
+	tmpl.ExecuteTemplate(w, "memberList.html", members)
+}
+
+func parseMember(r *http.Request) models.Member {
+	var member models.Member
+	member.Name = r.FormValue("name")
+	member.DNI = r.FormValue("dni")
+	return member
 }
 
 // funcmap := map[string]interface{}{
