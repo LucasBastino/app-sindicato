@@ -108,14 +108,30 @@ func (c *Controller) renderCreateMemberForm(w http.ResponseWriter, req *http.Req
 }
 
 func (c *Controller) createMember(w http.ResponseWriter, req *http.Request) {
-	// var member models.Member
-	// err := json.NewDecoder(req.Body).Decode(&member)
+	// name := req.FormValue("Name")
+	// dni := req.FormValue("DNI")
+	// newMember := models.Member{Name: name, DNI: dni}
+	// body, err := io.ReadAll(req.Body)
 	// if err != nil {
-	// 	fmt.Println("error decoding member")
+	// 	fmt.Println("error reading body")
 	// 	log.Panic(err.Error())
 	// }
-	w.Write([]byte(req.Body))
-	// insert, err := c.DB.Query(fmt.Sprintf("INSERT INTO MemberTable (Name, DNI) VALUES ('%s', '%d')", member.Name, member.DNI))
+
+	var newMember models.Member
+
+	err := json.NewDecoder(req.Body).Decode(&newMember)
+	if err != nil {
+		fmt.Println("error decoding member")
+		log.Panic(err.Error())
+	}
+	fmt.Println(newMember)
+	// w.Write([]byte(req.Body))
+	// insert, err := c.DB.Query(fmt.Sprintf("INSERT INTO MemberTable (Name, DNI) VALUES ('%s', '%s')", newMember.Name, newMember.DNI))
+	// if err != nil {
+	// 	fmt.Println("error inserting data in database")
+	// 	log.Panic(err.Error())
+	// }
+	// defer insert.Close()
 }
 
 // funcmap := map[string]interface{}{
