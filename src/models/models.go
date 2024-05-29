@@ -1,7 +1,7 @@
 package models
 
 type Member struct {
-	IdMember int
+	IdMember string
 	Name     string
 	DNI      string
 }

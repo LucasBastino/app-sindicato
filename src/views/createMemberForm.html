@@ -9,9 +9,13 @@
     
 </head>
 <body>
-    <form action="/member/create" method="POST">
-        <input type="text" name="Name" placeholder="Name">
-        <input type="text" name="DNI" placeholder="DNI">
+    <form action="/member/create" method="POST" enctype="application/json">
+        <!-- invalid character 'I' looking for beginning of value
+goroutine 37 [running]: CAMBIA CON EL name del primer input -->
+<!-- esto significa que no reconoce ni al primero -->
+        <input type="text" name="idmember" placeholder="IdMember">
+        <input type="text" name="name" placeholder="Name">
+        <input type="text" name="dni" placeholder="DNI">
         <button type="submit">Enviar</button>
     </form>
 </body>

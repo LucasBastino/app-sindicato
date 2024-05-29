@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"encoding/json"
 	"fmt"
+	"io"
 	"log"
 	"net/http"
 
@@ -53,10 +54,11 @@ func createTemplate(path string) *template.Template {
 }
 
 func execTemplate(w http.ResponseWriter, data any, tmpl *template.Template, file string) {
+	// w.Header().Set("Content-Type", "application/json")
 	err := tmpl.ExecuteTemplate(w, file, data)
 	if err != nil {
 		fmt.Println("error executing template")
-		log.Panic(err.Error())
+		log.Panic(err)
 	}
 }
 func ImprimirAlgo() func() {
@@ -82,15 +84,22 @@ func (c *Controller) insertUser(w http.ResponseWriter, r *http.Request) {
 }
 
 func (c *Controller) updateUser(w http.ResponseWriter, r *http.Request) {
-	id := r.PathValue("id")
-	var member models.Member
-	json.NewDecoder(r.Body).Decode(&member)
-	update, err := c.DB.Query(fmt.Sprintf("UPDATE member SET name = '%v', age = '%v' WHERE idMember = '%v' ", member.Name, member.DNI, id))
+	// id := r.PathValue("id")
+	// var member models.Member
+	// json.NewDecoder(r.Body).Decode(&member)
+	// update, err := c.DB.Query(fmt.Sprintf("UPDATE member SET name = '%v', age = '%v' WHERE idMember = '%v' ", member.Name, member.DNI, id))
+	// if err != nil {
+	// 	fmt.Println("error updating Member")
+	// 	panic(err)
+	// }
+	body, err := io.ReadAll(r.Body)
 	if err != nil {
-		fmt.Println("error updating Member")
-		panic(err)
+		fmt.Print("error reading body")
+		log.Panic(err)
 	}
-	update.Close()
+	fmt.Println(body)
+	fmt.Println(string(body))
+	// update.Close()
 }
 
 func (c *Controller) createTable(w http.ResponseWriter, r *http.Request) {
@@ -107,23 +116,37 @@ func (c *Controller) renderCreateMemberForm(w http.ResponseWriter, req *http.Req
 	execTemplate(w, nil, tmpl, "createMemberForm.html")
 }
 
+// type MemberRequest struct {
+// 	IdMember string `json:"idmember"`
+// 	Name     string `json:"name"`
+// 	DNI      string `json:"dni"`
+// }
+
 func (c *Controller) createMember(w http.ResponseWriter, req *http.Request) {
+	// w.Header().Set("Content-Type", "application/json")
 	// name := req.FormValue("Name")
 	// dni := req.FormValue("DNI")
 	// newMember := models.Member{Name: name, DNI: dni}
-	// body, err := io.ReadAll(req.Body)
-	// if err != nil {
-	// 	fmt.Println("error reading body")
-	// 	log.Panic(err.Error())
-	// }
+	body, err := io.ReadAll(req.Body)
+	if err != nil {
+		fmt.Println("error reading body")
+		log.Panic(err.Error())
+	}
+	fmt.Println(string(body))
 
 	var newMember models.Member
 
-	err := json.NewDecoder(req.Body).Decode(&newMember)
+	err = json.Unmarshal(body, &newMember)
 	if err != nil {
-		fmt.Println("error decoding member")
-		log.Panic(err.Error())
+		fmt.Println("error unmarshalling body")
+		panic(err)
 	}
+
+	// err = json.NewDecoder(req.Body).Decode(&newMember)
+	// if err != nil {
+	// 	fmt.Println("error decoding member")
+	// 	log.Panic(err)
+	// }
 	fmt.Println(newMember)
 	// w.Write([]byte(req.Body))
 	// insert, err := c.DB.Query(fmt.Sprintf("INSERT INTO MemberTable (Name, DNI) VALUES ('%s', '%s')", newMember.Name, newMember.DNI))
