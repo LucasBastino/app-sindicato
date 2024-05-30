@@ -1,0 +1,27 @@
+func (c *Controller) updateUser(w http.ResponseWriter, r *http.Request) {
+// 	// id := r.PathValue("id")
+// 	// var member models.Member
+// 	// json.NewDecoder(r.Body).Decode(&member)
+// 	// update, err := c.DB.Query(fmt.Sprintf("UPDATE member SET name = '%v', age = '%v' WHERE idMember = '%v' ", member.Name, member.DNI, id))
+// 	// if err != nil {
+// 	// 	fmt.Println("error updating Member")
+// 	// 	panic(err)
+// 	// }
+// 	body, err := io.ReadAll(r.Body)
+// 	if err != nil {
+// 		fmt.Print("error reading body")
+// 		log.Panic(err)
+// 	}
+// 	fmt.Println(body)
+// 	fmt.Println(string(body))
+// 	// update.Close()
+// }
+
+// funcmap := map[string]interface{}{
+// 	"Imprimir": ImprimirAlgo,
+// }
+// tmpl, err := template.New("tmplUsers").Funcs(funcmap).ParseFiles("src/views/index.html")
+// if err != nil {
+// 	fmt.Println("error creating template")
+// 	log.Panicln(err.Error())
+// }
