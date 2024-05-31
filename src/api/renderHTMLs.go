@@ -37,10 +37,6 @@ func (c *Controller) renderMemberList(w http.ResponseWriter, r *http.Request) {
 		members = append(members, member)
 	}
 
-	tmpl, err := template.New("randomName").ParseFiles("src/views/memberList.html")
-	if err != nil {
-		fmt.Println("error creating template")
-		log.Panic(err)
-	}
-	tmpl.ExecuteTemplate(w, "memberList.html", members)
+	tmpl := createTemplate("src/views/memberList.html")
+	execTemplate(w, members, tmpl, "memberList.html")
 }
