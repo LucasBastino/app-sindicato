@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"strconv"
 	// "syscall/js"
 )
 
@@ -24,11 +25,17 @@ func (c *Controller) createMember(w http.ResponseWriter, r *http.Request) {
 	}
 	defer insert.Close()
 
-	// tmpl, err := template.New("asdasdasd").ParseFiles("src/views/createdMember.html")
-	// if err != nil {
-	// 	log.Panic(err)
-	// }
-	// tmpl.ExecuteTemplate(w, "createdMember.html", newMember)
 	http.Redirect(w, r, "/members", http.StatusSeeOther) // poner un status de redirect (30X), sino no funciona
 	// c.renderMemberList(w, r) // esto tambien funciona
+}
+
+func (c *Controller) deleteMember(w http.ResponseWriter, r *http.Request) {
+	fmt.Println("estamos en deleteMember")
+	IdMemberParam := r.PathValue("IdMember")
+	IdMember, err := strconv.Atoi(IdMemberParam)
+	if err != nil {
+		fmt.Println("error converting IdMemberParam to INT")
+		panic(err)
+	}
+	fmt.Println(IdMember)
 }

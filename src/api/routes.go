@@ -9,5 +9,6 @@ func (c *Controller) RegisterRoutes(muxer *http.ServeMux) {
 
 	muxer.HandleFunc("GET /members", c.renderMemberList)
 	muxer.HandleFunc("POST /member/create", c.createMember)
+	muxer.HandleFunc("DELETE /member/{IdMember}/delete", c.deleteMember)
 	muxer.HandleFunc("GET /forms/createMember", c.renderCreateMemberForm)
 }

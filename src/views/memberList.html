@@ -17,10 +17,14 @@
         <tr>
             <td>{{$member.Name}} </td>
             <td>{{$member.DNI}} </td>
-            <td><button class="btn-danger">Eliminar</button></td>
-        </tr>
+
+            <td><form action="/member/{{$member.IdMember}}/delete" method="DELETE"><button type="submit" onclick="jsFunc()" class="btn-danger">Eliminar</button></td>
+       
+            </form>     </tr>
         {{end}}
 
     </table>
 </body>
+{{template "footer"}}
+<script src="/static/scripts/scripts.js" ></script>
 </html>
