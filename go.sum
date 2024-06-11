@@ -6,6 +6,8 @@ github.com/gopherjs/gopherjs v1.17.2 h1:fQnZVsXk8uxXIStYb0N4bGk7jeyTalG/wsZjQ25d
 github.com/gopherjs/gopherjs v1.17.2/go.mod h1:pRRIvn/QzFLrKfvEz3qUuEhtE/zLCWfreZ6J5gM2i+k=
 github.com/gorilla/mux v1.8.1/go.mod h1:AKf9I4AEqPTmMytcMc0KkNouC66V3BtZ4qD5fmWSiMQ=
 github.com/gorilla/schema v1.3.0/go.mod h1:Dg5SSm5PV60mhF2NFaTV1xuYYj8tV8NOPRo4FggUMnM=
+github.com/thebookpeople/html2text v0.0.0-20170814151915-7adf2c8a77dc h1:YBIXiLmuhKQ+wA10+b3t6WzTmbrbxnDTtSQmC8Jl6vU=
+github.com/thebookpeople/html2text v0.0.0-20170814151915-7adf2c8a77dc/go.mod h1:2mK0Hdq0WdSTOwisPPNorYjekFYP4cBfisfVjfcIsBk=
 honnef.co/go/js/dom v0.0.0-20231112215516-51f43a291193 h1:BST3Y7yWfYPO8qqWhL2KtuqgRCbls6bIr4b4iFCg43I=
 honnef.co/go/js/dom v0.0.0-20231112215516-51f43a291193/go.mod h1:sUMDUKNB2ZcVjt92UnLy3cdGs+wDAcrPdV3JP6sVgA4=
 honnef.co/go/js/dom/v2 v2.0.0-20231112215516-51f43a291193 h1:qc3CbLs/1Tb3N7yIKKph/UbUoyI8YQfTF1apIvqX/I8=

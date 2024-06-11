@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"log"
 	"net/http"
-	"strconv"
 	// "syscall/js"
 )
 
@@ -31,11 +30,12 @@ func (c *Controller) createMember(w http.ResponseWriter, r *http.Request) {
 
 func (c *Controller) deleteMember(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("estamos en deleteMember")
-	IdMemberParam := r.PathValue("IdMember")
-	IdMember, err := strconv.Atoi(IdMemberParam)
+	IdMember := r.PathValue("IdMember")
+	fmt.Println(IdMember)
+	delete, err := c.DB.Query(fmt.Sprintf("DELETE FROM MemberTable WHERE IdMember = '%s'", IdMember))
 	if err != nil {
-		fmt.Println("error converting IdMemberParam to INT")
+		fmt.Printf("error deleting member %s from database", IdMember)
 		panic(err)
 	}
-	fmt.Println(IdMember)
+	delete.Close()
 }

@@ -52,3 +52,62 @@ func (c *Controller) renderMemberList(w http.ResponseWriter, r *http.Request) {
 
 	tmpl.Execute(w, members)
 }
+
+func (c *Controller) renderMemberList2(w http.ResponseWriter, r *http.Request) {
+	tmpl, err := template.ParseFiles("src/views/memberList2.html", "src/views/footer.html")
+	if err != nil {
+		fmt.Println("error parsing file memberList2")
+		panic(err)
+	}
+	tmpl.Execute(w, nil)
+}
+
+func (c *Controller) getList(w http.ResponseWriter, r *http.Request) {
+	result, err := c.DB.Query("SELECT IdMember, Name, DNI FROM MemberTable")
+	if err != nil {
+		fmt.Println("error obtaining data from database")
+		log.Panic(err)
+	}
+
+	var members []models.Member
+	for result.Next() {
+		member := models.Member{}
+		err := result.Scan(&member.IdMember, &member.Name, &member.DNI)
+		if err != nil {
+			fmt.Println("error scanning data")
+			log.Panic(err)
+		}
+		members = append(members, member)
+	}
+	// file, err := os.ReadFile("src/views/getList.html")
+	// if err != nil {
+	// 	fmt.Println("error reading file getList.html")
+	// 	panic(err)
+	// }
+	// strFile := string(file)
+	// tmpl := template.Must(template.New("listTmpl").Parse(strFile))
+	// tmpl.Execute(w, members)
+	tmpl := returnHtmlTemplate("src/views/getList.html")
+	tmpl.Execute(w, members)
+}
+
+// func returnList() string {
+// 	return `
+//     <table class="table ">
+//         <tr>
+//             <th>Afiliado</th>
+//             <th>DNI</th>
+//         </tr>
+
+//         {{range $_, $member := .}}
+//         <tr>
+//             <td>{{$member.Name}} </td>
+//             <td>{{$member.DNI}} </td>
+
+//             <td><form action="/member/{{$member.IdMember}}/delete" method="DELETE"><button type="submit" onclick="jsFunc()" class="btn-danger">Eliminar</button></td>
+
+//             </form>     </tr>
+//         {{end}}
+
+//     </table>`
+// }

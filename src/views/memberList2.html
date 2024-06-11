@@ -7,25 +7,12 @@
     <title>Member List</title>
 </head>
 <body>
-    <table class="table ">
-        <tr>
-            <th>Afiliado</th>
-            <th>DNI</th>
-        </tr>
 
-        {{range $_, $member := .}}
-        <tr>
-            <td>{{$member.Name}} </td>
-            <td>{{$member.DNI}} </td>
-
-            <td><form action="/member/{{$member.IdMember}}/delete" method="DELETE"><button type="submit" onclick="jsFunc()" class="btn-danger">Eliminar</button></td>
-       
-            </form>     </tr>
-        {{end}}
-
-    </table>
+<button hx-get="/getList" hx-trigger="click" hx-target="#texto">clccccc</button>
+<div id="texto"></div>
 </body>
 {{template "footer"}}
 <script src="/static/scripts/scripts.js" ></script>
+<script src="https://unpkg.com/htmx.org@1.9.12" integrity="sha384-ujb1lZYygJmzgSwoxRggbCHcjc0rB2XoQrxeTUQyRjrOnlCoYta87iKBWq3EsdM2" crossorigin="anonymous"></script>
 
 </html>

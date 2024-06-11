@@ -33,3 +33,12 @@ func parseMember(r *http.Request) models.Member {
 	member.DNI = r.FormValue("dni")
 	return member
 }
+
+func returnHtmlTemplate(path string) *template.Template {
+	tmpl, err := template.ParseFiles(path)
+	if err != nil {
+		fmt.Println("error parsing", path)
+		panic(err)
+	}
+	return tmpl
+}
