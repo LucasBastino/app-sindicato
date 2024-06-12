@@ -38,4 +38,6 @@ func (c *Controller) deleteMember(w http.ResponseWriter, r *http.Request) {
 		panic(err)
 	}
 	delete.Close()
+
+	c.renderMemberList(w, r)
 }

@@ -26,7 +26,7 @@ func (c *Controller) renderCreateMemberForm(w http.ResponseWriter, req *http.Req
 	tmpl.Execute(w, nil)
 }
 
-func (c *Controller) renderMemberList(w http.ResponseWriter, r *http.Request) {
+func (c *Controller) renderMembers1(w http.ResponseWriter, r *http.Request) {
 	result, err := c.DB.Query("SELECT IdMember, Name, DNI FROM MemberTable")
 	if err != nil {
 		fmt.Println("error obtaining data from database")
@@ -53,8 +53,8 @@ func (c *Controller) renderMemberList(w http.ResponseWriter, r *http.Request) {
 	tmpl.Execute(w, members)
 }
 
-func (c *Controller) renderMemberList2(w http.ResponseWriter, r *http.Request) {
-	tmpl, err := template.ParseFiles("src/views/memberList2.html", "src/views/footer.html")
+func (c *Controller) renderMembers2(w http.ResponseWriter, r *http.Request) {
+	tmpl, err := template.ParseFiles("src/views/members2.html", "src/views/footer.html")
 	if err != nil {
 		fmt.Println("error parsing file memberList2")
 		panic(err)
@@ -62,7 +62,7 @@ func (c *Controller) renderMemberList2(w http.ResponseWriter, r *http.Request) {
 	tmpl.Execute(w, nil)
 }
 
-func (c *Controller) getList(w http.ResponseWriter, r *http.Request) {
+func (c *Controller) renderMemberList(w http.ResponseWriter, r *http.Request) {
 	result, err := c.DB.Query("SELECT IdMember, Name, DNI FROM MemberTable")
 	if err != nil {
 		fmt.Println("error obtaining data from database")
@@ -79,35 +79,19 @@ func (c *Controller) getList(w http.ResponseWriter, r *http.Request) {
 		}
 		members = append(members, member)
 	}
-	// file, err := os.ReadFile("src/views/getList.html")
-	// if err != nil {
-	// 	fmt.Println("error reading file getList.html")
-	// 	panic(err)
-	// }
-	// strFile := string(file)
-	// tmpl := template.Must(template.New("listTmpl").Parse(strFile))
-	// tmpl.Execute(w, members)
-	tmpl := returnHtmlTemplate("src/views/getList.html")
+
+	type arguments struct {
+		siono   bool
+		members []models.Member
+	}
+
+	tmpl := returnHtmlTemplate("src/views/memberList.html")
+	// tmpl.Execute(w, arguments{false, members})
 	tmpl.Execute(w, members)
 }
 
-// func returnList() string {
-// 	return `
-//     <table class="table ">
-//         <tr>
-//             <th>Afiliado</th>
-//             <th>DNI</th>
-//         </tr>
-
-//         {{range $_, $member := .}}
-//         <tr>
-//             <td>{{$member.Name}} </td>
-//             <td>{{$member.DNI}} </td>
-
-//             <td><form action="/member/{{$member.IdMember}}/delete" method="DELETE"><button type="submit" onclick="jsFunc()" class="btn-danger">Eliminar</button></td>
-
-//             </form>     </tr>
-//         {{end}}
-
-//     </table>`
-// }
+func (c *Controller) renderEditMemberForm(w http.ResponseWriter, r *http.Request) {
+	fmt.Println("estoy en edit ")
+	tmpl := returnHtmlTemplate("src/views/memberForm.html")
+	tmpl.Execute(w, nil)
+}

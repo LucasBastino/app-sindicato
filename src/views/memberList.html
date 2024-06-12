@@ -1,31 +1,16 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.4.1/dist/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
-    <title>Member List</title>
-</head>
-<body>
-    <table class="table ">
-        <tr>
-            <th>Afiliado</th>
-            <th>DNI</th>
-        </tr>
+<table class="table ">
+    <tr>
+        <th>Afiliado</th>
+        <th>DNI</th>
+    </tr>
 
-        {{range $_, $member := .}}
-        <tr>
-            <td>{{$member.Name}} </td>
-            <td>{{$member.DNI}} </td>
-
-            <td><form action="/member/{{$member.IdMember}}/delete" method="DELETE"><button type="submit" onclick="jsFunc()" class="btn-danger">Eliminar</button></td>
-       
-            </form>     </tr>
-        {{end}}
-
+    {{range $_, $member := .}}
+    <tr>
+        <td>{{$member.Name}} </td>
+        <td>{{$member.DNI}} </td>
+        <td><button hx-put="/member/{{$member.IdMember}}/edit" hx-target="#editMemberForm">Editar</button></td>
+        <td><button hx-delete="/member/{{$member.IdMember}}/delete" hx-confirm="¿Estás seguro que deseas eliminar el afiliado?"  hx-target="#memberList">Eliminar</button></td>
+    </tr>
+    {{end}}
     </table>
-</body>
-{{template "footer"}}
-<script src="/static/scripts/scripts.js" ></script>
-
-</html>
+<div id="editMemberForm"></div>
