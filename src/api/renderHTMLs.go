@@ -14,18 +14,6 @@ func (c *Controller) renderHome(w http.ResponseWriter, r *http.Request) {
 	tmpl.Execute(w, nil)
 }
 
-func (c *Controller) renderCreateMemberForm(w http.ResponseWriter, req *http.Request) {
-	// tmpl := createTemplate("src/views/createMemberForm.html")
-	// execTemplate(w, nil, tmpl, "createMemberForm.html")
-
-	// tmpl, _ := template.New("createMemberForm.html").ParseFiles("src/views/createMemberForm.html")
-	// tmpl.Execute(w, nil)
-
-	tmpl, _ := template.ParseFiles("src/views/createMemberForm.html", "src/views/footer.html")
-	// el primero siempre es el main template, los demas se usan como componentes
-	tmpl.Execute(w, nil)
-}
-
 func (c *Controller) renderMembers1(w http.ResponseWriter, r *http.Request) {
 	result, err := c.DB.Query("SELECT IdMember, Name, DNI FROM MemberTable")
 	if err != nil {
@@ -80,14 +68,24 @@ func (c *Controller) renderMemberList(w http.ResponseWriter, r *http.Request) {
 		members = append(members, member)
 	}
 
+	tmpl := returnHtmlTemplate("src/views/memberList.html")
+	tmpl.Execute(w, members)
+}
+
+func (c *Controller) renderCreateMemberForm(w http.ResponseWriter, req *http.Request) {
+	// tmpl := createTemplate("src/views/createMemberForm.html")
+	// execTemplate(w, nil, tmpl, "createMemberForm.html")
+
+	// tmpl, _ := template.New("createMemberForm.html").ParseFiles("src/views/createMemberForm.html")
+	// tmpl.Execute(w, nil)
+
 	type Info struct {
-		Action  string
-		Members []models.Member
+		Action string
 	}
 
-	tmpl := returnHtmlTemplate("src/views/memberList.html")
-	tmpl.Execute(w, Info{"edit", members})
-	// tmpl.Execute(w, members)
+	tmpl, _ := template.ParseFiles("src/views/memberForm.html", "src/views/footer.html")
+	// el primero siempre es el main template, los demas se usan como componentes
+	tmpl.Execute(w, Info{"create"})
 }
 
 func (c *Controller) renderEditMemberForm(w http.ResponseWriter, r *http.Request) {
@@ -95,17 +93,17 @@ func (c *Controller) renderEditMemberForm(w http.ResponseWriter, r *http.Request
 		Action string
 		Member models.Member
 	}
-
 	var memberToEdit models.Member
 
 	IdMember := r.PathValue("IdMember")
-	result, err := c.DB.Query("SELECT Name, DNI FROM MemberTable WHERE IdMember = '%s'", IdMember)
+	fmt.Println("member id:", IdMember)
+	result, err := c.DB.Query(fmt.Sprintf("SELECT * FROM MemberTable WHERE IdMember = '%s'", IdMember))
 	if err != nil {
 		fmt.Println("error searching member")
 	}
 
 	for result.Next() {
-		err := result.Scan(&memberToEdit.Name, memberToEdit.DNI)
+		err := result.Scan(&memberToEdit.IdMember, &memberToEdit.Name, &memberToEdit.DNI)
 		if err != nil {
 			fmt.Println("error scanning result")
 			panic(err)

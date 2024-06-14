@@ -3,22 +3,14 @@
         <th>Afiliado</th>
         <th>DNI</th>
     </tr>
-    {{if eq .Action "create"}}
-    <h2>create form</h2>
-    {{end}}
-    {{if eq .Action "edit"}}
-    <h2>edit form</h2>
-    {{end}}
-
-    <button class:="primary" hx-get="/forms/createMember">agregar</button>
+    <a href="/forms/createMember"><button class="btn-primary" type="submit">Agregar</button></a>
     <!-- siempre la variable a recorrer con mayuscula -->
-    {{range $_, $member := .Members}} 
+    {{range $_, $member := .}} 
     <tr>
         <td>{{$member.Name}} </td>
         <td>{{$member.DNI}} </td>
-        <td><button hx-put="/member/{{$member.IdMember}}/edit" hx-target="#editMemberForm">Editar</button></td>
+        <td> <a href="/forms/editMember/{{$member.IdMember}}"><button class="btn-warning">Editar</button></a></td>
         <td><button hx-delete="/member/{{$member.IdMember}}/delete" hx-confirm="¿Estás seguro que deseas eliminar el afiliado?"  hx-target="#memberList">Eliminar</button></td>
     </tr>
     {{end}}
     </table>
-<div id="editMemberForm"></div>
