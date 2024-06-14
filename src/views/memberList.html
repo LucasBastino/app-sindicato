@@ -3,8 +3,16 @@
         <th>Afiliado</th>
         <th>DNI</th>
     </tr>
+    {{if eq .Action "create"}}
+    <h2>create form</h2>
+    {{end}}
+    {{if eq .Action "edit"}}
+    <h2>edit form</h2>
+    {{end}}
 
-    {{range $_, $member := .}}
+    <button class:="primary" hx-get="/forms/createMember">agregar</button>
+    <!-- siempre la variable a recorrer con mayuscula -->
+    {{range $_, $member := .Members}} 
     <tr>
         <td>{{$member.Name}} </td>
         <td>{{$member.DNI}} </td>

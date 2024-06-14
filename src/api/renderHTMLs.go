@@ -80,18 +80,38 @@ func (c *Controller) renderMemberList(w http.ResponseWriter, r *http.Request) {
 		members = append(members, member)
 	}
 
-	type arguments struct {
-		siono   bool
-		members []models.Member
+	type Info struct {
+		Action  string
+		Members []models.Member
 	}
 
 	tmpl := returnHtmlTemplate("src/views/memberList.html")
-	// tmpl.Execute(w, arguments{false, members})
-	tmpl.Execute(w, members)
+	tmpl.Execute(w, Info{"edit", members})
+	// tmpl.Execute(w, members)
 }
 
 func (c *Controller) renderEditMemberForm(w http.ResponseWriter, r *http.Request) {
-	fmt.Println("estoy en edit ")
+	type Info struct {
+		Action string
+		Member models.Member
+	}
+
+	var memberToEdit models.Member
+
+	IdMember := r.PathValue("IdMember")
+	result, err := c.DB.Query("SELECT Name, DNI FROM MemberTable WHERE IdMember = '%s'", IdMember)
+	if err != nil {
+		fmt.Println("error searching member")
+	}
+
+	for result.Next() {
+		err := result.Scan(&memberToEdit.Name, memberToEdit.DNI)
+		if err != nil {
+			fmt.Println("error scanning result")
+			panic(err)
+		}
+	}
+
 	tmpl := returnHtmlTemplate("src/views/memberForm.html")
-	tmpl.Execute(w, nil)
+	tmpl.Execute(w, Info{"edit", memberToEdit})
 }
