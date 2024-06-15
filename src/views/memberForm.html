@@ -12,24 +12,18 @@
     {{if eq .Action "create"}}
     <h2>Agregar afiliado</h2>
     <form action="/member/create" method="POST" enctype="application/json">
-        <input type="text" name="name" placeholder="Name">
-        <input type="text" name="dni" placeholder="DNI">
+        
+        {{end}}
+        
+        {{if eq .Action "edit"}}
+        <h2>Editar afiliado2</h2>
+        <form action="/member/{{$.Member.IdMember}}/edit" method="PUT" enctype="application/json">
+            {{end}}
+            <input type="text" name="name" value="{{ShowOrNot . "Name"}}">
+            <input type="text" name="dni" value="{{ShowOrNot . "DNI"}}">
         <button type="submit">Enviar</button>
     </form>
-    {{end}}
-    
-    {{if eq .Action "edit"}}
-    <h2>Editar afiliado2</h2>
-    <input type="text">
-    <form action="/member/{{$.MemberToEdit.IdMember}}/edit" method="PUT" enctype="application/json">
-        <input type="text" name="name" value="{{$.MemberToEdit.Name}}">
-        <input type="text" name="dni" value="{{$.MemberToEdit.DNI}}">
-        <button type="submit">Enviar</button>
-    </form>
-    {{end}}
-        <!-- invalid character 'I' looking for beginning of value
-goroutine 37 [running]: CAMBIA CON EL name del primer input -->
-<!-- esto significa que no reconoce ni al primero -->
+       
         
         
 </body>
