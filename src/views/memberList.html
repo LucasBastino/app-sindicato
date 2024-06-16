@@ -17,7 +17,8 @@
         <tr>
             <td>{{$member.Name}} </td>
             <td>{{$member.DNI}} </td>
-            <td><form action="/member/{{$member.IdMember}}/delete" method="POST"><button class="btn-danger">Eliminar</button></form></td>
+            <td><form action="/forms/editMember/{{$member.IdMember}}" method="GET"><button class="btn-warning">Editar</button></form></td>
+            <td><button class="btn-danger" hx-delete="/member/{{$member.IdMember}}/delete" hx-confirm="¿Estás seguro que deseas eliminar el afiliado?" hx-target="#memberList">Eliminar</button></td>
             
          </tr>
         {{end}}
