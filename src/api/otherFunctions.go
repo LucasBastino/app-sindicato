@@ -42,3 +42,20 @@ func returnHtmlTemplate(path string) *template.Template {
 	}
 	return tmpl
 }
+
+func ShowIfEdit(info Info, field string) string {
+	if info.Action == "edit" {
+		switch field {
+		case "Name":
+			return info.Member.Name
+		case "DNI":
+			return info.Member.DNI
+		default:
+			return "error no field"
+		}
+	} else if info.Action == "create" {
+		return ""
+	} else {
+		return "big error"
+	}
+}

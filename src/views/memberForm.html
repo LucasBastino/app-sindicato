@@ -19,8 +19,8 @@
         <h2>Editar afiliado2</h2>
         <form action="/member/{{$.Member.IdMember}}/edit" method="PUT" enctype="application/json">
             {{end}}
-            <input type="text" name="name" value="{{ShowOrNot . "Name"}}">
-            <input type="text" name="dni" value="{{ShowOrNot . "DNI"}}">
+            <input type="text" name="name" value="{{ShowIfEdit . "Name"}}">
+            <input type="text" name="dni" value="{{ShowIfEdit . "DNI"}}">
         <button type="submit">Enviar</button>
     </form>
        

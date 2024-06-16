@@ -24,7 +24,7 @@ func (c *Controller) createMember(w http.ResponseWriter, r *http.Request) {
 	}
 	defer insert.Close()
 
-	http.Redirect(w, r, "/members", http.StatusSeeOther) // poner un status de redirect (30X), sino no funciona
+	http.Redirect(w, r, "/memberList", http.StatusSeeOther) // poner un status de redirect (30X), sino no funciona
 	// c.renderMemberList(w, r) // esto tambien funciona
 }
 

@@ -14,46 +14,10 @@ type Info struct {
 	Member models.Member
 }
 
-var funcMap = template.FuncMap{"ShowOrNot": ShowOrNot}
+var funcMap = template.FuncMap{"ShowIfEdit": ShowIfEdit}
 
-func (c *Controller) renderHome(w http.ResponseWriter, r *http.Request) {
-	tmpl := template.Must(template.ParseFiles("src/views/home.html"))
-	tmpl.Execute(w, nil)
-}
-
-func (c *Controller) renderMembers1(w http.ResponseWriter, r *http.Request) {
-	result, err := c.DB.Query("SELECT IdMember, Name, DNI FROM MemberTable")
-	if err != nil {
-		fmt.Println("error obtaining data from database")
-		log.Panic(err)
-	}
-
-	var members []models.Member
-	for result.Next() {
-		member := models.Member{}
-		err := result.Scan(&member.IdMember, &member.Name, &member.DNI)
-		if err != nil {
-			fmt.Println("error scanning data")
-			log.Panic(err)
-		}
-		members = append(members, member)
-	}
-
-	tmpl, err := template.ParseFiles("src/views/memberList.html", "src/views/footer.html")
-	if err != nil {
-		fmt.Println("error parsing files")
-		panic(err)
-	}
-
-	tmpl.Execute(w, members)
-}
-
-func (c *Controller) renderMembers2(w http.ResponseWriter, r *http.Request) {
-	tmpl, err := template.ParseFiles("src/views/members2.html", "src/views/footer.html")
-	if err != nil {
-		fmt.Println("error parsing file memberList2")
-		panic(err)
-	}
+func (c *Controller) renderIndex(w http.ResponseWriter, r *http.Request) {
+	tmpl := template.Must(template.ParseFiles("src/views/index.html", "src/views/footer.html"))
 	tmpl.Execute(w, nil)
 }
 
@@ -87,7 +51,7 @@ func (c *Controller) renderCreateMemberForm(w http.ResponseWriter, req *http.Req
 	}
 	// tmpl, _ := template.ParseFiles("src/views/memberForm.html", "src/views/footer.html")
 	// el primero siempre es el main template, los demas se usan como componentes
-	tmpl.Execute(w, Info{"create", models.Member{}}) // le paso un miembro vacio
+	tmpl.Execute(w, Info{"create", models.Member{}}) // le paso un member vacio, no se puede pasar nil
 }
 
 func (c *Controller) renderEditMemberForm(w http.ResponseWriter, r *http.Request) {
@@ -118,21 +82,4 @@ func (c *Controller) renderEditMemberForm(w http.ResponseWriter, r *http.Request
 		fmt.Println("error parsing file memberForm.html")
 	}
 	tmpl.Execute(w, Info{"edit", memberToEdit})
-}
-
-func ShowOrNot(info Info, field string) string {
-	if info.Action == "edit" {
-		switch field {
-		case "Name":
-			return info.Member.Name
-		case "DNI":
-			return info.Member.DNI
-		default:
-			return "error no field"
-		}
-	} else if info.Action == "create" {
-		return ""
-	} else {
-		return "big error"
-	}
 }
