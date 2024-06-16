@@ -17,7 +17,7 @@
         
         {{if eq .Action "edit"}}
         <h2>Editar afiliado2</h2>
-        <form action="/member/{{$.Member.IdMember}}/edit" method="PUT" enctype="application/json">
+        <form action="/member/{{$.Member.IdMember}}/edit" method="POST" enctype="application/json">
             {{end}}
             <input type="text" name="name" value="{{ShowIfEdit . "Name"}}">
             <input type="text" name="dni" value="{{ShowIfEdit . "DNI"}}">
