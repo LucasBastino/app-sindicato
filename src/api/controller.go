@@ -39,7 +39,7 @@ func (c *Controller) deleteMember(w http.ResponseWriter, r *http.Request) {
 	}
 	delete.Close()
 
-	c.renderMemberList(w, r)
+	c.renderMemberTable(w, r)
 }
 
 func (c *Controller) editMember(w http.ResponseWriter, r *http.Request) {

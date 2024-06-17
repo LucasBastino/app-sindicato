@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Familiares de {{$.Member.Name}}</title>
+</head>
+<body>
+    <h2>Familiares de {{$.Member.Name}}</h2>
+    <h3>DNI {{$.Member.DNI}} </h3>
+    
+    <table class="table table-striped">
+        <tr>
+            <th>Nombre</th>
+            <th>DNI</th>
+            <th>Parentesco</th>
+            </tr>
+            {{range $_, $parent = .Parents}}
+            <tr>
+                <td>{{$parent.Name}}</td>
+                <td>{{$parent.DNI}}</td>
+                <td>{{$parent.Rel}} </td>
+                </tr>
+                {{end}}
+    </table>
+
+    <button class="btn-primary" htmx-get="/forms/createParent" hx-trigger="click" hx-target="#parentFormDiv">Agregar Familiar</button>
+    <div id="parentFormDiv"></div>
+</body>
+</html>

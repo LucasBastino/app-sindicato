@@ -60,3 +60,12 @@ func (c *Controller) renderEditMemberForm(w http.ResponseWriter, r *http.Request
 	}
 	tmpl.Execute(w, Info{"edit", memberToEdit})
 }
+
+func (c *Controller) renderCreateParentForm(w http.ResponseWriter, r *http.Request) {
+	tmpl, err := template.ParseFiles("src/views/parentForm.html")
+	if err != nil {
+		fmt.Println("error parsing file parentForm.html")
+		panic(err)
+	}
+	tmpl.Execute(w, nil)
+}

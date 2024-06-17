@@ -8,7 +8,7 @@ import (
 	"github.com/LucasBastino/app-sindicato/src/models"
 )
 
-func (c *Controller) renderMemberList(w http.ResponseWriter, r *http.Request) {
+func (c *Controller) renderMemberTable(w http.ResponseWriter, r *http.Request) {
 	result, err := c.DB.Query("SELECT IdMember, Name, DNI FROM MemberTable")
 	if err != nil {
 		fmt.Println("error obtaining data from database")
@@ -26,6 +26,6 @@ func (c *Controller) renderMemberList(w http.ResponseWriter, r *http.Request) {
 		members = append(members, member)
 	}
 
-	tmpl := returnHtmlTemplate("src/views/memberList.html")
+	tmpl := returnHtmlTemplate("src/views/memberTable.html")
 	tmpl.Execute(w, members)
 }
