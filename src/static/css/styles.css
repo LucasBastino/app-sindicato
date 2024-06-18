@@ -1,18 +1,35 @@
 body{
-    background-color: lightgrey;
+    background-color: #BBBBBB;
 }
 
-.input-wrapper {
-    position: relative;
-    width: 271px;
-  }
+.container{
+  background-color: #EFEFEF;
+}
+
+/* enable relative positioning */
+.inner-addon { 
+  position: relative; 
+  text-align: center;
   
-  .input-icon {
-    color: #191919;
-    position: absolute;
-    width: 20px;
-    height: 20px;
-    left: 12px;
-    top: 50%;
-    transform: translateY(-50%);
-  }
+}
+
+/* style icon */
+.inner-addon .input-icon {
+position: absolute;
+/* bottom 0 para alinearlo mas arriba */
+bottom: 0%;  
+padding: 10px;
+pointer-events: none;
+}
+
+/* align icon */
+.left-addon .input-icon  { left:  0px;}
+.right-addon .input-icon { right: 0px;}
+
+/* add padding  */
+.left-addon input  { padding-left:  30px; }
+.right-addon input { padding-right: 30px; }
+
+.table{
+  text-align: center;
+}
