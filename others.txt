@@ -60,3 +60,12 @@ func returnList() string {
 
     </table>`
 }
+
+funcmap
+
+var funcMap = template.FuncMap{"ShowIfEdit": ShowIfEdit}
+tmpl, err := template.New("memberForm.html").Funcs(funcMap).ParseFiles("src/views/memberForm.html")
+
+--
+// tmpl, _ := template.ParseFiles("src/views/memberForm.html", "src/views/footer.html")
+	// el primero siempre es el main template, los demas se usan como componentes

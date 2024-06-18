@@ -9,18 +9,12 @@
     
 </head>
 <body>
-    {{if eq .Action "create"}}
-    <h2>Agregar afiliado</h2>
-    <form action="/member/create" method="POST" enctype="application/json">
-        
-        {{end}}
-        
-        {{if eq .Action "edit"}}
+       
         <h2>Editar afiliado2</h2>
-        <form action="/member/{{$.Member.IdMember}}/edit" method="POST" enctype="application/json">
-            {{end}}
-            <input type="text" name="name" value="{{ShowIfEdit . "Name"}}">
-            <input type="text" name="dni" value="{{ShowIfEdit . "DNI"}}">
+        <form action="/member/{{$.IdMember}}/edit" method="POST" enctype="application/json">
+            
+            <input type="text" name="name" value="{{$.Name}}">
+            <input type="text" name="dni" value="{{$.DNI}}">
         <button type="submit">Enviar</button>
     </form>
        

@@ -8,31 +8,21 @@ import (
 	"github.com/LucasBastino/app-sindicato/src/models"
 )
 
-type Info struct {
-	Action string
-	Member models.Member
-}
-
-var funcMap = template.FuncMap{"ShowIfEdit": ShowIfEdit}
-
 func (c *Controller) renderIndex(w http.ResponseWriter, r *http.Request) {
-	tmpl := template.Must(template.ParseFiles("src/views/index.html", "src/views/footer.html"))
+	tmpl := template.Must(template.ParseFiles("src/views/index.html"))
 	tmpl.Execute(w, nil)
 }
 
 func (c *Controller) renderCreateMemberForm(w http.ResponseWriter, req *http.Request) {
 	// creo el template para crear un afiliado y lo ejecuto
-	tmpl, err := template.New("memberForm.html").Funcs(funcMap).ParseFiles("src/views/memberForm.html")
+	tmpl, err := template.ParseFiles("/src/views/forms/createMemberForm.html")
 	if err != nil {
-		fmt.Println("error parsing file memberForm.html")
+		fmt.Println("error parsing file createMemberForm.html")
 	}
-	// tmpl, _ := template.ParseFiles("src/views/memberForm.html", "src/views/footer.html")
-	// el primero siempre es el main template, los demas se usan como componentes
-	tmpl.Execute(w, Info{"create", models.Member{}}) // le paso un member vacio, no se puede pasar nil
+	tmpl.Execute(w, nil) // le paso un member vacio, no se puede pasar nil
 }
 
 func (c *Controller) renderEditMemberForm(w http.ResponseWriter, r *http.Request) {
-
 	var memberToEdit models.Member
 
 	// capto el param id de la URL
@@ -54,17 +44,17 @@ func (c *Controller) renderEditMemberForm(w http.ResponseWriter, r *http.Request
 	}
 
 	// creo el template, le paso sus funciones y lo ejecuto
-	tmpl, err := template.New("memberForm.html").Funcs(funcMap).ParseFiles("src/views/memberForm.html")
+	tmpl, err := template.ParseFiles("src/views/forms/editMemberForm.html")
 	if err != nil {
-		fmt.Println("error parsing file memberForm.html")
+		fmt.Println("error parsing file editMemberForm.html")
 	}
-	tmpl.Execute(w, Info{"edit", memberToEdit})
+	tmpl.Execute(w, memberToEdit)
 }
 
 func (c *Controller) renderCreateParentForm(w http.ResponseWriter, r *http.Request) {
-	tmpl, err := template.ParseFiles("src/views/parentForm.html")
+	tmpl, err := template.ParseFiles("src/views/forms/createParentForm.html")
 	if err != nil {
-		fmt.Println("error parsing file parentForm.html")
+		fmt.Println("error parsing file createParentForm.html")
 		panic(err)
 	}
 	tmpl.Execute(w, nil)
