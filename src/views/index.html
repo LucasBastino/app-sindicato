@@ -10,18 +10,20 @@
 </head>
 <body>
   <div class="container">
+    <div class="nav-container">
   <nav class="navbar navbar-expand navbar-light bg-light">
     <a class="navbar-brand" href="#">Sindicato</a>
       <div class="navbar-nav">
-        <a class="nav-item nav-link active" href="#">Afiliados <span class="sr-only">(current)</span></a>
-        <a class="nav-item nav-link" href="#">Empresas</a>
-        <a class="nav-item nav-link" href="#">Familiares</a>
-        <a class="nav-item nav-link" href="#">Padrón</a>
+        <a class="nav-item nav-link active" id="navv" href="#">Afiliados</a>
+        <a class="nav-item nav-link active" href="#">Empresas</a>
+        <a class="nav-item nav-link active" href="#">Familiares</a>
         <div class="inner-addon right-addon">
           <i class="bi bi-search input-icon"></i>
           <input class="form-control mr-sm-2 input-field" type="search" aria-label="Search">
         </div> 
       </div>
+      <a class="nav-item-right" href="#">Padrón</a>
+    </div>
     
   </nav>
 <div id="memberTableDiv" hx-get="/memberTable" hx-trigger="load"></div>

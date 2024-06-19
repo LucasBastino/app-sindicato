@@ -4,12 +4,21 @@ body{
 
 .container{
   background-color: #EFEFEF;
+  margin-top: 5%;
+  padding: 0;
+  border-radius: 20px;
+}
+
+.navbar{
+  border-top-left-radius: 20px;
+  border-top-right-radius: 20px ;
 }
 
 /* enable relative positioning */
 .inner-addon { 
   position: relative; 
   text-align: center;
+  margin-left: 0.5em
   
 }
 
@@ -32,4 +41,25 @@ pointer-events: none;
 
 .table{
   text-align: center;
+}
+
+.nav-item-right{
+  margin-left: auto;
+  margin-right: 0;
+  padding-left: 10px;
+  padding-right: 0;
+  color: black
+}
+
+.nav-item-right:hover{
+  color:black;
+  text-decoration-line: none 
+}
+
+tr:last-child td:first-child{
+  border-bottom-left-radius: 20px;
+}
+
+tr:last-child td:last-child{
+  border-bottom-right-radius: 20px;
 }
