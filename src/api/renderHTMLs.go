@@ -59,3 +59,29 @@ func (c *Controller) renderCreateParentForm(w http.ResponseWriter, r *http.Reque
 	}
 	tmpl.Execute(w, nil)
 }
+
+func (c *Controller) renderParentFile(w http.ResponseWriter, r *http.Request) {
+	IdParent := r.PathValue("IdParent")
+	result, err := c.DB.Query(fmt.Sprintf("SELECT Name, Rel FROM ParentTable WHERE IdParent = '%s'", IdParent))
+	if err != nil {
+		fmt.Println("error searching parent from database")
+		panic(err)
+	}
+
+	var parent models.Parent
+	for result.Next() {
+		err = result.Scan(&parent.Name, &parent.Rel)
+		if err != nil {
+			fmt.Println("error scanning data")
+			panic(err)
+		}
+	}
+
+	tmpl, err := template.ParseFiles("src/views/files/parentFile.html")
+	if err != nil {
+		fmt.Println("error parsing file parentFile.html")
+		panic(err)
+	}
+	tmpl.Execute(w, parent)
+
+}

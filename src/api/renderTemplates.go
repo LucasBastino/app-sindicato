@@ -32,30 +32,27 @@ func (c *Controller) renderMemberTable(w http.ResponseWriter, r *http.Request) {
 }
 
 func (c *Controller) renderParentTable(w http.ResponseWriter, r *http.Request) {
-	fmt.Println("entro en renderparenttable")
 	IdMember := r.PathValue("IdMember")
-	result, err := c.DB.Query(fmt.Sprintf("SELECT Name, Rel FROM ParentTable WHERE IdMember = '%s'", IdMember))
+	result, err := c.DB.Query(fmt.Sprintf("SELECT Name, Rel, IdParent FROM ParentTable WHERE IdMember = '%s'", IdMember))
 	if err != nil {
 		fmt.Println("error selecting data from database")
 		panic(err)
 	}
 
-	fmt.Println("ya hizo el query")
 	var parent models.Parent
 	var parents []models.Parent
 	for result.Next() {
-		err = result.Scan(&parent.Name, &parent.Rel)
+		err = result.Scan(&parent.Name, &parent.Rel, &parent.IdParent)
 		if err != nil {
 			fmt.Println("error scanning data")
 			panic(err)
 		}
 		parents = append(parents, parent)
 	}
-	fmt.Println("paso los resultados a parents")
-	fmt.Println(parents)
-	tmpl, err := template.ParseFiles("src/views/tables/parentMemberTable.html")
+
+	tmpl, err := template.ParseFiles("src/views/tables/parentTable.html")
 	if err != nil {
-		fmt.Println("error parsing file parentMemberTable.html")
+		fmt.Println("error parsing file parentTable.html")
 		panic(err)
 	}
 	tmpl.Execute(w, parents)
