@@ -22,7 +22,7 @@ func (c *Controller) renderCreateMemberForm(w http.ResponseWriter, req *http.Req
 	tmpl.Execute(w, nil) // le paso un member vacio, no se puede pasar nil
 }
 
-func (c *Controller) renderEditMemberForm(w http.ResponseWriter, r *http.Request) {
+func (c *Controller) renderMemberFile(w http.ResponseWriter, r *http.Request) {
 	var memberToEdit models.Member
 
 	// capto el param id de la URL
@@ -44,7 +44,7 @@ func (c *Controller) renderEditMemberForm(w http.ResponseWriter, r *http.Request
 	}
 
 	// creo el template, le paso sus funciones y lo ejecuto
-	tmpl, err := template.ParseFiles("src/views/forms/editMemberForm.html")
+	tmpl, err := template.ParseFiles("src/views/files/memberFile.html")
 	if err != nil {
 		fmt.Println("error parsing file editMemberForm.html")
 	}

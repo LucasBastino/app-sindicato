@@ -5,3 +5,9 @@ type Member struct {
 	Name     string
 	DNI      string
 }
+
+type Parent struct {
+	Name     string
+	Rel      string
+	IdMember int
+}

@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Agregar familiar</title>
+</head>
+<body>
+    <h1>Agregar familiar de afiliado: {{$.Name}}</h1>
+    <form action="/member/{{$.IdMember}}/parent/create" method="POST">
+        <input type="text" name="name" placeholder="Nombre">
+        <input type="text" name="rel" placeholder="Parentesco">
+        <button class="btn-primary" type="submit">Enviar</button>
+    </form>
+</body>
+</html>

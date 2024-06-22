@@ -6,10 +6,10 @@ CREATE TABLE MemberTable(
 
 
 CREATE TABLE ParentTable(
-    IdParent INT PRIMARY KEY AUTO_INCREMENT;
-    Name VARCHAR(50);
-    Rel VARCHAR(3);
-    IdMember INT;
+    IdParent INT PRIMARY KEY AUTO_INCREMENT,
+    Name VARCHAR(50),
+    Rel VARCHAR(20),
+    IdMember INT,
     FOREIGN KEY (IdMember) REFERENCES MemberTable(IdMember)
 )
 
@@ -17,3 +17,5 @@ CREATE TABLE ParentTable(
 
 
 SELECT * FROM MemberTable
+
+INSERT INTO ParentTable (Name, Rel, IdMember) VALUES ('familiar1', 'prima', 1)

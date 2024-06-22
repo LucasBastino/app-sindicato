@@ -10,7 +10,7 @@
         <tr>
             <td>{{$member.Name}} </td>
             <td>{{$member.DNI}} </td>
-            <td><form action="/form/editMember/{{$member.IdMember}}" method="GET"><button class="btn-primary"><i class="bi bi-file-earmark-text"></i></button></form></td>
+            <td><form action="/member/{{$member.IdMember}}/file" method="GET"><button class="btn-primary"><i class="bi bi-file-earmark-text"></i></button></form></td>
             <td><button class="btn-danger" hx-delete="/member/{{$member.IdMember}}/delete" hx-confirm="¿Estás seguro que deseas eliminar el afiliado?" hx-target="#memberTableDiv"><i class="bi bi-x-square"></i></button></td>
             
          </tr>
