@@ -54,3 +54,18 @@ func (c *Controller) editMember(w http.ResponseWriter, r *http.Request) {
 	// no puedo hacer esto ↓ porque estoy en POST, no puedo redireccionar
 	http.Redirect(w, r, "/index", http.StatusSeeOther) // con este status me anda, con otros de 300 no
 }
+
+func (c *Controller) editParent(w http.ResponseWriter, r *http.Request) {
+	IdParent := r.PathValue("IdParent")
+	Name := r.FormValue("name")
+	Rel := r.FormValue("rel")
+
+	update, err := c.DB.Query(fmt.Sprintf("UPDATE ParentTable SET Name = '%s', Rel = '%s' WHERE IdParent = '%s'", Name, Rel, IdParent))
+	if err != nil {
+		fmt.Println("error updating parent")
+		panic(err)
+	}
+	update.Close()
+
+	c.renderParentFile(w, r)
+}

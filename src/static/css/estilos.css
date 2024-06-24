@@ -63,3 +63,16 @@ tr:last-child td:first-child{
 tr:last-child td:last-child{
   border-bottom-right-radius: 20px;
 }
+
+input:disabled{
+  background-color: white;
+  color: black
+}
+
+.btn-show{
+  display:inline
+}
+
+.btn-hide{
+  display: none
+}

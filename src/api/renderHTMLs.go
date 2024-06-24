@@ -62,7 +62,7 @@ func (c *Controller) renderCreateParentForm(w http.ResponseWriter, r *http.Reque
 
 func (c *Controller) renderParentFile(w http.ResponseWriter, r *http.Request) {
 	IdParent := r.PathValue("IdParent")
-	result, err := c.DB.Query(fmt.Sprintf("SELECT Name, Rel FROM ParentTable WHERE IdParent = '%s'", IdParent))
+	result, err := c.DB.Query(fmt.Sprintf("SELECT IdParent, Name, Rel, IdMember FROM ParentTable WHERE IdParent = '%s'", IdParent))
 	if err != nil {
 		fmt.Println("error searching parent from database")
 		panic(err)
@@ -70,7 +70,7 @@ func (c *Controller) renderParentFile(w http.ResponseWriter, r *http.Request) {
 
 	var parent models.Parent
 	for result.Next() {
-		err = result.Scan(&parent.Name, &parent.Rel)
+		err = result.Scan(&parent.IdParent, &parent.Name, &parent.Rel, &parent.IdMember)
 		if err != nil {
 			fmt.Println("error scanning data")
 			panic(err)

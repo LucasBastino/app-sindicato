@@ -58,3 +58,30 @@ func (c *Controller) renderParentTable(w http.ResponseWriter, r *http.Request) {
 	tmpl.Execute(w, parents)
 
 }
+
+func (c *Controller) renderAllParentsTable(w http.ResponseWriter, r *http.Request) {
+	var parents []models.Parent
+	var parent models.Parent
+
+	result, err := c.DB.Query("SELECT Name, Rel FROM ParentTable")
+	if err != nil {
+		fmt.Println("error searching parents")
+		panic(err)
+	}
+
+	for result.Next() {
+		err = result.Scan(&parent.Name, &parent.Rel)
+		if err != nil {
+			fmt.Println("error scanning data")
+			panic(err)
+		}
+		parents = append(parents, parent)
+	}
+
+	tmpl, err := template.ParseFiles("src/views/tables/allParentsTable.html")
+	if err != nil {
+		fmt.Println("error parsing file allParentsTable.html")
+		panic(err)
+	}
+	tmpl.Execute(w, parents)
+}
