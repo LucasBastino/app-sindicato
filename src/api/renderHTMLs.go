@@ -15,7 +15,7 @@ func (c *Controller) renderIndex(w http.ResponseWriter, r *http.Request) {
 
 func (c *Controller) renderCreateMemberForm(w http.ResponseWriter, req *http.Request) {
 	// creo el template para crear un afiliado y lo ejecuto
-	tmpl, err := template.ParseFiles("/src/views/forms/createMemberForm.html")
+	tmpl, err := template.ParseFiles("src/views/forms/createMemberForm.html")
 	if err != nil {
 		fmt.Println("error parsing file createMemberForm.html")
 	}
@@ -84,4 +84,13 @@ func (c *Controller) renderParentFile(w http.ResponseWriter, r *http.Request) {
 	}
 	tmpl.Execute(w, parent)
 
+}
+
+func (c *Controller) renderCreateEnterpriseForm(w http.ResponseWriter, r *http.Request) {
+	tmpl, err := template.ParseFiles("src/views/forms/createEnterpriseForm.html")
+	if err != nil {
+		fmt.Println("error parsing file createEnterpriseForm.html")
+		panic(err)
+	}
+	tmpl.Execute(w, nil)
 }

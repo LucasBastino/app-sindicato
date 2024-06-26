@@ -5,6 +5,9 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"text/template"
+
+	"github.com/LucasBastino/app-sindicato/src/models"
 	// "syscall/js"
 )
 
@@ -68,4 +71,26 @@ func (c *Controller) editParent(w http.ResponseWriter, r *http.Request) {
 	update.Close()
 
 	c.renderParentFile(w, r)
+}
+
+func (c *Controller) createEnterprise(w http.ResponseWriter, r *http.Request) {
+	var enterprise models.Enterprise
+	enterprise.Name = r.FormValue("name")
+	enterprise.Address = r.FormValue("address")
+	// parseEnterprise()
+
+	insert, err := c.DB.Query(fmt.Sprintf("INSERT INTO EnterpriseTable (Name, Address) VALUES ('%s', '%s')", enterprise.Name, enterprise.Address))
+	if err != nil {
+		fmt.Println("error inserting data to database")
+		panic(err)
+	}
+	defer insert.Close()
+
+	tmpl, err := template.ParseFiles("src/views/files/enterpriseFile.html")
+	if err != nil {
+		fmt.Println("error parsing file enterpriseFile.html")
+		panic(err)
+	}
+	tmpl.Execute(w, enterprise)
+
 }
