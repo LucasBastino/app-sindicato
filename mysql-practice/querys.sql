@@ -13,7 +13,13 @@ CREATE TABLE ParentTable(
     FOREIGN KEY (IdMember) REFERENCES MemberTable(IdMember)
 )
 
+CREATE TABLE EnterpriseTable(
+    IdEnterprise INT PRIMARY KEY AUTO_INCREMENT,
+    Name VARCHAR(50),
+    Address VARCHAR(50)
+)
 
+INSERT INTO EnterpriseTable (Name, Address) VALUES ('coto', 'valenzuela 223')
 
 
 SELECT * FROM MemberTable

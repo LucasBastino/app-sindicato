@@ -69,11 +69,11 @@ input:disabled{
   color: black
 }
 
-.btn-show{
+.show{
   display:inline
 }
 
-.btn-hide{
+.hide{
   display: none
 }
 

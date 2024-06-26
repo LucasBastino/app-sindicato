@@ -17,9 +17,9 @@
             <input type="text" name="name" value="{{$.Name}}" disabled>
             <input type="text" name="rel" value="{{$.Rel}}" disabled>
 
-            <button type="submit" class="btn-primary btn-submit btn-hide">Confirmar</button>
+            <button type="submit" class="btn-primary btn-submit hide">Confirmar</button>
         </form>
-        <button class="btn-primary" onclick="enableInputs(); showConfirmButton();">Editar</button>
+        <button class="btn-primary" onclick="enableInputs(); showConfirmButton(); disableBrowserInput();">Editar</button>
         <a href="/member/{{$.IdMember}}/file"><button class="btn-primary">Volver</button></a>
     
     <script src="/static/scripts/activeElements.js"></script>

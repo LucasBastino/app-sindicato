@@ -94,3 +94,60 @@ func (c *Controller) renderCreateEnterpriseForm(w http.ResponseWriter, r *http.R
 	}
 	tmpl.Execute(w, nil)
 }
+
+func (c *Controller) renderEnterpriseTable(w http.ResponseWriter, r *http.Request) {
+	var enterprises []models.Enterprise
+	var enterprise models.Enterprise
+
+	result, err := c.DB.Query("SELECT * FROM EnterpriseTable")
+	if err != nil {
+		fmt.Println("error getting data from EnterpriseTable")
+		panic(err)
+	}
+
+	for result.Next() {
+		err = result.Scan(&enterprise.IdEnterprise, &enterprise.Name, &enterprise.Address)
+		if err != nil {
+			fmt.Println("error scanning data")
+			panic(err)
+		}
+		enterprises = append(enterprises, enterprise)
+	}
+	tmpl, err := template.ParseFiles("src/views/tables/enterpriseTable.html")
+	if err != nil {
+		fmt.Println("error parsing file enterpriseTable.html")
+		panic(err)
+	}
+	tmpl.Execute(w, enterprises)
+}
+
+// es el mismo procedimiento para members empresas y familiares
+// hay que hacer alguna funcion para simplificar
+
+func (c *Controller) renderEnterpriseFile(w http.ResponseWriter, r *http.Request) {
+	IdEnterprise := r.PathValue("IdEnterprise")
+
+	result, err := c.DB.Query(fmt.Sprintf("SELECT * FROM EnterpriseTable WHERE IdEnterprise = '%s'", IdEnterprise))
+	if err != nil {
+		fmt.Println("error getting data from database")
+		panic(err)
+	}
+
+	var enterprise models.Enterprise
+	for result.Next() {
+		err = result.Scan(&enterprise.IdEnterprise, &enterprise.Name, &enterprise.Address)
+		if err != nil {
+			fmt.Println("error scanning data")
+			panic(err)
+		}
+	}
+
+	tmpl, err := template.ParseFiles("src/views/files/enterpriseFile.html")
+	if err != nil {
+		fmt.Println("error parsing file enterpriseFile.html")
+		panic(err)
+	}
+
+	tmpl.Execute(w, enterprise)
+
+}

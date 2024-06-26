@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.4.1/dist/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-    <link rel="stylesheet" href="/static/css/estilos.css">
+    <link rel="stylesheet" href="/static/css/estilos2.css">
     <title>Member List</title>
 </head>
 <body>
@@ -14,8 +14,8 @@
   <nav class="navbar navbar-expand navbar-light bg-light">
     <a class="navbar-brand" href="#">Sindicato</a>
       <div class="navbar-nav">
-        <a class="nav-item nav-link active" href="#" onclick="enableBrowserInput(); showAddMemberBtn(); hideAddEnterpriseBtn();" hx-get="/memberTable" hx-trigger="click" hx-target="#tableDiv"  >Afiliados</a>
-        <a class="nav-item nav-link active" href="#" onclick="enableBrowserInput(); showAddEnterpriseBtn(); hideAddMemberBtn();">Empresas</a>
+        <a class="nav-item nav-link active" href="#" onclick="enableBrowserInput(); showAddMemberBtn(); hideAddEnterpriseBtn();" hx-get="/memberTable" hx-trigger="click" hx-target="#tableDiv">Afiliados</a>
+        <a class="nav-item nav-link active" href="#" onclick="enableBrowserInput(); showAddEnterpriseBtn(); hideAddMemberBtn();" hx-get="/enterpriseTable" hx-trigger="click" hx-target="#tableDiv">Empresas</a>
         <a class="nav-item nav-link active" href="#" onclick="enableBrowserInput(); hideAddMemberBtn(); hideAddEnterpriseBtn();" hx-get="/allParentsTable" hx-trigger="click" hx-target="#tableDiv">Familiares</a>
 
         <div class="inner-addon right-addon">
@@ -23,8 +23,8 @@
           <input class="form-control mr-sm-2 input-field" id="browser-input" type="search" aria-label="Search">
         </div> 
       </div>
-      <a class="nav-item nav-link active" href="#" id="add-member-btn" onclick="hideAddMemberBtn(); hideAddEnterpriseBtn();" hx-get="/form/createMember" hx-trigger="click" hx-target="#tableDiv"><button class="btn-primary">Agregar afiliado</button> 
-      <a class="nav-item nav-link active" href="#" id="add-enterprise-btn" onclick="hideAddMemberBtn(); hideAddEnterpriseBtn();" hx-get="/form/createEnterprise" hx-trigger="click" hx-target="#tableDiv"><button class="btn-primary btn-hide">Agregar empresa</button> 
+      <a class="nav-item nav-link active py-0" href="#" id="add-member-btn" onclick="hideAddMemberBtn(); hideAddEnterpriseBtn();" hx-get="/form/createMember" hx-trigger="click" hx-target="#tableDiv"><button class="btn-primary">Agregar afiliado</button> 
+      <a class="nav-item nav-link active py-0 hide" href="#" id="add-enterprise-btn" onclick="hideAddMemberBtn(); hideAddEnterpriseBtn();" hx-get="/form/createEnterprise" hx-trigger="click" hx-target="#tableDiv"><button class="btn-primary">Agregar empresa</button> 
 
 
 
