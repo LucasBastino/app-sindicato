@@ -106,7 +106,7 @@ func (c *Controller) searchMember(w http.ResponseWriter, r *http.Request) {
 	var members []models.Member
 	var member models.Member
 
-	result, err := c.DB.Query(fmt.Sprintf(`SELECT * FROM MemberTable WHERE Name LIKE '%%%s%%'`, searchKey))
+	result, err := c.DB.Query(fmt.Sprintf(`SELECT * FROM MemberTable WHERE Name LIKE '%%%s%%' OR DNI LIKE '%%%s%%'`, searchKey, searchKey))
 	if err != nil {
 		fmt.Println("error searching member from database")
 		panic(err)
@@ -119,6 +119,7 @@ func (c *Controller) searchMember(w http.ResponseWriter, r *http.Request) {
 		}
 		members = append(members, member)
 	}
+	defer result.Close()
 
 	tmpl, err := template.ParseFiles("src/views/tables/memberTable.html")
 	if err != nil {
@@ -126,4 +127,60 @@ func (c *Controller) searchMember(w http.ResponseWriter, r *http.Request) {
 		panic(err)
 	}
 	tmpl.Execute(w, members)
+}
+
+func (c *Controller) searchEnterprise(w http.ResponseWriter, r *http.Request) {
+	searchKey := r.FormValue("search-key")
+	var enterprises []models.Enterprise
+	var enterprise models.Enterprise
+
+	result, err := c.DB.Query(fmt.Sprintf(`SELECT * FROM EnterpriseTable WHERE Name LIKE '%%%s%%' OR Address LIKE '%%%s%%'`, searchKey, searchKey))
+	if err != nil {
+		fmt.Println("error searching enterprise from database")
+		panic(err)
+	}
+	for result.Next() {
+		err = result.Scan(&enterprise.IdEnterprise, &enterprise.Name, &enterprise.Address)
+		if err != nil {
+			fmt.Println("error scanning data")
+			panic(err)
+		}
+		enterprises = append(enterprises, enterprise)
+	}
+	defer result.Close()
+
+	tmpl, err := template.ParseFiles("src/views/tables/enterpriseTable.html")
+	if err != nil {
+		fmt.Println("error parsing file enterpriseTable.html")
+		panic(err)
+	}
+	tmpl.Execute(w, enterprises)
+}
+
+func (c *Controller) searchParent(w http.ResponseWriter, r *http.Request) {
+	searchKey := r.FormValue("search-key")
+	var parents []models.Parent
+	var parent models.Parent
+
+	result, err := c.DB.Query(fmt.Sprintf(`SELECT * FROM ParentTable WHERE Name LIKE '%%%s%%' OR Rel LIKE '%%%s%%'`, searchKey, searchKey))
+	if err != nil {
+		fmt.Println("error searching parent from database")
+		panic(err)
+	}
+	for result.Next() {
+		err = result.Scan(&parent.IdParent, &parent.Name, &parent.Rel, &parent.IdMember)
+		if err != nil {
+			fmt.Println("error scanning data")
+			panic(err)
+		}
+		parents = append(parents, parent)
+	}
+	defer result.Close()
+
+	tmpl, err := template.ParseFiles("src/views/tables/allParentsTable.html")
+	if err != nil {
+		fmt.Println("error parsing file allParentsTable.html")
+		panic(err)
+	}
+	tmpl.Execute(w, parents)
 }
