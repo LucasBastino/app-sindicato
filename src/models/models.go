@@ -18,3 +18,8 @@ type Enterprise struct {
 	Name         string
 	Address      string
 }
+
+type DBError struct {
+	Statement string
+	Model     string
+}
