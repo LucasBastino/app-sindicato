@@ -27,7 +27,13 @@ func (c *Controller) createMember(w http.ResponseWriter, r *http.Request) {
 	}
 	defer insert.Close()
 
-	http.Redirect(w, r, "/index", http.StatusSeeOther) // poner un status de redirect (30X), sino no funciona
+	tmpl, err := template.ParseFiles("src/views/files/memberFile.html")
+	if err != nil {
+		fmt.Println("error parsing file memberFile.html")
+		panic(err)
+	}
+	tmpl.Execute(w, newMember)
+	// http.Redirect(w, r, "/index", http.StatusSeeOther) // poner un status de redirect (30X), sino no funciona
 	// c.renderMemberList(w, r) // esto tambien funciona
 }
 
@@ -93,4 +99,31 @@ func (c *Controller) createEnterprise(w http.ResponseWriter, r *http.Request) {
 	}
 	tmpl.Execute(w, enterprise)
 
+}
+
+func (c *Controller) searchMember(w http.ResponseWriter, r *http.Request) {
+	searchKey := r.FormValue("search-key")
+	var members []models.Member
+	var member models.Member
+
+	result, err := c.DB.Query(fmt.Sprintf(`SELECT * FROM MemberTable WHERE Name LIKE '%%%s%%'`, searchKey))
+	if err != nil {
+		fmt.Println("error searching member from database")
+		panic(err)
+	}
+	for result.Next() {
+		err = result.Scan(&member.IdMember, &member.Name, &member.DNI)
+		if err != nil {
+			fmt.Println("error scanning data")
+			panic(err)
+		}
+		members = append(members, member)
+	}
+
+	tmpl, err := template.ParseFiles("src/views/tables/memberTable.html")
+	if err != nil {
+		fmt.Println("error parsing file memberTable.html")
+		panic(err)
+	}
+	tmpl.Execute(w, members)
 }

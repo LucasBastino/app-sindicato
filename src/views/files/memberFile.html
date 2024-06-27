@@ -1,18 +1,7 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.4.1/dist/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-    <link rel="stylesheet" href="/static/css/estilos.css">
-    <title>Ficha de {{$.Name}} </title>
-    
-</head>
 <body>
        
         <h2>Ficha de {{$.Name}}</h2>
-        <form action="/member/{{$.IdMember}}/edit" method="POST" enctype="application/json">
+        <form hx-post="/member/{{$.IdMember}}/edit">
             
             <input type="text" name="name" value="{{$.Name}}" disabled>
             <input type="text" name="dni" value="{{$.DNI}}" disabled>
@@ -23,9 +12,8 @@
     
         <button type="submit" hx-get="/member/{{$.IdMember}}/parentTable" hx-trigger="click" hx-target="#parentTableDiv">Familiares</button>
         <div id="parentTableDiv"></div>
-        
+        <button class="btn-primary" hx-get="/memberTable" hx-trigger="click" hx-target="#tableDiv">Lista Afiliados</button>
         
     <script src="/static/scripts/activeElements.js"></script>
     <script src="https://unpkg.com/htmx.org@1.9.12" integrity="sha384-ujb1lZYygJmzgSwoxRggbCHcjc0rB2XoQrxeTUQyRjrOnlCoYta87iKBWq3EsdM2" crossorigin="anonymous"></script>
 </body>
-</html>

@@ -20,7 +20,8 @@
 
         <div class="inner-addon right-addon">
           <i class="bi bi-search input-icon"></i>
-          <input class="form-control mr-sm-2 input-field" id="browser-input" type="search" aria-label="Search">
+          <input class="form-control mr-sm-2 input-field" id="browser-input" name="search-key" type="search" aria-label="Search" 
+          hx-post="/searchMember" hx-trigger="keyup" hx-target="#tableDiv">
         </div> 
       </div>
       <a class="nav-item nav-link active py-0" href="#" id="add-member-btn" onclick="hideAddMemberBtn(); hideAddEnterpriseBtn();" hx-get="/form/createMember" hx-trigger="click" hx-target="#tableDiv"><button class="btn-primary">Agregar afiliado</button> 
