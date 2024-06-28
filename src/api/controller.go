@@ -14,27 +14,6 @@ type Controller struct {
 	DB *sql.DB
 }
 
-func checkError(err error, kind string, path string, dbErrorData models.DBError) {
-	switch kind {
-	case "dbError":
-		{
-			fmt.Printf("error with '%s %s' database action\n", dbErrorData.Statement, dbErrorData.Model)
-			panic(err)
-		}
-	case "tmplError":
-		{
-			fmt.Printf("error parsing file '%s'\n", path)
-			panic(err)
-		}
-
-	case "scanError":
-		{
-			fmt.Println("error scanning data")
-			panic(err)
-		}
-	}
-}
-
 func (c *Controller) createMember(w http.ResponseWriter, r *http.Request) {
 	newMember := parseMember(r)
 	path := "src/views/files/memberFile.html"
@@ -191,29 +170,4 @@ func (c *Controller) searchParent(w http.ResponseWriter, r *http.Request) {
 	}
 	tmpl.Execute(w, parents)
 
-}
-
-type DBError struct {
-	Action string
-}
-type ScanError struct {
-	Model string
-}
-type TmplError struct {
-	Path string
-}
-
-func (db DBError) Error(err error) {
-	fmt.Printf("error with '%s %s' database action\n", db.Action)
-	panic(err)
-}
-
-func (tmpl TmplError) Error(err error) {
-	fmt.Printf("error parsing file '%s'\n", tmpl.Path)
-	panic(err)
-}
-
-func (scan ScanError) Error(err error) {
-	fmt.Println("error scanning data from result to", scan.Model)
-	panic(err)
 }

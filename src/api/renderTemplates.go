@@ -27,7 +27,11 @@ func (c *Controller) renderMemberTable(w http.ResponseWriter, r *http.Request) {
 		members = append(members, member)
 	}
 
-	tmpl := returnHtmlTemplate("src/views/tables/memberTable.html")
+	path := "src/views/tables/memberTable.html"
+	tmpl, err := template.ParseFiles(path)
+	if err != nil {
+		TmplError{path}.Error(err)
+	}
 	tmpl.Execute(w, members)
 }
 

@@ -122,7 +122,8 @@ func (c *Controller) renderEnterpriseTable(w http.ResponseWriter, r *http.Reques
 }
 
 // es el mismo procedimiento para members empresas y familiares
-// hay que hacer alguna funcion para simplificar
+// buscar los datos en la bd, scanearlos y despues ejecutar un template
+// hay que hacer alguna funcion para simplificar como hacia hdeleon
 
 func (c *Controller) renderEnterpriseFile(w http.ResponseWriter, r *http.Request) {
 	IdEnterprise := r.PathValue("IdEnterprise")
