@@ -39,8 +39,10 @@ func (c *Controller) createMember(w http.ResponseWriter, r *http.Request) {
 	newMember := parseMember(r)
 	path := "src/views/files/memberFile.html"
 
-	insert, err := c.DB.Query(fmt.Sprintf("INSERT INTO MemberTable (Name, DNI) VALUES ('%s','%s')", newMember.Name, newMember.DNI))
-	checkError(err, "dbError", "", models.DBError{Statement: "INSERT", Model: "MEMBER"})
+	insert, err := c.DB.Query(fmt.Sprintf("INSERT INTO Membe2rTable (Name, DNI) VALUES ('%s','%s')", newMember.Name, newMember.DNI))
+	if err != nil {
+		DBError{"INSERT", "MEMB222ER"}.Error(err)
+	}
 	defer insert.Close()
 
 	tmpl, err := template.ParseFiles(path)
@@ -146,7 +148,9 @@ func (c *Controller) searchParent(w http.ResponseWriter, r *http.Request) {
 	var parent models.Parent
 
 	result, err := c.DB.Query(fmt.Sprintf(`SELECT * FROM ParentTable WHERE Name LIKE '%%%s%%' OR Rel LIKE '%%%s%%'`, searchKey, searchKey))
-	checkError(err, "dbError", "", models.DBError{Statement: "SELECT", Model: "PARENT"})
+	if err != nil {
+		checkError(err, "dbError", "", models.DBError{Statement: "SELECT", Model: "PARENT"})
+	}
 	for result.Next() {
 		err = result.Scan(&parent.IdParent, &parent.Name, &parent.Rel, &parent.IdMember)
 		checkError(err, "scanError", "", models.DBError{})
@@ -158,4 +162,36 @@ func (c *Controller) searchParent(w http.ResponseWriter, r *http.Request) {
 	tmpl, err := template.ParseFiles(path)
 	checkError(err, "tmplError", path, models.DBError{})
 	tmpl.Execute(w, parents)
+
+}
+
+type ErrorInterface interface {
+	Error(err error)
+}
+
+type DBError struct {
+	Statement string
+	Model     string
+}
+
+func (db DBError) Error(err error) {
+	fmt.Printf("error with '%s %s' database action\n", db.Statement, db.Model)
+	panic(err)
+}
+
+type ScanError struct {
+	Model string
+}
+
+func (scan ScanError) Error(err error) {
+	fmt.Println("error scanning data from result to", scan.Model)
+}
+
+type TmplError struct {
+	Path string
+}
+
+func (tmpl TmplError) Error(err error) {
+	fmt.Printf("error parsing file '%s'\n", tmpl.Path)
+	panic(err)
 }
