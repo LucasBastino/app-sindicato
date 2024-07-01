@@ -21,8 +21,7 @@ func (c *Controller) renderMemberTable(w http.ResponseWriter, r *http.Request) {
 		member := models.Member{}
 		err := result.Scan(&member.IdMember, &member.Name, &member.DNI)
 		if err != nil {
-			fmt.Println("error scanning data")
-			log.Panic(err)
+			ScanError{"MEMBER"}.Error(err)
 		}
 		members = append(members, member)
 	}
@@ -39,8 +38,7 @@ func (c *Controller) renderParentTable(w http.ResponseWriter, r *http.Request) {
 	IdMember := r.PathValue("IdMember")
 	result, err := c.DB.Query(fmt.Sprintf("SELECT Name, Rel, IdParent FROM ParentTable WHERE IdMember = '%s'", IdMember))
 	if err != nil {
-		fmt.Println("error selecting data from database")
-		panic(err)
+		DBError{"SELECT PARENT"}.Error(err)
 	}
 
 	var parent models.Parent
@@ -48,16 +46,15 @@ func (c *Controller) renderParentTable(w http.ResponseWriter, r *http.Request) {
 	for result.Next() {
 		err = result.Scan(&parent.Name, &parent.Rel, &parent.IdParent)
 		if err != nil {
-			fmt.Println("error scanning data")
-			panic(err)
+			ScanError{"PARENT"}.Error(err)
 		}
 		parents = append(parents, parent)
 	}
 
-	tmpl, err := template.ParseFiles("src/views/tables/parentTable.html")
+	path := "src/views/tables/parentTable.html"
+	tmpl, err := template.ParseFiles(path)
 	if err != nil {
-		fmt.Println("error parsing file parentTable.html")
-		panic(err)
+		TmplError{path}.Error(err)
 	}
 	tmpl.Execute(w, parents)
 
@@ -69,23 +66,21 @@ func (c *Controller) renderAllParentsTable(w http.ResponseWriter, r *http.Reques
 
 	result, err := c.DB.Query("SELECT Name, Rel FROM ParentTable")
 	if err != nil {
-		fmt.Println("error searching parents")
-		panic(err)
+		DBError{"SELECT PARENT"}.Error(err)
 	}
 
 	for result.Next() {
 		err = result.Scan(&parent.Name, &parent.Rel)
 		if err != nil {
-			fmt.Println("error scanning data")
-			panic(err)
+			ScanError{"PARENT"}.Error(err)
 		}
 		parents = append(parents, parent)
 	}
 
-	tmpl, err := template.ParseFiles("src/views/tables/allParentsTable.html")
+	path := "src/views/tables/allParentsTable.html"
+	tmpl, err := template.ParseFiles(path)
 	if err != nil {
-		fmt.Println("error parsing file allParentsTable.html")
-		panic(err)
+		TmplError{path}.Error(err)
 	}
 	tmpl.Execute(w, parents)
 }
