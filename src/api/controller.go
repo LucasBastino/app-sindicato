@@ -14,21 +14,15 @@ type Controller struct {
 	DB *sql.DB
 }
 
+// ------------------------------------
+
 func (c *Controller) createMember(w http.ResponseWriter, r *http.Request) {
-	newMember := parseMember(r)
-	path := "src/views/files/memberFile.html"
 
-	insert, err := c.DB.Query(fmt.Sprintf("INSERT INTO Membe2rTable (Name, DNI) VALUES ('%s','%s')", newMember.Name, newMember.DNI))
-	if err != nil {
-		DBError{"INSERT MEMBER"}.Error(err)
-	}
-	defer insert.Close()
+	memberMaker := MemberMaker{}
+	newMember := makerCaller(memberMaker, r)
+	insertInDBCaller(newMember, c.DB)
+	renderTemplateCaller(newMember, w, "src/views/files/memberFile.html")
 
-	tmpl, err := template.ParseFiles(path)
-	if err != nil {
-		TmplError{path}.Error(err)
-	}
-	tmpl.Execute(w, newMember)
 	// http.Redirect(w, r, "/index", http.StatusSeeOther) // poner un status de redirect (30X), sino no funciona
 	// c.renderMemberList(w, r) // esto tambien funciona
 }

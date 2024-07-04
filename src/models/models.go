@@ -1,5 +1,12 @@
 package models
 
+import (
+	"database/sql"
+	"fmt"
+	"net/http"
+	"text/template"
+)
+
 type Member struct {
 	IdMember int
 	Name     string
@@ -22,4 +29,26 @@ type Enterprise struct {
 type DBError struct {
 	Statement string
 	Model     string
+}
+
+func (m Member) Imprimir() {
+	fmt.Println(m)
+}
+
+func (newMember Member) InsertInDB(DB *sql.DB) {
+	insert, err := DB.Query(fmt.Sprintf("INSERT INTO MemberTable (Name, DNI) VALUES ('%s','%s')", newMember.Name, newMember.DNI))
+	if err != nil {
+		// DBError{"INSERT MEMBER"}.Error(err)
+		fmt.Println("error insertando en la DB")
+	}
+	defer insert.Close()
+}
+
+func (m Member) RenderTemplate(w http.ResponseWriter, path string) {
+	tmpl, err := template.ParseFiles(path)
+	if err != nil {
+		// TmplError{path}.Error(err)
+		fmt.Println("error parsing file", path)
+	}
+	tmpl.Execute(w, m)
 }
