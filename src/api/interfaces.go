@@ -11,15 +11,17 @@ type IModel interface {
 	Imprimir()
 	InsertInDB(*sql.DB)
 	RenderTemplate(http.ResponseWriter, string)
+	DeleteFromDB(*sql.DB)
+	UpdateInDB(int, *sql.DB)
 }
 
-type ModelMaker interface {
-	makeModel(*http.Request) IModel
+type ModelParser interface {
+	parseModel(*http.Request) IModel
 }
 
-type MemberMaker struct{}
+type MemberParser struct{}
 
-func (maker MemberMaker) makeModel(r *http.Request) IModel {
+func (m MemberParser) parseModel(r *http.Request) IModel {
 	member := models.Member{}
 	member.Name = r.FormValue("name")
 	member.DNI = r.FormValue("dni")

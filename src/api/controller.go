@@ -17,9 +17,8 @@ type Controller struct {
 // ------------------------------------
 
 func (c *Controller) createMember(w http.ResponseWriter, r *http.Request) {
-
-	memberMaker := MemberMaker{}
-	newMember := makerCaller(memberMaker, r)
+	memberParser := MemberParser{}
+	newMember := parserCaller(memberParser, r)
 	insertInDBCaller(newMember, c.DB)
 	renderTemplateCaller(newMember, w, "src/views/files/memberFile.html")
 
@@ -28,25 +27,17 @@ func (c *Controller) createMember(w http.ResponseWriter, r *http.Request) {
 }
 
 func (c *Controller) deleteMember(w http.ResponseWriter, r *http.Request) {
-	IdMember := r.PathValue("IdMember")
-	fmt.Println(IdMember)
-	delete, err := c.DB.Query(fmt.Sprintf("DELETE FROM MemberTable WHERE IdMember = '%s'", IdMember))
-	if err != nil {
-		DBError{"DELETE MEMBER"}.Error(err)
-	}
-	delete.Close()
-
+	IdMember := getIdModel("Member", r)
+	deleteFromDBCaller(models.Member{IdMember: IdMember}, c.DB)
 	c.renderMemberTable(w, r)
 }
 
 func (c *Controller) editMember(w http.ResponseWriter, r *http.Request) {
-	memberEdited := parseMember(r)
-	IdMember := r.PathValue("IdMember")
-	update, err := c.DB.Query(fmt.Sprintf("UPDATE MemberTable SET Name = '%s', DNI = '%s' WHERE IdMember = '%s'", memberEdited.Name, memberEdited.DNI, IdMember))
-	if err != nil {
-		DBError{"UPDATE MEMBER"}.Error(err)
-	}
-	update.Close()
+	memberParser := MemberParser{}
+	memberEdited := parserCaller(memberParser, r)
+	IdMember := getIdModel("Member", r)
+	updateInDBCaller(memberEdited, IdMember, c.DB)
+
 	// no puedo hacer esto ↓ porque estoy en POST, no puedo redireccionar
 	http.Redirect(w, r, "/index", http.StatusSeeOther) // con este status me anda, con otros de 300 no
 }

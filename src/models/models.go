@@ -52,3 +52,23 @@ func (m Member) RenderTemplate(w http.ResponseWriter, path string) {
 	}
 	tmpl.Execute(w, m)
 }
+
+func (m Member) DeleteFromDB(DB *sql.DB) {
+	delete, err := DB.Query(fmt.Sprintf("DELETE FROM MemberTable WHERE IdMember = '%v'", m.IdMember))
+	if err != nil {
+		// DBError{"DELETE MEMBER"}.Error(err)
+		fmt.Println("error deleting member")
+	}
+	defer delete.Close()
+
+}
+
+func (m Member) UpdateInDB(IdMember int, DB *sql.DB) {
+	update, err := DB.Query(fmt.Sprintf("UPDATE MemberTable SET Name = '%s', DNI = '%s' WHERE IdMember = '%v'", m.Name, m.DNI, IdMember))
+	if err != nil {
+		// DBError{"UPDATE MEMBER"}.Error(err)
+		fmt.Println("error updating member")
+		panic(err)
+	}
+	update.Close()
+}
