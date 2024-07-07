@@ -1,4 +1,4 @@
-package api
+package interfaces
 
 import (
 	"database/sql"
@@ -9,12 +9,12 @@ import (
 )
 
 type ModelSearcher interface {
-	searchModel(*http.Request, *sql.DB) []*IModel
+	SearchModel(*http.Request, *sql.DB) []*IModel
 }
 
 type MemberSearcher struct{}
 
-func (m MemberSearcher) searchModel(r *http.Request, DB *sql.DB) []*models.Member {
+func (m MemberSearcher) SearchModel(r *http.Request, DB *sql.DB) []models.Member {
 	searchKey := r.FormValue("search-key")
 	var members []*models.Member
 	var member models.Member
@@ -33,3 +33,5 @@ func (m MemberSearcher) searchModel(r *http.Request, DB *sql.DB) []*models.Membe
 	defer result.Close()
 	return members
 }
+
+// probar sacar esta interface y hacerlo con generics, igualmente primero probar asi que ya esta hecho

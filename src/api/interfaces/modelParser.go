@@ -1,4 +1,4 @@
-package api
+package interfaces
 
 import (
 	"net/http"
@@ -7,12 +7,12 @@ import (
 )
 
 type ModelParser interface {
-	parseModel(*http.Request) IModel
+	ParseModel(*http.Request) IModel
 }
 
 type MemberParser struct{}
 
-func (m MemberParser) parseModel(r *http.Request) IModel {
+func (m MemberParser) ParseModel(r *http.Request) IModel {
 	member := models.Member{}
 	member.Name = r.FormValue("name")
 	member.DNI = r.FormValue("dni")

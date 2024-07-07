@@ -1,4 +1,4 @@
-package api
+package interfaces
 
 import (
 	"database/sql"
@@ -11,4 +11,6 @@ type IModel interface {
 	RenderTemplate(http.ResponseWriter, string)
 	DeleteFromDB(*sql.DB)
 	UpdateInDB(int, *sql.DB)
+	// SearchInDB con generics falta hacer
+	// hay que borrar el memberSearcher
 }
