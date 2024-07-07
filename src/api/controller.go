@@ -79,29 +79,9 @@ func (c *Controller) createEnterprise(w http.ResponseWriter, r *http.Request) {
 }
 
 func (c *Controller) searchMember(w http.ResponseWriter, r *http.Request) {
-	searchKey := r.FormValue("search-key")
-	var members []models.Member
-	var member models.Member
+	emptyMember := models.Member{}
+	members := searchInDBCaller(emptyMember, r, c.DB)
 
-	result, err := c.DB.Query(fmt.Sprintf(`SELECT * FROM MemberTable WHERE Name LIKE '%%%s%%' OR DNI LIKE '%%%s%%'`, searchKey, searchKey))
-	if err != nil {
-		DBError{"SELECT MEMBER"}.Error(err)
-	}
-	for result.Next() {
-		err = result.Scan(&member.IdMember, &member.Name, &member.DNI)
-		if err != nil {
-			ScanError{"MEMBER"}.Error(err)
-		}
-		members = append(members, member)
-	}
-	defer result.Close()
-
-	path := "src/views/tables/memberTable.html"
-	tmpl, err := template.ParseFiles(path)
-	if err != nil {
-		TmplError{path}.Error(err)
-	}
-	tmpl.Execute(w, members)
 }
 
 func (c *Controller) searchEnterprise(w http.ResponseWriter, r *http.Request) {

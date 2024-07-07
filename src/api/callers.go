@@ -4,6 +4,8 @@ import (
 	"database/sql"
 	"fmt"
 	"net/http"
+
+	"github.com/LucasBastino/app-sindicato/src/models"
 )
 
 func imprimirCaller(m IModel) {
@@ -28,4 +30,8 @@ func deleteFromDBCaller(m IModel, DB *sql.DB) {
 
 func updateInDBCaller(m IModel, idModel int, DB *sql.DB) {
 	m.UpdateInDB(idModel, DB)
+}
+
+func searchInDBCaller(m IModel, r *http.Request, DB *sql.DB) []models.Member {
+	return m.SearchInDB(r, DB)
 }

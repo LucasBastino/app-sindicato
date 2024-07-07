@@ -13,6 +13,7 @@ type IModel interface {
 	RenderTemplate(http.ResponseWriter, string)
 	DeleteFromDB(*sql.DB)
 	UpdateInDB(int, *sql.DB)
+	SearchInDB(*http.Request, *sql.DB) []models.Member
 }
 
 type ModelParser interface {
