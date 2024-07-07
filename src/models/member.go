@@ -13,24 +13,6 @@ type Member struct {
 	DNI      string
 }
 
-type Parent struct {
-	IdParent int
-	Name     string
-	Rel      string
-	IdMember int
-}
-
-type Enterprise struct {
-	IdEnterprise int
-	Name         string
-	Address      string
-}
-
-type DBError struct {
-	Statement string
-	Model     string
-}
-
 func (m Member) Imprimir() {
 	fmt.Println(m)
 }
@@ -71,25 +53,4 @@ func (m Member) UpdateInDB(IdMember int, DB *sql.DB) {
 		panic(err)
 	}
 	update.Close()
-}
-
-func (m Member) SearchInDB(r *http.Request, DB *sql.DB) []Member {
-	searchKey := r.FormValue("search-key")
-	var members []Member
-	var member Member
-
-	result, err := DB.Query(fmt.Sprintf(`SELECT * FROM MemberTable WHERE Name LIKE '%%%s%%' OR DNI LIKE '%%%s%%'`, searchKey, searchKey))
-	if err != nil {
-		fmt.Println("error searching member in DB")
-	}
-	for result.Next() {
-		err = result.Scan(&member.IdMember, &member.Name, &member.DNI)
-		if err != nil {
-			fmt.Println("error scanning member")
-		}
-		members = append(members, member)
-	}
-	defer result.Close()
-	return members
-
 }

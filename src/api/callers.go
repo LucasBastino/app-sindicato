@@ -5,10 +5,10 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/LucasBastino/app-sindicato/src/models"
+	interfaces "github.com/LucasBastino/app-sindicato/src/api/interfaces/model.go"
 )
 
-func imprimirCaller(m IModel) {
+func imprimirCaller(m interfaces.IModel) {
 	fmt.Println(m)
 }
 
@@ -32,6 +32,6 @@ func updateInDBCaller(m IModel, idModel int, DB *sql.DB) {
 	m.UpdateInDB(idModel, DB)
 }
 
-func searchInDBCaller(m IModel, r *http.Request, DB *sql.DB) []models.Member {
-	return m.SearchInDB(r, DB)
+func searcherCaller(searcher ModelSearcher, r *http.Request, DB *sql.DB) []*IModel {
+	return searcher.searchModel(r, DB)
 }
