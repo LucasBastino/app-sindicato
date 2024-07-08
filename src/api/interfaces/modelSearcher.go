@@ -8,15 +8,15 @@ import (
 	"github.com/LucasBastino/app-sindicato/src/models"
 )
 
-type ModelSearcher interface {
-	SearchModel(*http.Request, *sql.DB) []*IModel
+type ModelSearcher[T TypeModel] interface {
+	SearchModel(*http.Request, *sql.DB) []T
 }
 
 type MemberSearcher struct{}
 
 func (m MemberSearcher) SearchModel(r *http.Request, DB *sql.DB) []models.Member {
 	searchKey := r.FormValue("search-key")
-	var members []*models.Member
+	var members []models.Member
 	var member models.Member
 
 	result, err := DB.Query(fmt.Sprintf(`SELECT * FROM MemberTable WHERE Name LIKE '%%%s%%' OR DNI LIKE '%%%s%%'`, searchKey, searchKey))
@@ -28,7 +28,7 @@ func (m MemberSearcher) SearchModel(r *http.Request, DB *sql.DB) []models.Member
 		if err != nil {
 			fmt.Println("error scanning member")
 		}
-		members = append(members, &member)
+		members = append(members, member)
 	}
 	defer result.Close()
 	return members
