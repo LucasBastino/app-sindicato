@@ -34,6 +34,7 @@ func updateInDBCaller(m i.IModel, idModel int, DB *sql.DB) {
 
 // probar sacar esto y hacerlo como antes pero con generics
 // igualmente primero probar asi que ya esta hecho
-func searcherCaller[G i.TypeModel](searcher i.ModelSearcher, r *http.Request, DB *sql.DB) []G {
-	return searcher.SearchModel(r, DB)
+
+func searchInDBCaller(m i.IModel, r *http.Request, DB *sql.DB) {
+	m.SearchInDB(r, DB)
 }
