@@ -26,13 +26,22 @@ func (newMember Member) InsertInDB(DB *sql.DB) {
 	defer insert.Close()
 }
 
-func (m Member) RenderTemplate(w http.ResponseWriter, path string) {
+func (m Member) RenderFileTemplate(w http.ResponseWriter, path string) {
 	tmpl, err := template.ParseFiles(path)
 	if err != nil {
 		// TmplError{path}.Error(err)
 		fmt.Println("error parsing file", path)
 	}
 	tmpl.Execute(w, m)
+}
+
+func (m Member) RenderTableTemplate(w http.ResponseWriter, path string, modelList []Member) {
+	tmpl, err := template.ParseFiles(path)
+	if err != nil {
+		// TmplError{path}.Error(err)
+		fmt.Println("error parsing file", path)
+	}
+	tmpl.Execute(w, modelList)
 }
 
 func (m Member) DeleteFromDB(DB *sql.DB) {
@@ -53,4 +62,24 @@ func (m Member) UpdateInDB(IdMember int, DB *sql.DB) {
 		panic(err)
 	}
 	update.Close()
+}
+
+func (m Member) SearchInDB(r *http.Request, DB *sql.DB) []Member {
+	searchKey := r.FormValue("search-key")
+	var members []Member
+	var member Member
+
+	result, err := DB.Query(fmt.Sprintf(`SELECT * FROM MemberTable WHERE Name LIKE '%%%s%%' OR DNI LIKE '%%%s%%'`, searchKey, searchKey))
+	if err != nil {
+		fmt.Println("error searching member in DB")
+	}
+	for result.Next() {
+		err = result.Scan(&member.IdMember, &member.Name, &member.DNI)
+		if err != nil {
+			fmt.Println("error scanning member")
+		}
+		members = append(members, member)
+	}
+	defer result.Close()
+	return members
 }

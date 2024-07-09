@@ -11,7 +11,7 @@ func (c *Controller) createMember(w http.ResponseWriter, r *http.Request) {
 	memberParser := i.MemberParser{}
 	newMember := parserCaller(memberParser, r)
 	insertInDBCaller(newMember, c.DB)
-	renderTemplateCaller(newMember, w, "src/views/files/memberFile.html")
+	renderFileTemplateCaller(newMember, w, "src/views/files/memberFile.html")
 
 	// http.Redirect(w, r, "/index", http.StatusSeeOther) // poner un status de redirect (30X), sino no funciona
 	// c.renderMemberList(w, r) // esto tambien funciona
@@ -34,8 +34,6 @@ func (c *Controller) editMember(w http.ResponseWriter, r *http.Request) {
 }
 
 func (c *Controller) searchMember(w http.ResponseWriter, r *http.Request) {
-	ms := i.MemberSearcher{}
-
-	members := searcherCaller(ms, r, c.DB)
-
+	members := searchInDBCaller(models.Member{}, r, c.DB)
+	renderTableTemplateCaller(models.Member{}, w, "src/views/tables/memberTable.html", members)
 }

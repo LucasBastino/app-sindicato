@@ -5,12 +5,12 @@ import (
 	"net/http"
 )
 
-type IModel interface {
+type IModel[M TypeModel] interface {
 	Imprimir()
 	InsertInDB(*sql.DB)
-	RenderTemplate(http.ResponseWriter, string)
+	RenderFileTemplate(http.ResponseWriter, string)
+	RenderTableTemplate(http.ResponseWriter, string, []M)
 	DeleteFromDB(*sql.DB)
 	UpdateInDB(int, *sql.DB)
-	// SearchInDB con generics falta hacer
-	// hay que borrar el memberSearcher
+	SearchInDB(*http.Request, *sql.DB) []M
 }

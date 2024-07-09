@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/LucasBastino/app-sindicato/src/api"
+	api "github.com/LucasBastino/app-sindicato/src/api/controller"
 	"github.com/LucasBastino/app-sindicato/src/connection"
 )
 

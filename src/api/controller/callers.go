@@ -8,32 +8,39 @@ import (
 	i "github.com/LucasBastino/app-sindicato/src/api/interfaces"
 )
 
-func imprimirCaller(m i.IModel) {
+func imprimirCaller[tM i.TypeModel](m i.IModel[tM]) {
 	fmt.Println(m)
+
 }
 
-func parserCaller(parser i.ModelParser, r *http.Request) i.IModel {
+func parserCaller[M i.TypeModel](parser i.ModelParser[M], r *http.Request) M {
 	return parser.ParseModel(r)
 }
 
-func insertInDBCaller(m i.IModel, DB *sql.DB) {
+func insertInDBCaller[M i.TypeModel](m i.IModel[M], DB *sql.DB) {
 	m.InsertInDB(DB)
 }
 
-func renderTemplateCaller(m i.IModel, w http.ResponseWriter, path string) {
-	m.RenderTemplate(w, path)
+func renderFileTemplateCaller[M i.TypeModel](m i.IModel[M], w http.ResponseWriter, path string) {
+	m.RenderFileTemplate(w, path)
 }
 
-func deleteFromDBCaller(m i.IModel, DB *sql.DB) {
+func renderTableTemplateCaller[M i.TypeModel](m i.IModel[M], w http.ResponseWriter, path string, modelList []M) {
+	m.RenderTableTemplate(w, path, modelList)
+}
+
+func deleteFromDBCaller[M i.TypeModel](m i.IModel[M], DB *sql.DB) {
 	m.DeleteFromDB(DB)
 }
 
-func updateInDBCaller(m i.IModel, idModel int, DB *sql.DB) {
+func updateInDBCaller[M i.TypeModel](m i.IModel[M], idModel int, DB *sql.DB) {
 	m.UpdateInDB(idModel, DB)
 }
 
-// probar sacar esto y hacerlo como antes pero con generics
-// igualmente primero probar asi que ya esta hecho
-func searcherCaller[G i.TypeModel](searcher i.ModelSearcher, r *http.Request, DB *sql.DB) []G {
-	return searcher.SearchModel(r, DB)
+func searchInDBCaller[M i.TypeModel](m i.IModel[M], r *http.Request, DB *sql.DB) []M {
+	return m.SearchInDB(r, DB)
 }
+
+// func searcherCaller[M i.TypeModel](searcher i.ModelSearcher[M], r *http.Request, DB *sql.DB) []M {
+// 	return searcher.SearchModel(r, DB)
+// }
