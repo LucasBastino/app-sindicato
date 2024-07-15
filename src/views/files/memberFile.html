@@ -8,7 +8,6 @@
             <button type="submit" class="btn-primary btn-submit hide">Confirmar</button>
         </form>
         <button class="btn-primary" onclick="enableInputs(); showConfirmButton(); disableBrowserInput();">Editar</button>
-        <a href="/index"><button class="btn-primary">Volver</button></a>
     
         <button type="submit" hx-get="/member/{{$.IdMember}}/parentTable" hx-trigger="click" hx-target="#parentTableDiv">Familiares</button>
         <div id="parentTableDiv"></div>
