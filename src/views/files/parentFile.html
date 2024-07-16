@@ -1,15 +1,12 @@
-<body>
+
        
         <h2>Ficha de {{$.Name}}</h2>
-        <form action="/parent/{{$.IdParent}}/edit" method="POST" enctype="application/json">
+        <form hx-put="/parent/{{$.IdParent}}/edit">
             <input type="text" value="{{$.IdParent}}" disabled>
             <input type="text" name="name" value="{{$.Name}}" disabled>
             <input type="text" name="rel" value="{{$.Rel}}" disabled>
-
             <button type="submit" class="btn-primary btn-submit hide">Confirmar</button>
         </form>
         <button class="btn-primary" onclick="enableInputs(); showConfirmButton(); disableBrowserInput();">Editar</button>
-        <a href="/member/{{$.IdMember}}/file"><button class="btn-primary">Volver</button></a>
-    
-            
-</body>
+        <script src="/static/scripts/activeElements.js"></script>
+        <script src="https://unpkg.com/htmx.org@1.9.12" integrity="sha384-ujb1lZYygJmzgSwoxRggbCHcjc0rB2XoQrxeTUQyRjrOnlCoYta87iKBWq3EsdM2" crossorigin="anonymous"></script>  

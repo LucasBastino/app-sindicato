@@ -1,14 +1,12 @@
-<body>
+
        
         <h2>Ficha de {{$.Name}}</h2>
-        <form action="/member/{{$.IdEnterprise}}/edit" method="POST" enctype="application/json">
-            
+        <form hx-put="/member/{{$.IdEnterprise}}/edit">
             <input type="text" name="name" value="{{$.Name}}" disabled>
             <input type="text" name="address" value="{{$.Address}}" disabled>
             <button type="submit" class="btn-primary btn-submit hide">Confirmar</button>
         </form>
         <button class="btn-primary" onclick="enableInputs(); showConfirmButton(); disableBrowserInput();">Editar</button>
-        <a href="/index"><button class="btn-primary">Volver</button></a>
     
         <button class="btn-primary" hx-get="/enterpriseTable" hx-trigger="click" hx-target="#tableDiv">Lista Empresas</button>
 
@@ -16,4 +14,3 @@
         
     <script src="/static/scripts/activeElements.js"></script>
     <script src="https://unpkg.com/htmx.org@1.9.12" integrity="sha384-ujb1lZYygJmzgSwoxRggbCHcjc0rB2XoQrxeTUQyRjrOnlCoYta87iKBWq3EsdM2" crossorigin="anonymous"></script>
-</body>

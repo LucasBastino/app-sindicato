@@ -13,4 +13,5 @@ type IModel[M TypeModel] interface {
 	DeleteFromDB(*sql.DB)
 	UpdateInDB(int, *sql.DB)
 	SearchInDB(*http.Request, *sql.DB) []M
+	GetIdModel(*http.Request) int
 }

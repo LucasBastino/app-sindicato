@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"fmt"
 	"net/http"
+	"strconv"
 	"text/template"
 )
 
@@ -26,7 +27,8 @@ func (newMember Member) InsertInDB(DB *sql.DB) {
 	defer insert.Close()
 }
 
-func (m Member) RenderFileTemplate(w http.ResponseWriter, path string) {
+func (m Member) RenderFileTemplate(w http.ResponseWriter, IdMember int, path string) {
+
 	tmpl, err := template.ParseFiles(path)
 	if err != nil {
 		// TmplError{path}.Error(err)
@@ -82,4 +84,14 @@ func (m Member) SearchInDB(r *http.Request, DB *sql.DB) []Member {
 	}
 	defer result.Close()
 	return members
+}
+
+func (m Member) GetIdModel(r *http.Request) int {
+	IdMemberStr := r.PathValue("IdMember")
+	IdMember, err := strconv.Atoi(IdMemberStr)
+	if err != nil {
+		fmt.Println("error converting type")
+		panic(err)
+	}
+	return IdMember
 }

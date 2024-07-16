@@ -8,7 +8,7 @@ import (
 	i "github.com/LucasBastino/app-sindicato/src/api/interfaces"
 )
 
-func imprimirCaller[tM i.TypeModel](m i.IModel[tM]) {
+func imprimirCaller[M i.TypeModel](m i.IModel[M]) {
 	fmt.Println(m)
 
 }
@@ -39,6 +39,10 @@ func updateInDBCaller[M i.TypeModel](m i.IModel[M], idModel int, DB *sql.DB) {
 
 func searchInDBCaller[M i.TypeModel](m i.IModel[M], r *http.Request, DB *sql.DB) []M {
 	return m.SearchInDB(r, DB)
+}
+
+func getIdModelCaller[M i.TypeModel](m i.IModel[M], r *http.Request) int {
+	return m.GetIdModel(r)
 }
 
 // func searcherCaller[M i.TypeModel](searcher i.ModelSearcher[M], r *http.Request, DB *sql.DB) []M {

@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"fmt"
 	"net/http"
+	"strconv"
 	"text/template"
 )
 
@@ -82,4 +83,14 @@ func (e Enterprise) SearchInDB(r *http.Request, DB *sql.DB) []Enterprise {
 	}
 	defer result.Close()
 	return enterprises
+}
+
+func (e Enterprise) GetIdModel(r *http.Request) int {
+	IdEnterpriseStr := r.PathValue("IdEnterprise")
+	IdEnterprise, err := strconv.Atoi(IdEnterpriseStr)
+	if err != nil {
+		fmt.Println("error converting type")
+		panic(err)
+	}
+	return IdEnterprise
 }

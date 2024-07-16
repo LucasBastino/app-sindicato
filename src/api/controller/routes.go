@@ -12,7 +12,7 @@ func (c *Controller) RegisterRoutes(muxer *http.ServeMux) {
 	muxer.HandleFunc("POST /member/create", c.createMember)
 	muxer.HandleFunc("GET /member/{IdMember}/file", c.renderMemberFile)
 	muxer.HandleFunc("GET /member/{IdMember}/parentTable", c.renderParentTable)
-	muxer.HandleFunc("POST /member/{IdMember}/edit", c.editMember)
+	muxer.HandleFunc("PUT /member/{IdMember}/edit", c.editMember)
 	muxer.HandleFunc("DELETE /member/{IdMember}/delete", c.deleteMember)
 	muxer.HandleFunc("POST /searchMember", c.searchMember)
 
@@ -20,7 +20,7 @@ func (c *Controller) RegisterRoutes(muxer *http.ServeMux) {
 	muxer.HandleFunc("POST /parent/create", c.createParent)
 	muxer.HandleFunc("GET /parent/{IdParent}/file", c.renderParentFile)
 	muxer.HandleFunc("DELETE /parent/{IdParent}", c.deleteParent)
-	muxer.HandleFunc("POST /parent/{IdParent}/edit", c.editParent)
+	muxer.HandleFunc("PUT /parent/{IdParent}/edit", c.editParent)
 	muxer.HandleFunc("POST /searchParent", c.searchParent)
 
 	muxer.HandleFunc("GET /form/createEnterprise", c.renderCreateEnterpriseForm)
@@ -28,7 +28,7 @@ func (c *Controller) RegisterRoutes(muxer *http.ServeMux) {
 	muxer.HandleFunc("GET /enterprise/{IdEnterprise}/file", c.renderEnterpriseFile)
 	muxer.HandleFunc("DELETE /enterprise/{IdEnterprise}/delete", c.deleteEnterprise)
 	// cambiar el de abajo a PUT
-	muxer.HandleFunc("POST /enterprise/{IdEnterprise}/edit", c.editEnterprise)
+	muxer.HandleFunc("PUT /enterprise/{IdEnterprise}/edit", c.editEnterprise)
 	muxer.HandleFunc("GET /enterpriseTable", c.renderEnterpriseTable)
 	muxer.HandleFunc("POST /searchEnterprise", c.searchEnterprise)
 

@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"fmt"
 	"net/http"
+	"strconv"
 	"text/template"
 )
 
@@ -83,4 +84,14 @@ func (m Parent) SearchInDB(r *http.Request, DB *sql.DB) []Parent {
 	}
 	defer result.Close()
 	return parents
+}
+
+func (p Parent) GetIdModel(r *http.Request) int {
+	IdParentStr := r.PathValue("IdParent")
+	IdParent, err := strconv.Atoi(IdParentStr)
+	if err != nil {
+		fmt.Println("error converting type")
+		panic(err)
+	}
+	return IdParent
 }

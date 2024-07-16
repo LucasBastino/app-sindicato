@@ -1,8 +1,6 @@
-<body>
-       
+
         <h2>Ficha de {{$.Name}}</h2>
-        <form hx-post="/member/{{$.IdMember}}/edit">
-            
+        <form hx-put="/member/{{$.IdMember}}/edit">
             <input type="text" name="name" value="{{$.Name}}" disabled>
             <input type="text" name="dni" value="{{$.DNI}}" disabled>
             <button type="submit" class="btn-primary btn-submit hide">Confirmar</button>
@@ -15,4 +13,3 @@
         
     <script src="/static/scripts/activeElements.js"></script>
     <script src="https://unpkg.com/htmx.org@1.9.12" integrity="sha384-ujb1lZYygJmzgSwoxRggbCHcjc0rB2XoQrxeTUQyRjrOnlCoYta87iKBWq3EsdM2" crossorigin="anonymous"></script>
-</body>

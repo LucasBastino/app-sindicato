@@ -18,7 +18,7 @@ func (c *Controller) createEnterprise(w http.ResponseWriter, r *http.Request) {
 }
 
 func (c *Controller) deleteEnterprise(w http.ResponseWriter, r *http.Request) {
-	IdEnterprise := getIdModel("Enterprise", r)
+	IdEnterprise := getIdModelCaller(models.Enterprise{}, r)
 	deleteFromDBCaller(models.Enterprise{IdEnterprise: IdEnterprise}, c.DB)
 	c.renderEnterpriseTable(w, r)
 }
@@ -26,7 +26,7 @@ func (c *Controller) deleteEnterprise(w http.ResponseWriter, r *http.Request) {
 func (c *Controller) editEnterprise(w http.ResponseWriter, r *http.Request) {
 	parser := i.EnterpriseParser{}
 	enterpriseEdited := parserCaller(parser, r)
-	IdEnterprise := getIdModel("Enterprise", r)
+	IdEnterprise := getIdModelCaller(models.Enterprise{}, r)
 	updateInDBCaller(enterpriseEdited, IdEnterprise, c.DB)
 
 	// no puedo hacer esto ↓ porque estoy en POST, no puedo redireccionar
