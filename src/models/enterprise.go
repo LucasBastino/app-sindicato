@@ -85,6 +85,23 @@ func (e Enterprise) SearchInDB(r *http.Request, DB *sql.DB) []Enterprise {
 	return enterprises
 }
 
+func (e Enterprise) SearchAllModels(DB *sql.DB) []Enterprise {
+	enterprise := Enterprise{}
+	enterprises := []Enterprise{}
+	result, err := DB.Query("SELECT IdEnterprise, Name, Address FROM enterpriseTable")
+	if err != nil {
+		fmt.Println("error searching all enterprises")
+	}
+	for result.Next() {
+		err = result.Scan(&enterprise.IdEnterprise, &enterprise.Name, &enterprise.Address)
+		if err != nil {
+			fmt.Println("error scanning data from enterprise")
+		}
+		enterprises = append(enterprises, enterprise)
+	}
+	return enterprises
+}
+
 func (e Enterprise) GetIdModel(r *http.Request) int {
 	IdEnterpriseStr := r.PathValue("IdEnterprise")
 	IdEnterprise, err := strconv.Atoi(IdEnterpriseStr)

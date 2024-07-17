@@ -41,6 +41,10 @@ func searchInDBCaller[M i.TypeModel](m i.IModel[M], r *http.Request, DB *sql.DB)
 	return m.SearchInDB(r, DB)
 }
 
+func searchAllModelsCaller[M i.TypeModel](m i.IModel[M], DB *sql.DB) []M {
+	return m.SearchAllModels(DB)
+}
+
 func getIdModelCaller[M i.TypeModel](m i.IModel[M], r *http.Request) int {
 	return m.GetIdModel(r)
 }

@@ -86,6 +86,23 @@ func (m Parent) SearchInDB(r *http.Request, DB *sql.DB) []Parent {
 	return parents
 }
 
+func (p Parent) SearchAllModels(DB *sql.DB) []Parent {
+	parent := Parent{}
+	parents := []Parent{}
+	result, err := DB.Query("SELECT IdParent, Name, Rel FROM parentTable")
+	if err != nil {
+		fmt.Println("error searching all parents")
+	}
+	for result.Next() {
+		err = result.Scan(&parent.IdParent, &parent.Name, &parent.Rel)
+		if err != nil {
+			fmt.Println("error scanning data from parent")
+		}
+		parents = append(parents, parent)
+	}
+	return parents
+}
+
 func (p Parent) GetIdModel(r *http.Request) int {
 	IdParentStr := r.PathValue("IdParent")
 	IdParent, err := strconv.Atoi(IdParentStr)

@@ -1,6 +1,6 @@
 
         <h2>Ficha de {{$.Name}}</h2>
-        <form hx-put="/member/{{$.IdMember}}/edit">
+        <form hx-put="/member/{{$.IdMember}}/edit" hx-target="#tableDiv">
             <input type="text" name="name" value="{{$.Name}}" disabled>
             <input type="text" name="dni" value="{{$.DNI}}" disabled>
             <button type="submit" class="btn-primary btn-submit hide">Confirmar</button>

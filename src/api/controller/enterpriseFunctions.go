@@ -8,8 +8,8 @@ import (
 )
 
 func (c *Controller) createEnterprise(w http.ResponseWriter, r *http.Request) {
-	EnterpriseParser := i.EnterpriseParser{}
-	newEnterprise := parserCaller(EnterpriseParser, r)
+	enterpriseParser := i.EnterpriseParser{}
+	newEnterprise := parserCaller(enterpriseParser, r)
 	insertInDBCaller(newEnterprise, c.DB)
 	renderFileTemplateCaller(newEnterprise, w, "src/views/files/enterpriseFile.html")
 
@@ -27,6 +27,7 @@ func (c *Controller) editEnterprise(w http.ResponseWriter, r *http.Request) {
 	parser := i.EnterpriseParser{}
 	enterpriseEdited := parserCaller(parser, r)
 	IdEnterprise := getIdModelCaller(models.Enterprise{}, r)
+	enterpriseEdited.IdEnterprise = IdEnterprise
 	updateInDBCaller(enterpriseEdited, IdEnterprise, c.DB)
 
 	// no puedo hacer esto ↓ porque estoy en POST, no puedo redireccionar

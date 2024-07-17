@@ -27,7 +27,7 @@ func (newMember Member) InsertInDB(DB *sql.DB) {
 	defer insert.Close()
 }
 
-func (m Member) RenderFileTemplate(w http.ResponseWriter, IdMember int, path string) {
+func (m Member) RenderFileTemplate(w http.ResponseWriter, path string) {
 
 	tmpl, err := template.ParseFiles(path)
 	if err != nil {
@@ -83,6 +83,23 @@ func (m Member) SearchInDB(r *http.Request, DB *sql.DB) []Member {
 		members = append(members, member)
 	}
 	defer result.Close()
+	return members
+}
+
+func (m Member) SearchAllModels(DB *sql.DB) []Member {
+	member := Member{}
+	members := []Member{}
+	result, err := DB.Query("SELECT IdMember, Name, DNI FROM MemberTable")
+	if err != nil {
+		fmt.Println("error searching all members")
+	}
+	for result.Next() {
+		err = result.Scan(&member.IdMember, &member.Name, &member.DNI)
+		if err != nil {
+			fmt.Println("error scanning data from member")
+		}
+		members = append(members, member)
+	}
 	return members
 }
 

@@ -15,21 +15,21 @@ func (c *Controller) createParent(w http.ResponseWriter, r *http.Request) {
 }
 
 func (c *Controller) deleteParent(w http.ResponseWriter, r *http.Request) {
-	IdParent := getIdModel("Parent", r)
+	IdParent := getIdModelCaller(models.Parent{}, r)
 	deleteFromDBCaller(models.Parent{IdParent: IdParent}, c.DB)
 	c.renderParentTable(w, r)
 }
 
 func (c *Controller) editParent(w http.ResponseWriter, r *http.Request) {
-	IdParent := getIdModel("Parent", r)
 	parser := i.ParentParser{}
-	parent := parserCaller(parser, r)
-	updateInDBCaller(parent, IdParent, c.DB)
-	renderFileTemplateCaller(parent, w, "src/views/files/parentFile.html")
+	parentEdited := parserCaller(parser, r)
+	IdParent := getIdModelCaller(models.Parent{}, r)
+	parentEdited.IdParent = IdParent
+	updateInDBCaller(parentEdited, IdParent, c.DB)
+	renderFileTemplateCaller(parentEdited, w, "src/views/files/parentFile.html")
 }
 
 func (c *Controller) searchParent(w http.ResponseWriter, r *http.Request) {
 	parents := searchInDBCaller(models.Parent{}, r, c.DB)
 	renderTableTemplateCaller(models.Parent{}, w, "src/views/tables/parentTable.html", parents)
-
 }
