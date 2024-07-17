@@ -6,13 +6,13 @@ import (
 )
 
 type IModel[M TypeModel] interface {
-	Imprimir()
-	InsertInDB(*sql.DB)
+	InsertModel(*sql.DB)
+	DeleteModel(*sql.DB)
+	EditModel(int, *sql.DB)
+	GetIdModel(*http.Request) int
+	SearchOneModelById(*http.Request, *sql.DB) M
+	SearchModelsByKey(*http.Request, *sql.DB) []M
+	SearchAllModels(*sql.DB) []M
 	RenderFileTemplate(http.ResponseWriter, string)
 	RenderTableTemplate(http.ResponseWriter, string, []M)
-	DeleteFromDB(*sql.DB)
-	UpdateInDB(int, *sql.DB)
-	SearchInDB(*http.Request, *sql.DB) []M
-	SearchAllModels(*sql.DB) []M
-	GetIdModel(*http.Request) int
 }

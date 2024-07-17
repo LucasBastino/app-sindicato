@@ -10,7 +10,7 @@ import (
 func (c *Controller) createMember(w http.ResponseWriter, r *http.Request) {
 	memberParser := i.MemberParser{}
 	newMember := parserCaller(memberParser, r)
-	insertInDBCaller(newMember, c.DB)
+	insertModelCaller(newMember, c.DB)
 	// hacer esto esta bien? estoy mostrando datos del newMember, no estan sacados de la DB
 	renderFileTemplateCaller(newMember, w, "src/views/files/memberFile.html")
 
@@ -20,7 +20,7 @@ func (c *Controller) createMember(w http.ResponseWriter, r *http.Request) {
 
 func (c *Controller) deleteMember(w http.ResponseWriter, r *http.Request) {
 	IdMember := getIdModelCaller(models.Member{}, r)
-	deleteFromDBCaller(models.Member{IdMember: IdMember}, c.DB)
+	deleteModelCaller(models.Member{IdMember: IdMember}, c.DB)
 	allMembers := searchAllModelsCaller(models.Member{}, c.DB)
 	renderTableTemplateCaller(models.Member{}, w, "src/views/tables/memberTable.html", allMembers)
 }
@@ -31,7 +31,7 @@ func (c *Controller) editMember(w http.ResponseWriter, r *http.Request) {
 	IdMember := getIdModelCaller(models.Member{}, r)
 	memberEdited.IdMember = IdMember
 	// necesito hacer esto ↑ para que se pueda editar 2 veces seguidas
-	updateInDBCaller(memberEdited, IdMember, c.DB)
+	editModelCaller(memberEdited, IdMember, c.DB)
 	// hacer esto esta bien? estoy mostrando datos del newMember, no estan sacados de la DB
 	renderFileTemplateCaller(memberEdited, w, "src/views/files/memberFile.html")
 
@@ -39,9 +39,14 @@ func (c *Controller) editMember(w http.ResponseWriter, r *http.Request) {
 	// http.Redirect(w, r, "/index", http.StatusSeeOther) // con este status me anda, con otros de 300 no
 }
 
-func (c *Controller) renderAllModels(w http.ResponseWriter, r *http.Request) {
+func (c *Controller) renderMemberTable(w http.ResponseWriter, r *http.Request) {
 	allMembers := searchAllModelsCaller(models.Member{}, c.DB)
 	renderTableTemplateCaller(models.Member{}, w, "src/views/tables/memberTable.html", allMembers)
+}
+
+func (c *Controller) renderMemberFile(w http.ResponseWriter, r *http.Request) {
+	member := searchOneModelByIdCaller(models.Member{}, r, c.DB)
+
 }
 
 func (c *Controller) searchMember(w http.ResponseWriter, r *http.Request) {

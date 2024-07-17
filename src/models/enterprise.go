@@ -14,11 +14,7 @@ type Enterprise struct {
 	Address      string
 }
 
-func (e Enterprise) Imprimir() {
-	fmt.Println(e)
-}
-
-func (newEnterprise Enterprise) InsertInDB(DB *sql.DB) {
+func (newEnterprise Enterprise) InsertModel(DB *sql.DB) {
 	insert, err := DB.Query(fmt.Sprintf("INSERT INTO EnterpriseTable (Name, Address) VALUES ('%s','%s')", newEnterprise.Name, newEnterprise.Address))
 	if err != nil {
 		// DBError{"INSERT Enterprise"}.Error(err)
@@ -27,25 +23,7 @@ func (newEnterprise Enterprise) InsertInDB(DB *sql.DB) {
 	defer insert.Close()
 }
 
-func (e Enterprise) RenderFileTemplate(w http.ResponseWriter, path string) {
-	tmpl, err := template.ParseFiles(path)
-	if err != nil {
-		// TmplError{path}.Error(err)
-		fmt.Println("error parsing file", path)
-	}
-	tmpl.Execute(w, e)
-}
-
-func (e Enterprise) RenderTableTemplate(w http.ResponseWriter, path string, modelList []Enterprise) {
-	tmpl, err := template.ParseFiles(path)
-	if err != nil {
-		// TmplError{path}.Error(err)
-		fmt.Println("error parsing file", path)
-	}
-	tmpl.Execute(w, modelList)
-}
-
-func (e Enterprise) DeleteFromDB(DB *sql.DB) {
+func (e Enterprise) DeleteModel(DB *sql.DB) {
 	delete, err := DB.Query(fmt.Sprintf("DELETE FROM EnterpriseTable WHERE IdEnterprise = '%v'", e.IdEnterprise))
 	if err != nil {
 		// DBError{"DELETE Enterprise"}.Error(err)
@@ -55,7 +33,7 @@ func (e Enterprise) DeleteFromDB(DB *sql.DB) {
 
 }
 
-func (e Enterprise) UpdateInDB(IdEnterprise int, DB *sql.DB) {
+func (e Enterprise) EditModel(IdEnterprise int, DB *sql.DB) {
 	update, err := DB.Query(fmt.Sprintf("UPDATE EnterpriseTable SET Name = '%s', Address = '%s' WHERE IdEnterprise = '%v'", e.Name, e.Address, IdEnterprise))
 	if err != nil {
 		// DBError{"UPDATE Enterprise"}.Error(err)
@@ -65,7 +43,34 @@ func (e Enterprise) UpdateInDB(IdEnterprise int, DB *sql.DB) {
 	update.Close()
 }
 
-func (e Enterprise) SearchInDB(r *http.Request, DB *sql.DB) []Enterprise {
+func (e Enterprise) GetIdModel(r *http.Request) int {
+	IdEnterpriseStr := r.PathValue("IdEnterprise")
+	IdEnterprise, err := strconv.Atoi(IdEnterpriseStr)
+	if err != nil {
+		fmt.Println("error converting type")
+		panic(err)
+	}
+	return IdEnterprise
+}
+
+func (e Enterprise) SearchOneModelById(r *http.Request, DB *sql.DB) Enterprise {
+	IdEnterprise := e.GetIdModel(r)
+	result, err := DB.Query(fmt.Sprintf("SELECT IdEnterprise, Name, Address FROM EnterpriseTable WHERE IdEnterprise = '%v'", IdEnterprise))
+	if err != nil {
+		fmt.Println("error searching enterprise by id")
+	}
+
+	var enterprise Enterprise
+	for result.Next() {
+		err = result.Scan(&enterprise.IdEnterprise, &enterprise.Name, &enterprise.Address)
+		if err != nil {
+			fmt.Println("error scanning Enterprise")
+		}
+	}
+	return enterprise
+}
+
+func (e Enterprise) SearchModelsByKey(r *http.Request, DB *sql.DB) []Enterprise {
 	searchKey := r.FormValue("search-key")
 	var enterprises []Enterprise
 	var enterprise Enterprise
@@ -102,12 +107,20 @@ func (e Enterprise) SearchAllModels(DB *sql.DB) []Enterprise {
 	return enterprises
 }
 
-func (e Enterprise) GetIdModel(r *http.Request) int {
-	IdEnterpriseStr := r.PathValue("IdEnterprise")
-	IdEnterprise, err := strconv.Atoi(IdEnterpriseStr)
+func (e Enterprise) RenderFileTemplate(w http.ResponseWriter, path string) {
+	tmpl, err := template.ParseFiles(path)
 	if err != nil {
-		fmt.Println("error converting type")
-		panic(err)
+		// TmplError{path}.Error(err)
+		fmt.Println("error parsing file", path)
 	}
-	return IdEnterprise
+	tmpl.Execute(w, e)
+}
+
+func (e Enterprise) RenderTableTemplate(w http.ResponseWriter, path string, modelList []Enterprise) {
+	tmpl, err := template.ParseFiles(path)
+	if err != nil {
+		// TmplError{path}.Error(err)
+		fmt.Println("error parsing file", path)
+	}
+	tmpl.Execute(w, modelList)
 }

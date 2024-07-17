@@ -15,11 +15,7 @@ type Parent struct {
 	IdMember int
 }
 
-func (m Parent) Imprimir() {
-	fmt.Println(m)
-}
-
-func (newParent Parent) InsertInDB(DB *sql.DB) {
+func (newParent Parent) InsertModel(DB *sql.DB) {
 	insert, err := DB.Query(fmt.Sprintf("INSERT INTO ParentTable (Name, Rel) VALUES ('%s','%s')", newParent.Name, newParent.Rel))
 	if err != nil {
 		// DBError{"INSERT Parent"}.Error(err)
@@ -28,26 +24,8 @@ func (newParent Parent) InsertInDB(DB *sql.DB) {
 	defer insert.Close()
 }
 
-func (m Parent) RenderFileTemplate(w http.ResponseWriter, path string) {
-	tmpl, err := template.ParseFiles(path)
-	if err != nil {
-		// TmplError{path}.Error(err)
-		fmt.Println("error parsing file", path)
-	}
-	tmpl.Execute(w, m)
-}
-
-func (m Parent) RenderTableTemplate(w http.ResponseWriter, path string, modelList []Parent) {
-	tmpl, err := template.ParseFiles(path)
-	if err != nil {
-		// TmplError{path}.Error(err)
-		fmt.Println("error parsing file", path)
-	}
-	tmpl.Execute(w, modelList)
-}
-
-func (m Parent) DeleteFromDB(DB *sql.DB) {
-	delete, err := DB.Query(fmt.Sprintf("DELETE FROM ParentTable WHERE IdParent = '%v'", m.IdParent))
+func (p Parent) DeleteModel(DB *sql.DB) {
+	delete, err := DB.Query(fmt.Sprintf("DELETE FROM ParentTable WHERE IdParent = '%v'", p.IdParent))
 	if err != nil {
 		// DBError{"DELETE Parent"}.Error(err)
 		fmt.Println("error deleting Parent")
@@ -56,8 +34,8 @@ func (m Parent) DeleteFromDB(DB *sql.DB) {
 
 }
 
-func (m Parent) UpdateInDB(IdParent int, DB *sql.DB) {
-	update, err := DB.Query(fmt.Sprintf("UPDATE ParentTable SET Name = '%s', Rel = '%s' WHERE IdParent = '%v'", m.Name, m.Rel, IdParent))
+func (p Parent) EditModel(IdParent int, DB *sql.DB) {
+	update, err := DB.Query(fmt.Sprintf("UPDATE ParentTable SET Name = '%s', Rel = '%s' WHERE IdParent = '%v'", p.Name, p.Rel, IdParent))
 	if err != nil {
 		// DBError{"UPDATE Parent"}.Error(err)
 		fmt.Println("error updating Parent")
@@ -66,7 +44,34 @@ func (m Parent) UpdateInDB(IdParent int, DB *sql.DB) {
 	update.Close()
 }
 
-func (m Parent) SearchInDB(r *http.Request, DB *sql.DB) []Parent {
+func (p Parent) GetIdModel(r *http.Request) int {
+	IdParentStr := r.PathValue("IdParent")
+	IdParent, err := strconv.Atoi(IdParentStr)
+	if err != nil {
+		fmt.Println("error converting type")
+		panic(err)
+	}
+	return IdParent
+}
+
+func (p Parent) SearchOneModelById(r *http.Request, DB *sql.DB) Parent {
+	IdParent := p.GetIdModel(r)
+	result, err := DB.Query(fmt.Sprintf("SELECT IdParent, Name, Rel FROM ParentTable WHERE IdParent = '%v'", IdParent))
+	if err != nil {
+		fmt.Println("error searching parent by id")
+	}
+
+	var parent Parent
+	for result.Next() {
+		err = result.Scan(&parent.IdParent, &parent.Name, &parent.Rel)
+		if err != nil {
+			fmt.Println("error scanning parent")
+		}
+	}
+	return parent
+}
+
+func (p Parent) SearchModelsByKey(r *http.Request, DB *sql.DB) []Parent {
 	searchKey := r.FormValue("search-key")
 	var parents []Parent
 	var parent Parent
@@ -103,12 +108,20 @@ func (p Parent) SearchAllModels(DB *sql.DB) []Parent {
 	return parents
 }
 
-func (p Parent) GetIdModel(r *http.Request) int {
-	IdParentStr := r.PathValue("IdParent")
-	IdParent, err := strconv.Atoi(IdParentStr)
+func (p Parent) RenderFileTemplate(w http.ResponseWriter, path string) {
+	tmpl, err := template.ParseFiles(path)
 	if err != nil {
-		fmt.Println("error converting type")
-		panic(err)
+		// TmplError{path}.Error(err)
+		fmt.Println("error parsing file", path)
 	}
-	return IdParent
+	tmpl.Execute(w, p)
+}
+
+func (p Parent) RenderTableTemplate(w http.ResponseWriter, path string, modelList []Parent) {
+	tmpl, err := template.ParseFiles(path)
+	if err != nil {
+		// TmplError{path}.Error(err)
+		fmt.Println("error parsing file", path)
+	}
+	tmpl.Execute(w, modelList)
 }

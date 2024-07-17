@@ -18,7 +18,7 @@ func (m Member) Imprimir() {
 	fmt.Println(m)
 }
 
-func (newMember Member) InsertInDB(DB *sql.DB) {
+func (newMember Member) InsertModel(DB *sql.DB) {
 	insert, err := DB.Query(fmt.Sprintf("INSERT INTO MemberTable (Name, DNI) VALUES ('%s','%s')", newMember.Name, newMember.DNI))
 	if err != nil {
 		// DBError{"INSERT MEMBER"}.Error(err)
@@ -27,26 +27,7 @@ func (newMember Member) InsertInDB(DB *sql.DB) {
 	defer insert.Close()
 }
 
-func (m Member) RenderFileTemplate(w http.ResponseWriter, path string) {
-
-	tmpl, err := template.ParseFiles(path)
-	if err != nil {
-		// TmplError{path}.Error(err)
-		fmt.Println("error parsing file", path)
-	}
-	tmpl.Execute(w, m)
-}
-
-func (m Member) RenderTableTemplate(w http.ResponseWriter, path string, modelList []Member) {
-	tmpl, err := template.ParseFiles(path)
-	if err != nil {
-		// TmplError{path}.Error(err)
-		fmt.Println("error parsing file", path)
-	}
-	tmpl.Execute(w, modelList)
-}
-
-func (m Member) DeleteFromDB(DB *sql.DB) {
+func (m Member) DeleteModel(DB *sql.DB) {
 	delete, err := DB.Query(fmt.Sprintf("DELETE FROM MemberTable WHERE IdMember = '%v'", m.IdMember))
 	if err != nil {
 		// DBError{"DELETE MEMBER"}.Error(err)
@@ -56,7 +37,7 @@ func (m Member) DeleteFromDB(DB *sql.DB) {
 
 }
 
-func (m Member) UpdateInDB(IdMember int, DB *sql.DB) {
+func (m Member) EditModel(IdMember int, DB *sql.DB) {
 	update, err := DB.Query(fmt.Sprintf("UPDATE MemberTable SET Name = '%s', DNI = '%s' WHERE IdMember = '%v'", m.Name, m.DNI, IdMember))
 	if err != nil {
 		// DBError{"UPDATE MEMBER"}.Error(err)
@@ -66,7 +47,34 @@ func (m Member) UpdateInDB(IdMember int, DB *sql.DB) {
 	update.Close()
 }
 
-func (m Member) SearchInDB(r *http.Request, DB *sql.DB) []Member {
+func (m Member) GetIdModel(r *http.Request) int {
+	IdMemberStr := r.PathValue("IdMember")
+	IdMember, err := strconv.Atoi(IdMemberStr)
+	if err != nil {
+		fmt.Println("error converting type")
+		panic(err)
+	}
+	return IdMember
+}
+
+func (m Member) SearchOneModelById(r *http.Request, DB *sql.DB) Member {
+	IdMember := m.GetIdModel(r)
+	result, err := DB.Query(fmt.Sprintf("SELECT IdMember, Name, DNI FROM MemberTable WHERE IdMember = '%v'", IdMember))
+	if err != nil {
+		fmt.Println("error searching member by Id")
+	}
+
+	var member Member
+	for result.Next() {
+		err = result.Scan(&member.IdMember, &member.Name, &member.DNI)
+		if err != nil {
+			fmt.Println("error scanning member")
+		}
+	}
+	return member
+}
+
+func (m Member) SearchModelsByKey(r *http.Request, DB *sql.DB) []Member {
 	searchKey := r.FormValue("search-key")
 	var members []Member
 	var member Member
@@ -103,12 +111,21 @@ func (m Member) SearchAllModels(DB *sql.DB) []Member {
 	return members
 }
 
-func (m Member) GetIdModel(r *http.Request) int {
-	IdMemberStr := r.PathValue("IdMember")
-	IdMember, err := strconv.Atoi(IdMemberStr)
+func (m Member) RenderFileTemplate(w http.ResponseWriter, path string) {
+
+	tmpl, err := template.ParseFiles(path)
 	if err != nil {
-		fmt.Println("error converting type")
-		panic(err)
+		// TmplError{path}.Error(err)
+		fmt.Println("error parsing file", path)
 	}
-	return IdMember
+	tmpl.Execute(w, m)
+}
+
+func (m Member) RenderTableTemplate(w http.ResponseWriter, path string, modelList []Member) {
+	tmpl, err := template.ParseFiles(path)
+	if err != nil {
+		// TmplError{path}.Error(err)
+		fmt.Println("error parsing file", path)
+	}
+	tmpl.Execute(w, modelList)
 }
