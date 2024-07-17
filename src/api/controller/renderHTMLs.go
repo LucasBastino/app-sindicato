@@ -65,30 +65,6 @@ func (c *Controller) renderCreateEnterpriseForm(w http.ResponseWriter, r *http.R
 	tmpl.Execute(w, nil)
 }
 
-func (c *Controller) renderEnterpriseTable(w http.ResponseWriter, r *http.Request) {
-	var enterprises []models.Enterprise
-	var enterprise models.Enterprise
-
-	result, err := c.DB.Query("SELECT * FROM EnterpriseTable")
-	if err != nil {
-		DBError{"SELECT ENTERPRISE"}.Error(err)
-	}
-
-	for result.Next() {
-		err = result.Scan(&enterprise.IdEnterprise, &enterprise.Name, &enterprise.Address)
-		if err != nil {
-			ScanError{"ENTERPRISE"}.Error(err)
-		}
-		enterprises = append(enterprises, enterprise)
-	}
-	path := "src/views/tables/enterpriseTable.html"
-	tmpl, err := template.ParseFiles(path)
-	if err != nil {
-		TmplError{path}.Error(err)
-	}
-	tmpl.Execute(w, enterprises)
-}
-
 // es el mismo procedimiento para members empresas y familiares
 // buscar los datos en la bd, scanearlos y despues ejecutar un template
 // hay que hacer alguna funcion para simplificar como hacia hdeleon

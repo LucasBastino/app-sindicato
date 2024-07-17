@@ -10,7 +10,7 @@ import (
 func (c *Controller) createEnterprise(w http.ResponseWriter, r *http.Request) {
 	enterpriseParser := i.EnterpriseParser{}
 	newEnterprise := parserCaller(enterpriseParser, r)
-	insertInDBCaller(newEnterprise, c.DB)
+	insertModelCaller(newEnterprise, c.DB)
 	renderFileTemplateCaller(newEnterprise, w, "src/views/files/enterpriseFile.html")
 
 	// http.Redirect(w, r, "/index", http.StatusSeeOther) // poner un status de redirect (30X), sino no funciona
@@ -19,7 +19,7 @@ func (c *Controller) createEnterprise(w http.ResponseWriter, r *http.Request) {
 
 func (c *Controller) deleteEnterprise(w http.ResponseWriter, r *http.Request) {
 	IdEnterprise := getIdModelCaller(models.Enterprise{}, r)
-	deleteFromDBCaller(models.Enterprise{IdEnterprise: IdEnterprise}, c.DB)
+	deleteModelCaller(models.Enterprise{IdEnterprise: IdEnterprise}, c.DB)
 	c.renderEnterpriseTable(w, r)
 }
 
@@ -28,13 +28,13 @@ func (c *Controller) editEnterprise(w http.ResponseWriter, r *http.Request) {
 	enterpriseEdited := parserCaller(parser, r)
 	IdEnterprise := getIdModelCaller(models.Enterprise{}, r)
 	enterpriseEdited.IdEnterprise = IdEnterprise
-	updateInDBCaller(enterpriseEdited, IdEnterprise, c.DB)
+	editModelCaller(enterpriseEdited, IdEnterprise, c.DB)
 
 	// no puedo hacer esto ↓ porque estoy en POST, no puedo redireccionar
 	http.Redirect(w, r, "/index", http.StatusSeeOther) // con este status me anda, con otros de 300 no
 }
 
-func (c *Controller) searchEnterprise(w http.ResponseWriter, r *http.Request) {
-	enterprises := searchInDBCaller(models.Enterprise{}, r, c.DB)
+func (c *Controller) renderEnterpriseTable(w http.ResponseWriter, r *http.Request) {
+	enterprises := searchModelsCaller(models.Enterprise{}, r, c.DB)
 	renderTableTemplateCaller(models.Enterprise{}, w, "src/views/tables/enterpriseTable.html", enterprises)
 }

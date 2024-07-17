@@ -21,7 +21,7 @@ func (c *Controller) createMember(w http.ResponseWriter, r *http.Request) {
 func (c *Controller) deleteMember(w http.ResponseWriter, r *http.Request) {
 	IdMember := getIdModelCaller(models.Member{}, r)
 	deleteModelCaller(models.Member{IdMember: IdMember}, c.DB)
-	allMembers := searchAllModelsCaller(models.Member{}, c.DB)
+	allMembers := searchModelsCaller(models.Member{}, r, c.DB)
 	renderTableTemplateCaller(models.Member{}, w, "src/views/tables/memberTable.html", allMembers)
 }
 
@@ -40,16 +40,11 @@ func (c *Controller) editMember(w http.ResponseWriter, r *http.Request) {
 }
 
 func (c *Controller) renderMemberTable(w http.ResponseWriter, r *http.Request) {
-	allMembers := searchAllModelsCaller(models.Member{}, c.DB)
-	renderTableTemplateCaller(models.Member{}, w, "src/views/tables/memberTable.html", allMembers)
+	members := searchModelsCaller(models.Member{}, r, c.DB)
+	renderTableTemplateCaller(models.Member{}, w, "src/views/tables/memberTable.html", members)
 }
 
 func (c *Controller) renderMemberFile(w http.ResponseWriter, r *http.Request) {
 	member := searchOneModelByIdCaller(models.Member{}, r, c.DB)
-
-}
-
-func (c *Controller) searchMember(w http.ResponseWriter, r *http.Request) {
-	members := searchInDBCaller(models.Member{}, r, c.DB)
-	renderTableTemplateCaller(models.Member{}, w, "src/views/tables/memberTable.html", members)
+	renderFileTemplateCaller(member, w, "src/views/files/memberFile.html")
 }

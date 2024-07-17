@@ -31,12 +31,8 @@ func searchOneModelByIdCaller[M i.TypeModel](m i.IModel[M], r *http.Request, DB 
 	return m.SearchOneModelById(r, DB)
 }
 
-func searchModelsByKeyCaller[M i.TypeModel](m i.IModel[M], r *http.Request, DB *sql.DB) []M {
-	return m.SearchModelsByKey(r, DB)
-}
-
-func searchAllModelsCaller[M i.TypeModel](m i.IModel[M], DB *sql.DB) []M {
-	return m.SearchAllModels(DB)
+func searchModelsCaller[M i.TypeModel](m i.IModel[M], r *http.Request, DB *sql.DB) []M {
+	return m.SearchModels(r, DB)
 }
 
 func renderFileTemplateCaller[M i.TypeModel](m i.IModel[M], w http.ResponseWriter, path string) {

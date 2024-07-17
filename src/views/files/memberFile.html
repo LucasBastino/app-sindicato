@@ -9,7 +9,7 @@
     
         <button type="submit" hx-get="/member/{{$.IdMember}}/parentTable" hx-trigger="click" hx-target="#parentTableDiv">Familiares</button>
         <div id="parentTableDiv"></div>
-        <button class="btn-primary" hx-get="/memberTable" hx-trigger="click" hx-target="#tableDiv">Lista Afiliados</button>
+        <button class="btn-primary" hx-get="/member/renderTable" hx-trigger="click" hx-target="#tableDiv">Lista Afiliados</button>
         
     <script src="/static/scripts/activeElements.js"></script>
     <script src="https://unpkg.com/htmx.org@1.9.12" integrity="sha384-ujb1lZYygJmzgSwoxRggbCHcjc0rB2XoQrxeTUQyRjrOnlCoYta87iKBWq3EsdM2" crossorigin="anonymous"></script>

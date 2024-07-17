@@ -15,25 +15,25 @@
     <a class="navbar-brand" href="#">Sindicato</a>
       <div class="navbar-nav">
         <!-- navbar links -->
-        <a class="nav-item nav-link active" href="#" onclick="showAddMemberBtn(); hideAddEnterpriseBtn(); showMemberSearchInput(); hideParentSearchInput(); hideEnterpriseSearchInput();" hx-get="/memberTable" hx-trigger="click" hx-target="#tableDiv">Afiliados</a>
-        <a class="nav-item nav-link active" href="#" onclick="showAddEnterpriseBtn(); hideAddMemberBtn(); hideMemberSearchInput(); hideParentSearchInput(); showEnterpriseSearchInput();" hx-get="/enterpriseTable" hx-trigger="click" hx-target="#tableDiv">Empresas</a>
-        <a class="nav-item nav-link active" href="#" onclick="hideAddMemberBtn(); hideAddEnterpriseBtn(); hideMemberSearchInput(); showParentSearchInput(); hideEnterpriseSearchInput();" hx-get="/allParentsTable" hx-trigger="click" hx-target="#tableDiv">Familiares</a>
+        <a class="nav-item nav-link active" href="#" onclick="showAddMemberBtn(); hideAddEnterpriseBtn(); showMemberSearchInput(); hideParentSearchInput(); hideEnterpriseSearchInput();" hx-get="/member/renderTable" hx-trigger="click" hx-target="#tableDiv">Afiliados</a>
+        <a class="nav-item nav-link active" href="#" onclick="showAddEnterpriseBtn(); hideAddMemberBtn(); hideMemberSearchInput(); hideParentSearchInput(); showEnterpriseSearchInput();" hx-get="/enterprise/renderTable" hx-trigger="click" hx-target="#tableDiv">Empresas</a>
+        <a class="nav-item nav-link active" href="#" onclick="hideAddMemberBtn(); hideAddEnterpriseBtn(); hideMemberSearchInput(); showParentSearchInput(); hideEnterpriseSearchInput();" hx-get="/parent/renderTable" hx-trigger="click" hx-target="#tableDiv">Familiares</a>
 
         <!-- 4 search inputs -->
         <div class="inner-addon right-addon" id="member-search-input">
           <i class="bi bi-search input-icon"></i>
           <input class="form-control mr-sm-2 input-field" name="search-key" type="search" aria-label="Search" 
-          hx-post="/searchMember" hx-trigger="keyup" hx-target="#tableDiv">
+          hx-get="/member/renderTable" hx-trigger="keyup" hx-target="#tableDiv">
         </div> 
         <div class="inner-addon right-addon hide" id="enterprise-search-input">
           <i class="bi bi-search input-icon"></i>
           <input class="form-control mr-sm-2 input-field" name="search-key" type="search" aria-label="Search" 
-          hx-post="/searchEnterprise" hx-trigger="keyup" hx-target="#tableDiv">
+          hx-get="/enterprise/renderTable" hx-trigger="keyup" hx-target="#tableDiv">
         </div> 
         <div class="inner-addon right-addon hide" id="parent-search-input">
           <i class="bi bi-search input-icon"></i>
           <input class="form-control mr-sm-2 input-field" name="search-key" type="search" aria-label="Search" 
-          hx-post="/searchParent" hx-trigger="keyup" hx-target="#tableDiv">
+          hx-get="/parent/renderTable" hx-trigger="keyup" hx-target="#tableDiv">
         </div> 
       </div>
 
@@ -48,7 +48,7 @@
   </nav>
 
   <!-- tableDiv -->
-  <div id="tableDiv" hx-get="/memberTable" hx-trigger="load"></div>
+  <div id="tableDiv" hx-get="/member/renderTable" hx-trigger="load"></div>
   </div>
 </body>
 

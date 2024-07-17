@@ -11,8 +11,7 @@ type IModel[M TypeModel] interface {
 	EditModel(int, *sql.DB)
 	GetIdModel(*http.Request) int
 	SearchOneModelById(*http.Request, *sql.DB) M
-	SearchModelsByKey(*http.Request, *sql.DB) []M
-	SearchAllModels(*sql.DB) []M
+	SearchModels(*http.Request, *sql.DB) []M
 	RenderFileTemplate(http.ResponseWriter, string)
 	RenderTableTemplate(http.ResponseWriter, string, []M)
 }

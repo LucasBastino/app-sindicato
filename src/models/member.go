@@ -23,6 +23,7 @@ func (newMember Member) InsertModel(DB *sql.DB) {
 	if err != nil {
 		// DBError{"INSERT MEMBER"}.Error(err)
 		fmt.Println("error insertando en la DB")
+		panic(err)
 	}
 	defer insert.Close()
 }
@@ -32,6 +33,7 @@ func (m Member) DeleteModel(DB *sql.DB) {
 	if err != nil {
 		// DBError{"DELETE MEMBER"}.Error(err)
 		fmt.Println("error deleting member")
+		panic(err)
 	}
 	defer delete.Close()
 
@@ -44,7 +46,7 @@ func (m Member) EditModel(IdMember int, DB *sql.DB) {
 		fmt.Println("error updating member")
 		panic(err)
 	}
-	update.Close()
+	defer update.Close()
 }
 
 func (m Member) GetIdModel(r *http.Request) int {
@@ -62,6 +64,7 @@ func (m Member) SearchOneModelById(r *http.Request, DB *sql.DB) Member {
 	result, err := DB.Query(fmt.Sprintf("SELECT IdMember, Name, DNI FROM MemberTable WHERE IdMember = '%v'", IdMember))
 	if err != nil {
 		fmt.Println("error searching member by Id")
+		panic(err)
 	}
 
 	var member Member
@@ -69,12 +72,14 @@ func (m Member) SearchOneModelById(r *http.Request, DB *sql.DB) Member {
 		err = result.Scan(&member.IdMember, &member.Name, &member.DNI)
 		if err != nil {
 			fmt.Println("error scanning member")
+			panic(err)
 		}
 	}
+	defer result.Close()
 	return member
 }
 
-func (m Member) SearchModelsByKey(r *http.Request, DB *sql.DB) []Member {
+func (m Member) SearchModels(r *http.Request, DB *sql.DB) []Member {
 	searchKey := r.FormValue("search-key")
 	var members []Member
 	var member Member
@@ -82,32 +87,17 @@ func (m Member) SearchModelsByKey(r *http.Request, DB *sql.DB) []Member {
 	result, err := DB.Query(fmt.Sprintf(`SELECT * FROM MemberTable WHERE Name LIKE '%%%s%%' OR DNI LIKE '%%%s%%'`, searchKey, searchKey))
 	if err != nil {
 		fmt.Println("error searching member in DB")
+		panic(err)
 	}
 	for result.Next() {
 		err = result.Scan(&member.IdMember, &member.Name, &member.DNI)
 		if err != nil {
 			fmt.Println("error scanning member")
+			panic(err)
 		}
 		members = append(members, member)
 	}
 	defer result.Close()
-	return members
-}
-
-func (m Member) SearchAllModels(DB *sql.DB) []Member {
-	member := Member{}
-	members := []Member{}
-	result, err := DB.Query("SELECT IdMember, Name, DNI FROM MemberTable")
-	if err != nil {
-		fmt.Println("error searching all members")
-	}
-	for result.Next() {
-		err = result.Scan(&member.IdMember, &member.Name, &member.DNI)
-		if err != nil {
-			fmt.Println("error scanning data from member")
-		}
-		members = append(members, member)
-	}
 	return members
 }
 
@@ -117,6 +107,7 @@ func (m Member) RenderFileTemplate(w http.ResponseWriter, path string) {
 	if err != nil {
 		// TmplError{path}.Error(err)
 		fmt.Println("error parsing file", path)
+		panic(err)
 	}
 	tmpl.Execute(w, m)
 }
@@ -126,6 +117,7 @@ func (m Member) RenderTableTemplate(w http.ResponseWriter, path string, modelLis
 	if err != nil {
 		// TmplError{path}.Error(err)
 		fmt.Println("error parsing file", path)
+		panic(err)
 	}
 	tmpl.Execute(w, modelList)
 }

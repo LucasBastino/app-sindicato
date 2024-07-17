@@ -19,6 +19,7 @@ func (newEnterprise Enterprise) InsertModel(DB *sql.DB) {
 	if err != nil {
 		// DBError{"INSERT Enterprise"}.Error(err)
 		fmt.Println("error insertando en la DB")
+		panic(err)
 	}
 	defer insert.Close()
 }
@@ -28,6 +29,7 @@ func (e Enterprise) DeleteModel(DB *sql.DB) {
 	if err != nil {
 		// DBError{"DELETE Enterprise"}.Error(err)
 		fmt.Println("error deleting Enterprise")
+		panic(err)
 	}
 	defer delete.Close()
 
@@ -40,7 +42,7 @@ func (e Enterprise) EditModel(IdEnterprise int, DB *sql.DB) {
 		fmt.Println("error updating Enterprise")
 		panic(err)
 	}
-	update.Close()
+	defer update.Close()
 }
 
 func (e Enterprise) GetIdModel(r *http.Request) int {
@@ -58,6 +60,7 @@ func (e Enterprise) SearchOneModelById(r *http.Request, DB *sql.DB) Enterprise {
 	result, err := DB.Query(fmt.Sprintf("SELECT IdEnterprise, Name, Address FROM EnterpriseTable WHERE IdEnterprise = '%v'", IdEnterprise))
 	if err != nil {
 		fmt.Println("error searching enterprise by id")
+		panic(err)
 	}
 
 	var enterprise Enterprise
@@ -65,12 +68,14 @@ func (e Enterprise) SearchOneModelById(r *http.Request, DB *sql.DB) Enterprise {
 		err = result.Scan(&enterprise.IdEnterprise, &enterprise.Name, &enterprise.Address)
 		if err != nil {
 			fmt.Println("error scanning Enterprise")
+			panic(err)
 		}
 	}
+	defer result.Close()
 	return enterprise
 }
 
-func (e Enterprise) SearchModelsByKey(r *http.Request, DB *sql.DB) []Enterprise {
+func (e Enterprise) SearchModels(r *http.Request, DB *sql.DB) []Enterprise {
 	searchKey := r.FormValue("search-key")
 	var enterprises []Enterprise
 	var enterprise Enterprise
@@ -78,32 +83,17 @@ func (e Enterprise) SearchModelsByKey(r *http.Request, DB *sql.DB) []Enterprise 
 	result, err := DB.Query(fmt.Sprintf(`SELECT * FROM EnterpriseTable WHERE Name LIKE '%%%s%%' OR Address LIKE '%%%s%%'`, searchKey, searchKey))
 	if err != nil {
 		fmt.Println("error searching Enterprise in DB")
+		panic(err)
 	}
 	for result.Next() {
 		err = result.Scan(&enterprise.IdEnterprise, &enterprise.Name, &enterprise.Address)
 		if err != nil {
 			fmt.Println("error scanning Enterprise")
+			panic(err)
 		}
 		enterprises = append(enterprises, enterprise)
 	}
 	defer result.Close()
-	return enterprises
-}
-
-func (e Enterprise) SearchAllModels(DB *sql.DB) []Enterprise {
-	enterprise := Enterprise{}
-	enterprises := []Enterprise{}
-	result, err := DB.Query("SELECT IdEnterprise, Name, Address FROM enterpriseTable")
-	if err != nil {
-		fmt.Println("error searching all enterprises")
-	}
-	for result.Next() {
-		err = result.Scan(&enterprise.IdEnterprise, &enterprise.Name, &enterprise.Address)
-		if err != nil {
-			fmt.Println("error scanning data from enterprise")
-		}
-		enterprises = append(enterprises, enterprise)
-	}
 	return enterprises
 }
 
@@ -112,6 +102,7 @@ func (e Enterprise) RenderFileTemplate(w http.ResponseWriter, path string) {
 	if err != nil {
 		// TmplError{path}.Error(err)
 		fmt.Println("error parsing file", path)
+		panic(err)
 	}
 	tmpl.Execute(w, e)
 }
@@ -121,6 +112,7 @@ func (e Enterprise) RenderTableTemplate(w http.ResponseWriter, path string, mode
 	if err != nil {
 		// TmplError{path}.Error(err)
 		fmt.Println("error parsing file", path)
+		panic(err)
 	}
 	tmpl.Execute(w, modelList)
 }
