@@ -38,7 +38,7 @@ func (c *Controller) renderParentTable(w http.ResponseWriter, r *http.Request) {
 
 func (c *Controller) renderMemberParents(w http.ResponseWriter, r *http.Request) {
 	IdMember := getIdModelCaller(models.Member{}, r)
-	result, err := c.DB.Query(fmt.Sprintf("SELECT Name, Rel, IdParent FROM ParentTable WHERE IdMember = '%s'", IdMember))
+	result, err := c.DB.Query(fmt.Sprintf("SELECT Name, Rel, IdParent FROM ParentTable WHERE IdMember = '%d'", IdMember))
 	if err != nil {
 		fmt.Println("error searching parents from db")
 		panic(err)

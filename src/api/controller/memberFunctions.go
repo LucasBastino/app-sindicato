@@ -30,7 +30,7 @@ func (c *Controller) editMember(w http.ResponseWriter, r *http.Request) {
 	memberEdited := parserCaller(memberParser, r)
 	IdMember := getIdModelCaller(models.Member{}, r)
 	memberEdited.IdMember = IdMember
-	// necesito hacer esto ↑ para que se pueda editar 2 veces seguidas
+	// necesito poner esta linea ↑ para que se pueda editar 2 veces seguidas
 	editModelCaller(memberEdited, IdMember, c.DB)
 	// hacer esto esta bien? estoy mostrando datos del newMember, no estan sacados de la DB
 	renderFileTemplateCaller(memberEdited, w, "src/views/files/memberFile.html")

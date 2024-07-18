@@ -1,11 +1,8 @@
 package api
 
 import (
-	"fmt"
 	"html/template"
 	"net/http"
-
-	"github.com/LucasBastino/app-sindicato/src/models"
 )
 
 func (c *Controller) renderIndex(w http.ResponseWriter, r *http.Request) {
@@ -32,30 +29,6 @@ func (c *Controller) renderCreateParentForm(w http.ResponseWriter, r *http.Reque
 	tmpl.Execute(w, nil)
 }
 
-func (c *Controller) renderParentFile(w http.ResponseWriter, r *http.Request) {
-	IdParent := r.PathValue("IdParent")
-	result, err := c.DB.Query(fmt.Sprintf("SELECT IdParent, Name, Rel, IdMember FROM ParentTable WHERE IdParent = '%s'", IdParent))
-	if err != nil {
-		DBError{"SELECT PARENT"}.Error(err)
-	}
-
-	var parent models.Parent
-	for result.Next() {
-		err = result.Scan(&parent.IdParent, &parent.Name, &parent.Rel, &parent.IdMember)
-		if err != nil {
-			ScanError{"PARENT"}.Error(err)
-		}
-	}
-
-	path := "src/views/files/parentFile.html"
-	tmpl, err := template.ParseFiles(path)
-	if err != nil {
-		TmplError{path}.Error(err)
-	}
-	tmpl.Execute(w, parent)
-
-}
-
 func (c *Controller) renderCreateEnterpriseForm(w http.ResponseWriter, r *http.Request) {
 	path := "src/views/forms/createEnterpriseForm.html"
 	tmpl, err := template.ParseFiles(path)
@@ -63,34 +36,4 @@ func (c *Controller) renderCreateEnterpriseForm(w http.ResponseWriter, r *http.R
 		TmplError{path}.Error(err)
 	}
 	tmpl.Execute(w, nil)
-}
-
-// es el mismo procedimiento para members empresas y familiares
-// buscar los datos en la bd, scanearlos y despues ejecutar un template
-// hay que hacer alguna funcion para simplificar como hacia hdeleon
-
-func (c *Controller) renderEnterpriseFile(w http.ResponseWriter, r *http.Request) {
-	IdEnterprise := r.PathValue("IdEnterprise")
-
-	result, err := c.DB.Query(fmt.Sprintf("SELECT * FROM EnterpriseTable WHERE IdEnterprise = '%s'", IdEnterprise))
-	if err != nil {
-		DBError{"SELECT ENTERPRISE"}.Error(err)
-	}
-
-	var enterprise models.Enterprise
-	for result.Next() {
-		err = result.Scan(&enterprise.IdEnterprise, &enterprise.Name, &enterprise.Address)
-		if err != nil {
-			ScanError{"ENTERPRISE"}.Error(err)
-		}
-	}
-
-	path := "src/views/files/enterpriseFile.html"
-	tmpl, err := template.ParseFiles(path)
-	if err != nil {
-		TmplError{path}.Error(err)
-	}
-
-	tmpl.Execute(w, enterprise)
-
 }

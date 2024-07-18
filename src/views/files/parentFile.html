@@ -1,7 +1,7 @@
 
        
         <h2>Ficha de {{$.Name}}</h2>
-        <form hx-put="/parent/{{$.IdParent}}/edit">
+        <form hx-put="/parent/{{$.IdParent}}/edit" hx-target="#tableDiv">
             <input type="text" value="{{$.IdParent}}" disabled>
             <input type="text" name="name" value="{{$.Name}}" disabled>
             <input type="text" name="rel" value="{{$.Rel}}" disabled>

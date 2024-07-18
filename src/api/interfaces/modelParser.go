@@ -23,8 +23,8 @@ type ParentParser struct{}
 
 func (p ParentParser) ParseModel(r *http.Request) models.Parent {
 	parent := models.Parent{}
-	parent.Name = r.PathValue("name")
-	parent.Rel = r.PathValue("rel")
+	parent.Name = r.FormValue("name")
+	parent.Rel = r.FormValue("rel")
 	return parent
 }
 
@@ -32,7 +32,7 @@ type EnterpriseParser struct{}
 
 func (p EnterpriseParser) ParseModel(r *http.Request) models.Enterprise {
 	enterprise := models.Enterprise{}
-	enterprise.Name = r.PathValue("name")
-	enterprise.Address = r.PathValue("address")
+	enterprise.Name = r.FormValue("name")
+	enterprise.Address = r.FormValue("address")
 	return enterprise
 }
