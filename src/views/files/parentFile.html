@@ -1,13 +1,10 @@
+<h2>Ficha de {{$.Name}}</h2>
+<form hx-put="/parent/{{$.IdParent}}/edit" hx-target="#tableDiv">
+    <input class="hide" type="number" name="idmember" value="{{$.IdMember}}">
+    <input type="text" name="name" value="{{$.Name}}" disabled>
+    <input type="text" name="rel" value="{{$.Rel}}" disabled>
+    <button type="submit" class="btn-primary btn-submit hide">Confirmar</button>
+</form>
+<button class="btn-primary" onclick="enableInputs(); showConfirmButton(); disableBrowserInput();">Editar</button>
 
-       
-        <h2>Ficha de {{$.Name}}</h2>
-        <form hx-put="/parent/{{$.IdParent}}/edit" hx-target="#tableDiv">
-            <input type="text" value="{{$.IdParent}}" disabled>
-            <input type="text" name="name" value="{{$.Name}}" disabled>
-            <input type="text" name="rel" value="{{$.Rel}}" disabled>
-            <button type="submit" class="btn-primary btn-submit hide">Confirmar</button>
-        </form>
-        <button class="btn-primary" onclick="enableInputs(); showConfirmButton(); disableBrowserInput();">Editar</button>
-        <button class="btn-primary" hx-get="/parent/renderTable" hx-trigger="click" hx-target="#tableDiv">Lista familiares</button>
-        <script src="/static/scripts/activeElements.js"></script>
-        <script src="https://unpkg.com/htmx.org@1.9.12" integrity="sha384-ujb1lZYygJmzgSwoxRggbCHcjc0rB2XoQrxeTUQyRjrOnlCoYta87iKBWq3EsdM2" crossorigin="anonymous"></script>  
+<button class="btn-primary" hx-get="/member/{{$.IdMember}}/file" hx-trigger="click" hx-target="#tableDiv">Volver al afiliado</button>

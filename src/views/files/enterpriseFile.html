@@ -1,16 +1,7 @@
-
-       
-        <h2>Ficha de {{$.Name}}</h2>
-        <form hx-put="/enterprise/{{$.IdEnterprise}}/edit" hx-target="#tableDiv">
-            <input type="text" name="name" value="{{$.Name}}" disabled>
-            <input type="text" name="address" value="{{$.Address}}" disabled>
-            <button type="submit" class="btn-primary btn-submit hide">Confirmar</button>
-        </form>
-        <button class="btn-primary" onclick="enableInputs(); showConfirmButton(); disableBrowserInput();">Editar</button>
-    
-        <button class="btn-primary" hx-get="/enterprise/renderTable" hx-trigger="click" hx-target="#tableDiv">Lista Empresas</button>
-
-
-        
-    <script src="/static/scripts/activeElements.js"></script>
-    <script src="https://unpkg.com/htmx.org@1.9.12" integrity="sha384-ujb1lZYygJmzgSwoxRggbCHcjc0rB2XoQrxeTUQyRjrOnlCoYta87iKBWq3EsdM2" crossorigin="anonymous"></script>
+<h2>Ficha de {{$.Name}}</h2>
+<form hx-put="/enterprise/{{$.IdEnterprise}}/edit" hx-target="#tableDiv">
+    <input type="text" name="name" value="{{$.Name}}" disabled>
+    <input type="text" name="address" value="{{$.Address}}" disabled>
+    <button type="submit" class="btn-primary btn-submit hide">Confirmar</button>
+</form>
+<button class="btn-primary" onclick="enableInputs(); showConfirmButton(); disableBrowserInput();">Editar</button>

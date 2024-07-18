@@ -58,7 +58,7 @@ func (p Parent) GetIdModel(r *http.Request) int {
 
 func (p Parent) SearchOneModelById(r *http.Request, DB *sql.DB) Parent {
 	IdParent := p.GetIdModel(r)
-	result, err := DB.Query(fmt.Sprintf("SELECT IdParent, Name, Rel FROM ParentTable WHERE IdParent = '%v'", IdParent))
+	result, err := DB.Query(fmt.Sprintf("SELECT IdParent, Name, Rel, IdMember FROM ParentTable WHERE IdParent = '%v'", IdParent))
 	if err != nil {
 		fmt.Println("error searching parent by id")
 		panic(err)
@@ -66,7 +66,7 @@ func (p Parent) SearchOneModelById(r *http.Request, DB *sql.DB) Parent {
 
 	var parent Parent
 	for result.Next() {
-		err = result.Scan(&parent.IdParent, &parent.Name, &parent.Rel)
+		err = result.Scan(&parent.IdParent, &parent.Name, &parent.Rel, &parent.IdMember)
 		if err != nil {
 			fmt.Println("error scanning parent")
 			panic(err)

@@ -1,15 +1,12 @@
+<h2>Ficha de {{$.Name}}</h2>
+<form hx-put="/member/{{$.IdMember}}/edit" hx-target="#tableDiv">
+    <input type="text" name="name" value="{{$.Name}}" disabled>
+    <input type="text" name="dni" value="{{$.DNI}}" disabled>
+    <button type="submit" class="btn-primary btn-submit hide">Confirmar</button>
+</form>
+<button class="btn-primary" onclick="enableInputs(); showConfirmButton(); disableBrowserInput();">Editar</button>
 
-        <h2>Ficha de {{$.Name}}</h2>
-        <form hx-put="/member/{{$.IdMember}}/edit" hx-target="#tableDiv">
-            <input type="text" name="name" value="{{$.Name}}" disabled>
-            <input type="text" name="dni" value="{{$.DNI}}" disabled>
-            <button type="submit" class="btn-primary btn-submit hide">Confirmar</button>
-        </form>
-        <button class="btn-primary" onclick="enableInputs(); showConfirmButton(); disableBrowserInput();">Editar</button>
-    
-        <button type="submit" hx-get="/member/{{$.IdMember}}/parentTable" hx-trigger="click" hx-target="#parentTableDiv">Familiares</button>
-        <div id="parentTableDiv"></div>
-        <button class="btn-primary" hx-get="/member/renderTable" hx-trigger="click" hx-target="#tableDiv">Lista Afiliados</button>
-        
-    <script src="/static/scripts/activeElements.js"></script>
-    <script src="https://unpkg.com/htmx.org@1.9.12" integrity="sha384-ujb1lZYygJmzgSwoxRggbCHcjc0rB2XoQrxeTUQyRjrOnlCoYta87iKBWq3EsdM2" crossorigin="anonymous"></script>
+<button type="submit" hx-get="/member/{{$.IdMember}}/parentTable" hx-trigger="click" hx-target="#parentTableDiv">Familiares</button>
+<div id="parentTableDiv"></div>
+
+
