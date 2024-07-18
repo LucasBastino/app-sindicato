@@ -29,12 +29,19 @@ func (c *Controller) editEnterprise(w http.ResponseWriter, r *http.Request) {
 	IdEnterprise := getIdModelCaller(models.Enterprise{}, r)
 	enterpriseEdited.IdEnterprise = IdEnterprise
 	editModelCaller(enterpriseEdited, IdEnterprise, c.DB)
-
-	// no puedo hacer esto ↓ porque estoy en POST, no puedo redireccionar
-	http.Redirect(w, r, "/index", http.StatusSeeOther) // con este status me anda, con otros de 300 no
+	renderFileTemplateCaller(enterpriseEdited, w, "src/views/files/enterpriseFile.html")
 }
 
 func (c *Controller) renderEnterpriseTable(w http.ResponseWriter, r *http.Request) {
 	enterprises := searchModelsCaller(models.Enterprise{}, r, c.DB)
 	renderTableTemplateCaller(models.Enterprise{}, w, "src/views/tables/enterpriseTable.html", enterprises)
+}
+
+func (c *Controller) renderEnterpriseFile(w http.ResponseWriter, r *http.Request) {
+	enterprise := searchOneModelByIdCaller(models.Enterprise{}, r, c.DB)
+	renderFileTemplateCaller(enterprise, w, "src/views/files/enterpriseFile.html")
+}
+
+func (c *Controller) renderCreateEnterpriseForm(w http.ResponseWriter, r *http.Request) {
+	renderCreateModelFormCaller(models.Enterprise{}, w, "src/views/forms/createEnterpriseForm.html")
 }

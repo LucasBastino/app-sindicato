@@ -14,4 +14,5 @@ type IModel[M TypeModel] interface {
 	SearchModels(*http.Request, *sql.DB) []M
 	RenderFileTemplate(http.ResponseWriter, string)
 	RenderTableTemplate(http.ResponseWriter, string, []M)
+	RenderCreateModelForm(http.ResponseWriter, string)
 }

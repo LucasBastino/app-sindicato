@@ -8,5 +8,6 @@
             <button type="submit" class="btn-primary btn-submit hide">Confirmar</button>
         </form>
         <button class="btn-primary" onclick="enableInputs(); showConfirmButton(); disableBrowserInput();">Editar</button>
+        <button class="btn-primary" hx-get="/parent/renderTable" hx-trigger="click" hx-target="#tableDiv">Lista familiares</button>
         <script src="/static/scripts/activeElements.js"></script>
         <script src="https://unpkg.com/htmx.org@1.9.12" integrity="sha384-ujb1lZYygJmzgSwoxRggbCHcjc0rB2XoQrxeTUQyRjrOnlCoYta87iKBWq3EsdM2" crossorigin="anonymous"></script>  

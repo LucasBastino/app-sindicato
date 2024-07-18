@@ -43,6 +43,6 @@ func renderTableTemplateCaller[M i.TypeModel](m i.IModel[M], w http.ResponseWrit
 	m.RenderTableTemplate(w, path, modelList)
 }
 
-// func searcherCaller[M i.TypeModel](searcher i.ModelSearcher[M], r *http.Request, DB *sql.DB) []M {
-// 	return searcher.SearchModel(r, DB)
-// }
+func renderCreateModelFormCaller[M i.TypeModel](m i.IModel[M], w http.ResponseWriter, path string) {
+	m.RenderCreateModelForm(w, path)
+}

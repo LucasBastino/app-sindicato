@@ -121,3 +121,12 @@ func (m Member) RenderTableTemplate(w http.ResponseWriter, path string, modelLis
 	}
 	tmpl.Execute(w, modelList)
 }
+
+func (m Member) RenderCreateModelForm(w http.ResponseWriter, path string) {
+	tmpl, err := template.ParseFiles(path)
+	if err != nil {
+		fmt.Println("error parsing file", path)
+		panic(err)
+	}
+	tmpl.Execute(w, nil)
+}

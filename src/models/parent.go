@@ -16,7 +16,7 @@ type Parent struct {
 }
 
 func (newParent Parent) InsertModel(DB *sql.DB) {
-	insert, err := DB.Query(fmt.Sprintf("INSERT INTO ParentTable (Name, Rel) VALUES ('%s','%s')", newParent.Name, newParent.Rel))
+	insert, err := DB.Query(fmt.Sprintf("INSERT INTO ParentTable (Name, Rel, IdMember) VALUES ('%s','%s', '%d')", newParent.Name, newParent.Rel, newParent.IdMember))
 	if err != nil {
 		// DBError{"INSERT Parent"}.Error(err)
 		fmt.Println("error inserting parent")
@@ -116,4 +116,13 @@ func (p Parent) RenderTableTemplate(w http.ResponseWriter, path string, modelLis
 		panic(err)
 	}
 	tmpl.Execute(w, modelList)
+}
+
+func (p Parent) RenderCreateModelForm(w http.ResponseWriter, path string) {
+	tmpl, err := template.ParseFiles(path)
+	if err != nil {
+		fmt.Println("error parsing file", path)
+		panic(err)
+	}
+	tmpl.Execute(w, nil)
 }

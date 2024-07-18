@@ -69,3 +69,7 @@ tmpl, err := template.New("memberForm.html").Funcs(funcMap).ParseFiles("src/view
 --
 // tmpl, _ := template.ParseFiles("src/views/memberForm.html", "src/views/footer.html")
 	// el primero siempre es el main template, los demas se usan como componentes
+
+
+	// no puedo hacer esto ↓ porque estoy en POST, no puedo redireccionar
+	// http.Redirect(w, r, "/index", http.StatusSeeOther) // con este status me anda, con otros de 300 no

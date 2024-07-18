@@ -1,8 +1,6 @@
 package api
 
 import (
-	"fmt"
-	"html/template"
 	"net/http"
 
 	i "github.com/LucasBastino/app-sindicato/src/api/interfaces"
@@ -36,31 +34,11 @@ func (c *Controller) renderParentTable(w http.ResponseWriter, r *http.Request) {
 	renderTableTemplateCaller(models.Parent{}, w, "src/views/tables/parentTable.html", parents)
 }
 
-func (c *Controller) renderMemberParents(w http.ResponseWriter, r *http.Request) {
-	IdMember := getIdModelCaller(models.Member{}, r)
-	result, err := c.DB.Query(fmt.Sprintf("SELECT Name, Rel, IdParent FROM ParentTable WHERE IdMember = '%d'", IdMember))
-	if err != nil {
-		fmt.Println("error searching parents from db")
-		panic(err)
-	}
+func (c *Controller) renderParentFile(w http.ResponseWriter, r *http.Request) {
+	parent := searchOneModelByIdCaller(models.Parent{}, r, c.DB)
+	renderFileTemplateCaller(parent, w, "src/views/files/parentFile.html")
+}
 
-	// hacer un metodo para scan
-	var parent models.Parent
-	var parents []models.Parent
-	for result.Next() {
-		err = result.Scan(&parent.Name, &parent.Rel, &parent.IdParent)
-		if err != nil {
-			fmt.Println("error scanning parent")
-			panic(err)
-		}
-		parents = append(parents, parent)
-	}
-
-	path := "src/views/tables/parentTable.html"
-	tmpl, err := template.ParseFiles(path)
-	if err != nil {
-		fmt.Println("error parsing file", path)
-	}
-	tmpl.Execute(w, parents)
-
+func (c *Controller) renderCreateParentForm(w http.ResponseWriter, r *http.Request) {
+	renderCreateModelFormCaller(models.Parent{}, w, "src/views/forms/createParentForm.html")
 }

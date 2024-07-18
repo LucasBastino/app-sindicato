@@ -1,7 +1,9 @@
 package interfaces
 
 import (
+	"fmt"
 	"net/http"
+	"strconv"
 
 	"github.com/LucasBastino/app-sindicato/src/models"
 )
@@ -25,6 +27,14 @@ func (p ParentParser) ParseModel(r *http.Request) models.Parent {
 	parent := models.Parent{}
 	parent.Name = r.FormValue("name")
 	parent.Rel = r.FormValue("rel")
+	IdMemberStr := r.FormValue("idmember")
+	IdMember, err := strconv.Atoi(IdMemberStr)
+	if err != nil {
+		fmt.Println("error converting IdMemberStr to int")
+		panic(err)
+	}
+	parent.IdMember = IdMember
+
 	return parent
 }
 

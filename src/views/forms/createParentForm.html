@@ -1,8 +1,9 @@
 <body>
     <h1>Agregar familiar de afiliado: {{$.Name}}</h1>
-    <form hx-post="/member/{{$.IdMember}}/parent/create">
+    <form hx-post="/parent/create">
         <input type="text" name="name" placeholder="Nombre">
         <input type="text" name="rel" placeholder="Parentesco">
+        <input class="hide" type="number" value="{{$.IdMember}}">
         <button class="btn-primary" type="submit">Enviar</button>
     </form>
 </body>
