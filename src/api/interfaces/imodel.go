@@ -15,4 +15,5 @@ type IModel[M TypeModel] interface {
 	RenderFileTemplate(http.ResponseWriter, string)
 	RenderTableTemplate(http.ResponseWriter, string, []M)
 	RenderCreateModelForm(http.ResponseWriter, string)
+	ValidateFields(*http.Request) bool
 }

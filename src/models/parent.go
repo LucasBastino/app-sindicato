@@ -126,3 +126,7 @@ func (p Parent) RenderCreateModelForm(w http.ResponseWriter, path string) {
 	}
 	tmpl.Execute(w, nil)
 }
+
+func (m Parent) ValidateFields(r *http.Request) bool {
+	return true
+}

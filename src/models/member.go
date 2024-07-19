@@ -5,7 +5,9 @@ import (
 	"fmt"
 	"net/http"
 	"strconv"
+	"strings"
 	"text/template"
+	"unicode/utf8"
 )
 
 type Member struct {
@@ -129,4 +131,21 @@ func (m Member) RenderCreateModelForm(w http.ResponseWriter, path string) {
 		panic(err)
 	}
 	tmpl.Execute(w, nil)
+}
+
+func (m Member) ValidateFields(r *http.Request) bool {
+	checkName, checkAge := true, true
+	if strings.TrimSpace(r.FormValue("name")) == "" {
+		fmt.Println("error en trim name")
+		checkName = false
+	}
+	if strings.TrimSpace(r.FormValue("dni")) == "" {
+		fmt.Println("error en trim dni")
+		checkAge = false
+	}
+	if utf8.RuneCountInString(r.FormValue("dni")) > 8 {
+		fmt.Println("error en runecount dni")
+		checkAge = false
+	}
+	return checkName && checkAge
 }

@@ -46,3 +46,7 @@ func renderTableTemplateCaller[M i.TypeModel](m i.IModel[M], w http.ResponseWrit
 func renderCreateModelFormCaller[M i.TypeModel](m i.IModel[M], w http.ResponseWriter, path string) {
 	m.RenderCreateModelForm(w, path)
 }
+
+func validateFieldsCaller[M i.TypeModel](m i.IModel[M], r *http.Request) bool {
+	return m.ValidateFields(r)
+}

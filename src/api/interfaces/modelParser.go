@@ -8,8 +8,8 @@ import (
 	"github.com/LucasBastino/app-sindicato/src/models"
 )
 
-type ModelParser[tM TypeModel] interface {
-	ParseModel(*http.Request) tM
+type ModelParser[M TypeModel] interface {
+	ParseModel(*http.Request) M
 }
 
 type MemberParser struct{}

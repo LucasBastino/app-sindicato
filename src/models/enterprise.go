@@ -125,3 +125,7 @@ func (e Enterprise) RenderCreateModelForm(w http.ResponseWriter, path string) {
 	}
 	tmpl.Execute(w, nil)
 }
+
+func (m Enterprise) ValidateFields(r *http.Request) bool {
+	return true
+}
