@@ -19,7 +19,7 @@ func (c *Controller) RegisterRoutes(muxer *http.ServeMux) {
 	muxer.HandleFunc("GET /form/createParent", c.renderCreateParentForm)
 	muxer.HandleFunc("POST /parent/create", c.createParent)
 	muxer.HandleFunc("GET /parent/{IdParent}/file", c.renderParentFile)
-	muxer.HandleFunc("DELETE /parent/{IdParent}", c.deleteParent)
+	muxer.HandleFunc("DELETE /parent/{IdParent}/delete", c.deleteParent)
 	muxer.HandleFunc("PUT /parent/{IdParent}/edit", c.editParent)
 
 	muxer.HandleFunc("GET /enterprise/renderTable", c.renderEnterpriseTable)

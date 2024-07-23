@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"net/http"
 	"strconv"
-	"text/template"
 )
 
 type Enterprise struct {
@@ -35,8 +34,8 @@ func (e Enterprise) DeleteModel(DB *sql.DB) {
 
 }
 
-func (e Enterprise) EditModel(IdEnterprise int, DB *sql.DB) {
-	update, err := DB.Query(fmt.Sprintf("UPDATE EnterpriseTable SET Name = '%s', Address = '%s' WHERE IdEnterprise = '%v'", e.Name, e.Address, IdEnterprise))
+func (e Enterprise) EditModel(DB *sql.DB) {
+	update, err := DB.Query(fmt.Sprintf("UPDATE EnterpriseTable SET Name = '%s', Address = '%s' WHERE IdEnterprise = '%v'", e.Name, e.Address, e.IdEnterprise))
 	if err != nil {
 		// DBError{"UPDATE Enterprise"}.Error(err)
 		fmt.Println("error updating Enterprise")
@@ -95,35 +94,6 @@ func (e Enterprise) SearchModels(r *http.Request, DB *sql.DB) []Enterprise {
 	}
 	defer result.Close()
 	return enterprises
-}
-
-func (e Enterprise) RenderFileTemplate(w http.ResponseWriter, templateData TemplateData) {
-	tmpl, err := template.ParseFiles(templateData.Path)
-	if err != nil {
-		// TmplError{path}.Error(err)
-		fmt.Println("error parsing file", templateData.Path)
-		panic(err)
-	}
-	tmpl.Execute(w, templateData)
-}
-
-func (e Enterprise) RenderTableTemplate(w http.ResponseWriter, templateData TemplateData) {
-	tmpl, err := template.ParseFiles(templateData.Path)
-	if err != nil {
-		// TmplError{path}.Error(err)
-		fmt.Println("error parsing file", templateData.Path)
-		panic(err)
-	}
-	tmpl.Execute(w, templateData)
-}
-
-func (e Enterprise) RenderCreateModelForm(w http.ResponseWriter, templateData TemplateData) {
-	tmpl, err := template.ParseFiles(templateData.Path)
-	if err != nil {
-		fmt.Println("error parsing file", templateData.Path)
-		panic(err)
-	}
-	tmpl.Execute(w, templateData)
 }
 
 func (e Enterprise) ValidateFields(r *http.Request) map[string]string {

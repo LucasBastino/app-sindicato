@@ -6,7 +6,6 @@ import (
 	"net/http"
 	"strconv"
 	"strings"
-	"text/template"
 	"unicode/utf8"
 )
 
@@ -41,8 +40,8 @@ func (m Member) DeleteModel(DB *sql.DB) {
 
 }
 
-func (m Member) EditModel(IdMember int, DB *sql.DB) {
-	update, err := DB.Query(fmt.Sprintf("UPDATE MemberTable SET Name = '%s', DNI = '%s' WHERE IdMember = '%v'", m.Name, m.DNI, IdMember))
+func (m Member) EditModel(DB *sql.DB) {
+	update, err := DB.Query(fmt.Sprintf("UPDATE MemberTable SET Name = '%s', DNI = '%s' WHERE IdMember = '%v'", m.Name, m.DNI, m.IdMember))
 	if err != nil {
 		// DBError{"UPDATE MEMBER"}.Error(err)
 		fmt.Println("error updating member")
@@ -101,36 +100,6 @@ func (m Member) SearchModels(r *http.Request, DB *sql.DB) []Member {
 	}
 	defer result.Close()
 	return members
-}
-
-func (m Member) RenderFileTemplate(w http.ResponseWriter, templateData TemplateData) {
-
-	tmpl, err := template.ParseFiles(templateData.Path)
-	if err != nil {
-		// TmplError{path}.Error(err)
-		fmt.Println("error parsing file", templateData.Path)
-		panic(err)
-	}
-	tmpl.Execute(w, templateData)
-}
-
-func (m Member) RenderTableTemplate(w http.ResponseWriter, templateData TemplateData) {
-	tmpl, err := template.ParseFiles(templateData.Path)
-	if err != nil {
-		// TmplError{path}.Error(err)
-		fmt.Println("error parsing file", templateData.Path)
-		panic(err)
-	}
-	tmpl.Execute(w, templateData)
-}
-
-func (m Member) RenderCreateModelForm(w http.ResponseWriter, templateData TemplateData) {
-	tmpl, err := template.ParseFiles(templateData.Path)
-	if err != nil {
-		fmt.Println("error parsing file", templateData.Path)
-		panic(err)
-	}
-	tmpl.Execute(w, templateData)
 }
 
 func (m Member) ValidateFields(r *http.Request) map[string]string {

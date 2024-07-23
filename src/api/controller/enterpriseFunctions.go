@@ -16,7 +16,7 @@ func (c *Controller) createEnterprise(w http.ResponseWriter, r *http.Request) {
 	newEnterprise := parserCaller(enterpriseParser, r)
 	insertModelCaller(newEnterprise, c.DB)
 	templateData := createTemplateDataCaller(enterprise, newEnterprise, nil, "src/views/files/enterpriseFile.html", nil)
-	renderFileTemplateCaller(newEnterprise, w, templateData)
+	c.RenderHTML(w, templateData)
 
 	// http.Redirect(w, r, "/index", http.StatusSeeOther) // poner un status de redirect (30X), sino no funciona
 	// c.renderEnterpriseList(w, r) // esto tambien funciona
@@ -33,24 +33,24 @@ func (c *Controller) editEnterprise(w http.ResponseWriter, r *http.Request) {
 	enterpriseEdited := parserCaller(enterpriseParser, r)
 	IdEnterprise := getIdModelCaller(enterprise, r)
 	enterpriseEdited.IdEnterprise = IdEnterprise
-	editModelCaller(enterpriseEdited, IdEnterprise, c.DB)
+	editModelCaller(enterpriseEdited, c.DB)
 	templateData := createTemplateDataCaller(enterprise, enterpriseEdited, nil, "src/views/files/enterpriseFile.html", nil)
-	renderFileTemplateCaller(enterpriseEdited, w, templateData)
+	c.RenderHTML(w, templateData)
 }
 
 func (c *Controller) renderEnterpriseTable(w http.ResponseWriter, r *http.Request) {
 	enterprises := searchModelsCaller(enterprise, r, c.DB)
 	templateData := createTemplateDataCaller(enterprise, enterprise, enterprises, "src/views/tables/enterpriseTable.html", nil)
-	renderTableTemplateCaller(enterprise, w, templateData)
+	c.RenderHTML(w, templateData)
 }
 
 func (c *Controller) renderEnterpriseFile(w http.ResponseWriter, r *http.Request) {
 	enterprise := searchOneModelByIdCaller(enterprise, r, c.DB)
 	templateData := createTemplateDataCaller(enterprise, enterprise, nil, "src/views/files/enterpriseFile.html", nil)
-	renderFileTemplateCaller(enterprise, w, templateData)
+	c.RenderHTML(w, templateData)
 }
 
 func (c *Controller) renderCreateEnterpriseForm(w http.ResponseWriter, r *http.Request) {
 	templateData := createTemplateDataCaller(enterprise, enterprise, nil, "src/views/forms/createEnterpriseForm.html", nil)
-	renderCreateModelFormCaller(enterprise, w, templateData)
+	c.RenderHTML(w, templateData)
 }

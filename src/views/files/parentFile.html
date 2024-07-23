@@ -1,6 +1,6 @@
 <h2>Ficha de {{$.Parent.Name}}</h2>
 <form hx-put="/parent/{{$.Parent.IdParent}}/edit" hx-target="#tableDiv">
-    <input class="hide" type="number" name="idmember" value="{{$.IdMember}}">
+    <input class="hide" type="number" name="idmember" value="{{$.Parent.IdMember}}">
     <input type="text" name="name" value="{{$.Parent.Name}}" disabled>
     <input type="text" name="rel" value="{{$.Parent.Rel}}" disabled>
     <button type="submit" class="btn-primary btn-submit hide">Confirmar</button>
