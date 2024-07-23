@@ -7,7 +7,7 @@
         <th> </th>
     </tr>
 
-    {{range $_, $parent := .}}
+    {{range $_, $parent := .Parents}}
     <tr>
         <td>{{$parent.Name}}</td>
         <td>{{$parent.Rel}}</td>

@@ -1,10 +1,10 @@
-<h2>Ficha de {{$.Name}}</h2>
-<form hx-put="/parent/{{$.IdParent}}/edit" hx-target="#tableDiv">
+<h2>Ficha de {{$.Parent.Name}}</h2>
+<form hx-put="/parent/{{$.Parent.IdParent}}/edit" hx-target="#tableDiv">
     <input class="hide" type="number" name="idmember" value="{{$.IdMember}}">
-    <input type="text" name="name" value="{{$.Name}}" disabled>
-    <input type="text" name="rel" value="{{$.Rel}}" disabled>
+    <input type="text" name="name" value="{{$.Parent.Name}}" disabled>
+    <input type="text" name="rel" value="{{$.Parent.Rel}}" disabled>
     <button type="submit" class="btn-primary btn-submit hide">Confirmar</button>
 </form>
 <button class="btn-primary" onclick="enableInputs(); showConfirmButton(); disableBrowserInput();">Editar</button>
 
-<button class="btn-primary" hx-get="/member/{{$.IdMember}}/file" hx-trigger="click" hx-target="#tableDiv">Volver al afiliado</button>
+<button class="btn-primary" hx-get="/member/{{$.Parent.IdMember}}/file" hx-trigger="click" hx-target="#tableDiv">Volver al afiliado</button>

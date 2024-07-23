@@ -103,49 +103,59 @@ func (m Member) SearchModels(r *http.Request, DB *sql.DB) []Member {
 	return members
 }
 
-func (m Member) RenderFileTemplate(w http.ResponseWriter, path string) {
+func (m Member) RenderFileTemplate(w http.ResponseWriter, templateData TemplateData) {
 
-	tmpl, err := template.ParseFiles(path)
+	tmpl, err := template.ParseFiles(templateData.Path)
 	if err != nil {
 		// TmplError{path}.Error(err)
-		fmt.Println("error parsing file", path)
+		fmt.Println("error parsing file", templateData.Path)
 		panic(err)
 	}
-	tmpl.Execute(w, m)
+	tmpl.Execute(w, templateData)
 }
 
-func (m Member) RenderTableTemplate(w http.ResponseWriter, path string, modelList []Member) {
-	tmpl, err := template.ParseFiles(path)
+func (m Member) RenderTableTemplate(w http.ResponseWriter, templateData TemplateData) {
+	tmpl, err := template.ParseFiles(templateData.Path)
 	if err != nil {
 		// TmplError{path}.Error(err)
-		fmt.Println("error parsing file", path)
+		fmt.Println("error parsing file", templateData.Path)
 		panic(err)
 	}
-	tmpl.Execute(w, modelList)
+	tmpl.Execute(w, templateData)
 }
 
-func (m Member) RenderCreateModelForm(w http.ResponseWriter, path string) {
-	tmpl, err := template.ParseFiles(path)
+func (m Member) RenderCreateModelForm(w http.ResponseWriter, templateData TemplateData) {
+	tmpl, err := template.ParseFiles(templateData.Path)
 	if err != nil {
-		fmt.Println("error parsing file", path)
+		fmt.Println("error parsing file", templateData.Path)
 		panic(err)
 	}
-	tmpl.Execute(w, nil)
+	tmpl.Execute(w, templateData)
 }
 
-func (m Member) ValidateFields(r *http.Request) bool {
-	checkName, checkAge := true, true
+func (m Member) ValidateFields(r *http.Request) map[string]string {
+	errorMap := map[string]string{}
+
 	if strings.TrimSpace(r.FormValue("name")) == "" {
 		fmt.Println("error en trim name")
-		checkName = false
+		errorMap["name"] = "error en trim name"
 	}
 	if strings.TrimSpace(r.FormValue("dni")) == "" {
 		fmt.Println("error en trim dni")
-		checkAge = false
+		errorMap["dni"] = "error en trim dni"
 	}
 	if utf8.RuneCountInString(r.FormValue("dni")) > 8 {
 		fmt.Println("error en runecount dni")
-		checkAge = false
+		errorMap["dni"] = "error en runecount dni"
 	}
-	return checkName && checkAge
+	return errorMap
+}
+
+func (m Member) CreateTemplateData(member Member, members []Member, path string, errorMap map[string]string) TemplateData {
+	templateData := TemplateData{}
+	templateData.Member = member
+	templateData.Members = members
+	templateData.Path = path
+	templateData.ErrorMap = errorMap
+	return templateData
 }

@@ -1,7 +1,7 @@
-<h2>Ficha de {{$.Name}}</h2>
-<form hx-put="/enterprise/{{$.IdEnterprise}}/edit" hx-target="#tableDiv">
-    <input type="text" name="name" value="{{$.Name}}" disabled>
-    <input type="text" name="address" value="{{$.Address}}" disabled>
+<h2>Ficha de {{$.Enterprise.Name}}</h2>
+<form hx-put="/enterprise/{{$.Enterprise.IdEnterprise}}/edit" hx-target="#tableDiv">
+    <input type="text" name="name" value="{{$.Enterprise.Name}}" disabled>
+    <input type="text" name="address" value="{{$.Enterprise.Address}}" disabled>
     <button type="submit" class="btn-primary btn-submit hide">Confirmar</button>
 </form>
 <button class="btn-primary" onclick="enableInputs(); showConfirmButton(); disableBrowserInput();">Editar</button>

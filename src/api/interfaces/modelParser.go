@@ -8,7 +8,7 @@ import (
 	"github.com/LucasBastino/app-sindicato/src/models"
 )
 
-type ModelParser[M TypeModel] interface {
+type ModelParser[M models.TypeModel] interface {
 	ParseModel(*http.Request) M
 }
 

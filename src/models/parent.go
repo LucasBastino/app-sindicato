@@ -98,35 +98,45 @@ func (p Parent) SearchModels(r *http.Request, DB *sql.DB) []Parent {
 	return parents
 }
 
-func (p Parent) RenderFileTemplate(w http.ResponseWriter, path string) {
-	tmpl, err := template.ParseFiles(path)
+func (p Parent) RenderFileTemplate(w http.ResponseWriter, templateData TemplateData) {
+	tmpl, err := template.ParseFiles(templateData.Path)
 	if err != nil {
 		// TmplError{path}.Error(err)
-		fmt.Println("error parsing file", path)
+		fmt.Println("error parsing file", templateData.Path)
 		panic(err)
 	}
-	tmpl.Execute(w, p)
+	tmpl.Execute(w, templateData)
 }
 
-func (p Parent) RenderTableTemplate(w http.ResponseWriter, path string, modelList []Parent) {
-	tmpl, err := template.ParseFiles(path)
+func (p Parent) RenderTableTemplate(w http.ResponseWriter, templateData TemplateData) {
+	tmpl, err := template.ParseFiles(templateData.Path)
 	if err != nil {
 		// TmplError{path}.Error(err)
-		fmt.Println("error parsing file", path)
+		fmt.Println("error parsing file", templateData.Path)
 		panic(err)
 	}
-	tmpl.Execute(w, modelList)
+	tmpl.Execute(w, templateData)
 }
 
-func (p Parent) RenderCreateModelForm(w http.ResponseWriter, path string) {
-	tmpl, err := template.ParseFiles(path)
+func (p Parent) RenderCreateModelForm(w http.ResponseWriter, templateData TemplateData) {
+	tmpl, err := template.ParseFiles(templateData.Path)
 	if err != nil {
-		fmt.Println("error parsing file", path)
+		fmt.Println("error parsing file", templateData.Path)
 		panic(err)
 	}
-	tmpl.Execute(w, nil)
+	tmpl.Execute(w, templateData)
 }
 
-func (m Parent) ValidateFields(r *http.Request) bool {
-	return true
+func (p Parent) ValidateFields(r *http.Request) map[string]string {
+	errorMap := map[string]string{}
+	return errorMap
+}
+
+func (p Parent) CreateTemplateData(parent Parent, parents []Parent, path string, errorMap map[string]string) TemplateData {
+	templateData := TemplateData{}
+	templateData.Parent = parent
+	templateData.Parents = parents
+	templateData.Path = path
+	templateData.ErrorMap = errorMap
+	return templateData
 }

@@ -97,35 +97,45 @@ func (e Enterprise) SearchModels(r *http.Request, DB *sql.DB) []Enterprise {
 	return enterprises
 }
 
-func (e Enterprise) RenderFileTemplate(w http.ResponseWriter, path string) {
-	tmpl, err := template.ParseFiles(path)
+func (e Enterprise) RenderFileTemplate(w http.ResponseWriter, templateData TemplateData) {
+	tmpl, err := template.ParseFiles(templateData.Path)
 	if err != nil {
 		// TmplError{path}.Error(err)
-		fmt.Println("error parsing file", path)
+		fmt.Println("error parsing file", templateData.Path)
 		panic(err)
 	}
-	tmpl.Execute(w, e)
+	tmpl.Execute(w, templateData)
 }
 
-func (e Enterprise) RenderTableTemplate(w http.ResponseWriter, path string, modelList []Enterprise) {
-	tmpl, err := template.ParseFiles(path)
+func (e Enterprise) RenderTableTemplate(w http.ResponseWriter, templateData TemplateData) {
+	tmpl, err := template.ParseFiles(templateData.Path)
 	if err != nil {
 		// TmplError{path}.Error(err)
-		fmt.Println("error parsing file", path)
+		fmt.Println("error parsing file", templateData.Path)
 		panic(err)
 	}
-	tmpl.Execute(w, modelList)
+	tmpl.Execute(w, templateData)
 }
 
-func (e Enterprise) RenderCreateModelForm(w http.ResponseWriter, path string) {
-	tmpl, err := template.ParseFiles(path)
+func (e Enterprise) RenderCreateModelForm(w http.ResponseWriter, templateData TemplateData) {
+	tmpl, err := template.ParseFiles(templateData.Path)
 	if err != nil {
-		fmt.Println("error parsing file", path)
+		fmt.Println("error parsing file", templateData.Path)
 		panic(err)
 	}
-	tmpl.Execute(w, nil)
+	tmpl.Execute(w, templateData)
 }
 
-func (m Enterprise) ValidateFields(r *http.Request) bool {
-	return true
+func (e Enterprise) ValidateFields(r *http.Request) map[string]string {
+	errorMap := map[string]string{}
+	return errorMap
+}
+
+func (e Enterprise) CreateTemplateData(enterprise Enterprise, enterprises []Enterprise, path string, errorMap map[string]string) TemplateData {
+	templateData := TemplateData{}
+	templateData.Enterprise = enterprise
+	templateData.Enterprises = enterprises
+	templateData.Path = path
+	templateData.ErrorMap = errorMap
+	return templateData
 }

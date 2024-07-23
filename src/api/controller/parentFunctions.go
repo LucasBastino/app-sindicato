@@ -7,38 +7,47 @@ import (
 	"github.com/LucasBastino/app-sindicato/src/models"
 )
 
+var (
+	parent       models.Parent
+	parentParser i.ParentParser
+)
+
 func (c *Controller) createParent(w http.ResponseWriter, r *http.Request) {
-	parentParser := i.ParentParser{}
 	newParent := parserCaller(parentParser, r)
 	insertModelCaller(newParent, c.DB)
-	renderFileTemplateCaller(newParent, w, "src/views/files/parentFile.html")
+	templateData := createTemplateDataCaller(parent, parent, nil, "src/views/files/parentFile.html", nil)
+	renderFileTemplateCaller(newParent, w, templateData)
 }
 
 func (c *Controller) deleteParent(w http.ResponseWriter, r *http.Request) {
-	IdParent := getIdModelCaller(models.Parent{}, r)
-	deleteModelCaller(models.Parent{IdParent: IdParent}, c.DB)
+	IdParent := getIdModelCaller(parent, r)
+	parent.IdParent = IdParent
+	deleteModelCaller(parent, c.DB)
 	c.renderParentTable(w, r)
 }
 
 func (c *Controller) editParent(w http.ResponseWriter, r *http.Request) {
-	parser := i.ParentParser{}
-	parentEdited := parserCaller(parser, r)
-	IdParent := getIdModelCaller(models.Parent{}, r)
+	parentEdited := parserCaller(parentParser, r)
+	IdParent := getIdModelCaller(parent, r)
 	parentEdited.IdParent = IdParent
 	editModelCaller(parentEdited, IdParent, c.DB)
-	renderFileTemplateCaller(parentEdited, w, "src/views/files/parentFile.html")
+	templateData := createTemplateDataCaller(parent, parent, nil, "src/views/files/parentFile.html", nil)
+	renderFileTemplateCaller(parentEdited, w, templateData)
 }
 
 func (c *Controller) renderParentTable(w http.ResponseWriter, r *http.Request) {
-	parents := searchModelsCaller(models.Parent{}, r, c.DB)
-	renderTableTemplateCaller(models.Parent{}, w, "src/views/tables/parentTable.html", parents)
+	parents := searchModelsCaller(parent, r, c.DB)
+	templateData := createTemplateDataCaller(parent, parent, parents, "src/views/tables/parentTable.html", nil)
+	renderTableTemplateCaller(parent, w, templateData)
 }
 
 func (c *Controller) renderParentFile(w http.ResponseWriter, r *http.Request) {
-	parent := searchOneModelByIdCaller(models.Parent{}, r, c.DB)
-	renderFileTemplateCaller(parent, w, "src/views/files/parentFile.html")
+	parent := searchOneModelByIdCaller(parent, r, c.DB)
+	templateData := createTemplateDataCaller(parent, parent, nil, "src/views/files/parentFile.html", nil)
+	renderFileTemplateCaller(parent, w, templateData)
 }
 
 func (c *Controller) renderCreateParentForm(w http.ResponseWriter, r *http.Request) {
-	renderCreateModelFormCaller(models.Parent{}, w, "src/views/forms/createParentForm.html")
+	templateData := createTemplateDataCaller(parent, parent, nil, "src/views/forms/createParentForm.html", nil)
+	renderCreateModelFormCaller(parent, w, templateData)
 }

@@ -9,16 +9,27 @@ import (
 	"github.com/LucasBastino/app-sindicato/src/models"
 )
 
+var (
+	member       models.Member
+	memberParser i.MemberParser
+)
+
 func (c *Controller) createMember(w http.ResponseWriter, r *http.Request) {
-	if validateFieldsCaller(models.Member{}, r) {
-		memberParser := i.MemberParser{}
-		newMember := parserCaller(memberParser, r)
-		insertModelCaller(newMember, c.DB)
-		// hacer esto esta bien? estoy mostrando datos del newMember, no estan sacados de la DB
-		renderFileTemplateCaller(newMember, w, "src/views/files/memberFile.html")
-	} else {
-		renderFileTemplateCaller(models.Member{}, w, "src/views/files/memberFileError.html")
+	errorsMap := validateFieldsCaller(member, r)
+	if len(errorsMap) > 0 {
+		templateData := createTemplateDataCaller(member, member, nil, "src/views/forms/createMemberForm.html", errorsMap)
+		renderCreateModelFormCaller(member, w, templateData)
 	}
+
+	// if validateFieldsCaller(member, r) {
+	// 	memberParser := i.MemberParser{}
+	// 	newMember := parserCaller(memberParser, r)
+	// 	insertModelCaller(newMember, c.DB)
+	// 	// hacer esto esta bien? estoy mostrando datos del newMember, no estan sacados de la DB
+	// renderFileTemplateCaller(newMember, w, "src/views/files/memberFile.html")
+	// } else {
+	// 	renderFileTemplateCaller(member, w, "src/views/files/memberFileError.html")
+	// }
 
 	// memberParser := i.MemberParser{}
 	// newMember := parserCaller(memberParser, r)
@@ -30,42 +41,47 @@ func (c *Controller) createMember(w http.ResponseWriter, r *http.Request) {
 }
 
 func (c *Controller) deleteMember(w http.ResponseWriter, r *http.Request) {
-	IdMember := getIdModelCaller(models.Member{}, r)
-	deleteModelCaller(models.Member{IdMember: IdMember}, c.DB)
-	allMembers := searchModelsCaller(models.Member{}, r, c.DB)
-	renderTableTemplateCaller(models.Member{}, w, "src/views/tables/memberTable.html", allMembers)
+	IdMember := getIdModelCaller(member, r)
+	member.IdMember = IdMember
+	deleteModelCaller(member, c.DB)
+	allMembers := searchModelsCaller(member, r, c.DB)
+	templateData := createTemplateDataCaller(member, member, allMembers, "src/views/tables/memberTable.html", nil)
+	renderTableTemplateCaller(member, w, templateData)
 }
 
 func (c *Controller) editMember(w http.ResponseWriter, r *http.Request) {
-	memberParser := i.MemberParser{}
-	memberEdited := parserCaller(memberParser, r)
-	IdMember := getIdModelCaller(models.Member{}, r)
-	memberEdited.IdMember = IdMember
+	member = parserCaller(memberParser, r)
+	IdMember := getIdModelCaller(member, r)
+	member.IdMember = IdMember
 	// necesito poner esta linea ↑ para que se pueda editar 2 veces seguidas
-	editModelCaller(memberEdited, IdMember, c.DB)
+	editModelCaller(member, IdMember, c.DB)
 	// hacer esto esta bien? estoy mostrando datos del newMember, no estan sacados de la DB
-	renderFileTemplateCaller(memberEdited, w, "src/views/files/memberFile.html")
+	templateData := createTemplateDataCaller(member, member, nil, "src/views/files/memberFile.html", nil)
+	renderFileTemplateCaller(member, w, templateData)
 
 	// no puedo hacer esto ↓ porque estoy en POST, no puedo redireccionar
 	// http.Redirect(w, r, "/index", http.StatusSeeOther) // con este status me anda, con otros de 300 no
 }
 
 func (c *Controller) renderMemberTable(w http.ResponseWriter, r *http.Request) {
-	members := searchModelsCaller(models.Member{}, r, c.DB)
-	renderTableTemplateCaller(models.Member{}, w, "src/views/tables/memberTable.html", members)
+	members := searchModelsCaller(member, r, c.DB)
+	templateData := createTemplateDataCaller(member, member, members, "src/views/tables/memberTable.html", nil)
+	renderTableTemplateCaller(member, w, templateData)
 }
 
 func (c *Controller) renderMemberFile(w http.ResponseWriter, r *http.Request) {
-	member := searchOneModelByIdCaller(models.Member{}, r, c.DB)
-	renderFileTemplateCaller(member, w, "src/views/files/memberFile.html")
+	member := searchOneModelByIdCaller(member, r, c.DB)
+	templateData := createTemplateDataCaller(member, member, nil, "src/views/files/memberFile.html", nil)
+	renderFileTemplateCaller(member, w, templateData)
 }
 
 func (c *Controller) renderCreateMemberForm(w http.ResponseWriter, req *http.Request) {
-	renderCreateModelFormCaller(models.Member{}, w, "src/views/forms/createMemberForm.html")
+	templateData := createTemplateDataCaller(member, member, nil, "src/views/forms/createMemberForm.html", nil)
+	renderCreateModelFormCaller(member, w, templateData)
 }
 
 func (c *Controller) renderMemberParents(w http.ResponseWriter, r *http.Request) {
-	IdMember := getIdModelCaller(models.Member{}, r)
+	IdMember := getIdModelCaller(member, r)
 	result, err := c.DB.Query(fmt.Sprintf("SELECT Name, Rel, IdParent FROM ParentTable WHERE IdMember = '%d'", IdMember))
 	if err != nil {
 		fmt.Println("error searching parents from db")
