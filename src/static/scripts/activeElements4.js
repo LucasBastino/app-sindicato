@@ -51,3 +51,11 @@ function showParentSearchInput(){
 function hideParentSearchInput(){
     document.getElementById('parent-search-input').style.display = 'none'
 }
+
+function showAddParentButton(){
+    document.getElementById('add-parent-button').style.display = 'inline'
+}
+
+function hideAddParentButton(){
+    document.getElementById('add-parent-button').style.display = 'none'
+}

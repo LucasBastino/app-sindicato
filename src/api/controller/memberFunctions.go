@@ -79,7 +79,7 @@ func (c *Controller) renderCreateMemberForm(w http.ResponseWriter, req *http.Req
 
 func (c *Controller) renderMemberParents(w http.ResponseWriter, r *http.Request) {
 	IdMember := getIdModelCaller(member, r)
-	result, err := c.DB.Query(fmt.Sprintf("SELECT Name, Rel, IdParent FROM ParentTable WHERE IdMember = '%d'", IdMember))
+	result, err := c.DB.Query(fmt.Sprintf("SELECT Name, Rel, IdParent, IdMember FROM ParentTable WHERE IdMember = '%d'", IdMember))
 	if err != nil {
 		fmt.Println("error searching parents from db")
 		panic(err)
@@ -89,7 +89,7 @@ func (c *Controller) renderMemberParents(w http.ResponseWriter, r *http.Request)
 	var parent models.Parent
 	var parents []models.Parent
 	for result.Next() {
-		err = result.Scan(&parent.Name, &parent.Rel, &parent.IdParent)
+		err = result.Scan(&parent.Name, &parent.Rel, &parent.IdParent, &parent.IdMember)
 		if err != nil {
 			fmt.Println("error scanning parent")
 			panic(err)

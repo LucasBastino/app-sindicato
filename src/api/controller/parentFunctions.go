@@ -13,18 +13,18 @@ var (
 )
 
 func (c *Controller) createParent(w http.ResponseWriter, r *http.Request) {
-	newParent := parserCaller(parentParser, r)
-	insertModelCaller(newParent, c.DB)
+	parent := parserCaller(parentParser, r)
+	insertModelCaller(parent, c.DB)
 	templateData := createTemplateDataCaller(parent, parent, nil, "src/views/files/parentFile.html", nil)
 	c.RenderHTML(w, templateData)
 }
 
 func (c *Controller) deleteParent(w http.ResponseWriter, r *http.Request) {
-	IdParent := getIdModelCaller(parent, r)
-	parent.IdParent = IdParent
+	parent = searchOneModelByIdCaller(parent, r, c.DB)
 	deleteModelCaller(parent, c.DB)
 	// renderiza de nuevo la tabla
 	// falla aca abajo, fijarse. Tambien probar agregar familiares
+	member = searchOneModelByIdCaller(member, r, c.DB)
 	c.renderMemberParents(w, r)
 }
 
@@ -50,6 +50,8 @@ func (c *Controller) renderParentFile(w http.ResponseWriter, r *http.Request) {
 }
 
 func (c *Controller) renderCreateParentForm(w http.ResponseWriter, r *http.Request) {
+	IdMember := getIdModelCaller(member, r)
+	parent.IdMember = IdMember
 	templateData := createTemplateDataCaller(parent, parent, nil, "src/views/forms/createParentForm.html", nil)
 	c.RenderHTML(w, templateData)
 }
