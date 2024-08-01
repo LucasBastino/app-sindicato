@@ -12,11 +12,14 @@
 
     <h2>Agregar empresa</h2>
     <form hx-post="/enterprise/create">
-
-       
-
             <input type="text" name="name">
+            {{with .ErrorMap.name}}
+            <p>{{.}}</p>
+            {{end}}
             <input type="text" name="address">
+            {{with .ErrorMap.address}}
+            <p>{{.}}</p>
+            {{end}}
         <button type="submit">Enviar</button>
     </form>
        

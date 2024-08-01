@@ -58,6 +58,8 @@ func (c *Controller) renderParentFile(w http.ResponseWriter, r *http.Request) {
 
 func (c *Controller) renderCreateParentForm(w http.ResponseWriter, r *http.Request) {
 	IdMember := getIdModelCaller(member, r)
+	// creo un parent nuevo para que el form aparezca con campos vacios
+	parent = models.Parent{}
 	parent.IdMember = IdMember
 	templateData := createTemplateDataCaller(parent, parent, nil, "src/views/forms/createParentForm.html", nil)
 	c.RenderHTML(w, templateData)

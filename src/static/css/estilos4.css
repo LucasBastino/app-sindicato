@@ -77,3 +77,18 @@ input:disabled{
   display: none
 }
 
+.form-container{
+  display: flex;
+  justify-content: center;
+}
+
+.form-input{
+display: block;
+padding: 5px;
+margin: 10px
+}
+
+.input-container{
+  text-align: center;
+}
+

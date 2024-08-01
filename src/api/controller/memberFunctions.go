@@ -18,7 +18,7 @@ func (c *Controller) createMember(w http.ResponseWriter, r *http.Request) {
 	parser := i.MemberParser{}
 	member = parserCaller(parser, r)
 	if len(errorMap) > 0 {
-		templateData := createTemplateDataCaller(member, member, nil, "src/views/files/memberFile.html", errorMap)
+		templateData := createTemplateDataCaller(member, member, nil, "src/views/forms/createMemberForm.html", errorMap)
 		c.RenderHTML(w, templateData)
 	} else {
 		insertModelCaller(member, c.DB)
@@ -40,7 +40,7 @@ func (c *Controller) editMember(w http.ResponseWriter, r *http.Request) {
 	member.IdMember = IdMember
 	// necesito poner esta linea ↑ para que se pueda editar 2 veces seguidas
 	editModelCaller(member, c.DB)
-	// hacer esto esta bien? estoy mostrando datos del newMember, no estan sacados de la DB
+	// hacer esto esta bien? estoy mostrando datos del nuevo member, no estan sacados de la DB
 	templateData := createTemplateDataCaller(member, member, nil, "src/views/files/memberFile.html", nil)
 	c.RenderHTML(w, templateData)
 
@@ -61,7 +61,8 @@ func (c *Controller) renderMemberFile(w http.ResponseWriter, r *http.Request) {
 }
 
 func (c *Controller) renderCreateMemberForm(w http.ResponseWriter, req *http.Request) {
-	templateData := createTemplateDataCaller(member, member, nil, "src/views/forms/createMemberForm.html", nil)
+	// le paso un member vacio para que los campos del form aparezcan vacios
+	templateData := createTemplateDataCaller(member, models.Member{}, nil, "src/views/forms/createMemberForm.html", nil)
 	c.RenderHTML(w, templateData)
 }
 

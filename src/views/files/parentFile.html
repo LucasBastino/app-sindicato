@@ -2,13 +2,7 @@
 <form hx-put="/parent/{{$.Parent.IdParent}}/edit" hx-target="#tableDiv">
     <input class="hide" type="number" name="idmember" value="{{$.Parent.IdMember}}">
     <input type="text" name="name" value="{{$.Parent.Name}}" disabled>
-    {{with .ErrorMap.name}}
-    <p>{{.}}</p>
-    {{end}}
     <input type="text" name="rel" value="{{$.Parent.Rel}}" disabled>
-    {{with .ErrorMap.rel}}
-    <p>{{.}}</p>
-    {{end}}
     <button type="submit" class="btn-primary btn-submit hide">Confirmar</button>
 </form>
 <button class="btn-primary" onclick="enableInputs(); showConfirmButton(); disableBrowserInput();">Editar</button>

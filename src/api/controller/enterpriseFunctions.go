@@ -55,6 +55,7 @@ func (c *Controller) renderEnterpriseFile(w http.ResponseWriter, r *http.Request
 }
 
 func (c *Controller) renderCreateEnterpriseForm(w http.ResponseWriter, r *http.Request) {
-	templateData := createTemplateDataCaller(enterprise, enterprise, nil, "src/views/forms/createEnterpriseForm.html", nil)
+	// le paso un enterprise vacio para que los campos del form aparezcan vacios
+	templateData := createTemplateDataCaller(enterprise, models.Enterprise{}, nil, "src/views/forms/createEnterpriseForm.html", nil)
 	c.RenderHTML(w, templateData)
 }
