@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net/http"
 	"strconv"
+	"strings"
 )
 
 type Enterprise struct {
@@ -98,6 +99,12 @@ func (e Enterprise) SearchModels(r *http.Request, DB *sql.DB) []Enterprise {
 
 func (e Enterprise) ValidateFields(r *http.Request) map[string]string {
 	errorMap := map[string]string{}
+	if strings.TrimSpace(r.FormValue("name")) == "" {
+		errorMap["name"] = "el campo Nombre no puede estar vacio"
+	}
+	if strings.TrimSpace(r.FormValue("address")) == "" {
+		errorMap["address"] = "el campo Direccion no puede estar vacio"
+	}
 	return errorMap
 }
 

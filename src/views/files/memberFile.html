@@ -5,6 +5,9 @@
         <p>{{.}}</p>
     {{end}}
     <input type="text" name="dni" value="{{$.Member.DNI}}" disabled>
+    {{with .ErrorMap.dni}}
+    <p>{{.}}</p>
+    {{end}}
     <button type="submit" class="btn-primary btn-submit hide">Confirmar</button>
 </form>
 <button class="btn-primary" onclick="enableInputs(); showConfirmButton(); hideMemberSearchInput();">Editar</button>

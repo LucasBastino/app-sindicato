@@ -1,7 +1,13 @@
 <h2>Ficha de {{$.Enterprise.Name}}</h2>
 <form hx-put="/enterprise/{{$.Enterprise.IdEnterprise}}/edit" hx-target="#tableDiv">
     <input type="text" name="name" value="{{$.Enterprise.Name}}" disabled>
+    {{with .ErrorMap.name}}
+    <p>{{.}}</p>
+    {{end}}
     <input type="text" name="address" value="{{$.Enterprise.Address}}" disabled>
+    {{with .ErrorMap.address}}
+    <p>{{.}}</p>
+    {{end}}
     <button type="submit" class="btn-primary btn-submit hide">Confirmar</button>
 </form>
 <button class="btn-primary" onclick="enableInputs(); showConfirmButton(); disableBrowserInput();">Editar</button>

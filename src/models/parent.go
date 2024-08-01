@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net/http"
 	"strconv"
+	"strings"
 )
 
 type Parent struct {
@@ -99,6 +100,12 @@ func (p Parent) SearchModels(r *http.Request, DB *sql.DB) []Parent {
 
 func (p Parent) ValidateFields(r *http.Request) map[string]string {
 	errorMap := map[string]string{}
+	if strings.TrimSpace(r.FormValue("name")) == "" {
+		errorMap["name"] = "el campo Nombre no puede estar vacio"
+	}
+	if strings.TrimSpace(r.FormValue("rel")) == "" {
+		errorMap["rel"] = "el campo Parentesco no puede estar vacio"
+	}
 	return errorMap
 }
 

@@ -25,24 +25,6 @@ func (c *Controller) createMember(w http.ResponseWriter, r *http.Request) {
 		templateData := createTemplateDataCaller(member, member, nil, "src/views/files/memberFile.html", errorMap)
 		c.RenderHTML(w, templateData)
 	}
-
-	// if validateFieldsCaller(member, r) {
-	// 	memberParser := i.MemberParser{}
-	// 	newMember := parserCaller(memberParser, r)
-	// 	insertModelCaller(newMember, c.DB)
-	// 	// hacer esto esta bien? estoy mostrando datos del newMember, no estan sacados de la DB
-	// renderFileTemplateCaller(newMember, w, "src/views/files/memberFile.html")
-	// } else {
-	// 	renderFileTemplateCaller(member, w, "src/views/files/memberFileError.html")
-	// }
-
-	// memberParser := i.MemberParser{}
-	// newMember := parserCaller(memberParser, r)
-	// insertModelCaller(newMember, c.DB)
-	// renderFileTemplateCaller(newMember, w, "src/views/files/memberFile.html")
-
-	// http.Redirect(w, r, "/index", http.StatusSeeOther) // poner un status de redirect (30X), sino no funciona
-	// c.renderMemberList(w, r) // esto tambien funciona
 }
 
 func (c *Controller) deleteMember(w http.ResponseWriter, r *http.Request) {

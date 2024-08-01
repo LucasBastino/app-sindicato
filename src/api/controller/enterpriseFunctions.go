@@ -13,13 +13,17 @@ var (
 )
 
 func (c *Controller) createEnterprise(w http.ResponseWriter, r *http.Request) {
-	newEnterprise := parserCaller(enterpriseParser, r)
-	insertModelCaller(newEnterprise, c.DB)
-	templateData := createTemplateDataCaller(enterprise, newEnterprise, nil, "src/views/files/enterpriseFile.html", nil)
-	c.RenderHTML(w, templateData)
-
-	// http.Redirect(w, r, "/index", http.StatusSeeOther) // poner un status de redirect (30X), sino no funciona
-	// c.renderEnterpriseList(w, r) // esto tambien funciona
+	errorMap := validateFieldsCaller(enterprise, r)
+	parser := i.EnterpriseParser{}
+	enterprise = parserCaller(parser, r)
+	if len(errorMap) > 0 {
+		templateData := createTemplateDataCaller(enterprise, enterprise, nil, "src/views/files/enterpriseFile.html", errorMap)
+		c.RenderHTML(w, templateData)
+	} else {
+		insertModelCaller(enterprise, c.DB)
+		templateData := createTemplateDataCaller(enterprise, enterprise, nil, "src/views/files/enterpriseFile.html", errorMap)
+		c.RenderHTML(w, templateData)
+	}
 }
 
 func (c *Controller) deleteEnterprise(w http.ResponseWriter, r *http.Request) {
