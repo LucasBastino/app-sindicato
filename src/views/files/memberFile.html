@@ -1,6 +1,9 @@
 <h2>Ficha de {{$.Member.Name}}</h2>
 <form hx-put="/member/{{$.Member.IdMember}}/edit" hx-target="#tableDiv">
     <input type="text" name="name" value="{{$.Member.Name}}" disabled>
+    {{with .ErrorMap.name}}
+        <p>{{.}}</p>
+    {{end}}
     <input type="text" name="dni" value="{{$.Member.DNI}}" disabled>
     <button type="submit" class="btn-primary btn-submit hide">Confirmar</button>
 </form>

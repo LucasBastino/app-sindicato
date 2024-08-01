@@ -14,9 +14,15 @@ var (
 )
 
 func (c *Controller) createMember(w http.ResponseWriter, r *http.Request) {
-	errorsMap := validateFieldsCaller(member, r)
-	if len(errorsMap) > 0 {
-		templateData := createTemplateDataCaller(member, member, nil, "src/views/forms/createMemberForm.html", errorsMap)
+	errorMap := validateFieldsCaller(member, r)
+	parser := i.MemberParser{}
+	member = parserCaller(parser, r)
+	if len(errorMap) > 0 {
+		templateData := createTemplateDataCaller(member, member, nil, "src/views/files/memberFile.html", errorMap)
+		c.RenderHTML(w, templateData)
+	} else {
+		insertModelCaller(member, c.DB)
+		templateData := createTemplateDataCaller(member, member, nil, "src/views/files/memberFile.html", errorMap)
 		c.RenderHTML(w, templateData)
 	}
 

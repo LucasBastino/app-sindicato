@@ -106,16 +106,16 @@ func (m Member) ValidateFields(r *http.Request) map[string]string {
 	errorMap := map[string]string{}
 
 	if strings.TrimSpace(r.FormValue("name")) == "" {
-		fmt.Println("error en trim name")
+		fmt.Println("el campo Nombre no puede estar vacio")
 		errorMap["name"] = "el campo Nombre no puede estar vacio"
 	}
 	// consultar que sea alfanumerico
 	if strings.TrimSpace(r.FormValue("dni")) == "" {
-		fmt.Println("error en trim dni")
+		fmt.Println("el campo DNI no puede estar vacio")
 		errorMap["dni"] = "el campo DNI no puede estar vacio"
 	}
 	if utf8.RuneCountInString(r.FormValue("dni")) > 8 {
-		fmt.Println("error en runecount dni")
+		fmt.Println("el DNI no puede tener mas de 8 caracteres")
 		errorMap["dni"] = "el DNI no puede tener mas de 8 caracteres"
 	}
 	return errorMap
