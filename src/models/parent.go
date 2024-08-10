@@ -106,12 +106,3 @@ func (p Parent) ValidateFields(c *fiber.Ctx) map[string]string {
 	}
 	return errorMap
 }
-
-func (p Parent) CreateTemplateData(parent Parent, parents []Parent, path string, errorMap map[string]string) TemplateData {
-	templateData := TemplateData{}
-	templateData.Parent = parent
-	templateData.Parents = parents
-	templateData.Path = path
-	templateData.ErrorMap = errorMap
-	return templateData
-}

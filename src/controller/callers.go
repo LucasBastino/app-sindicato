@@ -37,7 +37,3 @@ func searchModelsCaller[M models.TypeModel](m i.IModel[M], c *fiber.Ctx) []M {
 func validateFieldsCaller[M models.TypeModel](m i.IModel[M], c *fiber.Ctx) map[string]string {
 	return m.ValidateFields(c)
 }
-
-// func createTemplateDataCaller[M models.TypeModel](m i.IModel[M], model M, models []M, path string, errorMap map[string]string) models.TemplateData {
-// 	return m.CreateTemplateData(model, models, path, errorMap)
-// }

@@ -115,12 +115,3 @@ func (e Enterprise) ValidateFields(c *fiber.Ctx) map[string]string {
 	}
 	return errorMap
 }
-
-func (e Enterprise) CreateTemplateData(enterprise Enterprise, enterprises []Enterprise, path string, errorMap map[string]string) TemplateData {
-	templateData := TemplateData{}
-	templateData.Enterprise = enterprise
-	templateData.Enterprises = enterprises
-	templateData.Path = path
-	templateData.ErrorMap = errorMap
-	return templateData
-}

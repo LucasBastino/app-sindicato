@@ -13,5 +13,4 @@ type IModel[M models.TypeModel] interface {
 	SearchOneModelById(*fiber.Ctx) M
 	SearchModels(*fiber.Ctx) []M
 	ValidateFields(*fiber.Ctx) map[string]string
-	CreateTemplateData(M, []M, string, map[string]string) models.TemplateData
 }
