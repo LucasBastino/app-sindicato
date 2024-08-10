@@ -2,32 +2,32 @@ package interfaces
 
 import (
 	"fmt"
-	"net/http"
 	"strconv"
 
 	"github.com/LucasBastino/app-sindicato/src/models"
+	"github.com/gofiber/fiber/v2"
 )
 
 type ModelParser[M models.TypeModel] interface {
-	ParseModel(*http.Request) M
+	ParseModel(*fiber.Ctx) M
 }
 
 type MemberParser struct{}
 
-func (m MemberParser) ParseModel(r *http.Request) models.Member {
+func (m MemberParser) ParseModel(c *fiber.Ctx) models.Member {
 	member := models.Member{}
-	member.Name = r.FormValue("name")
-	member.DNI = r.FormValue("dni")
+	member.Name = c.FormValue("name")
+	member.DNI = c.FormValue("dni")
 	return member
 }
 
 type ParentParser struct{}
 
-func (p ParentParser) ParseModel(r *http.Request) models.Parent {
+func (p ParentParser) ParseModel(c *fiber.Ctx) models.Parent {
 	parent := models.Parent{}
-	parent.Name = r.FormValue("name")
-	parent.Rel = r.FormValue("rel")
-	IdMemberStr := r.FormValue("idmember")
+	parent.Name = c.FormValue("name")
+	parent.Rel = c.FormValue("rel")
+	IdMemberStr := c.FormValue("idmember")
 	IdMember, err := strconv.Atoi(IdMemberStr)
 	if err != nil {
 		fmt.Println("error converting IdMemberStr to int")
@@ -40,9 +40,9 @@ func (p ParentParser) ParseModel(r *http.Request) models.Parent {
 
 type EnterpriseParser struct{}
 
-func (p EnterpriseParser) ParseModel(r *http.Request) models.Enterprise {
+func (p EnterpriseParser) ParseModel(c *fiber.Ctx) models.Enterprise {
 	enterprise := models.Enterprise{}
-	enterprise.Name = r.FormValue("name")
-	enterprise.Address = r.FormValue("address")
+	enterprise.Name = c.FormValue("name")
+	enterprise.Address = c.FormValue("address")
 	return enterprise
 }

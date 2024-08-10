@@ -2,14 +2,14 @@
     <h1>Agregar familiar:</h1>
     <form hx-post="/parent/create">
         <input type="text" name="name" placeholder="Nombre">
-        {{with .ErrorMap.name}}
+        {{with .errorMap.name}}
             <p>{{.}}</p>
             {{end}}
         <input type="text" name="rel" placeholder="Parentesco">
-        {{with .ErrorMap.rel}}
+        {{with .errorMap.rel}}
             <p>{{.}}</p>
             {{end}}
-        <input class="hide" type="number" name="idmember" value="{{$.Parent.IdMember}}">
+        <input class="hide" type="number" name="idmember" value="{{$.parent.IdMember}}">
         <button class="btn-primary" type="submit">Enviar</button>
     </form>
 </body>

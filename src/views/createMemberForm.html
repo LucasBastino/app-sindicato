@@ -2,13 +2,13 @@
     <h2>Agregar afiliado</h2>
     <div class="form-container">
     <form class="input-container" hx-post="/member/create">
-            <input class="form-input" type="text" name="name" value="{{.Member.Name}}" placeholder="Nombre">
-            {{with .ErrorMap.name}}
+            <input class="form-input" type="text" name="name" value="{{.member.Name}}" placeholder="Nombre">
+            {{with .errorMap.name}}
             <p>{{.}}</p>
             {{end}}
             
-            <input class="form-input" type="text" name="dni" value="{{.Member.DNI}}" placeholder="DNI">
-            {{with .ErrorMap.dni}}
+            <input class="form-input" type="text" name="dni" value="{{.member.DNI}}" placeholder="DNI">
+            {{with .errorMap.dni}}
             <p>{{.}}</p>
             {{end}}
         <button type="submit">Enviar</button>

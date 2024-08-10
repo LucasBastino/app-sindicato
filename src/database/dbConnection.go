@@ -1,4 +1,4 @@
-package connection
+package database
 
 import (
 	"database/sql"
@@ -8,7 +8,9 @@ import (
 	_ "github.com/go-sql-driver/mysql"
 )
 
-func CreateConnection() *sql.DB {
+var DB *sql.DB
+
+func CreateConnection() {
 	host := "w0x.h.filess.io"
 	user := "goProjects_cowboydish"
 	password := "databasefilessio"
@@ -29,6 +31,6 @@ func CreateConnection() *sql.DB {
 	}
 
 	fmt.Println("Succesfully connected to database:", dbName)
-	return db
+	DB = db
 
 }

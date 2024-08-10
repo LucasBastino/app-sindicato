@@ -1,12 +1,12 @@
 package models
 
 import (
-	"database/sql"
 	"fmt"
-	"net/http"
-	"strconv"
 	"strings"
 	"unicode/utf8"
+
+	"github.com/LucasBastino/app-sindicato/src/database"
+	"github.com/gofiber/fiber/v2"
 )
 
 type Member struct {
@@ -19,8 +19,8 @@ func (m Member) Imprimir() {
 	fmt.Println(m)
 }
 
-func (newMember Member) InsertModel(DB *sql.DB) {
-	insert, err := DB.Query(fmt.Sprintf("INSERT INTO MemberTable (Name, DNI) VALUES ('%s','%s')", newMember.Name, newMember.DNI))
+func (newMember Member) InsertModel() {
+	insert, err := database.DB.Query(fmt.Sprintf("INSERT INTO MemberTable (Name, DNI) VALUES ('%s','%s')", newMember.Name, newMember.DNI))
 	if err != nil {
 		// DBError{"INSERT MEMBER"}.Error(err)
 		fmt.Println("error insertando en la DB")
@@ -29,8 +29,8 @@ func (newMember Member) InsertModel(DB *sql.DB) {
 	defer insert.Close()
 }
 
-func (m Member) DeleteModel(DB *sql.DB) {
-	delete, err := DB.Query(fmt.Sprintf("DELETE FROM MemberTable WHERE IdMember = '%v'", m.IdMember))
+func (m Member) DeleteModel() {
+	delete, err := database.DB.Query(fmt.Sprintf("DELETE FROM MemberTable WHERE IdMember = '%v'", m.IdMember))
 	if err != nil {
 		// DBError{"DELETE MEMBER"}.Error(err)
 		fmt.Println("error deleting member")
@@ -40,8 +40,8 @@ func (m Member) DeleteModel(DB *sql.DB) {
 
 }
 
-func (m Member) EditModel(DB *sql.DB) {
-	update, err := DB.Query(fmt.Sprintf("UPDATE MemberTable SET Name = '%s', DNI = '%s' WHERE IdMember = '%v'", m.Name, m.DNI, m.IdMember))
+func (m Member) EditModel() {
+	update, err := database.DB.Query(fmt.Sprintf("UPDATE MemberTable SET Name = '%s', DNI = '%s' WHERE IdMember = '%v'", m.Name, m.DNI, m.IdMember))
 	if err != nil {
 		// DBError{"UPDATE MEMBER"}.Error(err)
 		fmt.Println("error updating member")
@@ -50,19 +50,18 @@ func (m Member) EditModel(DB *sql.DB) {
 	defer update.Close()
 }
 
-func (m Member) GetIdModel(r *http.Request) int {
-	IdMemberStr := r.PathValue("IdMember")
-	IdMember, err := strconv.Atoi(IdMemberStr)
-	if err != nil {
-		fmt.Println("error converting type")
-		panic(err)
-	}
-	return IdMember
+func (m Member) GetIdModel(c *fiber.Ctx) int {
+	params := struct {
+		IdMember int `params:"IdMember"`
+	}{}
+
+	c.ParamsParser(&params)
+	return params.IdMember
 }
 
-func (m Member) SearchOneModelById(r *http.Request, DB *sql.DB) Member {
-	IdMember := m.GetIdModel(r)
-	result, err := DB.Query(fmt.Sprintf("SELECT IdMember, Name, DNI FROM MemberTable WHERE IdMember = '%v'", IdMember))
+func (m Member) SearchOneModelById(c *fiber.Ctx) Member {
+	IdMember := m.GetIdModel(c)
+	result, err := database.DB.Query(fmt.Sprintf("SELECT IdMember, Name, DNI FROM MemberTable WHERE IdMember = '%v'", IdMember))
 	if err != nil {
 		fmt.Println("error searching member by Id")
 		panic(err)
@@ -80,12 +79,12 @@ func (m Member) SearchOneModelById(r *http.Request, DB *sql.DB) Member {
 	return member
 }
 
-func (m Member) SearchModels(r *http.Request, DB *sql.DB) []Member {
-	searchKey := r.FormValue("search-key")
+func (m Member) SearchModels(c *fiber.Ctx) []Member {
+	searchKey := c.FormValue("search-key")
 	var members []Member
 	var member Member
 
-	result, err := DB.Query(fmt.Sprintf(`SELECT * FROM MemberTable WHERE Name LIKE '%%%s%%' OR DNI LIKE '%%%s%%'`, searchKey, searchKey))
+	result, err := database.DB.Query(fmt.Sprintf(`SELECT * FROM MemberTable WHERE Name LIKE '%%%s%%' OR DNI LIKE '%%%s%%'`, searchKey, searchKey))
 	if err != nil {
 		fmt.Println("error searching member in DB")
 		panic(err)
@@ -102,17 +101,17 @@ func (m Member) SearchModels(r *http.Request, DB *sql.DB) []Member {
 	return members
 }
 
-func (m Member) ValidateFields(r *http.Request) map[string]string {
+func (m Member) ValidateFields(c *fiber.Ctx) map[string]string {
 	errorMap := map[string]string{}
 
-	if strings.TrimSpace(r.FormValue("name")) == "" {
+	if strings.TrimSpace(c.FormValue("name")) == "" {
 		errorMap["name"] = "el campo Nombre no puede estar vacio"
 	}
 	// consultar que sea alfanumerico
-	if strings.TrimSpace(r.FormValue("dni")) == "" {
+	if strings.TrimSpace(c.FormValue("dni")) == "" {
 		errorMap["dni"] = "el campo DNI no puede estar vacio"
 	}
-	if utf8.RuneCountInString(r.FormValue("dni")) > 8 {
+	if utf8.RuneCountInString(c.FormValue("dni")) > 8 {
 		errorMap["dni"] = "el DNI no puede tener mas de 8 caracteres"
 	}
 	return errorMap

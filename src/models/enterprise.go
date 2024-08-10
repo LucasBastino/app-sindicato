@@ -1,11 +1,11 @@
 package models
 
 import (
-	"database/sql"
 	"fmt"
-	"net/http"
-	"strconv"
 	"strings"
+
+	"github.com/LucasBastino/app-sindicato/src/database"
+	"github.com/gofiber/fiber/v2"
 )
 
 type Enterprise struct {
@@ -14,8 +14,8 @@ type Enterprise struct {
 	Address      string
 }
 
-func (newEnterprise Enterprise) InsertModel(DB *sql.DB) {
-	insert, err := DB.Query(fmt.Sprintf("INSERT INTO EnterpriseTable (Name, Address) VALUES ('%s','%s')", newEnterprise.Name, newEnterprise.Address))
+func (e Enterprise) InsertModel() {
+	insert, err := database.DB.Query(fmt.Sprintf("INSERT INTO EnterpriseTable (Name, Address) VALUES ('%s','%s')", e.Name, e.Address))
 	if err != nil {
 		// DBError{"INSERT Enterprise"}.Error(err)
 		fmt.Println("error insertando en la DB")
@@ -24,8 +24,8 @@ func (newEnterprise Enterprise) InsertModel(DB *sql.DB) {
 	defer insert.Close()
 }
 
-func (e Enterprise) DeleteModel(DB *sql.DB) {
-	delete, err := DB.Query(fmt.Sprintf("DELETE FROM EnterpriseTable WHERE IdEnterprise = '%v'", e.IdEnterprise))
+func (e Enterprise) DeleteModel() {
+	delete, err := database.DB.Query(fmt.Sprintf("DELETE FROM EnterpriseTable WHERE IdEnterprise = '%v'", e.IdEnterprise))
 	if err != nil {
 		// DBError{"DELETE Enterprise"}.Error(err)
 		fmt.Println("error deleting Enterprise")
@@ -35,8 +35,8 @@ func (e Enterprise) DeleteModel(DB *sql.DB) {
 
 }
 
-func (e Enterprise) EditModel(DB *sql.DB) {
-	update, err := DB.Query(fmt.Sprintf("UPDATE EnterpriseTable SET Name = '%s', Address = '%s' WHERE IdEnterprise = '%v'", e.Name, e.Address, e.IdEnterprise))
+func (e Enterprise) EditModel() {
+	update, err := database.DB.Query(fmt.Sprintf("UPDATE EnterpriseTable SET Name = '%s', Address = '%s' WHERE IdEnterprise = '%v'", e.Name, e.Address, e.IdEnterprise))
 	if err != nil {
 		// DBError{"UPDATE Enterprise"}.Error(err)
 		fmt.Println("error updating Enterprise")
@@ -45,19 +45,27 @@ func (e Enterprise) EditModel(DB *sql.DB) {
 	defer update.Close()
 }
 
-func (e Enterprise) GetIdModel(r *http.Request) int {
-	IdEnterpriseStr := r.PathValue("IdEnterprise")
-	IdEnterprise, err := strconv.Atoi(IdEnterpriseStr)
-	if err != nil {
-		fmt.Println("error converting type")
-		panic(err)
-	}
-	return IdEnterprise
+func (e Enterprise) GetIdModel(c *fiber.Ctx) int {
+	params := struct {
+		IdEnterprise int `params:"IdEnterprise"`
+	}{}
+
+	c.ParamsParser(&params)
+
+	return params.IdEnterprise
+
+	// IdEnterpriseStr := c.PathValue("IdEnterprise")
+	// IdEnterprise, err := strconv.Atoi(IdEnterpriseStr)
+	// if err != nil {
+	// 	fmt.Println("error converting type")
+	// 	panic(err)
+	// }
+	// return IdEnterprise
 }
 
-func (e Enterprise) SearchOneModelById(r *http.Request, DB *sql.DB) Enterprise {
-	IdEnterprise := e.GetIdModel(r)
-	result, err := DB.Query(fmt.Sprintf("SELECT IdEnterprise, Name, Address FROM EnterpriseTable WHERE IdEnterprise = '%v'", IdEnterprise))
+func (e Enterprise) SearchOneModelById(c *fiber.Ctx) Enterprise {
+	IdEnterprise := e.GetIdModel(c)
+	result, err := database.DB.Query(fmt.Sprintf("SELECT IdEnterprise, Name, Address FROM EnterpriseTable WHERE IdEnterprise = '%v'", IdEnterprise))
 	if err != nil {
 		fmt.Println("error searching enterprise by id")
 		panic(err)
@@ -75,12 +83,12 @@ func (e Enterprise) SearchOneModelById(r *http.Request, DB *sql.DB) Enterprise {
 	return enterprise
 }
 
-func (e Enterprise) SearchModels(r *http.Request, DB *sql.DB) []Enterprise {
-	searchKey := r.FormValue("search-key")
+func (e Enterprise) SearchModels(c *fiber.Ctx) []Enterprise {
+	searchKey := c.FormValue("search-key")
 	var enterprises []Enterprise
 	var enterprise Enterprise
 
-	result, err := DB.Query(fmt.Sprintf(`SELECT * FROM EnterpriseTable WHERE Name LIKE '%%%s%%' OR Address LIKE '%%%s%%'`, searchKey, searchKey))
+	result, err := database.DB.Query(fmt.Sprintf(`SELECT * FROM EnterpriseTable WHERE Name LIKE '%%%s%%' OR Address LIKE '%%%s%%'`, searchKey, searchKey))
 	if err != nil {
 		fmt.Println("error searching Enterprise in DB")
 		panic(err)
@@ -97,12 +105,12 @@ func (e Enterprise) SearchModels(r *http.Request, DB *sql.DB) []Enterprise {
 	return enterprises
 }
 
-func (e Enterprise) ValidateFields(r *http.Request) map[string]string {
+func (e Enterprise) ValidateFields(c *fiber.Ctx) map[string]string {
 	errorMap := map[string]string{}
-	if strings.TrimSpace(r.FormValue("name")) == "" {
+	if strings.TrimSpace(c.FormValue("name")) == "" {
 		errorMap["name"] = "el campo Nombre no puede estar vacio"
 	}
-	if strings.TrimSpace(r.FormValue("address")) == "" {
+	if strings.TrimSpace(c.FormValue("address")) == "" {
 		errorMap["address"] = "el campo Direccion no puede estar vacio"
 	}
 	return errorMap
