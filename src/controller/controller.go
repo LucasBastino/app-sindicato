@@ -3,20 +3,20 @@ package controller
 import (
 	"fmt"
 	"html/template"
+	"net/http"
 
 	"github.com/LucasBastino/app-sindicato/src/models"
-	"github.com/gofiber/fiber/v2"
 	// "syscall/js"
 )
 
 // ------------------------------------
 
-func RenderIndex(c *fiber.Ctx) {
+func RenderIndex(w http.ResponseWriter) {
 	tmpl := template.Must(template.ParseFiles("src/views/index.html"))
 	tmpl.Execute(w, nil)
 }
 
-func RenderHTML(c *fiber.Ctx, templateData models.TemplateData) {
+func RenderHTML(w http.ResponseWriter, templateData models.TemplateData) {
 	tmpl, err := template.ParseFiles(templateData.Path)
 	if err != nil {
 		fmt.Println("error parsing file", templateData.Path)
