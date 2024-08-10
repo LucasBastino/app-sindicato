@@ -12,17 +12,17 @@ var (
 )
 
 func CreateEnterprise(c *fiber.Ctx) error {
-	// errorMap := validateFieldsCaller(enterprise, c)
+	errorMap := validateFieldsCaller(enterprise, c)
 	parser := i.EnterpriseParser{}
 	enterprise = parserCaller(parser, c)
-	// if len(errorMap) > 0 {
-	// 	data := fiber.Map{"model": models.Enterprise{}, "template": "enterpriseFile", "errorMap": errorMap}
-	// 	return RenderHTML(c, data)
-	// } else {
-	insertModelCaller(enterprise)
-	// templateData := createTemplateDataCaller(enterprise, enterprise, nil, "src/views/files/enterpriseFile.html", errorMap)
-	return RenderHTML(c, fiber.Map{})
-
+	if len(errorMap) > 0 {
+		data := fiber.Map{"model": enterprise, "enterprise": enterprise, "errorMap": errorMap}
+		return c.Render("createEnterpriseForm", data)
+	} else {
+		insertModelCaller(enterprise)
+		data := fiber.Map{"model": enterprise, "enterprise": enterprise}
+		return c.Render("enterpriseFile", data)
+	}
 }
 
 func DeleteEnterprise(c *fiber.Ctx) error {
@@ -33,28 +33,29 @@ func DeleteEnterprise(c *fiber.Ctx) error {
 }
 
 func EditEnterprise(c *fiber.Ctx) error {
+	// falta agregar la validacion
 	enterpriseEdited := parserCaller(enterpriseParser, c)
 	IdEnterprise := getIdModelCaller(enterprise, c)
 	enterpriseEdited.IdEnterprise = IdEnterprise
 	editModelCaller(enterpriseEdited)
-	// templateData := createTemplateDataCaller(enterprise, enterpriseEdited, nil, "src/views/files/enterpriseFile.html", nil)
-	return RenderHTML(c, fiber.Map{})
+	data := fiber.Map{"model": enterprise, "enterprise": enterprise}
+	return c.Render("enterpriseFile", data)
 }
 
 func RenderEnterpriseTable(c *fiber.Ctx) error {
-	// enterprises := searchModelsCaller(enterprise, c)
-	// templateData := createTemplateDataCaller(enterprise, enterprise, enterprises, "src/views/tables/enterpriseTable.html", nil)
-	return RenderHTML(c, fiber.Map{})
+	enterprises := searchModelsCaller(enterprise, c)
+	data := fiber.Map{"model": enterprise, "enterprises": enterprises}
+	return c.Render("enterpriseTable", data)
 }
 
 func RenderEnterpriseFile(c *fiber.Ctx) error {
-	// enterprise := searchOneModelByIdCaller(enterprise, c)
-	// templateData := createTemplateDataCaller(enterprise, enterprise, nil, "src/views/files/enterpriseFile.html", nil)
-	return RenderHTML(c, fiber.Map{})
+	enterprise := searchOneModelByIdCaller(enterprise, c)
+	data := fiber.Map{"model": enterprise, "enterprise": enterprise}
+	return c.Render("enterpriseFile", data)
 }
 
 func RenderCreateEnterpriseForm(c *fiber.Ctx) error {
 	// le paso un enterprise vacio para que los campos del form aparezcan vacios
-	// templateData := createTemplateDataCaller(enterprise, models.Enterprise{}, nil, "src/views/forms/createEnterpriseForm.html", nil)
-	return RenderHTML(c, fiber.Map{})
+	data := fiber.Map{"model": enterprise, "enterprise": models.Enterprise{}}
+	return c.Render("createEnterpriseForm", data)
 }

@@ -12,16 +12,17 @@ var (
 )
 
 func CreateParent(c *fiber.Ctx) error {
-	// errorMap := validateFieldsCaller(parent, c)
+	errorMap := validateFieldsCaller(parent, c)
 	parser := i.ParentParser{}
 	parent = parserCaller(parser, c)
-	// if len(errorMap) > 0 {
-	// 	templateData := createTemplateDataCaller(parent, parent, nil, "src/views/files/parentFile.html", errorMap)
-	// 	return RenderHTML(c, templateData)
-	// } else {
-	insertModelCaller(parent)
-	// templateData := createTemplateDataCaller(parent, parent, nil, "src/views/files/parentFile.html", errorMap)
-	return RenderHTML(c, fiber.Map{})
+	if len(errorMap) > 0 {
+		data := fiber.Map{"model": parent, "parent": parent, "errorMap": errorMap}
+		return c.Render("createParentForm", data)
+	} else {
+		insertModelCaller(parent)
+		data := fiber.Map{"model": parent, "parent": parent}
+		return c.Render("parentFile", data)
+	}
 }
 
 func DeleteParent(c *fiber.Ctx) error {
@@ -34,24 +35,25 @@ func DeleteParent(c *fiber.Ctx) error {
 }
 
 func EditParent(c *fiber.Ctx) error {
+	// falta hacer la validacion
 	parentEdited := parserCaller(parentParser, c)
 	IdParent := getIdModelCaller(parent, c)
 	parentEdited.IdParent = IdParent
 	editModelCaller(parentEdited)
-	// templateData := createTemplateDataCaller(parent, parent, nil, "src/views/files/parentFile.html", nil)
-	return RenderHTML(c, fiber.Map{})
+	data := fiber.Map{"model": parent, "parent": parent}
+	return c.Render("parentFile", data)
 }
 
 func RenderParentTable(c *fiber.Ctx) error {
-	// parents := searchModelsCaller(parent, c)
-	// templateData := createTemplateDataCaller(parent, parent, parents, "src/views/tables/parentTable.html", nil)
-	return RenderHTML(c, fiber.Map{})
+	parents := searchModelsCaller(parent, c)
+	data := fiber.Map{"model": parent, "parents": parents}
+	return c.Render("parentTable", data)
 }
 
 func RenderParentFile(c *fiber.Ctx) error {
-	// parent := searchOneModelByIdCaller(parent, c)
-	// templateData := createTemplateDataCaller(parent, parent, nil, "src/views/files/parentFile.html", nil)
-	return RenderHTML(c, fiber.Map{})
+	parent := searchOneModelByIdCaller(parent, c)
+	data := fiber.Map{"model": parent, "parent": parent}
+	return c.Render("parentFile", data)
 }
 
 func RenderCreateParentForm(c *fiber.Ctx) error {
@@ -59,6 +61,6 @@ func RenderCreateParentForm(c *fiber.Ctx) error {
 	// creo un parent nuevo para que el form aparezca con campos vacios
 	parent = models.Parent{}
 	parent.IdMember = IdMember
-	// templateData := createTemplateDataCaller(parent, parent, nil, "src/views/forms/createParentForm.html", nil)
-	return RenderHTML(c, fiber.Map{})
+	data := fiber.Map{"model": parent, "parent": models.Parent{}}
+	return c.Render("createParentForm", data)
 }

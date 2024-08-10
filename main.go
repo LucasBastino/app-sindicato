@@ -27,7 +27,7 @@ func main() {
 	database.CreateConnection()
 
 	// Serve static files
-	app.Static("/static", "./static")
+	app.Static("/static", "./src/static")
 
 	// Listen
 	log.Fatal(app.Listen(":8085"))

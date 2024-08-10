@@ -33,7 +33,6 @@ function showMemberSearchInput(){
 
 function hideMemberSearchInput(){
     input = document.getElementById('member-search-input').style.display = 'none'
-    console.log(input)
 }
 
 function showEnterpriseSearchInput(){

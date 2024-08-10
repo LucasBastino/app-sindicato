@@ -6,7 +6,7 @@ import (
 )
 
 func RegisterRoutes(app *fiber.App) {
-	app.Get("/index", c.RenderIndex)
+	app.Get("/", c.RenderIndex)
 
 	app.Get("/member/renderTable", c.RenderMemberTable)
 	app.Get("/form/createMember", c.RenderCreateMemberForm)
