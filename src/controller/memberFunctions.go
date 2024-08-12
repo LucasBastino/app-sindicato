@@ -82,7 +82,7 @@ func RenderMemberParents(c *fiber.Ctx) error {
 	IdMember := getIdModelCaller(member, c)
 
 	// Busco los parents asociados a ese member
-	result, err := database.DB.Query(fmt.Sprintf("SELECT Name, cel, IdParent, IdMember FROM ParentTable WHERE IdMember = '%d'", IdMember))
+	result, err := database.DB.Query(fmt.Sprintf("SELECT Name, Rel, IdParent, IdMember FROM ParentTable WHERE IdMember = '%d'", IdMember))
 	if err != nil {
 		fmt.Println("error searching parents from database.db")
 		panic(err)
