@@ -92,3 +92,6 @@ margin: 10px
   text-align: center;
 }
 
+.current-page{
+  background-color: grey;
+}

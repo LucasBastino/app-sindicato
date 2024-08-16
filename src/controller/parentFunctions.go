@@ -61,6 +61,6 @@ func RenderCreateParentForm(c *fiber.Ctx) error {
 	// creo un parent nuevo para que el form aparezca con campos vacios
 	parent = models.Parent{}
 	parent.IdMember = IdMember
-	data := fiber.Map{"model": parent, "parent": models.Parent{}}
+	data := fiber.Map{"model": parent, "parent": parent}
 	return c.Render("createParentForm", data)
 }
