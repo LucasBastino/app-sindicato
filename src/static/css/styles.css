@@ -93,5 +93,6 @@ margin: 10px
 }
 
 .current-page{
-  background-color: grey;
+  background-color: #2222EE;
+  color: white
 }

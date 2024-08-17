@@ -2,6 +2,7 @@ package models
 
 import (
 	"fmt"
+	"log"
 	"strings"
 	"unicode/utf8"
 
@@ -83,6 +84,22 @@ func (m Member) SearchModels(c *fiber.Ctx) []Member {
 	searchKey := c.FormValue("search-key")
 	var members []Member
 	var member Member
+
+	// getting page from url
+	params := struct {
+		Page int `params:"page"`
+	}{}
+	c.ParamsParser(&params)
+	// currentPage := params.Page
+
+	// getting number of rows
+	var totalRows int
+	row := database.DB.QueryRow("SELECT COUNT(*) FROM MemberTable WHERE Name LIKE '%%%s%%' OR DNI LIKE '%%%s%%'", searchKey, searchKey)
+	// row.Scan copia el numero de fila en la variable count
+	err := row.Scan(&totalRows)
+	if err != nil {
+		log.Fatal(err)
+	}
 
 	result, err := database.DB.Query(fmt.Sprintf(`SELECT * FROM MemberTable WHERE Name LIKE '%%%s%%' OR DNI LIKE '%%%s%%'`, searchKey, searchKey))
 	if err != nil {
