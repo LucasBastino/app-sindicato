@@ -57,8 +57,14 @@ func EditMember(c *fiber.Ctx) error {
 }
 
 func RenderMemberTable(c *fiber.Ctx) error {
-	// Busco todos los members y renderizo la tabla de miembros
+	// Busco todos los members por key y renderizo la tabla de miembros
+	// calcular la cantidad de filas
+	// calcular totalPages
+	// calcular currentPage y offset
+	// calcularAproximador
 	members := searchModelsCaller(member, c)
+	// calcular totalPagesArray[]
+	// pasar todas las variables al map ↓
 	data := fiber.Map{"model": member, "members": members}
 	return c.Render("memberTable", data)
 }
