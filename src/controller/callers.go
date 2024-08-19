@@ -30,10 +30,14 @@ func searchOneModelByIdCaller[M models.TypeModel](m i.IModel[M], c *fiber.Ctx) M
 	return m.SearchOneModelById(c)
 }
 
-func searchModelsCaller[M models.TypeModel](m i.IModel[M], c *fiber.Ctx) []M {
-	return m.SearchModels(c)
+func searchModelsCaller[M models.TypeModel](m i.IModel[M], c *fiber.Ctx, offset int) []M {
+	return m.SearchModels(c, offset)
 }
 
 func validateFieldsCaller[M models.TypeModel](m i.IModel[M], c *fiber.Ctx) map[string]string {
 	return m.ValidateFields(c)
+}
+
+func getTotalRowsCaller[M models.TypeModel](m i.IModel[M], c *fiber.Ctx) int {
+	return m.GetTotalRows(c)
 }

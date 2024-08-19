@@ -45,7 +45,7 @@ func EditParent(c *fiber.Ctx) error {
 }
 
 func RenderParentTable(c *fiber.Ctx) error {
-	parents := searchModelsCaller(parent, c)
+	parents := searchModelsCaller(parent, c, 5)
 	data := fiber.Map{"model": parent, "parents": parents}
 	return c.Render("parentTable", data)
 }

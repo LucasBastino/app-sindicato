@@ -2,6 +2,7 @@ package models
 
 import (
 	"fmt"
+	"log"
 	"strings"
 	"unicode/utf8"
 
@@ -79,12 +80,12 @@ func (m Member) SearchOneModelById(c *fiber.Ctx) Member {
 	return member
 }
 
-func (m Member) SearchModels(c *fiber.Ctx) []Member {
+func (m Member) SearchModels(c *fiber.Ctx, offset int) []Member {
 	searchKey := c.FormValue("search-key")
 	var members []Member
 	var member Member
 
-	result, err := database.DB.Query(fmt.Sprintf(`SELECT * FROM MemberTable WHERE Name LIKE '%%%s%%' OR DNI LIKE '%%%s%%'`, searchKey, searchKey))
+	result, err := database.DB.Query(fmt.Sprintf(`SELECT * FROM MemberTable WHERE Name LIKE '%%%s%%' OR DNI LIKE '%%%s%%' LIMIT 10`, searchKey, searchKey))
 	if err != nil {
 		fmt.Println("error searching member in DB")
 		panic(err)
@@ -115,4 +116,19 @@ func (m Member) ValidateFields(c *fiber.Ctx) map[string]string {
 		errorMap["dni"] = "el DNI no puede tener mas de 8 caracteres"
 	}
 	return errorMap
+}
+
+func (m Member) GetTotalRows(c *fiber.Ctx) int {
+	var totalRows int
+	searchKey := c.FormValue("search-key")
+	fmt.Println("antes de la query row")
+	row := database.DB.QueryRow(fmt.Sprintf("SELECT COUNT(*) FROM MemberTable WHERE Name LIKE '%%%s%%'", searchKey))
+	// row.Scan copia el numero de fila en la variable count
+	fmt.Println("despues de la query row")
+	err := row.Scan(&totalRows)
+	if err != nil {
+		log.Fatal(err)
+	}
+	fmt.Println("despues del scan")
+	return totalRows
 }

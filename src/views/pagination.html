@@ -1,0 +1,80 @@
+{{define "Pagination"}}
+<nav aria-label="pagination-nav">
+    <ul class="pagination">
+
+    <!-- si totalPages es menor o igual a 10 -->
+    {{if le .totalPages 10}}
+         <!-- creo la variable currentPage porque dentro del range no la voy a poder usar sino -->
+        {{$currentPage := .currentPage}}
+        <!-- recorro el array de [1,2,3,4...] -->
+        {{range $i := .totalPagesArray}}
+            {{ if eq $currentPage $i }}
+            <li class="page-item"><a class="page-link current-page" href="#">{{$i}}</a></li>
+            {{else}}
+            <li class="page-item"><a class="page-link" href="/test/{{$i}}">{{$i}}</a></li>
+            {{end}}
+        {{end}}
+    {{else}}
+        <!-- si es la primera pagina -->
+        {{if eq .currentPage .firstPage}}
+            <li class="page-item disabled"><a class="page-link" href="#"><i class="bi bi-chevron-double-left"></i></a></li>
+            <li class="page-item disabled"><a class="page-link" href="#"><i class="bi bi-chevron-left"></i></a></li>
+            <li class="page-item disabled"><a class="page-link" href="#">...</a></li>
+        <!-- si es la segunda pagina -->
+        {{else if eq .currentPage 2}}
+            <li class="page-item"><a class="page-link" href="/test/{{.firstPage}}"><i class="bi bi-chevron-double-left"></i></a></li>
+            <li class="page-item"><a class="page-link" href="/test/{{.previousPage}}"><i class="bi bi-chevron-left"></i></a></li>
+            <li class="page-item"><a class="page-link" href="/test/{{.someBefore}}">...</a></li>
+            <li class="page-item"><a class="page-link" href="/test/{{.previousPage}}">{{.previousPage}} </a></li>
+        <!-- si es la tercera pagina -->
+        {{else if eq .currentPage 3}}
+            <li class="page-item"><a class="page-link" href="/test/{{.firstPage}}"><i class="bi bi-chevron-double-left"></i></a></li>
+            <li class="page-item"><a class="page-link" href="/test/{{.previousPage}}"><i class="bi bi-chevron-left"></i></a></li>
+            <li class="page-item"><a class="page-link" href="/test/{{.someBefore}}">...</a></li>
+            <li class="page-item"><a class="page-link" href="/test/{{.twoBefore}}">{{.twoBefore}}</a></li>
+            <li class="page-item"><a class="page-link" href="/test/{{.previousPage}}">{{.previousPage}} </a></li>
+        {{else}}
+        <!-- si es la cuarta o mas -->
+            <li class="page-item"><a class="page-link" href="/test/{{.firstPage}}"><i class="bi bi-chevron-double-left"></i></a></li>
+            <li class="page-item"><a class="page-link" href="/test/{{.previousPage}}"><i class="bi bi-chevron-left"></i></a></li>
+            <li class="page-item"><a class="page-link" href="/test/{{.someBefore}}">...</a></li>
+            <li class="page-item"><a class="page-link" href="/test/{{.threeBefore}}">{{.threeBefore}} </a></li>
+            <li class="page-item"><a class="page-link" href="/test/{{.twoBefore}}">{{.twoBefore}} </a></li>
+            <li class="page-item"><a class="page-link" href="/test/{{.previousPage}}">{{.previousPage}} </a></li>
+        {{end}}
+
+        <!-- pagina actual -->
+        <li class="page-item"><a class="page-link current-page" href="#">{{.currentPage}} </a></li>
+                
+        <!-- si es la antepenultima -->
+        {{if eq .twoAfter .lastPage}}
+            <li class="page-item"><a class="page-link" href="/test/{{.nextPage}}">{{.nextPage}} </a></li>
+            <li class="page-item"><a class="page-link" href="/test/{{.twoAfter}}">{{.twoAfter}} </a></li>
+            <li class="page-item"><a class="page-link" href="/test/{{.someAfter}}">...</a></li>
+            <li class="page-item"><a class="page-link" href="/test/{{.nextPage}}"><i class="bi bi-chevron-right"></i></a></li>
+            <li class="page-item"><a class="page-link" href="/test/{{.lastPage}}"><i class="bi bi-chevron-double-right"></i></a></li>
+        <!-- si es la anteultima -->
+        {{else if eq .nextPage .lastPage}}
+            <li class="page-item"><a class="page-link" href="/test/{{.nextPage}}">{{.nextPage}} </a></li>
+            <li class="page-item"><a class="page-link" href="/test/{{.someAfter}}">...</a></li>
+            <li class="page-item"><a class="page-link" href="/test/{{.nextPage}}"><i class="bi bi-chevron-right"></i></a></li>
+            <li class="page-item"><a class="page-link" href="/test/{{.lastPage}}"><i class="bi bi-chevron-double-right"></i></a></li>
+        <!-- si es la ultima pagina -->
+        {{else if eq .currentPage .lastPage}}
+            <li class="page-item disabled"><a class="page-link" href="#">...</a></li>
+            <li class="page-item disabled"><a class="page-link" href="#"><i class="bi bi-chevron-right"></i></a></li>
+            <li class="page-item disabled"><a class="page-link" href="#"><i class="bi bi-chevron-double-right"></i></a></li>
+
+        {{else}}
+        <!-- si es anterior a la antepenultima -->
+            <li class="page-item"><a class="page-link" href="/test/{{.nextPage}}">{{.nextPage}} </a></li>
+            <li class="page-item"><a class="page-link" href="/test/{{.twoAfter}}">{{.twoAfter}} </a></li>
+            <li class="page-item"><a class="page-link" href="/test/{{.threeAfter}}">{{.threeAfter}} </a></li>
+            <li class="page-item"><a class="page-link" href="/test/{{.someAfter}}">...</a></li>
+            <li class="page-item"><a class="page-link" href="/test/{{.nextPage}}"><i class="bi bi-chevron-right"></i></a></li>
+            <li class="page-item"><a class="page-link" href="/test/{{.lastPage}}"><i class="bi bi-chevron-double-right"></i></a></li>
+        {{end}}
+    {{end}}
+    </ul>
+  </nav>
+{{end}}

@@ -9,6 +9,7 @@ func RegisterRoutes(app *fiber.App) {
 	app.Get("/", c.RenderIndex)
 
 	app.Get("/member/renderTable", c.RenderMemberTable)
+	app.Get("/member/renderTable/:Page", c.RenderMemberTable)
 	app.Get("/form/createMember", c.RenderCreateMemberForm)
 	app.Post("/member/create", c.CreateMember)
 	app.Get("/member/:IdMember/file", c.RenderMemberFile)

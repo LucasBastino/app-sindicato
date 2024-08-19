@@ -2,6 +2,7 @@ package models
 
 import (
 	"fmt"
+	"log"
 	"strings"
 
 	"github.com/LucasBastino/app-sindicato/src/database"
@@ -74,7 +75,7 @@ func (p Parent) SearchOneModelById(c *fiber.Ctx) Parent {
 	return parent
 }
 
-func (p Parent) SearchModels(c *fiber.Ctx) []Parent {
+func (p Parent) SearchModels(c *fiber.Ctx, offset int) []Parent {
 	searchKey := c.FormValue("search-key")
 	var parents []Parent
 	var parent Parent
@@ -105,4 +106,16 @@ func (p Parent) ValidateFields(c *fiber.Ctx) map[string]string {
 		errorMap["rel"] = "el campo Parentesco no puede estar vacio"
 	}
 	return errorMap
+}
+
+func (p Parent) GetTotalRows(c *fiber.Ctx) int {
+	var totalRows int
+	searchKey := c.FormValue("search-key")
+	row := database.DB.QueryRow("SELECT COUNT(*) FROM ParentTable WHERE Name LIKE '%%%s%%'", searchKey)
+	// row.Scan copia el numero de fila en la variable count
+	err := row.Scan(&totalRows)
+	if err != nil {
+		log.Fatal(err)
+	}
+	return totalRows
 }

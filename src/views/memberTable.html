@@ -17,3 +17,88 @@
         {{end}}
 
  </table>
+
+ <nav aria-label="pagination-nav">
+    <ul class="pagination">
+
+    <!-- si totalPages es menor o igual a 10 -->
+    {{if le .totalPages 10}}
+         <!-- creo la variable currentPage porque dentro del range no la voy a poder usar sino -->
+        {{$currentPage := .currentPage}}
+        <!-- recorro el array de [1,2,3,4...] -->
+        {{range $i := .totalPagesArray}}
+            {{ if eq $currentPage $i }}
+            
+            <li class="page-item"><a class="page-link current-page" href="#">{{$i}}</a></li>
+            {{else}}
+            <div hx-get="/member/renderTable/{{$i}}" hx-trigger="click">
+                <li class="page-item"><a class="page-link">{{$i}}</a></li>
+            </div>
+            {{end}}
+        {{end}}
+    {{else}}
+        <!-- si es la primera pagina -->
+        {{if eq .currentPage .firstPage}}
+
+            <li class="page-item disabled"><a class="page-link" href="#"><i class="bi bi-chevron-double-left"></i></a></li>
+            <li class="page-item disabled"><a class="page-link" href="#"><i class="bi bi-chevron-left"></i></a></li>
+            <li class="page-item disabled"><a class="page-link" href="#">...</a></li>
+        <!-- si es la segunda pagina -->
+        {{else if eq .currentPage 2}}
+        <div hx-get="/member/renderTable/{{.firstPage}}" hx-trigger="click">
+            <li class="page-item"><a class="page-link"><i class="bi bi-chevron-double-left"></i></a></li>
+        </div>
+            <li class="page-item"><a class="page-link" href="/member/renderTable/{{.previousPage}}"><i class="bi bi-chevron-left"></i></a></li>
+            <li class="page-item"><a class="page-link" href="/member/renderTable/{{.someBefore}}">...</a></li>
+            <li class="page-item"><a class="page-link" href="/member/renderTable/{{.previousPage}}">{{.previousPage}} </a></li>
+        <!-- si es la tercera pagina -->
+        {{else if eq .currentPage 3}}
+            <li class="page-item"><a class="page-link" href="/member/renderTable/{{.firstPage}}"><i class="bi bi-chevron-double-left"></i></a></li>
+            <li class="page-item"><a class="page-link" href="/member/renderTable/{{.previousPage}}"><i class="bi bi-chevron-left"></i></a></li>
+            <li class="page-item"><a class="page-link" href="/member/renderTable/{{.someBefore}}">...</a></li>
+            <li class="page-item"><a class="page-link" href="/member/renderTable/{{.twoBefore}}">{{.twoBefore}}</a></li>
+            <li class="page-item"><a class="page-link" href="/member/renderTable/{{.previousPage}}">{{.previousPage}} </a></li>
+        {{else}}
+        <!-- si es la cuarta o mas -->
+            <li class="page-item"><a class="page-link" href="/member/renderTable/{{.firstPage}}"><i class="bi bi-chevron-double-left"></i></a></li>
+            <li class="page-item"><a class="page-link" href="/member/renderTable/{{.previousPage}}"><i class="bi bi-chevron-left"></i></a></li>
+            <li class="page-item"><a class="page-link" href="/member/renderTable/{{.someBefore}}">...</a></li>
+            <li class="page-item"><a class="page-link" href="/member/renderTable/{{.threeBefore}}">{{.threeBefore}} </a></li>
+            <li class="page-item"><a class="page-link" href="/member/renderTable/{{.twoBefore}}">{{.twoBefore}} </a></li>
+            <li class="page-item"><a class="page-link" href="/member/renderTable/{{.previousPage}}">{{.previousPage}} </a></li>
+        {{end}}
+
+        <!-- pagina actual -->
+        <li class="page-item"><a class="page-link current-page" href="#">{{.currentPage}} </a></li>
+                
+        <!-- si es la antepenultima -->
+        {{if eq .twoAfter .lastPage}}
+            <li class="page-item"><a class="page-link" href="/member/renderTable/{{.nextPage}}">{{.nextPage}} </a></li>
+            <li class="page-item"><a class="page-link" href="/member/renderTable/{{.twoAfter}}">{{.twoAfter}} </a></li>
+            <li class="page-item"><a class="page-link" href="/member/renderTable/{{.someAfter}}">...</a></li>
+            <li class="page-item"><a class="page-link" href="/member/renderTable/{{.nextPage}}"><i class="bi bi-chevron-right"></i></a></li>
+            <li class="page-item"><a class="page-link" href="/member/renderTable/{{.lastPage}}"><i class="bi bi-chevron-double-right"></i></a></li>
+        <!-- si es la anteultima -->
+        {{else if eq .nextPage .lastPage}}
+            <li class="page-item"><a class="page-link" href="/member/renderTable/{{.nextPage}}">{{.nextPage}} </a></li>
+            <li class="page-item"><a class="page-link" href="/member/renderTable/{{.someAfter}}">...</a></li>
+            <li class="page-item"><a class="page-link" href="/member/renderTable/{{.nextPage}}"><i class="bi bi-chevron-right"></i></a></li>
+            <li class="page-item"><a class="page-link" href="/member/renderTable/{{.lastPage}}"><i class="bi bi-chevron-double-right"></i></a></li>
+        <!-- si es la ultima pagina -->
+        {{else if eq .currentPage .lastPage}}
+            <li class="page-item disabled"><a class="page-link" href="#">...</a></li>
+            <li class="page-item disabled"><a class="page-link" href="#"><i class="bi bi-chevron-right"></i></a></li>
+            <li class="page-item disabled"><a class="page-link" href="#"><i class="bi bi-chevron-double-right"></i></a></li>
+
+        {{else}}
+        <!-- si es anterior a la antepenultima -->
+            <li class="page-item"><a class="page-link" href="/member/renderTable/{{.nextPage}}">{{.nextPage}} </a></li>
+            <li class="page-item"><a class="page-link" href="/member/renderTable/{{.twoAfter}}">{{.twoAfter}} </a></li>
+            <li class="page-item"><a class="page-link" href="/member/renderTable/{{.threeAfter}}">{{.threeAfter}} </a></li>
+            <li class="page-item"><a class="page-link" href="/member/renderTable/{{.someAfter}}">...</a></li>
+            <li class="page-item"><a class="page-link" href="/member/renderTable/{{.nextPage}}"><i class="bi bi-chevron-right"></i></a></li>
+            <li class="page-item"><a class="page-link" href="/member/renderTable/{{.lastPage}}"><i class="bi bi-chevron-double-right"></i></a></li>
+        {{end}}
+    {{end}}
+    </ul>
+  </nav>

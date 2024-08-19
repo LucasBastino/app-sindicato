@@ -2,6 +2,7 @@ package models
 
 import (
 	"fmt"
+	"log"
 	"strings"
 
 	"github.com/LucasBastino/app-sindicato/src/database"
@@ -83,7 +84,7 @@ func (e Enterprise) SearchOneModelById(c *fiber.Ctx) Enterprise {
 	return enterprise
 }
 
-func (e Enterprise) SearchModels(c *fiber.Ctx) []Enterprise {
+func (e Enterprise) SearchModels(c *fiber.Ctx, offset int) []Enterprise {
 	searchKey := c.FormValue("search-key")
 	var enterprises []Enterprise
 	var enterprise Enterprise
@@ -114,4 +115,16 @@ func (e Enterprise) ValidateFields(c *fiber.Ctx) map[string]string {
 		errorMap["address"] = "el campo Direccion no puede estar vacio"
 	}
 	return errorMap
+}
+
+func (e Enterprise) GetTotalRows(c *fiber.Ctx) int {
+	var totalRows int
+	searchKey := c.FormValue("search-key")
+	row := database.DB.QueryRow("SELECT COUNT(*) FROM EnterpriseTable WHERE Name LIKE '%%%s%%'", searchKey)
+	// row.Scan copia el numero de fila en la variable count
+	err := row.Scan(&totalRows)
+	if err != nil {
+		log.Fatal(err)
+	}
+	return totalRows
 }

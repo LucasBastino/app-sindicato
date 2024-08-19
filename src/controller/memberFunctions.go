@@ -58,14 +58,33 @@ func EditMember(c *fiber.Ctx) error {
 
 func RenderMemberTable(c *fiber.Ctx) error {
 	// Busco todos los members por key y renderizo la tabla de miembros
+	currentPage := GetPageFromPath(c)
+	fmt.Println("desp de get from path")
 	// calcular la cantidad de filas
+	totalRows := getTotalRowsCaller(member, c)
+	fmt.Println("desp de get total rows")
 	// calcular totalPages
-	// calcular currentPage y offset
-	// calcularAproximador
-	members := searchModelsCaller(member, c)
+	totalPages, offset, someBefore, someAfter := GetPaginationData(currentPage, totalRows)
+	members := searchModelsCaller(member, c, offset)
 	// calcular totalPagesArray[]
+	totalPagesArray := GetTotalPagesArray(totalPages)
 	// pasar todas las variables al map ↓
-	data := fiber.Map{"model": member, "members": members}
+	data := fiber.Map{
+		"members":         members,
+		"currentPage":     currentPage,
+		"firstPage":       1,
+		"previousPage":    currentPage - 1,
+		"someBefore":      currentPage - someBefore,
+		"threeBefore":     currentPage - 3,
+		"twoBefore":       currentPage - 2,
+		"twoAfter":        currentPage + 2,
+		"threeAfter":      currentPage + 3,
+		"someAfter":       currentPage + someAfter,
+		"nextPage":        currentPage + 1,
+		"lastPage":        totalPages,
+		"totalPages":      totalPages,
+		"totalPagesArray": totalPagesArray,
+	}
 	return c.Render("memberTable", data)
 }
 
