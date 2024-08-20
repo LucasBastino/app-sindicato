@@ -96,3 +96,8 @@ margin: 10px
   background-color: #2222EE;
   color: white
 }
+
+.btn-pagination{
+  height: 2.5em;
+  width: 3em;
+}

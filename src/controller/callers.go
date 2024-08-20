@@ -30,7 +30,7 @@ func searchOneModelByIdCaller[M models.TypeModel](m i.IModel[M], c *fiber.Ctx) M
 	return m.SearchOneModelById(c)
 }
 
-func searchModelsCaller[M models.TypeModel](m i.IModel[M], c *fiber.Ctx, offset int) []M {
+func searchModelsCaller[M models.TypeModel](m i.IModel[M], c *fiber.Ctx, offset int) ([]M, string) {
 	return m.SearchModels(c, offset)
 }
 

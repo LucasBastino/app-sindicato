@@ -78,6 +78,7 @@ func GetPaginationData(currentPage, totalRows int) (int, int, int, int) {
 	} else if currentPage-someBefore < 1 {
 		someBefore = currentPage - 1
 	}
+	fmt.Println("offset", offset)
 	return totalPages, offset, someBefore, someAfter
 }
 

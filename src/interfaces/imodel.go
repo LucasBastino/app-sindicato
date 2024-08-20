@@ -11,7 +11,7 @@ type IModel[M models.TypeModel] interface {
 	EditModel()
 	GetIdModel(*fiber.Ctx) int
 	SearchOneModelById(*fiber.Ctx) M
-	SearchModels(*fiber.Ctx, int) []M
+	SearchModels(*fiber.Ctx, int) ([]M, string)
 	ValidateFields(*fiber.Ctx) map[string]string
 	GetTotalRows(*fiber.Ctx) int
 }

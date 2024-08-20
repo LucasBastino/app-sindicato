@@ -75,7 +75,7 @@ func (p Parent) SearchOneModelById(c *fiber.Ctx) Parent {
 	return parent
 }
 
-func (p Parent) SearchModels(c *fiber.Ctx, offset int) []Parent {
+func (p Parent) SearchModels(c *fiber.Ctx, offset int) ([]Parent, string) {
 	searchKey := c.FormValue("search-key")
 	var parents []Parent
 	var parent Parent
@@ -94,7 +94,7 @@ func (p Parent) SearchModels(c *fiber.Ctx, offset int) []Parent {
 		parents = append(parents, parent)
 	}
 	defer result.Close()
-	return parents
+	return parents, searchKey
 }
 
 func (p Parent) ValidateFields(c *fiber.Ctx) map[string]string {

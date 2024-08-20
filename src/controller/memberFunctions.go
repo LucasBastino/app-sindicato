@@ -65,16 +65,18 @@ func RenderMemberTable(c *fiber.Ctx) error {
 	fmt.Println("desp de get total rows")
 	// calcular totalPages
 	totalPages, offset, someBefore, someAfter := GetPaginationData(currentPage, totalRows)
-	members := searchModelsCaller(member, c, offset)
+	members, searchKey := searchModelsCaller(member, c, offset)
 	// calcular totalPagesArray[]
 	totalPagesArray := GetTotalPagesArray(totalPages)
 	// pasar todas las variables al map ↓
 	data := fiber.Map{
 		"members":         members,
+		"searchKey":       searchKey,
 		"currentPage":     currentPage,
 		"firstPage":       1,
 		"previousPage":    currentPage - 1,
 		"someBefore":      currentPage - someBefore,
+		"sixBefore":       currentPage - 6,
 		"fiveBefore":      currentPage - 5,
 		"fourBefore":      currentPage - 4,
 		"threeBefore":     currentPage - 3,
@@ -83,6 +85,7 @@ func RenderMemberTable(c *fiber.Ctx) error {
 		"threeAfter":      currentPage + 3,
 		"fourAfter":       currentPage + 4,
 		"fiveAfter":       currentPage + 5,
+		"sixAfter":        currentPage + 6,
 		"someAfter":       currentPage + someAfter,
 		"nextPage":        currentPage + 1,
 		"lastPage":        totalPages,

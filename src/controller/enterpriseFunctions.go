@@ -43,8 +43,8 @@ func EditEnterprise(c *fiber.Ctx) error {
 }
 
 func RenderEnterpriseTable(c *fiber.Ctx) error {
-	enterprises := searchModelsCaller(enterprise, c, 5)
-	data := fiber.Map{"model": enterprise, "enterprises": enterprises}
+	enterprises, searchKey := searchModelsCaller(enterprise, c, 5)
+	data := fiber.Map{"model": enterprise, "enterprises": enterprises, "searchKey": searchKey}
 	return c.Render("enterpriseTable", data)
 }
 

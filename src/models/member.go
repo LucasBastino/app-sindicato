@@ -80,12 +80,11 @@ func (m Member) SearchOneModelById(c *fiber.Ctx) Member {
 	return member
 }
 
-func (m Member) SearchModels(c *fiber.Ctx, offset int) []Member {
+func (m Member) SearchModels(c *fiber.Ctx, offset int) ([]Member, string) {
 	searchKey := c.FormValue("search-key")
 	var members []Member
 	var member Member
-
-	result, err := database.DB.Query(fmt.Sprintf(`SELECT * FROM MemberTable WHERE Name LIKE '%%%s%%' OR DNI LIKE '%%%s%%' LIMIT 10`, searchKey, searchKey))
+	result, err := database.DB.Query(fmt.Sprintf(`SELECT * FROM MemberTable WHERE Name LIKE '%%%s%%' OR DNI LIKE '%%%s%%' LIMIT 10 OFFSET %d`, searchKey, searchKey, offset))
 	if err != nil {
 		fmt.Println("error searching member in DB")
 		panic(err)
@@ -99,7 +98,7 @@ func (m Member) SearchModels(c *fiber.Ctx, offset int) []Member {
 		members = append(members, member)
 	}
 	defer result.Close()
-	return members
+	return members, searchKey
 }
 
 func (m Member) ValidateFields(c *fiber.Ctx) map[string]string {

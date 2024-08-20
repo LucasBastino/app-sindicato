@@ -84,7 +84,7 @@ func (e Enterprise) SearchOneModelById(c *fiber.Ctx) Enterprise {
 	return enterprise
 }
 
-func (e Enterprise) SearchModels(c *fiber.Ctx, offset int) []Enterprise {
+func (e Enterprise) SearchModels(c *fiber.Ctx, offset int) ([]Enterprise, string) {
 	searchKey := c.FormValue("search-key")
 	var enterprises []Enterprise
 	var enterprise Enterprise
@@ -103,7 +103,7 @@ func (e Enterprise) SearchModels(c *fiber.Ctx, offset int) []Enterprise {
 		enterprises = append(enterprises, enterprise)
 	}
 	defer result.Close()
-	return enterprises
+	return enterprises, searchKey
 }
 
 func (e Enterprise) ValidateFields(c *fiber.Ctx) map[string]string {
