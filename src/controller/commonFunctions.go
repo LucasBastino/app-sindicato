@@ -21,7 +21,11 @@ func GetPageFromPath(c *fiber.Ctx) int {
 	}{}
 
 	c.ParamsParser(&params)
-	return params.Page
+	if params.Page <= 1 {
+		return 1
+	} else {
+		return params.Page
+	}
 }
 
 func GetPaginationData(currentPage, totalRows int) (int, int, int, int) {
@@ -46,7 +50,6 @@ func GetPaginationData(currentPage, totalRows int) (int, int, int, int) {
 	// PODES HACER UNA FUNCION DE ESTO O METER UN SWITCH
 	//  si currentPage es menor a 1, currentPage ahora es 1 y muestra los primeros 10
 	if currentPage <= 1 {
-		currentPage = 1
 		offset = 0
 	}
 

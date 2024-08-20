@@ -75,10 +75,14 @@ func RenderMemberTable(c *fiber.Ctx) error {
 		"firstPage":       1,
 		"previousPage":    currentPage - 1,
 		"someBefore":      currentPage - someBefore,
+		"fiveBefore":      currentPage - 5,
+		"fourBefore":      currentPage - 4,
 		"threeBefore":     currentPage - 3,
 		"twoBefore":       currentPage - 2,
 		"twoAfter":        currentPage + 2,
 		"threeAfter":      currentPage + 3,
+		"fourAfter":       currentPage + 4,
+		"fiveAfter":       currentPage + 5,
 		"someAfter":       currentPage + someAfter,
 		"nextPage":        currentPage + 1,
 		"lastPage":        totalPages,
@@ -128,4 +132,8 @@ func RenderMemberParents(c *fiber.Ctx) error {
 	data := fiber.Map{"model": parent, "parents": parents}
 	return c.Render("memberParentTable", data)
 
+}
+
+func Prueba(c *fiber.Ctx) error {
+	return c.Render("prueba", fiber.Map{})
 }
