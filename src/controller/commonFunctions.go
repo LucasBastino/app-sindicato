@@ -31,9 +31,9 @@ func GetPageFromPath(c *fiber.Ctx) int {
 func GetPaginationData(currentPage, totalRows int) (int, int, int, int) {
 	// setting totalPages
 	var totalPages int
-	// si no hay filas no hay paginas
+	// si no hay filas no hay paginas, se pone 1 para que calcule bien el offset
 	if totalRows == 0 {
-		totalPages = 0
+		totalPages = 1
 		// si la cantidad de filas es un multiplo de 10 entran justo y no sobran
 	} else if totalRows%10 == 0 {
 		totalPages = totalRows / 10
@@ -41,8 +41,6 @@ func GetPaginationData(currentPage, totalRows int) (int, int, int, int) {
 	} else {
 		totalPages = (totalRows / 10) + 1
 	}
-	fmt.Println("totalPages at line 44:", totalPages)
-	fmt.Println("currentPage at line 44:", currentPage)
 
 	// setting currentPage and offset
 	var offset int
@@ -65,9 +63,6 @@ func GetPaginationData(currentPage, totalRows int) (int, int, int, int) {
 		offset = (currentPage - 1) * 10
 	}
 
-	fmt.Println("totalPages at line 56:", totalPages)
-	fmt.Println("currentPage at line 56:", currentPage)
-
 	// setting aproximador
 	someBefore := totalPages / 6
 	someAfter := totalPages / 6
@@ -83,6 +78,7 @@ func GetPaginationData(currentPage, totalRows int) (int, int, int, int) {
 }
 
 func GetTotalPagesArray(totalPages int) []int {
+	// devuelve el array para que se pueda recorrer en el template
 	var totalPagesArray []int
 	if totalPages <= 10 {
 		for i := 1; i <= totalPages; i++ {

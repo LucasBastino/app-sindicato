@@ -99,5 +99,10 @@ margin: 10px
 
 .btn-pagination{
   height: 2.5em;
-  width: 3em;
+  width: 2.8em;
+}
+
+.nav-container{
+  display: flex;
+  justify-content: center
 }

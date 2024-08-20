@@ -128,3 +128,29 @@ func (e Enterprise) GetTotalRows(c *fiber.Ctx) int {
 	}
 	return totalRows
 }
+
+func (e Enterprise) GetFiberMap(enterprises []Enterprise, searchKey string, currentPage, someBefore, someAfter, totalPages int, totalPagesArray []int) fiber.Map {
+	return fiber.Map{
+		"enterprises":     enterprises,
+		"searchKey":       searchKey,
+		"currentPage":     currentPage,
+		"firstPage":       1,
+		"previousPage":    currentPage - 1,
+		"someBefore":      currentPage - someBefore,
+		"sixBefore":       currentPage - 6,
+		"fiveBefore":      currentPage - 5,
+		"fourBefore":      currentPage - 4,
+		"threeBefore":     currentPage - 3,
+		"twoBefore":       currentPage - 2,
+		"twoAfter":        currentPage + 2,
+		"threeAfter":      currentPage + 3,
+		"fourAfter":       currentPage + 4,
+		"fiveAfter":       currentPage + 5,
+		"sixAfter":        currentPage + 6,
+		"someAfter":       currentPage + someAfter,
+		"nextPage":        currentPage + 1,
+		"lastPage":        totalPages,
+		"totalPages":      totalPages,
+		"totalPagesArray": totalPagesArray,
+	}
+}

@@ -58,41 +58,56 @@ func EditMember(c *fiber.Ctx) error {
 
 func RenderMemberTable(c *fiber.Ctx) error {
 	// Busco todos los members por key y renderizo la tabla de miembros
+
+	// obtengo la currentPage del path
 	currentPage := GetPageFromPath(c)
-	fmt.Println("desp de get from path")
-	// calcular la cantidad de filas
+
+	// calculo la cantidad de resultados
 	totalRows := getTotalRowsCaller(member, c)
-	fmt.Println("desp de get total rows")
-	// calcular totalPages
-	totalPages, offset, someBefore, someAfter := GetPaginationData(currentPage, totalRows)
-	members, searchKey := searchModelsCaller(member, c, offset)
-	// calcular totalPagesArray[]
-	totalPagesArray := GetTotalPagesArray(totalPages)
-	// pasar todas las variables al map ↓
-	data := fiber.Map{
-		"members":         members,
-		"searchKey":       searchKey,
-		"currentPage":     currentPage,
-		"firstPage":       1,
-		"previousPage":    currentPage - 1,
-		"someBefore":      currentPage - someBefore,
-		"sixBefore":       currentPage - 6,
-		"fiveBefore":      currentPage - 5,
-		"fourBefore":      currentPage - 4,
-		"threeBefore":     currentPage - 3,
-		"twoBefore":       currentPage - 2,
-		"twoAfter":        currentPage + 2,
-		"threeAfter":      currentPage + 3,
-		"fourAfter":       currentPage + 4,
-		"fiveAfter":       currentPage + 5,
-		"sixAfter":        currentPage + 6,
-		"someAfter":       currentPage + someAfter,
-		"nextPage":        currentPage + 1,
-		"lastPage":        totalPages,
-		"totalPages":      totalPages,
-		"totalPagesArray": totalPagesArray,
+	if totalRows == 0 {
+		// si no hay resultados renderizar esto
+		return c.Render("searchWithNoResults", fiber.Map{})
+	} else {
+		// si hay resultados...
+
+		// calcular totalPages
+		totalPages, offset, someBefore, someAfter := GetPaginationData(currentPage, totalRows)
+
+		// busco los miembros y devuelvo el searchKey para usarlo nuevamente en la paginacion
+		members, searchKey := searchModelsCaller(member, c, offset)
+
+		// hago un array para poder recorrerlo y crear botones cuando hay menos de 10 paginas en el template
+		totalPagesArray := GetTotalPagesArray(totalPages)
+
+		// paso todas las variables al map ↓
+		// hacer un metodo para esto
+		mapData := getFiberMapCaller(member, members, searchKey, currentPage, someBefore, someAfter, totalPages, totalPagesArray)
+		return c.Render("memberTable", mapData)
+		// data := fiber.Map{
+		// 	"members":         members,
+		// 	"searchKey":       searchKey,
+		// 	"currentPage":     currentPage,
+		// 	"firstPage":       1,
+		// 	"previousPage":    currentPage - 1,
+		// 	"someBefore":      currentPage - someBefore,
+		// 	"sixBefore":       currentPage - 6,
+		// 	"fiveBefore":      currentPage - 5,
+		// 	"fourBefore":      currentPage - 4,
+		// 	"threeBefore":     currentPage - 3,
+		// 	"twoBefore":       currentPage - 2,
+		// 	"twoAfter":        currentPage + 2,
+		// 	"threeAfter":      currentPage + 3,
+		// 	"fourAfter":       currentPage + 4,
+		// 	"fiveAfter":       currentPage + 5,
+		// 	"sixAfter":        currentPage + 6,
+		// 	"someAfter":       currentPage + someAfter,
+		// 	"nextPage":        currentPage + 1,
+		// 	"lastPage":        totalPages,
+		// 	"totalPages":      totalPages,
+		// 	"totalPagesArray": totalPagesArray,
+		// }
+		// return c.Render("memberTable", data)
 	}
-	return c.Render("memberTable", data)
 }
 
 func RenderMemberFile(c *fiber.Ctx) error {
