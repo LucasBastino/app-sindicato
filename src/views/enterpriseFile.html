@@ -1,5 +1,5 @@
 <h2>Ficha de {{$.enterprise.Name}}</h2>
-<form hx-put="/enterprise/{{$.Enterprise.IdEnterprise}}/edit" hx-target="#tableDiv">
+<form hx-put="/enterprise/{{$.enterprise.IdEnterprise}}/edit" hx-target="#tableDiv">
     <input type="text" name="name" value="{{$.enterprise.Name}}" disabled>
     <input type="text" name="address" value="{{$.enterprise.Address}}" disabled>
     <button type="submit" class="btn-primary btn-submit hide">Confirmar</button>

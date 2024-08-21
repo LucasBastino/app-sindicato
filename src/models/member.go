@@ -20,14 +20,26 @@ func (m Member) Imprimir() {
 	fmt.Println(m)
 }
 
-func (newMember Member) InsertModel() {
+func (newMember Member) InsertModel() Member {
 	insert, err := database.DB.Query(fmt.Sprintf("INSERT INTO MemberTable (Name, DNI) VALUES ('%s','%s')", newMember.Name, newMember.DNI))
 	if err != nil {
 		// DBError{"INSERT MEMBER"}.Error(err)
 		fmt.Println("error insertando en la DB")
 		panic(err)
 	}
-	defer insert.Close()
+	insert.Close()
+	var member Member
+	result, err := database.DB.Query("SELECT * FROM MemberTable WHERE IdMember = (SELECT LAST_INSERT_ID())")
+	if err != nil {
+		fmt.Print(err)
+	}
+	result.Next()
+	err = result.Scan(&member.IdMember, &member.Name, &member.DNI)
+	if err != nil {
+		fmt.Println(err)
+	}
+	result.Close()
+	return member
 }
 
 func (m Member) DeleteModel() {

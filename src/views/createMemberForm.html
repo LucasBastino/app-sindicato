@@ -1,7 +1,7 @@
 <body>
     <h2>Agregar afiliado</h2>
     <div class="form-container">
-    <form class="input-container" hx-post="/member/create">
+    <form class="input-container" hx-post="/member/create" hx-target="#tableDiv">
             <input class="form-input" type="text" name="name" value="{{.member.Name}}" placeholder="Nombre">
             {{with .errorMap.name}}
             <p>{{.}}</p>

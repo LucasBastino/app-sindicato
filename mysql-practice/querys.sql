@@ -36,3 +36,10 @@ INSERT INTO ParentTable (Name, Rel, IdMember) VALUES ('familiar3', 'PRIMssO', 1)
 SELECT COUNT(IdMember) FROM MemberTable;
 
 DELETE FROM MemberTable WHERE IdMember > 500
+
+
+
+INSERT INTO MemberTable (Name, DNI) VALUES ('memberprueba', '44343')
+
+
+SELECT LAST_INSERT_ID();

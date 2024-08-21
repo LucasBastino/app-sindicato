@@ -28,7 +28,7 @@ func CreateMember(c *fiber.Ctx) error {
 
 	} else {
 		// Si no tiene errores inserto el member en la DB y renderizo el su archivo
-		insertModelCaller(member)
+		member = insertModelCaller(member)
 		data := fiber.Map{"model": member, "member": member}
 		return c.Render("memberFile", data)
 	}

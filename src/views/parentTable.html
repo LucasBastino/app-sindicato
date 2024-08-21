@@ -4,7 +4,6 @@
         <th>Relacion</th>
         <th>Afiliado</th>
         <th> </th>
-        <th> </th>
     </tr>
 
     {{range $_, $parent := .parents}}
@@ -12,8 +11,6 @@
         <td>{{$parent.Name}}</td>
         <td>{{$parent.Rel}}</td>
         <td><button class="btn-primary" onclick="disableBrowserInput();" hx-get="/parent/{{$parent.IdParent}}/file" hx-trigger="click" hx-target="#tableDiv"><i class="bi bi-file-earmark-text"></i></button></form></td>
-        <td><button class="btn-danger" hx-delete="/parent/{{$parent.IdParent}}/delete" hx-confirm="¿Estás seguro que deseas eliminar el familiar?" hx-target="#memberTableDiv"><i class="bi bi-x-square"></i></button></td>
-        
      </tr>
     {{end}}
 

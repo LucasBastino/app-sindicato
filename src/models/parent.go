@@ -16,7 +16,8 @@ type Parent struct {
 	IdMember int
 }
 
-func (newParent Parent) InsertModel() {
+func (newParent Parent) InsertModel() Parent {
+	var parent Parent
 	insert, err := database.DB.Query(fmt.Sprintf("INSERT INTO ParentTable (Name, Rel, IdMember) VALUES ('%s','%s', '%d')", newParent.Name, newParent.Rel, newParent.IdMember))
 	if err != nil {
 		// DBError{"INSERT Parent"}.Error(err)
@@ -24,6 +25,7 @@ func (newParent Parent) InsertModel() {
 		panic(err)
 	}
 	defer insert.Close()
+	return parent
 }
 
 func (p Parent) DeleteModel() {

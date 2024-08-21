@@ -15,14 +15,16 @@ type Enterprise struct {
 	Address      string
 }
 
-func (e Enterprise) InsertModel() {
-	insert, err := database.DB.Query(fmt.Sprintf("INSERT INTO EnterpriseTable (Name, Address) VALUES ('%s','%s')", e.Name, e.Address))
+func (newEnterprise Enterprise) InsertModel() Enterprise {
+	var enterprise Enterprise
+	insert, err := database.DB.Query(fmt.Sprintf("INSERT INTO EnterpriseTable (Name, Address) VALUES ('%s','%s')", newEnterprise.Name, newEnterprise.Address))
 	if err != nil {
 		// DBError{"INSERT Enterprise"}.Error(err)
 		fmt.Println("error insertando en la DB")
 		panic(err)
 	}
 	defer insert.Close()
+	return enterprise
 }
 
 func (e Enterprise) DeleteModel() {

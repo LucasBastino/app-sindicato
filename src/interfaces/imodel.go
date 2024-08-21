@@ -6,7 +6,7 @@ import (
 )
 
 type IModel[M models.TypeModel] interface {
-	InsertModel()
+	InsertModel() M
 	DeleteModel()
 	EditModel()
 	GetIdModel(*fiber.Ctx) int

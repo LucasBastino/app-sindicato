@@ -10,8 +10,8 @@ func parserCaller[M models.TypeModel](parser i.ModelParser[M], c *fiber.Ctx) M {
 	return parser.ParseModel(c)
 }
 
-func insertModelCaller[M models.TypeModel](m i.IModel[M]) {
-	m.InsertModel()
+func insertModelCaller[M models.TypeModel](m i.IModel[M]) M {
+	return m.InsertModel()
 }
 
 func deleteModelCaller[M models.TypeModel](m i.IModel[M]) {

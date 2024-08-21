@@ -34,10 +34,10 @@ func DeleteEnterprise(c *fiber.Ctx) error {
 
 func EditEnterprise(c *fiber.Ctx) error {
 	// falta agregar la validacion
-	enterpriseEdited := parserCaller(enterpriseParser, c)
+	enterprise := parserCaller(enterpriseParser, c)
 	IdEnterprise := getIdModelCaller(enterprise, c)
-	enterpriseEdited.IdEnterprise = IdEnterprise
-	editModelCaller(enterpriseEdited)
+	enterprise.IdEnterprise = IdEnterprise
+	editModelCaller(enterprise)
 	data := fiber.Map{"model": enterprise, "enterprise": enterprise}
 	return c.Render("enterpriseFile", data)
 }
