@@ -1,80 +1,135 @@
 {{define "Pagination"}}
-<nav aria-label="pagination-nav">
-    <ul class="pagination">
-
-    <!-- si totalPages es menor o igual a 10 -->
-    {{if le .totalPages 10}}
-         <!-- creo la variable currentPage porque dentro del range no la voy a poder usar sino -->
-        {{$currentPage := .currentPage}}
-        <!-- recorro el array de [1,2,3,4...] -->
-        {{range $i := .totalPagesArray}}
-            {{ if eq $currentPage $i }}
-            <li class="page-item"><a class="page-link current-page" href="#">{{$i}}</a></li>
-            {{else}}
-            <li class="page-item"><a class="page-link" href="/test/{{$i}}">{{$i}}</a></li>
+<!-- start of pagination -->
+<div class="nav-container">
+    <nav aria-label="pagination-nav">
+        <ul class="pagination">
+        <!-- si hay una pagina sola que no se muestre la paginacion -->
+        {{if eq .totalPages 1}}
+        
+        <!-- si totalPages es menor o igual a 10 no mostrar los botones de siguiente, etc -->
+        {{else if le .totalPages 10}}
+            <!-- creo la variable currentPage porque dentro del range no la voy a poder usar sino -->
+            {{$currentPage := .currentPage}}
+            {{$searchKey := .searchKey}}
+           <!-- recorro el array de [1,2,3,4...] -->
+            {{range $i := .totalPagesArray}}
+                {{ if eq $currentPage $i }}
+                <button class="btn btn-primary btn-pagination disabled current-page">{{$i}}</button>
+                {{else}}
+                <button hx-get="/{{.model}}/renderTable/{{$i}}" hx-trigger="click" hx-target="#tableDiv" name="search-key" value="{{$searchKey}}" class="btn btn-primary btn-pagination">{{$i}}</button>
+                {{end}}
             {{end}}
-        {{end}}
-    {{else}}
-        <!-- si es la primera pagina -->
-        {{if eq .currentPage .firstPage}}
-            <li class="page-item disabled"><a class="page-link" href="#"><i class="bi bi-chevron-double-left"></i></a></li>
-            <li class="page-item disabled"><a class="page-link" href="#"><i class="bi bi-chevron-left"></i></a></li>
-            <li class="page-item disabled"><a class="page-link" href="#">...</a></li>
-        <!-- si es la segunda pagina -->
-        {{else if eq .currentPage 2}}
-            <li class="page-item"><a class="page-link" href="/test/{{.firstPage}}"><i class="bi bi-chevron-double-left"></i></a></li>
-            <li class="page-item"><a class="page-link" href="/test/{{.previousPage}}"><i class="bi bi-chevron-left"></i></a></li>
-            <li class="page-item"><a class="page-link" href="/test/{{.someBefore}}">...</a></li>
-            <li class="page-item"><a class="page-link" href="/test/{{.previousPage}}">{{.previousPage}} </a></li>
-        <!-- si es la tercera pagina -->
-        {{else if eq .currentPage 3}}
-            <li class="page-item"><a class="page-link" href="/test/{{.firstPage}}"><i class="bi bi-chevron-double-left"></i></a></li>
-            <li class="page-item"><a class="page-link" href="/test/{{.previousPage}}"><i class="bi bi-chevron-left"></i></a></li>
-            <li class="page-item"><a class="page-link" href="/test/{{.someBefore}}">...</a></li>
-            <li class="page-item"><a class="page-link" href="/test/{{.twoBefore}}">{{.twoBefore}}</a></li>
-            <li class="page-item"><a class="page-link" href="/test/{{.previousPage}}">{{.previousPage}} </a></li>
         {{else}}
-        <!-- si es la cuarta o mas -->
-            <li class="page-item"><a class="page-link" href="/test/{{.firstPage}}"><i class="bi bi-chevron-double-left"></i></a></li>
-            <li class="page-item"><a class="page-link" href="/test/{{.previousPage}}"><i class="bi bi-chevron-left"></i></a></li>
-            <li class="page-item"><a class="page-link" href="/test/{{.someBefore}}">...</a></li>
-            <li class="page-item"><a class="page-link" href="/test/{{.threeBefore}}">{{.threeBefore}} </a></li>
-            <li class="page-item"><a class="page-link" href="/test/{{.twoBefore}}">{{.twoBefore}} </a></li>
-            <li class="page-item"><a class="page-link" href="/test/{{.previousPage}}">{{.previousPage}} </a></li>
+            <!-- si es la primera pagina -->
+            {{if eq .currentPage 1}}
+                <button class="btn btn-primary btn-pagination disabled"><i class="bi bi-chevron-double-left"></i></button>
+                <button class="btn btn-primary btn-pagination disabled"><i class="bi bi-chevron-left"></i></button>
+                <button class="btn btn-primary btn-pagination disabled">...</i></button>
+                <button class="btn btn-primary btn-pagination disabled current-page">{{.currentPage}}</button>
+                <button hx-get="/{{.model}}/renderTable/{{.nextPage}}" hx-trigger="click" hx-target="#tableDiv" name="search-key" value="{{.searchKey}}" class="btn btn-primary btn-pagination">{{.nextPage}}</button>
+                <button hx-get="/{{.model}}/renderTable/{{.twoAfter}}" hx-trigger="click" hx-target="#tableDiv" name="search-key" value="{{.searchKey}}" class="btn btn-primary btn-pagination">{{.twoAfter}}</button>
+                <button hx-get="/{{.model}}/renderTable/{{.threeAfter}}" hx-trigger="click" hx-target="#tableDiv" name="search-key" value="{{.searchKey}}" class="btn btn-primary btn-pagination">{{.threeAfter}}</button>
+                <button hx-get="/{{.model}}/renderTable/{{.fourAfter}}" hx-trigger="click" hx-target="#tableDiv" name="search-key" value="{{.searchKey}}" class="btn btn-primary btn-pagination">{{.fourAfter}}</button>
+                <button hx-get="/{{.model}}/renderTable/{{.fiveAfter}}" hx-trigger="click" hx-target="#tableDiv" name="search-key" value="{{.searchKey}}" class="btn btn-primary btn-pagination">{{.fiveAfter}}</button>
+                <button hx-get="/{{.model}}/renderTable/{{.sixAfter}}" hx-trigger="click" hx-target="#tableDiv" name="search-key" value="{{.searchKey}}" class="btn btn-primary btn-pagination">{{.sixAfter}}</button>
+                <button hx-get="/{{.model}}/renderTable/{{.someAfter}}" hx-trigger="click" hx-target="#tableDiv" name="search-key" value="{{.searchKey}}" class="btn btn-primary btn-pagination">...</button>
+                <button hx-get="/{{.model}}/renderTable/{{.nextPage}}" hx-trigger="click" hx-target="#tableDiv" name="search-key" value="{{.searchKey}}" class="btn btn-primary btn-pagination"><i class="bi bi-chevron-right"></i></button>
+                <button hx-get="/{{.model}}/renderTable/{{.lastPage}}" hx-trigger="click" hx-target="#tableDiv" name="search-key" value="{{.searchKey}}" class="btn btn-primary btn-pagination"><i class="bi bi-chevron-double-right"></i></button>
+                                
+            
+            <!-- si es la segunda pagina -->
+            {{else if eq .currentPage 2}}
+                <button hx-get="/{{.model}}/renderTable/{{.firstPage}}" hx-trigger="click" hx-target="#tableDiv" name="search-key" value="{{.searchKey}}" class="btn btn-primary btn-pagination"><i class="bi bi-chevron-double-left"></i></button>
+                <button hx-get="/{{.model}}/renderTable/{{.previousPage}}" hx-trigger="click" hx-target="#tableDiv" name="search-key" value="{{.searchKey}}" class="btn btn-primary btn-pagination"><i class="bi bi-chevron-left"></i></button>
+                <button hx-get="/{{.model}}/renderTable/{{.someBefore}}" hx-trigger="click" hx-target="#tableDiv" name="search-key" value="{{.searchKey}}" class="btn btn-primary btn-pagination">...</button>
+                <button hx-get="/{{.model}}/renderTable/{{.previousPage}}" hx-trigger="click" hx-target="#tableDiv" name="search-key" value="{{.searchKey}}" class="btn btn-primary btn-pagination">{{.previousPage}}</button>
+                <button class="btn btn-primary btn-pagination disabled current-page">{{.currentPage}}</button>
+                <button hx-get="/{{.model}}/renderTable/{{.nextPage}}" hx-trigger="click" hx-target="#tableDiv" name="search-key" value="{{.searchKey}}" class="btn btn-primary btn-pagination">{{.nextPage}}</button>
+                <button hx-get="/{{.model}}/renderTable/{{.twoAfter}}" hx-trigger="click" hx-target="#tableDiv" name="search-key" value="{{.searchKey}}" class="btn btn-primary btn-pagination">{{.twoAfter}}</button>
+                <button hx-get="/{{.model}}/renderTable/{{.threeAfter}}" hx-trigger="click" hx-target="#tableDiv" name="search-key" value="{{.searchKey}}" class="btn btn-primary btn-pagination">{{.threeAfter}}</button>
+                <button hx-get="/{{.model}}/renderTable/{{.fourAfter}}" hx-trigger="click" hx-target="#tableDiv" name="search-key" value="{{.searchKey}}" class="btn btn-primary btn-pagination">{{.fourAfter}}</button>
+                <button hx-get="/{{.model}}/renderTable/{{.fiveAfter}}" hx-trigger="click" hx-target="#tableDiv" name="search-key" value="{{.searchKey}}" class="btn btn-primary btn-pagination">{{.fiveAfter}}</button>
+                <button hx-get="/{{.model}}/renderTable/{{.someAfter}}" hx-trigger="click" hx-target="#tableDiv" name="search-key" value="{{.searchKey}}" class="btn btn-primary btn-pagination">...</button>
+                <button hx-get="/{{.model}}/renderTable/{{.nextPage}}" hx-trigger="click" hx-target="#tableDiv" name="search-key" value="{{.searchKey}}" class="btn btn-primary btn-pagination"><i class="bi bi-chevron-right"></i></button>
+                <button hx-get="/{{.model}}/renderTable/{{.lastPage}}" hx-trigger="click" hx-target="#tableDiv" name="search-key" value="{{.searchKey}}" class="btn btn-primary btn-pagination"><i class="bi bi-chevron-double-right"></i></button>
+            <!-- si es la tercera pagina -->
+            {{else if eq .currentPage 3}}
+                <button hx-get="/{{.model}}/renderTable/{{.firstPage}}" hx-trigger="click" hx-target="#tableDiv" name="search-key" value="{{.searchKey}}" class="btn btn-primary btn-pagination"><i class="bi bi-chevron-double-left"></i></button>
+                <button hx-get="/{{.model}}/renderTable/{{.previousPage}}" hx-trigger="click" hx-target="#tableDiv" name="search-key" value="{{.searchKey}}" class="btn btn-primary btn-pagination"><i class="bi bi-chevron-left"></i></button>
+                <button hx-get="/{{.model}}/renderTable/{{.someBefore}}" hx-trigger="click" hx-target="#tableDiv" name="search-key" value="{{.searchKey}}" class="btn btn-primary btn-pagination">...</button>
+                <button hx-get="/{{.model}}/renderTable/{{.twoBefore}}" hx-trigger="click" hx-target="#tableDiv" name="search-key" value="{{.searchKey}}" class="btn btn-primary btn-pagination">{{.twoBefore}}</button>
+                <button hx-get="/{{.model}}/renderTable/{{.previousPage}}" hx-trigger="click" hx-target="#tableDiv" name="search-key" value="{{.searchKey}}" class="btn btn-primary btn-pagination">{{.previousPage}}</button>
+                <button class="btn btn-primary btn-pagination disabled current-page">{{.currentPage}}</button>
+                <button hx-get="/{{.model}}/renderTable/{{.nextPage}}" hx-trigger="click" hx-target="#tableDiv" name="search-key" value="{{.searchKey}}" class="btn btn-primary btn-pagination">{{.nextPage}}</button>
+                <button hx-get="/{{.model}}/renderTable/{{.twoAfter}}" hx-trigger="click" hx-target="#tableDiv" name="search-key" value="{{.searchKey}}" class="btn btn-primary btn-pagination">{{.twoAfter}}</button>
+                <button hx-get="/{{.model}}/renderTable/{{.threeAfter}}" hx-trigger="click" hx-target="#tableDiv" name="search-key" value="{{.searchKey}}" class="btn btn-primary btn-pagination">{{.threeAfter}}</button>
+                <button hx-get="/{{.model}}/renderTable/{{.fourAfter}}" hx-trigger="click" hx-target="#tableDiv" name="search-key" value="{{.searchKey}}" class="btn btn-primary btn-pagination">{{.fourAfter}}</button>
+                <button hx-get="/{{.model}}/renderTable/{{.someAfter}}" hx-trigger="click" hx-target="#tableDiv" name="search-key" value="{{.searchKey}}" class="btn btn-primary btn-pagination">...</button>
+                <button hx-get="/{{.model}}/renderTable/{{.nextPage}}" hx-trigger="click" hx-target="#tableDiv" name="search-key" value="{{.searchKey}}" class="btn btn-primary btn-pagination"><i class="bi bi-chevron-right"></i></button>
+                <button hx-get="/{{.model}}/renderTable/{{.lastPage}}" hx-trigger="click" hx-target="#tableDiv" name="search-key" value="{{.searchKey}}" class="btn btn-primary btn-pagination"><i class="bi bi-chevron-double-right"></i></button>                
+            <!-- si es la antepenultima -->
+            {{else if eq .twoAfter .lastPage}}
+                <button hx-get="/{{.model}}/renderTable/{{.firstPage}}" hx-trigger="click" hx-target="#tableDiv" name="search-key" value="{{.searchKey}}" class="btn btn-primary btn-pagination"><i class="bi bi-chevron-double-left"></i></button>
+                <button hx-get="/{{.model}}/renderTable/{{.previousPage}}" hx-trigger="click" hx-target="#tableDiv" name="search-key" value="{{.searchKey}}" class="btn btn-primary btn-pagination"><i class="bi bi-chevron-left"></i></button>
+                <button hx-get="/{{.model}}/renderTable/{{.someBefore}}" hx-trigger="click" hx-target="#tableDiv" name="search-key" value="{{.searchKey}}" class="btn btn-primary btn-pagination">...</button>
+                <button hx-get="/{{.model}}/renderTable/{{.fiveBefore}}" hx-trigger="click" hx-target="#tableDiv" name="search-key" value="{{.searchKey}}" class="btn btn-primary btn-pagination">{{.fiveBefore}}</button>
+                <button hx-get="/{{.model}}/renderTable/{{.fourBefore}}" hx-trigger="click" hx-target="#tableDiv" name="search-key" value="{{.searchKey}}" class="btn btn-primary btn-pagination">{{.fourBefore}}</button>
+                <button hx-get="/{{.model}}/renderTable/{{.threeBefore}}" hx-trigger="click" hx-target="#tableDiv" name="search-key" value="{{.searchKey}}" class="btn btn-primary btn-pagination">{{.threeBefore}}</button>
+                <button hx-get="/{{.model}}/renderTable/{{.twoBefore}}" hx-trigger="click" hx-target="#tableDiv" name="search-key" value="{{.searchKey}}" class="btn btn-primary btn-pagination">{{.twoBefore}}</button>
+                <button class="btn btn-primary btn-pagination disabled current-page">{{.currentPage}}</button>
+                <button hx-get="/{{.model}}/renderTable/{{.nextPage}}" hx-trigger="click" hx-target="#tableDiv" name="search-key" value="{{.searchKey}}" class="btn btn-primary btn-pagination">{{.nextPage}}</button>
+                <button hx-get="/{{.model}}/renderTable/{{.twoAfter}}" hx-trigger="click" hx-target="#tableDiv" name="search-key" value="{{.searchKey}}" class="btn btn-primary btn-pagination">{{.twoAfter}}</button>
+                <button hx-get="/{{.model}}/renderTable/{{.someAfter}}" hx-trigger="click" hx-target="#tableDiv" name="search-key" value="{{.searchKey}}" class="btn btn-primary btn-pagination">...</button>
+                <button hx-get="/{{.model}}/renderTable/{{.nextPage}}" hx-trigger="click" hx-target="#tableDiv" name="search-key" value="{{.searchKey}}" class="btn btn-primary btn-pagination"><i class="bi bi-chevron-right"></i></button>
+                <button hx-get="/{{.model}}/renderTable/{{.lastPage}}" hx-trigger="click" hx-target="#tableDiv" name="search-key" value="{{.searchKey}}" class="btn btn-primary btn-pagination"><i class="bi bi-chevron-double-right"></i></button>
+            <!-- si es la anteultima -->
+            {{else if eq .nextPage .lastPage}}
+                <button hx-get="/{{.model}}/renderTable/{{.firstPage}}" hx-trigger="click" hx-target="#tableDiv" name="search-key" value="{{.searchKey}}" class="btn btn-primary btn-pagination"><i class="bi bi-chevron-double-left"></i></button>
+                <button hx-get="/{{.model}}/renderTable/{{.previousPage}}" hx-trigger="click" hx-target="#tableDiv" name="search-key" value="{{.searchKey}}" class="btn btn-primary btn-pagination"><i class="bi bi-chevron-left"></i></button>
+                <button hx-get="/{{.model}}/renderTable/{{.someBefore}}" hx-trigger="click" hx-target="#tableDiv" name="search-key" value="{{.searchKey}}" class="btn btn-primary btn-pagination">...</button>
+                <button hx-get="/{{.model}}/renderTable/{{.fiveBefore}}" hx-trigger="click" hx-target="#tableDiv" name="search-key" value="{{.searchKey}}" class="btn btn-primary btn-pagination">{{.fiveBefore}}</button>
+                <button hx-get="/{{.model}}/renderTable/{{.fourBefore}}" hx-trigger="click" hx-target="#tableDiv" name="search-key" value="{{.searchKey}}" class="btn btn-primary btn-pagination">{{.fourBefore}}</button>
+                <button hx-get="/{{.model}}/renderTable/{{.threeBefore}}" hx-trigger="click" hx-target="#tableDiv" name="search-key" value="{{.searchKey}}" class="btn btn-primary btn-pagination">{{.threeBefore}}</button>
+                <button hx-get="/{{.model}}/renderTable/{{.twoBefore}}" hx-trigger="click" hx-target="#tableDiv" name="search-key" value="{{.searchKey}}" class="btn btn-primary btn-pagination">{{.twoBefore}}</button>
+                <button hx-get="/{{.model}}/renderTable/{{.previousPage}}" hx-trigger="click" hx-target="#tableDiv" name="search-key" value="{{.searchKey}}" class="btn btn-primary btn-pagination">{{.previousPage}}</button>
+                <button class="btn btn-primary btn-pagination disabled current-page">{{.currentPage}}</button>
+                <button hx-get="/{{.model}}/renderTable/{{.nextPage}}" hx-trigger="click" hx-target="#tableDiv" name="search-key" value="{{.searchKey}}" class="btn btn-primary btn-pagination">{{.nextPage}}</button>
+                <button hx-get="/{{.model}}/renderTable/{{.someAfter}}" hx-trigger="click" hx-target="#tableDiv" name="search-key" value="{{.searchKey}}" class="btn btn-primary btn-pagination">...</button>
+                <button hx-get="/{{.model}}/renderTable/{{.nextPage}}" hx-trigger="click" hx-target="#tableDiv" name="search-key" value="{{.searchKey}}" class="btn btn-primary btn-pagination"><i class="bi bi-chevron-right"></i></button>
+                <button hx-get="/{{.model}}/renderTable/{{.lastPage}}" hx-trigger="click" hx-target="#tableDiv" name="search-key" value="{{.searchKey}}" class="btn btn-primary btn-pagination"><i class="bi bi-chevron-double-right"></i></button>
+            <!-- si es la ultima pagina -->
+            {{else if eq .currentPage .lastPage}}
+                <button hx-get="/{{.model}}/renderTable/{{.firstPage}}" hx-trigger="click" hx-target="#tableDiv" name="search-key" value="{{.searchKey}}" class="btn btn-primary btn-pagination"><i class="bi bi-chevron-double-left"></i></button>
+                <button hx-get="/{{.model}}/renderTable/{{.previousPage}}" hx-trigger="click" hx-target="#tableDiv" name="search-key" value="{{.searchKey}}" class="btn btn-primary btn-pagination"><i class="bi bi-chevron-left"></i></button>
+                <button hx-get="/{{.model}}/renderTable/{{.someBefore}}" hx-trigger="click" hx-target="#tableDiv" name="search-key" value="{{.searchKey}}" class="btn btn-primary btn-pagination">...</button>
+                <button hx-get="/{{.model}}/renderTable/{{.sixBefore}}" hx-trigger="click" hx-target="#tableDiv" name="search-key" value="{{.searchKey}}" class="btn btn-primary btn-pagination">{{.sixBefore}}</button>
+                <button hx-get="/{{.model}}/renderTable/{{.fiveBefore}}" hx-trigger="click" hx-target="#tableDiv" name="search-key" value="{{.searchKey}}" class="btn btn-primary btn-pagination">{{.fiveBefore}}</button>
+                <button hx-get="/{{.model}}/renderTable/{{.fourBefore}}" hx-trigger="click" hx-target="#tableDiv" name="search-key" value="{{.searchKey}}" class="btn btn-primary btn-pagination">{{.fourBefore}}</button>
+                <button hx-get="/{{.model}}/renderTable/{{.threeBefore}}" hx-trigger="click" hx-target="#tableDiv" name="search-key" value="{{.searchKey}}" class="btn btn-primary btn-pagination">{{.threeBefore}}</button>
+                <button hx-get="/{{.model}}/renderTable/{{.twoBefore}}" hx-trigger="click" hx-target="#tableDiv" name="search-key" value="{{.searchKey}}" class="btn btn-primary btn-pagination">{{.twoBefore}}</button>
+                <button hx-get="/{{.model}}/renderTable/{{.previousPage}}" hx-trigger="click" hx-target="#tableDiv" name="search-key" value="{{.searchKey}}" class="btn btn-primary btn-pagination">{{.previousPage}}</button>
+                <button class="btn btn-primary btn-pagination disabled current-page">{{.currentPage}}</button>
+                <button class="btn btn-primary btn-pagination disabled">...</i></button>
+                <button class="btn btn-primary btn-pagination disabled"><i class="bi bi-chevron-right"></i></button>
+                <button class="btn btn-primary btn-pagination disabled"><i class="bi bi-chevron-double-right"></i></button>
+            {{else}} 
+            <!-- si esta en el medio -->
+                <button hx-get="/{{.model}}/renderTable/{{.firstPage}}" hx-trigger="click" hx-target="#tableDiv" name="search-key" value="{{.searchKey}}" class="btn btn-primary btn-pagination"><i class="bi bi-chevron-double-left"></i></button>
+                <button hx-get="/{{.model}}/renderTable/{{.previousPage}}" hx-trigger="click" hx-target="#tableDiv" name="search-key" value="{{.searchKey}}" class="btn btn-primary btn-pagination"><i class="bi bi-chevron-left"></i></button>
+                <button hx-get="/{{.model}}/renderTable/{{.someBefore}}" hx-trigger="click" hx-target="#tableDiv" name="search-key" value="{{.searchKey}}" class="btn btn-primary btn-pagination">...</button>
+                <button hx-get="/{{.model}}/renderTable/{{.threeBefore}}" hx-trigger="click" hx-target="#tableDiv" name="search-key" value="{{.searchKey}}" class="btn btn-primary btn-pagination">{{.threeBefore}}</button>
+                <button hx-get="/{{.model}}/renderTable/{{.twoBefore}}" hx-trigger="click" hx-target="#tableDiv" name="search-key" value="{{.searchKey}}" class="btn btn-primary btn-pagination">{{.twoBefore}}</button>
+                <button hx-get="/{{.model}}/renderTable/{{.previousPage}}" hx-trigger="click" hx-target="#tableDiv" name="search-key" value="{{.searchKey}}" class="btn btn-primary btn-pagination">{{.previousPage}}</button>
+                <button class="btn btn-primary btn-pagination disabled current-page">{{.currentPage}}</button>
+                <button hx-get="/{{.model}}/renderTable/{{.nextPage}}" hx-trigger="click" hx-target="#tableDiv" name="search-key" value="{{.searchKey}}" class="btn btn-primary btn-pagination">{{.nextPage}}</button>
+                <button hx-get="/{{.model}}/renderTable/{{.twoAfter}}" hx-trigger="click" hx-target="#tableDiv" name="search-key" value="{{.searchKey}}" class="btn btn-primary btn-pagination">{{.twoAfter}}</button>
+                <button hx-get="/{{.model}}/renderTable/{{.threeAfter}}" hx-trigger="click" hx-target="#tableDiv" name="search-key" value="{{.searchKey}}" class="btn btn-primary btn-pagination">{{.threeAfter}}</button>
+                <button hx-get="/{{.model}}/renderTable/{{.someAfter}}" hx-trigger="click" hx-target="#tableDiv" name="search-key" value="{{.searchKey}}" class="btn btn-primary btn-pagination">...</button>
+                <button hx-get="/{{.model}}/renderTable/{{.nextPage}}" hx-trigger="click" hx-target="#tableDiv" name="search-key" value="{{.searchKey}}" class="btn btn-primary btn-pagination"><i class="bi bi-chevron-right"></i></button>
+                <button hx-get="/{{.model}}/renderTable/{{.lastPage}}" hx-trigger="click" hx-target="#tableDiv" name="search-key" value="{{.searchKey}}" class="btn btn-primary btn-pagination"><i class="bi bi-chevron-double-right"></i></button>
+            {{end}} 
         {{end}}
-
-        <!-- pagina actual -->
-        <li class="page-item"><a class="page-link current-page" href="#">{{.currentPage}} </a></li>
-                
-        <!-- si es la antepenultima -->
-        {{if eq .twoAfter .lastPage}}
-            <li class="page-item"><a class="page-link" href="/test/{{.nextPage}}">{{.nextPage}} </a></li>
-            <li class="page-item"><a class="page-link" href="/test/{{.twoAfter}}">{{.twoAfter}} </a></li>
-            <li class="page-item"><a class="page-link" href="/test/{{.someAfter}}">...</a></li>
-            <li class="page-item"><a class="page-link" href="/test/{{.nextPage}}"><i class="bi bi-chevron-right"></i></a></li>
-            <li class="page-item"><a class="page-link" href="/test/{{.lastPage}}"><i class="bi bi-chevron-double-right"></i></a></li>
-        <!-- si es la anteultima -->
-        {{else if eq .nextPage .lastPage}}
-            <li class="page-item"><a class="page-link" href="/test/{{.nextPage}}">{{.nextPage}} </a></li>
-            <li class="page-item"><a class="page-link" href="/test/{{.someAfter}}">...</a></li>
-            <li class="page-item"><a class="page-link" href="/test/{{.nextPage}}"><i class="bi bi-chevron-right"></i></a></li>
-            <li class="page-item"><a class="page-link" href="/test/{{.lastPage}}"><i class="bi bi-chevron-double-right"></i></a></li>
-        <!-- si es la ultima pagina -->
-        {{else if eq .currentPage .lastPage}}
-            <li class="page-item disabled"><a class="page-link" href="#">...</a></li>
-            <li class="page-item disabled"><a class="page-link" href="#"><i class="bi bi-chevron-right"></i></a></li>
-            <li class="page-item disabled"><a class="page-link" href="#"><i class="bi bi-chevron-double-right"></i></a></li>
-
-        {{else}}
-        <!-- si es anterior a la antepenultima -->
-            <li class="page-item"><a class="page-link" href="/test/{{.nextPage}}">{{.nextPage}} </a></li>
-            <li class="page-item"><a class="page-link" href="/test/{{.twoAfter}}">{{.twoAfter}} </a></li>
-            <li class="page-item"><a class="page-link" href="/test/{{.threeAfter}}">{{.threeAfter}} </a></li>
-            <li class="page-item"><a class="page-link" href="/test/{{.someAfter}}">...</a></li>
-            <li class="page-item"><a class="page-link" href="/test/{{.nextPage}}"><i class="bi bi-chevron-right"></i></a></li>
-            <li class="page-item"><a class="page-link" href="/test/{{.lastPage}}"><i class="bi bi-chevron-double-right"></i></a></li>
-        {{end}}
-    {{end}}
-    </ul>
-  </nav>
+        </ul>
+    </nav>
+</div>
 {{end}}

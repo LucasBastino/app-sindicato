@@ -19,12 +19,14 @@ func RegisterRoutes(app *fiber.App) {
 	app.Get("/member/:IdMember/form/createParent", c.RenderCreateParentForm)
 
 	app.Get("/parent/renderTable", c.RenderParentTable)
+	app.Get("/parent/renderTable/:Page", c.RenderParentTable)
 	app.Post("/parent/create", c.CreateParent)
 	app.Get("/parent/:IdParet/file", c.RenderParentFile)
 	app.Delete("/parent/:IdMember/:IdParet/delete", c.DeleteParent)
 	app.Put("/parent/:IdParet/edit", c.EditParent)
 
 	app.Get("/enterprise/renderTable", c.RenderEnterpriseTable)
+	app.Get("/enterprise/renderTable/:Page", c.RenderEnterpriseTable)
 	app.Get("/form/createEnterprise", c.RenderCreateEnterpriseForm)
 	app.Post("/enterprise/create", c.CreateEnterprise)
 	app.Get("/enterprise/:IdEnterprise/file", c.RenderEnterpriseFile)
@@ -38,5 +40,7 @@ func RegisterRoutes(app *fiber.App) {
 	// app.Get("/form/createParent", c.renderCreateParentForm)
 	app.Get("/test/:Page", c.TestOffset)
 	app.Get("/createMembers", c.CreateMembers)
+	app.Get("/createParents", c.CreateParents)
+	app.Get("/createEnterprises", c.CreateEnterprises)
 	app.Get("/prueba", c.Prueba)
 }

@@ -89,7 +89,7 @@ func (e Enterprise) SearchModels(c *fiber.Ctx, offset int) ([]Enterprise, string
 	var enterprises []Enterprise
 	var enterprise Enterprise
 
-	result, err := database.DB.Query(fmt.Sprintf(`SELECT * FROM EnterpriseTable WHERE Name LIKE '%%%s%%' OR Address LIKE '%%%s%%'`, searchKey, searchKey))
+	result, err := database.DB.Query(fmt.Sprintf(`SELECT * FROM EnterpriseTable WHERE Name LIKE '%%%s%%' OR Address LIKE '%%%s%%' LIMIT 10 OFFSET %d`, searchKey, searchKey, offset))
 	if err != nil {
 		fmt.Println("error searching Enterprise in DB")
 		panic(err)
@@ -120,7 +120,7 @@ func (e Enterprise) ValidateFields(c *fiber.Ctx) map[string]string {
 func (e Enterprise) GetTotalRows(c *fiber.Ctx) int {
 	var totalRows int
 	searchKey := c.FormValue("search-key")
-	row := database.DB.QueryRow("SELECT COUNT(*) FROM EnterpriseTable WHERE Name LIKE '%%%s%%'", searchKey)
+	row := database.DB.QueryRow(fmt.Sprintf("SELECT COUNT(*) FROM EnterpriseTable WHERE Name LIKE '%%%s%%'", searchKey))
 	// row.Scan copia el numero de fila en la variable count
 	err := row.Scan(&totalRows)
 	if err != nil {
@@ -131,6 +131,7 @@ func (e Enterprise) GetTotalRows(c *fiber.Ctx) int {
 
 func (e Enterprise) GetFiberMap(enterprises []Enterprise, searchKey string, currentPage, someBefore, someAfter, totalPages int, totalPagesArray []int) fiber.Map {
 	return fiber.Map{
+		"model":           "enterprise",
 		"enterprises":     enterprises,
 		"searchKey":       searchKey,
 		"currentPage":     currentPage,

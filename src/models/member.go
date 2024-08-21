@@ -120,20 +120,18 @@ func (m Member) ValidateFields(c *fiber.Ctx) map[string]string {
 func (m Member) GetTotalRows(c *fiber.Ctx) int {
 	var totalRows int
 	searchKey := c.FormValue("search-key")
-	fmt.Println("antes de la query row")
 	row := database.DB.QueryRow(fmt.Sprintf("SELECT COUNT(*) FROM MemberTable WHERE Name LIKE '%%%s%%'", searchKey))
 	// row.Scan copia el numero de fila en la variable count
-	fmt.Println("despues de la query row")
 	err := row.Scan(&totalRows)
 	if err != nil {
 		log.Fatal(err)
 	}
-	fmt.Println("despues del scan")
 	return totalRows
 }
 
 func (m Member) GetFiberMap(members []Member, searchKey string, currentPage, someBefore, someAfter, totalPages int, totalPagesArray []int) fiber.Map {
 	return fiber.Map{
+		"model":           "member",
 		"members":         members,
 		"searchKey":       searchKey,
 		"currentPage":     currentPage,

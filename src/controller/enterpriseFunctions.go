@@ -43,9 +43,31 @@ func EditEnterprise(c *fiber.Ctx) error {
 }
 
 func RenderEnterpriseTable(c *fiber.Ctx) error {
-	enterprises, searchKey := searchModelsCaller(enterprise, c, 5)
-	data := fiber.Map{"model": enterprise, "enterprises": enterprises, "searchKey": searchKey}
-	return c.Render("enterpriseTable", data)
+	// obtengo la currentPage del path
+	currentPage := GetPageFromPath(c)
+	// calculo la cantidad de resultados
+	totalRows := getTotalRowsCaller(enterprise, c)
+	if totalRows == 0 {
+		// si no hay resultados renderizar esto
+		return c.Render("searchWithNoResults", fiber.Map{})
+	} else {
+		// si hay resultados...
+
+		// calcular totalPages
+		totalPages, offset, someBefore, someAfter := GetPaginationData(currentPage, totalRows)
+
+		// busco los miembros y devuelvo el searchKey para usarlo nuevamente en la paginacion
+		enterprises, searchKey := searchModelsCaller(enterprise, c, offset)
+
+		// hago un array para poder recorrerlo y crear botones cuando hay menos de 10 paginas en el template
+		totalPagesArray := GetTotalPagesArray(totalPages)
+
+		// creo un map con todas las variables
+		mapData := getFiberMapCaller(enterprise, enterprises, searchKey, currentPage, someBefore, someAfter, totalPages, totalPagesArray)
+
+		// renderizo la tabla y le envio el map con las variables
+		return c.Render("enterpriseTable", mapData)
+	}
 }
 
 func RenderEnterpriseFile(c *fiber.Ctx) error {

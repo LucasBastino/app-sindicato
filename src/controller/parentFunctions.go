@@ -45,9 +45,31 @@ func EditParent(c *fiber.Ctx) error {
 }
 
 func RenderParentTable(c *fiber.Ctx) error {
-	parents, searchKey := searchModelsCaller(parent, c, 5)
-	data := fiber.Map{"model": parent, "parents": parents, "searchKey": searchKey}
-	return c.Render("parentTable", data)
+	// obtengo la currentPage del path
+	currentPage := GetPageFromPath(c)
+	// calculo la cantidad de resultados
+	totalRows := getTotalRowsCaller(parent, c)
+	if totalRows == 0 {
+		// si no hay resultados renderizar esto
+		return c.Render("searchWithNoResults", fiber.Map{})
+	} else {
+		// si hay resultados...
+
+		// calcular totalPages
+		totalPages, offset, someBefore, someAfter := GetPaginationData(currentPage, totalRows)
+
+		// busco los miembros y devuelvo el searchKey para usarlo nuevamente en la paginacion
+		parents, searchKey := searchModelsCaller(parent, c, offset)
+
+		// hago un array para poder recorrerlo y crear botones cuando hay menos de 10 paginas en el template
+		totalPagesArray := GetTotalPagesArray(totalPages)
+
+		// creo un map con todas las variables
+		mapData := getFiberMapCaller(parent, parents, searchKey, currentPage, someBefore, someAfter, totalPages, totalPagesArray)
+
+		// renderizo la tabla y le envio el map con las variables
+		return c.Render("parentTable", mapData)
+	}
 }
 
 func RenderParentFile(c *fiber.Ctx) error {

@@ -34,3 +34,5 @@ INSERT INTO ParentTable (Name, Rel, IdMember) VALUES ('familiar1', 'prima', 1)
 INSERT INTO ParentTable (Name, Rel, IdMember) VALUES ('familiar3', 'PRIMssO', 1)
 
 SELECT COUNT(IdMember) FROM MemberTable;
+
+DELETE FROM MemberTable WHERE IdMember > 500

@@ -80,7 +80,7 @@ func (p Parent) SearchModels(c *fiber.Ctx, offset int) ([]Parent, string) {
 	var parents []Parent
 	var parent Parent
 
-	result, err := database.DB.Query(fmt.Sprintf(`SELECT IdParent, Name, Rel FROM ParentTable WHERE Name LIKE '%%%s%%' OR Rel LIKE '%%%s%%'`, searchKey, searchKey))
+	result, err := database.DB.Query(fmt.Sprintf(`SELECT IdParent, Name, Rel FROM ParentTable WHERE Name LIKE '%%%s%%' OR Rel LIKE '%%%s%%' LIMIT 10 OFFSET %d`, searchKey, searchKey, offset))
 	if err != nil {
 		fmt.Println("error searching Parent in DB")
 		panic(err)
@@ -111,7 +111,7 @@ func (p Parent) ValidateFields(c *fiber.Ctx) map[string]string {
 func (p Parent) GetTotalRows(c *fiber.Ctx) int {
 	var totalRows int
 	searchKey := c.FormValue("search-key")
-	row := database.DB.QueryRow("SELECT COUNT(*) FROM ParentTable WHERE Name LIKE '%%%s%%'", searchKey)
+	row := database.DB.QueryRow(fmt.Sprintf("SELECT COUNT(*) FROM ParentTable WHERE Name LIKE '%%%s%%'", searchKey))
 	// row.Scan copia el numero de fila en la variable count
 	err := row.Scan(&totalRows)
 	if err != nil {
@@ -122,6 +122,7 @@ func (p Parent) GetTotalRows(c *fiber.Ctx) int {
 
 func (p Parent) GetFiberMap(parents []Parent, searchKey string, currentPage, someBefore, someAfter, totalPages int, totalPagesArray []int) fiber.Map {
 	return fiber.Map{
+		"model":           "parent",
 		"parents":         parents,
 		"searchKey":       searchKey,
 		"currentPage":     currentPage,
