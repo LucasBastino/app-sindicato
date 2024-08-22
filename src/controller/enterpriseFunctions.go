@@ -19,7 +19,7 @@ func CreateEnterprise(c *fiber.Ctx) error {
 		data := fiber.Map{"model": enterprise, "enterprise": enterprise, "errorMap": errorMap}
 		return c.Render("createEnterpriseForm", data)
 	} else {
-		insertModelCaller(enterprise)
+		enterprise = insertModelCaller(enterprise)
 		data := fiber.Map{"model": enterprise, "enterprise": enterprise}
 		return c.Render("enterpriseFile", data)
 	}

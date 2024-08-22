@@ -16,14 +16,24 @@ type Enterprise struct {
 }
 
 func (newEnterprise Enterprise) InsertModel() Enterprise {
-	var enterprise Enterprise
 	insert, err := database.DB.Query(fmt.Sprintf("INSERT INTO EnterpriseTable (Name, Address) VALUES ('%s','%s')", newEnterprise.Name, newEnterprise.Address))
 	if err != nil {
 		// DBError{"INSERT Enterprise"}.Error(err)
 		fmt.Println("error insertando en la DB")
 		panic(err)
 	}
-	defer insert.Close()
+	insert.Close()
+	var enterprise Enterprise
+	result, err := database.DB.Query("SELECT * FROM EnterpriseTable WHERE IdEnterprise = (SELECT LAST_INSERT_ID())")
+	if err != nil {
+		fmt.Print(err)
+	}
+	result.Next()
+	err = result.Scan(&enterprise.IdEnterprise, &enterprise.Name, &enterprise.Address)
+	if err != nil {
+		fmt.Println(err)
+	}
+	result.Close()
 	return enterprise
 }
 

@@ -17,14 +17,24 @@ type Parent struct {
 }
 
 func (newParent Parent) InsertModel() Parent {
-	var parent Parent
-	insert, err := database.DB.Query(fmt.Sprintf("INSERT INTO ParentTable (Name, Rel, IdMember) VALUES ('%s','%s', '%d')", newParent.Name, newParent.Rel, newParent.IdMember))
+	insert, err := database.DB.Query(fmt.Sprintf("INSERT INTO ParentTable (Name, Rel, IdParent) VALUES ('%s','%s', '%d')", newParent.Name, newParent.Rel, newParent.IdParent))
 	if err != nil {
 		// DBError{"INSERT Parent"}.Error(err)
 		fmt.Println("error inserting parent")
 		panic(err)
 	}
-	defer insert.Close()
+	insert.Close()
+	var parent Parent
+	result, err := database.DB.Query("SELECT * FROM ParentTable WHERE IdParent = (SELECT LAST_INSERT_ID())")
+	if err != nil {
+		fmt.Print(err)
+	}
+	result.Next()
+	err = result.Scan(&parent.IdParent, &parent.Name, &parent.Rel, &parent.IdMember)
+	if err != nil {
+		fmt.Println(err)
+	}
+	result.Close()
 	return parent
 }
 

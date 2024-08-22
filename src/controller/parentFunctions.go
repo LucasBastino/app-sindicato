@@ -19,7 +19,7 @@ func CreateParent(c *fiber.Ctx) error {
 		data := fiber.Map{"model": parent, "parent": parent, "errorMap": errorMap}
 		return c.Render("createParentForm", data)
 	} else {
-		insertModelCaller(parent)
+		parent = insertModelCaller(parent)
 		data := fiber.Map{"model": parent, "parent": parent}
 		return c.Render("parentFile", data)
 	}
@@ -36,10 +36,10 @@ func DeleteParent(c *fiber.Ctx) error {
 
 func EditParent(c *fiber.Ctx) error {
 	// falta hacer la validacion
-	parentEdited := parserCaller(parentParser, c)
+	parent := parserCaller(parentParser, c)
 	IdParent := getIdModelCaller(parent, c)
-	parentEdited.IdParent = IdParent
-	editModelCaller(parentEdited)
+	parent.IdParent = IdParent
+	editModelCaller(parent)
 	data := fiber.Map{"model": parent, "parent": parent}
 	return c.Render("parentFile", data)
 }
