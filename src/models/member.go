@@ -11,9 +11,10 @@ import (
 )
 
 type Member struct {
-	IdMember int
-	Name     string
-	DNI      string
+	IdMember     int
+	Name         string
+	DNI          string
+	IdEnterprise int
 }
 
 func (m Member) Imprimir() {
@@ -21,7 +22,7 @@ func (m Member) Imprimir() {
 }
 
 func (newMember Member) InsertModel() Member {
-	insert, err := database.DB.Query(fmt.Sprintf("INSERT INTO MemberTable (Name, DNI) VALUES ('%s','%s')", newMember.Name, newMember.DNI))
+	insert, err := database.DB.Query(fmt.Sprintf("INSERT INTO MemberTable (Name, DNI, IdEnterprise) VALUES ('%s','%s', '%d')", newMember.Name, newMember.DNI, newMember.IdEnterprise))
 	if err != nil {
 		// DBError{"INSERT MEMBER"}.Error(err)
 		fmt.Println("error insertando en la DB")
@@ -34,7 +35,7 @@ func (newMember Member) InsertModel() Member {
 		fmt.Print(err)
 	}
 	result.Next()
-	err = result.Scan(&member.IdMember, &member.Name, &member.DNI)
+	err = result.Scan(&member.IdMember, &member.Name, &member.DNI, &member.IdEnterprise)
 	if err != nil {
 		fmt.Println(err)
 	}
@@ -54,7 +55,7 @@ func (m Member) DeleteModel() {
 }
 
 func (m Member) EditModel() {
-	update, err := database.DB.Query(fmt.Sprintf("UPDATE MemberTable SET Name = '%s', DNI = '%s' WHERE IdMember = '%v'", m.Name, m.DNI, m.IdMember))
+	update, err := database.DB.Query(fmt.Sprintf("UPDATE MemberTable SET Name = '%s', DNI = '%s', IdEnterprise = '%d' WHERE IdMember = '%v'", m.Name, m.DNI, m.IdEnterprise, m.IdMember))
 	if err != nil {
 		// DBError{"UPDATE MEMBER"}.Error(err)
 		fmt.Println("error updating member")
@@ -74,7 +75,7 @@ func (m Member) GetIdModel(c *fiber.Ctx) int {
 
 func (m Member) SearchOneModelById(c *fiber.Ctx) Member {
 	IdMember := m.GetIdModel(c)
-	result, err := database.DB.Query(fmt.Sprintf("SELECT IdMember, Name, DNI FROM MemberTable WHERE IdMember = '%v'", IdMember))
+	result, err := database.DB.Query(fmt.Sprintf("SELECT IdMember, Name, DNI, IdEnterprise FROM MemberTable WHERE IdMember = '%v'", IdMember))
 	if err != nil {
 		fmt.Println("error searching member by Id")
 		panic(err)
@@ -82,7 +83,7 @@ func (m Member) SearchOneModelById(c *fiber.Ctx) Member {
 
 	var member Member
 	for result.Next() {
-		err = result.Scan(&member.IdMember, &member.Name, &member.DNI)
+		err = result.Scan(&member.IdMember, &member.Name, &member.DNI, &member.IdEnterprise)
 		if err != nil {
 			fmt.Println("error scanning member")
 			panic(err)

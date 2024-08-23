@@ -2,11 +2,11 @@
 
     <h2>Agregar empresa</h2>
     <form hx-post="/enterprise/create" hx-target="#tableDiv">
-            <input type="text" name="name">
+            <input type="text" name="name" value="{{$.enterprise.Name}}" placeholder="Nombre">
             {{with .errorMap.name}}
             <p>{{.}}</p>
             {{end}}
-            <input type="text" name="address">
+            <input type="text" name="address" value="{{$.enterprise.Address}}" placeholder="Direccion">
             {{with .errorMap.address}}
             <p>{{.}}</p>
             {{end}}

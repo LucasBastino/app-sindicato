@@ -6,12 +6,12 @@
             <th> </th>
         </tr>
 
-        {{range $_, $member := .members}}
+        {{range $_, $m := .members}}
         <tr>
-            <td>{{$member.Name}} </td>
-            <td>{{$member.DNI}} </td>
-            <td><button class="btn-primary" hx-get="/member/{{$member.IdMember}}/file" hx-trigger="click" hx-target="#tableDiv" onclick="hideMemberSearchInput();"><i class="bi bi-file-earmark-text"></i></button></form></td>
-            <td><button class="btn-danger" hx-delete="/member/{{$member.IdMember}}/delete" hx-confirm="¿Estás seguro que deseas eliminar el afiliado?" hx-target="#tableDiv"><i class="bi bi-x-square"></i></button></td>  
+            <td>{{$m.Name}} </td>
+            <td>{{$m.DNI}} </td>
+            <td><button class="btn-primary" hx-get="/member/{{$m.IdMember}}/file" hx-trigger="click" hx-target="#tableDiv" onclick="hideMemberSearchInput();"><i class="bi bi-file-earmark-text"></i></button></form></td>
+            <td><button class="btn-danger" hx-delete="/member/{{$m.IdMember}}/delete" hx-confirm="¿Estás seguro que deseas eliminar el afiliado?" hx-target="#tableDiv"><i class="bi bi-x-square"></i></button></td>  
          </tr>
         {{end}}
 

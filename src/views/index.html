@@ -6,46 +6,45 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.4.1/dist/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <link rel="stylesheet" href="/static/css/styles.css">
-    <title>Member List</title>
+    <title>Sindicato San Martín</title>
 </head>
 <body>
   <div class="container">
     <div class="nav-container">
-  <nav class="navbar navbar-expand navbar-light bg-light">
-    <a class="navbar-brand" href="#">Sindicato</a>
-      <div class="navbar-nav">
-        <!-- navbar links -->
-        <a class="nav-item nav-link active" href="#" onclick="showAddMemberBtn(); hideAddEnterpriseBtn(); showMemberSearchInput(); hideParentSearchInput(); hideEnterpriseSearchInput();" hx-get="/member/renderTable" hx-trigger="click" hx-target="#tableDiv">Afiliados</a>
-        <a class="nav-item nav-link active" href="#" onclick="showAddEnterpriseBtn(); hideAddMemberBtn(); hideMemberSearchInput(); hideParentSearchInput(); showEnterpriseSearchInput();" hx-get="/enterprise/renderTable" hx-trigger="click" hx-target="#tableDiv">Empresas</a>
-        <a class="nav-item nav-link active" href="#" onclick="hideAddMemberBtn(); hideAddEnterpriseBtn(); hideMemberSearchInput(); showParentSearchInput(); hideEnterpriseSearchInput();" hx-get="/parent/renderTable" hx-trigger="click" hx-target="#tableDiv">Familiares</a>
+      <nav class="navbar navbar-expand navbar-light bg-light">
+        <a class="navbar-brand" href="#" onclick="showAddMemberBtn(); hideAddEnterpriseBtn(); showMemberSearchInput(); hideParentSearchInput(); hideEnterpriseSearchInput();" hx-get="/member/renderTable" hx-trigger="click" hx-target="#tableDiv">Sindicato</a>
+          <div class="navbar-nav">
+            <!-- navbar links -->
+            <a class="nav-item nav-link active" href="#" onclick="showAddMemberBtn(); hideAddEnterpriseBtn(); showMemberSearchInput(); hideParentSearchInput(); hideEnterpriseSearchInput();" hx-get="/member/renderTable" hx-trigger="click" hx-target="#tableDiv">Afiliados</a>
+            <a class="nav-item nav-link active" href="#" onclick="showAddEnterpriseBtn(); hideAddMemberBtn(); hideMemberSearchInput(); hideParentSearchInput(); showEnterpriseSearchInput();" hx-get="/enterprise/renderTable" hx-trigger="click" hx-target="#tableDiv">Empresas</a>
+            <a class="nav-item nav-link active" href="#" onclick="hideAddMemberBtn(); hideAddEnterpriseBtn(); hideMemberSearchInput(); showParentSearchInput(); hideEnterpriseSearchInput();" hx-get="/parent/renderTable" hx-trigger="click" hx-target="#tableDiv">Familiares</a>
 
-        <!-- 4 search inputs -->
-        <div class="inner-addon right-addon" id="member-search-input">
-          <i class="bi bi-search input-icon"></i>
-          <input class="form-control mr-sm-2 input-field" name="search-key" type="search" aria-label="Search" 
-          hx-get="/member/renderTable" hx-trigger="keyup" hx-target="#tableDiv">
-        </div> 
-        <div class="inner-addon right-addon hide" id="enterprise-search-input">
-          <i class="bi bi-search input-icon"></i>
-          <input class="form-control mr-sm-2 input-field" name="search-key" type="search" aria-label="Search" 
-          hx-get="/enterprise/renderTable" hx-trigger="keyup" hx-target="#tableDiv">
-        </div> 
-        <div class="inner-addon right-addon hide" id="parent-search-input">
-          <i class="bi bi-search input-icon"></i>
-          <input class="form-control mr-sm-2 input-field" name="search-key" type="search" aria-label="Search" 
-          hx-get="/parent/renderTable" hx-trigger="keyup" hx-target="#tableDiv">
-        </div> 
-      </div>
+            <!-- 4 search inputs -->
+            <div class="inner-addon right-addon" id="member-search-input">
+              <i class="bi bi-search input-icon"></i>
+              <input class="form-control mr-sm-2 input-field" name="search-key" type="search" aria-label="Search" 
+              hx-get="/member/renderTable" hx-trigger="keyup" hx-target="#tableDiv">
+            </div> 
+            <div class="inner-addon right-addon hide" id="enterprise-search-input">
+              <i class="bi bi-search input-icon"></i>
+              <input class="form-control mr-sm-2 input-field" name="search-key" type="search" aria-label="Search" 
+              hx-get="/enterprise/renderTable" hx-trigger="keyup" hx-target="#tableDiv">
+            </div> 
+            <div class="inner-addon right-addon hide" id="parent-search-input">
+              <i class="bi bi-search input-icon"></i>
+              <input class="form-control mr-sm-2 input-field" name="search-key" type="search" aria-label="Search" 
+              hx-get="/parent/renderTable" hx-trigger="keyup" hx-target="#tableDiv">
+            </div> 
+          </div>
 
-      <!-- buttons -->
-      <a class="nav-item nav-link active py-0" href="#" id="add-member-btn" onclick="hideAddMemberBtn(); hideAddEnterpriseBtn();" hx-get="/form/createMember" hx-trigger="click" hx-target="#tableDiv"><button class="btn-primary">Agregar afiliado</button> 
-      <a class="nav-item nav-link active py-0 hide" href="#" id="add-enterprise-btn" onclick="hideAddMemberBtn(); hideAddEnterpriseBtn();" hx-get="/form/createEnterprise" hx-trigger="click" hx-target="#tableDiv"><button class="btn-primary">Agregar empresa</button> 
+          <!-- buttons -->
+          <a class="nav-item nav-link active py-0" href="#" id="add-member-btn" onclick="hideAddMemberBtn(); hideAddEnterpriseBtn();" hx-get="/form/createMember" hx-trigger="click" hx-target="#tableDiv"><button class="btn-primary">Agregar afiliado</button> 
+          <a class="nav-item nav-link active py-0 hide" href="#" id="add-enterprise-btn" onclick="hideAddMemberBtn(); hideAddEnterpriseBtn();" hx-get="/form/createEnterprise" hx-trigger="click" hx-target="#tableDiv"><button class="btn-primary">Agregar empresa</button> 
 
 
-      <a class="nav-item-right" href="#">Padrón</a>
-    </div>
-    
-  </nav>
+          <a class="nav-item-right" href="/renderElectoralMemberList">Padrón</a>
+        </div>
+      </nav>
 
   <!-- tableDiv -->
   <div id="tableDiv" hx-get="/member/renderTable" hx-trigger="load"></div>

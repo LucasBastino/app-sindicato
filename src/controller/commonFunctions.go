@@ -1,6 +1,10 @@
 package controller
 
 import (
+	"fmt"
+
+	"github.com/LucasBastino/app-sindicato/src/database"
+	"github.com/LucasBastino/app-sindicato/src/models"
 	"github.com/gofiber/fiber/v2"
 	// "syscall/js"
 )
@@ -83,4 +87,39 @@ func GetTotalPagesArray(totalPages int) []int {
 		}
 	}
 	return totalPagesArray
+}
+
+func RenderElectoralMemberList(c *fiber.Ctx) error {
+	var member models.Member
+	var members []models.Member
+	result, err := database.DB.Query("SELECT Name, DNI from MemberTable")
+	if err != nil {
+		fmt.Println(err)
+	}
+	for result.Next() {
+		err = result.Scan(&member.Name, &member.DNI)
+		if err != nil {
+			fmt.Println(err)
+		}
+		members = append(members, member)
+	}
+	defer result.Close()
+	return c.Render("electoralMemberList", fiber.Map{"members": members})
+}
+
+func RenderPruebaEmpresas(c *fiber.Ctx) error {
+	var enterprise models.Enterprise
+	var enterprises []models.Enterprise
+	result, err := database.DB.Query("SELECT IdEnterprise, Name FROM EnterpriseTable LIMIT 10")
+	if err != nil {
+		fmt.Println(err)
+	}
+	for result.Next() {
+		err = result.Scan(&enterprise.IdEnterprise, &enterprise.Name)
+		if err != nil {
+			fmt.Println(err)
+		}
+		enterprises = append(enterprises, enterprise)
+	}
+	return c.Render("pruebaEmpresas", fiber.Map{"enterprises": enterprises})
 }

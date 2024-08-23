@@ -6,11 +6,11 @@
         <th> </th>
     </tr>
 
-    {{range $_, $parent := .parents}}
+    {{range $_, $p := .parents}}
     <tr>
-        <td>{{$parent.Name}}</td>
-        <td>{{$parent.Rel}}</td>
-        <td><button class="btn-primary" onclick="disableBrowserInput();" hx-get="/parent/{{$parent.IdParent}}/file" hx-trigger="click" hx-target="#tableDiv"><i class="bi bi-file-earmark-text"></i></button></form></td>
+        <td>{{$p.Name}}</td>
+        <td>{{$p.Rel}}</td>
+        <td><button class="btn-primary" onclick="disableBrowserInput();" hx-get="/parent/{{$p.IdParent}}/file" hx-trigger="click" hx-target="#tableDiv"><i class="bi bi-file-earmark-text"></i></button></form></td>
      </tr>
     {{end}}
 

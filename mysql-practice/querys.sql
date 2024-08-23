@@ -2,6 +2,8 @@ CREATE TABLE MemberTable(
     IdMember INT PRIMARY KEY AUTO_INCREMENT,
     Name VARCHAR(50),
     DNI VARCHAR(12)
+    IdEnterprise INT,
+    FOREIGN KEY (IdEnterprise) REFERENCES EnterpriseTable(IdEnterprise) 
 )
 
 
