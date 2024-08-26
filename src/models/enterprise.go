@@ -15,30 +15,30 @@ type Enterprise struct {
 	Address      string
 }
 
-func (newEnterprise Enterprise) InsertModel() Enterprise {
-	insert, err := database.DB.Query(fmt.Sprintf("INSERT INTO EnterpriseTable (Name, Address) VALUES ('%s','%s')", newEnterprise.Name, newEnterprise.Address))
+func (enterprise Enterprise) InsertModel() Enterprise {
+	insert, err := database.DB.Query(fmt.Sprintf("INSERT INTO EnterpriseTable (Name, Address) VALUES ('%s','%s')", enterprise.Name, enterprise.Address))
 	if err != nil {
 		// DBError{"INSERT Enterprise"}.Error(err)
 		fmt.Println("error insertando en la DB")
 		panic(err)
 	}
 	insert.Close()
-	var enterprise Enterprise
+	var e Enterprise
 	result, err := database.DB.Query("SELECT * FROM EnterpriseTable WHERE IdEnterprise = (SELECT LAST_INSERT_ID())")
 	if err != nil {
 		fmt.Print(err)
 	}
 	result.Next()
-	err = result.Scan(&enterprise.IdEnterprise, &enterprise.Name, &enterprise.Address)
+	err = result.Scan(&e.IdEnterprise, &e.Name, &e.Address)
 	if err != nil {
 		fmt.Println(err)
 	}
 	result.Close()
-	return enterprise
+	return e
 }
 
-func (e Enterprise) DeleteModel() {
-	delete, err := database.DB.Query(fmt.Sprintf("DELETE FROM EnterpriseTable WHERE IdEnterprise = '%v'", e.IdEnterprise))
+func (enterprise Enterprise) DeleteModel() {
+	delete, err := database.DB.Query(fmt.Sprintf("DELETE FROM EnterpriseTable WHERE IdEnterprise = '%v'", enterprise.IdEnterprise))
 	if err != nil {
 		// DBError{"DELETE Enterprise"}.Error(err)
 		fmt.Println("error deleting Enterprise")
@@ -48,8 +48,8 @@ func (e Enterprise) DeleteModel() {
 
 }
 
-func (e Enterprise) EditModel() {
-	update, err := database.DB.Query(fmt.Sprintf("UPDATE EnterpriseTable SET Name = '%s', Address = '%s' WHERE IdEnterprise = '%v'", e.Name, e.Address, e.IdEnterprise))
+func (enterprise Enterprise) EditModel() {
+	update, err := database.DB.Query(fmt.Sprintf("UPDATE EnterpriseTable SET Name = '%s', Address = '%s' WHERE IdEnterprise = '%v'", enterprise.Name, enterprise.Address, enterprise.IdEnterprise))
 	if err != nil {
 		// DBError{"UPDATE Enterprise"}.Error(err)
 		fmt.Println("error updating Enterprise")
@@ -58,7 +58,7 @@ func (e Enterprise) EditModel() {
 	defer update.Close()
 }
 
-func (e Enterprise) GetIdModel(c *fiber.Ctx) int {
+func (enterprise Enterprise) GetIdModel(c *fiber.Ctx) int {
 	params := struct {
 		IdEnterprise int `params:"IdEnterprise"`
 	}{}
@@ -76,30 +76,30 @@ func (e Enterprise) GetIdModel(c *fiber.Ctx) int {
 	// return IdEnterprise
 }
 
-func (e Enterprise) SearchOneModelById(c *fiber.Ctx) Enterprise {
-	IdEnterprise := e.GetIdModel(c)
+func (enterprise Enterprise) SearchOneModelById(c *fiber.Ctx) Enterprise {
+	IdEnterprise := enterprise.GetIdModel(c)
 	result, err := database.DB.Query(fmt.Sprintf("SELECT IdEnterprise, Name, Address FROM EnterpriseTable WHERE IdEnterprise = '%v'", IdEnterprise))
 	if err != nil {
 		fmt.Println("error searching enterprise by id")
 		panic(err)
 	}
 
-	var enterprise Enterprise
+	var e Enterprise
 	for result.Next() {
-		err = result.Scan(&enterprise.IdEnterprise, &enterprise.Name, &enterprise.Address)
+		err = result.Scan(&e.IdEnterprise, &e.Name, &e.Address)
 		if err != nil {
 			fmt.Println("error scanning Enterprise")
 			panic(err)
 		}
 	}
 	defer result.Close()
-	return enterprise
+	return e
 }
 
-func (e Enterprise) SearchModels(c *fiber.Ctx, offset int) ([]Enterprise, string) {
+func (enterprise Enterprise) SearchModels(c *fiber.Ctx, offset int) ([]Enterprise, string) {
 	searchKey := c.FormValue("search-key")
 	var enterprises []Enterprise
-	var enterprise Enterprise
+	var e Enterprise
 
 	result, err := database.DB.Query(fmt.Sprintf(`SELECT * FROM EnterpriseTable WHERE Name LIKE '%%%s%%' OR Address LIKE '%%%s%%' LIMIT 10 OFFSET %d`, searchKey, searchKey, offset))
 	if err != nil {
@@ -107,18 +107,18 @@ func (e Enterprise) SearchModels(c *fiber.Ctx, offset int) ([]Enterprise, string
 		panic(err)
 	}
 	for result.Next() {
-		err = result.Scan(&enterprise.IdEnterprise, &enterprise.Name, &enterprise.Address)
+		err = result.Scan(&e.IdEnterprise, &e.Name, &e.Address)
 		if err != nil {
 			fmt.Println("error scanning Enterprise")
 			panic(err)
 		}
-		enterprises = append(enterprises, enterprise)
+		enterprises = append(enterprises, e)
 	}
 	defer result.Close()
 	return enterprises, searchKey
 }
 
-func (e Enterprise) ValidateFields(c *fiber.Ctx) map[string]string {
+func (enterprise Enterprise) ValidateFields(c *fiber.Ctx) map[string]string {
 	errorMap := map[string]string{}
 	if strings.TrimSpace(c.FormValue("name")) == "" {
 		errorMap["name"] = "el campo Nombre no puede estar vacio"
@@ -129,7 +129,7 @@ func (e Enterprise) ValidateFields(c *fiber.Ctx) map[string]string {
 	return errorMap
 }
 
-func (e Enterprise) GetTotalRows(c *fiber.Ctx) int {
+func (enterprise Enterprise) GetTotalRows(c *fiber.Ctx) int {
 	var totalRows int
 	searchKey := c.FormValue("search-key")
 	row := database.DB.QueryRow(fmt.Sprintf("SELECT COUNT(*) FROM EnterpriseTable WHERE Name LIKE '%%%s%%'", searchKey))
@@ -141,7 +141,7 @@ func (e Enterprise) GetTotalRows(c *fiber.Ctx) int {
 	return totalRows
 }
 
-func (e Enterprise) GetFiberMap(enterprises []Enterprise, searchKey string, currentPage, someBefore, someAfter, totalPages int, totalPagesArray []int) fiber.Map {
+func (enterprise Enterprise) GetFiberMap(enterprises []Enterprise, searchKey string, currentPage, someBefore, someAfter, totalPages int, totalPagesArray []int) fiber.Map {
 	return fiber.Map{
 		"model":           "enterprise",
 		"enterprises":     enterprises,
@@ -166,4 +166,25 @@ func (e Enterprise) GetFiberMap(enterprises []Enterprise, searchKey string, curr
 		"totalPages":      totalPages,
 		"totalPagesArray": totalPagesArray,
 	}
+}
+
+func (enterprise Enterprise) GetAllModels() []Enterprise {
+	var enterprises []Enterprise
+	var e Enterprise
+
+	result, err := database.DB.Query("SELECT * FROM EnterpriseTable")
+	if err != nil {
+		fmt.Println("error searching enterprise in DB")
+		panic(err)
+	}
+	for result.Next() {
+		err = result.Scan(&e.IdEnterprise, &e.Name, &e.Address)
+		if err != nil {
+			fmt.Println("error scanning enterprise")
+			panic(err)
+		}
+		enterprises = append(enterprises, e)
+	}
+	defer result.Close()
+	return enterprises
 }

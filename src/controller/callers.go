@@ -45,3 +45,7 @@ func getTotalRowsCaller[M models.TypeModel](m i.IModel[M], c *fiber.Ctx) int {
 func getFiberMapCaller[M models.TypeModel](m i.IModel[M], models []M, searchKey string, currentPage, someBefore, someAfter, totalPages int, totalPagesArray []int) fiber.Map {
 	return m.GetFiberMap(models, searchKey, currentPage, someBefore, someAfter, totalPages, totalPagesArray)
 }
+
+func getAllModelsCaller[M models.TypeModel](m i.IModel[M]) []M {
+	return m.GetAllModels()
+}

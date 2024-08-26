@@ -6,7 +6,6 @@ CREATE TABLE MemberTable(
     FOREIGN KEY (IdEnterprise) REFERENCES EnterpriseTable(IdEnterprise) 
 )
 
-
 CREATE TABLE ParentTable(
     IdParent INT PRIMARY KEY AUTO_INCREMENT,
     Name VARCHAR(50),
@@ -20,6 +19,7 @@ CREATE TABLE EnterpriseTable(
     Name VARCHAR(50),
     Address VARCHAR(50)
 )
+
 
 INSERT INTO EnterpriseTable (Name, Address) VALUES ('coto', 'valenzuela 223')
 

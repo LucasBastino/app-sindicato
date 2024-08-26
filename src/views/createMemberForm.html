@@ -13,7 +13,9 @@
             {{end}}
 
             <select name="id-enterprise" id="enterprise-select">
+                <option value="0">--Elegir una empresa--</option>
                 {{range $_, $e := .enterprises}}
+                <option value="{{$e.IdEnterprise}}">{{$e.Name}}</option>
                 {{end}}
             </select>
         <button type="submit">Enviar</button>

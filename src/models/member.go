@@ -21,30 +21,30 @@ func (m Member) Imprimir() {
 	fmt.Println(m)
 }
 
-func (newMember Member) InsertModel() Member {
-	insert, err := database.DB.Query(fmt.Sprintf("INSERT INTO MemberTable (Name, DNI, IdEnterprise) VALUES ('%s','%s', '%d')", newMember.Name, newMember.DNI, newMember.IdEnterprise))
+func (member Member) InsertModel() Member {
+	insert, err := database.DB.Query(fmt.Sprintf("INSERT INTO MemberTable (Name, DNI, IdEnterprise) VALUES ('%s','%s', '%d')", member.Name, member.DNI, member.IdEnterprise))
 	if err != nil {
 		// DBError{"INSERT MEMBER"}.Error(err)
 		fmt.Println("error insertando en la DB")
 		panic(err)
 	}
 	insert.Close()
-	var member Member
+	var m Member
 	result, err := database.DB.Query("SELECT * FROM MemberTable WHERE IdMember = (SELECT LAST_INSERT_ID())")
 	if err != nil {
 		fmt.Print(err)
 	}
 	result.Next()
-	err = result.Scan(&member.IdMember, &member.Name, &member.DNI, &member.IdEnterprise)
+	err = result.Scan(&m.IdMember, &m.Name, &m.DNI, &m.IdEnterprise)
 	if err != nil {
 		fmt.Println(err)
 	}
 	result.Close()
-	return member
+	return m
 }
 
-func (m Member) DeleteModel() {
-	delete, err := database.DB.Query(fmt.Sprintf("DELETE FROM MemberTable WHERE IdMember = '%v'", m.IdMember))
+func (member Member) DeleteModel() {
+	delete, err := database.DB.Query(fmt.Sprintf("DELETE FROM MemberTable WHERE IdMember = '%v'", member.IdMember))
 	if err != nil {
 		// DBError{"DELETE MEMBER"}.Error(err)
 		fmt.Println("error deleting member")
@@ -54,8 +54,8 @@ func (m Member) DeleteModel() {
 
 }
 
-func (m Member) EditModel() {
-	update, err := database.DB.Query(fmt.Sprintf("UPDATE MemberTable SET Name = '%s', DNI = '%s', IdEnterprise = '%d' WHERE IdMember = '%v'", m.Name, m.DNI, m.IdEnterprise, m.IdMember))
+func (member Member) EditModel() {
+	update, err := database.DB.Query(fmt.Sprintf("UPDATE MemberTable SET Name = '%s', DNI = '%s', IdEnterprise = '%d' WHERE IdMember = '%v'", member.Name, member.DNI, member.IdEnterprise, member.IdMember))
 	if err != nil {
 		// DBError{"UPDATE MEMBER"}.Error(err)
 		fmt.Println("error updating member")
@@ -64,7 +64,7 @@ func (m Member) EditModel() {
 	defer update.Close()
 }
 
-func (m Member) GetIdModel(c *fiber.Ctx) int {
+func (member Member) GetIdModel(c *fiber.Ctx) int {
 	params := struct {
 		IdMember int `params:"IdMember"`
 	}{}
@@ -73,42 +73,42 @@ func (m Member) GetIdModel(c *fiber.Ctx) int {
 	return params.IdMember
 }
 
-func (m Member) SearchOneModelById(c *fiber.Ctx) Member {
-	IdMember := m.GetIdModel(c)
+func (member Member) SearchOneModelById(c *fiber.Ctx) Member {
+	IdMember := member.GetIdModel(c)
 	result, err := database.DB.Query(fmt.Sprintf("SELECT IdMember, Name, DNI, IdEnterprise FROM MemberTable WHERE IdMember = '%v'", IdMember))
 	if err != nil {
 		fmt.Println("error searching member by Id")
 		panic(err)
 	}
 
-	var member Member
+	var m Member
 	for result.Next() {
-		err = result.Scan(&member.IdMember, &member.Name, &member.DNI, &member.IdEnterprise)
+		err = result.Scan(&m.IdMember, &m.Name, &m.DNI, &m.IdEnterprise)
 		if err != nil {
 			fmt.Println("error scanning member")
 			panic(err)
 		}
 	}
 	defer result.Close()
-	return member
+	return m
 }
 
-func (m Member) SearchModels(c *fiber.Ctx, offset int) ([]Member, string) {
+func (member Member) SearchModels(c *fiber.Ctx, offset int) ([]Member, string) {
 	searchKey := c.FormValue("search-key")
 	var members []Member
-	var member Member
+	var m Member
 	result, err := database.DB.Query(fmt.Sprintf(`SELECT * FROM MemberTable WHERE Name LIKE '%%%s%%' OR DNI LIKE '%%%s%%' LIMIT 10 OFFSET %d`, searchKey, searchKey, offset))
 	if err != nil {
 		fmt.Println("error searching member in DB")
 		panic(err)
 	}
 	for result.Next() {
-		err = result.Scan(&member.IdMember, &member.Name, &member.DNI)
+		err = result.Scan(&m.IdMember, &m.Name, &m.DNI)
 		if err != nil {
 			fmt.Println("error scanning member")
 			panic(err)
 		}
-		members = append(members, member)
+		members = append(members, m)
 	}
 	defer result.Close()
 	return members, searchKey
@@ -130,7 +130,7 @@ func (m Member) ValidateFields(c *fiber.Ctx) map[string]string {
 	return errorMap
 }
 
-func (m Member) GetTotalRows(c *fiber.Ctx) int {
+func (member Member) GetTotalRows(c *fiber.Ctx) int {
 	var totalRows int
 	searchKey := c.FormValue("search-key")
 	row := database.DB.QueryRow(fmt.Sprintf("SELECT COUNT(*) FROM MemberTable WHERE Name LIKE '%%%s%%'", searchKey))
@@ -167,4 +167,25 @@ func (m Member) GetFiberMap(members []Member, searchKey string, currentPage, som
 		"totalPages":      totalPages,
 		"totalPagesArray": totalPagesArray,
 	}
+}
+
+func (member Member) GetAllModels() []Member {
+	var members []Member
+	var m Member
+
+	result, err := database.DB.Query("SELECT * FROM MemberTable")
+	if err != nil {
+		fmt.Println("error searching member in DB")
+		panic(err)
+	}
+	for result.Next() {
+		err = result.Scan(&m.IdMember, &m.Name, &m.DNI, &m.IdEnterprise)
+		if err != nil {
+			fmt.Println("error scanning enterprise")
+			panic(err)
+		}
+		members = append(members, m)
+	}
+	defer result.Close()
+	return members
 }

@@ -15,4 +15,5 @@ type IModel[M models.TypeModel] interface {
 	ValidateFields(*fiber.Ctx) map[string]string
 	GetTotalRows(*fiber.Ctx) int
 	GetFiberMap([]M, string, int, int, int, int, []int) fiber.Map
+	GetAllModels() []M
 }
