@@ -11,6 +11,11 @@
             {{with .errorMap.dni}}
             <p>{{.}}</p>
             {{end}}
+
+            <select name="id-enterprise" id="enterprise-select">
+                {{range $_, $e := .enterprises}}
+                {{end}}
+            </select>
         <button type="submit">Enviar</button>
     </form> 
 </div>

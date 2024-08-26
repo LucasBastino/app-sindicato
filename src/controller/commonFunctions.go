@@ -110,7 +110,7 @@ func RenderElectoralMemberList(c *fiber.Ctx) error {
 func RenderPruebaEmpresas(c *fiber.Ctx) error {
 	var enterprise models.Enterprise
 	var enterprises []models.Enterprise
-	result, err := database.DB.Query("SELECT IdEnterprise, Name FROM EnterpriseTable LIMIT 10")
+	result, err := database.DB.Query("SELECT IdEnterprise, Name FROM EnterpriseTable ORDER BY Name")
 	if err != nil {
 		fmt.Println(err)
 	}
