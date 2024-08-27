@@ -11,10 +11,12 @@ import (
 func CreateMembers(c *fiber.Ctx) error {
 	var Name string
 	var DNI int
-	for i := 105; i < 801; i++ {
-		Name = fmt.Sprintf("ejemplo%d", i)
+	var IdEnterprise int
+	for i := 1; i < 400; i++ {
+		Name = fmt.Sprintf("afiliado%d", i)
 		DNI = rand.IntN(30000000) + 20000000
-		insert, err := database.DB.Query(fmt.Sprintf("INSERT INTO MemberTable (Name, DNI) VALUES ('%s','%d')", Name, DNI))
+		IdEnterprise = rand.IntN(100) + 1
+		insert, err := database.DB.Query(fmt.Sprintf("INSERT INTO MemberTable (Name, DNI, IdEnterprise) VALUES ('%s','%d', '%d')", Name, DNI, IdEnterprise))
 		if err != nil {
 			// DBError{"INSERT MEMBER"}.Error(err)
 			fmt.Println("error insertando en la DB")

@@ -3,6 +3,17 @@
     <input type="text" name="name" value="{{$.member.Name}}" disabled>
     <input type="text" name="dni" value="{{$.member.DNI}}" disabled>
     <button type="submit" class="btn-primary btn-submit hide">Confirmar</button>
+    {{range $_, $e := .enterprises}}
+        {{if eq $e.IdEnterprise $.member.IdEnterprise}}
+        <input type="text" value="{{$e.Name}}">
+        {{end}}
+    {{end}}
+    <select name="id-enterprise" id="enterprise-select">
+        <option value="{{$.member.IdEnterprise}}"></option>
+        {{range $_, $e := .enterprises}}
+         <option value="{{$e.IdEnterprise}}">{{$e.Name}}</option>
+        {{end}}
+    </select>
 </form>
 
 <button class="btn-primary" onclick="enableInputs(); showConfirmButton(); hideMemberSearchInput();">Editar</button>

@@ -27,7 +27,7 @@ func CreateParents(c *fiber.Ctx) error {
 	}
 
 	for _, IdMember := range IdMemberArray {
-		for i := 1; i <= 5; i++ {
+		for i := 1; i <= 4; i++ {
 			Name = fmt.Sprintf("pariente%d", rand.IntN(99)+1)
 			Rel = fmt.Sprintf("rel%d", IdMember)
 			insert, err := database.DB.Query(fmt.Sprintf("INSERT INTO ParentTable (Name, Rel, IdMember) VALUES ('%s','%s', '%d')", Name, Rel, IdMember))

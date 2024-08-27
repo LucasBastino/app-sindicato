@@ -11,11 +11,16 @@ import (
 var DB *sql.DB
 
 func CreateConnection() {
-	host := "w0x.h.filess.io"
-	user := "goProjects_cowboydish"
+	// host := "w0x.h.filess.io"
+	// user := "goProjects_cowboydish"
+	// password := "databasefilessio"
+	// port := "3307"
+	// dbName := "goProjects_cowboydish"
+	host := "ndk.h.filess.io"
+	user := "sindicatoDB_settingcry"
 	password := "databasefilessio"
 	port := "3307"
-	dbName := "goProjects_cowboydish"
+	dbName := "sindicatoDB_settingcry"
 
 	connString := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s", user, password, host, port, dbName)
 	db, err := sql.Open("mysql", connString)

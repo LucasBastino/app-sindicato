@@ -82,8 +82,9 @@ func RenderMemberTable(c *fiber.Ctx) error {
 
 func RenderMemberFile(c *fiber.Ctx) error {
 	// Busco el miembro por ID y renderizo su archivo
+	enterprises := getAllModelsCaller(models.Enterprise{})
 	m := searchOneModelByIdCaller(models.Member{}, c)
-	data := fiber.Map{"member": m}
+	data := fiber.Map{"member": m, "enterprises": enterprises}
 	return c.Render("memberFile", data)
 }
 

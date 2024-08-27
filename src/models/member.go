@@ -103,7 +103,7 @@ func (member Member) SearchModels(c *fiber.Ctx, offset int) ([]Member, string) {
 		panic(err)
 	}
 	for result.Next() {
-		err = result.Scan(&m.IdMember, &m.Name, &m.DNI)
+		err = result.Scan(&m.IdMember, &m.Name, &m.DNI, &m.IdEnterprise)
 		if err != nil {
 			fmt.Println("error scanning member")
 			panic(err)

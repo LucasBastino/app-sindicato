@@ -1,7 +1,7 @@
 CREATE TABLE MemberTable(
     IdMember INT PRIMARY KEY AUTO_INCREMENT,
     Name VARCHAR(50),
-    DNI VARCHAR(12)
+    DNI VARCHAR(12),
     IdEnterprise INT,
     FOREIGN KEY (IdEnterprise) REFERENCES EnterpriseTable(IdEnterprise) 
 )
@@ -29,7 +29,7 @@ SELECT * FROM MemberTable
 SELECT * FROM ParentTable
 
 
-DROP TABLE ParentTable
+DROP TABLE MemberTable
 
 INSERT INTO ParentTable (Name, Rel, IdMember) VALUES ('familiar1', 'prima', 1)
 
