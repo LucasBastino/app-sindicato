@@ -3,6 +3,11 @@ function enableInputs(){
     inputs.forEach(input => {
         input.disabled = false
     }); 
+
+}
+
+function enableSelect(){
+    document.getElementById("enterprise-select").disabled = false
 }
 
 function showConfirmButton(){

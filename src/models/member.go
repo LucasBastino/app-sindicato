@@ -127,6 +127,9 @@ func (m Member) ValidateFields(c *fiber.Ctx) map[string]string {
 	if utf8.RuneCountInString(c.FormValue("dni")) > 8 {
 		errorMap["dni"] = "el DNI no puede tener mas de 8 caracteres"
 	}
+	if c.FormValue("enterprise") == "" {
+		errorMap["enterprise"] = "hay que elegir una empresa"
+	}
 	return errorMap
 }
 

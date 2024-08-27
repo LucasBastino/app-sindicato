@@ -1,22 +1,30 @@
 <h2>Ficha de {{$.member.Name}}</h2>
 <form hx-put="/member/{{$.member.IdMember}}/edit" hx-target="#tableDiv">
     <input type="text" name="name" value="{{$.member.Name}}" disabled>
-    <input type="text" name="dni" value="{{$.member.DNI}}" disabled>
-    <button type="submit" class="btn-primary btn-submit hide">Confirmar</button>
-    {{range $_, $e := .enterprises}}
-        {{if eq $e.IdEnterprise $.member.IdEnterprise}}
-        <input type="text" value="{{$e.Name}}">
-        {{end}}
+    {{with .errorMap.name}}
+        <p>{{.}}</p>
     {{end}}
-    <select name="id-enterprise" id="enterprise-select">
-        <option value="{{$.member.IdEnterprise}}"></option>
+    <input type="text" name="dni" value="{{$.member.DNI}}" disabled>
+    {{with .errorMap.dni}}
+        <p>{{.}}</p>
+    {{end}}
+    <select name="id-enterprise" id="enterprise-select" disabled>
         {{range $_, $e := .enterprises}}
-         <option value="{{$e.IdEnterprise}}">{{$e.Name}}</option>
+            {{if eq $e.IdEnterprise $.member.IdEnterprise}}
+                <option value="{{$e.IdEnterprise}}">{{$e.Name}}</option>
+            {{end}}
+        {{end}}
+        {{range $_, $e := .enterprises}}
+            <option value="{{$e.IdEnterprise}}">{{$e.Name}}</option>
+        {{end}}
+        {{with .errorMap.enterprise}}
+            <p>{{.}}</p>
         {{end}}
     </select>
+    <button type="submit" class="btn-primary btn-submit hide">Confirmar</button>
 </form>
 
-<button class="btn-primary" onclick="enableInputs(); showConfirmButton(); hideMemberSearchInput();">Editar</button>
+<button class="btn-primary" onclick="enableInputs(); showConfirmButton(); hideMemberSearchInput(); enableSelect();">Editar</button>
 <button type="submit" hx-get="/member/{{$.member.IdMember}}/parentTable" hx-trigger="click" hx-target="#parentTableDiv" onclick="showAddParentButton();">Familiares</button>
 
 

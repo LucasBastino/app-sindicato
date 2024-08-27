@@ -4,12 +4,12 @@
     <form class="input-container" hx-post="/member/create" hx-target="#tableDiv">
             <input class="form-input" type="text" name="name" value="{{.member.Name}}" placeholder="Nombre">
             {{with .errorMap.name}}
-            <p>{{.}}</p>
+                <p>{{.}}</p>
             {{end}}
             
             <input class="form-input" type="text" name="dni" value="{{.member.DNI}}" placeholder="DNI">
             {{with .errorMap.dni}}
-            <p>{{.}}</p>
+                <p>{{.}}</p>
             {{end}}
 
             <select name="id-enterprise" id="enterprise-select">
@@ -18,6 +18,9 @@
                 <option value="{{$e.IdEnterprise}}">{{$e.Name}}</option>
                 {{end}}
             </select>
+            {{with .errorMap.enterprise}}
+                <p>{{.}}</p>
+            {{end}}
         <button type="submit">Enviar</button>
     </form> 
 </div>

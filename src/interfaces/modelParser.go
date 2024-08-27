@@ -18,6 +18,12 @@ func (m MemberParser) ParseModel(c *fiber.Ctx) models.Member {
 	member := models.Member{}
 	member.Name = c.FormValue("name")
 	member.DNI = c.FormValue("dni")
+	IdEnterpriseStr := c.FormValue("id-enterprise")
+	IdEnterprise, err := strconv.Atoi(IdEnterpriseStr)
+	if err != nil {
+		fmt.Println(err)
+	}
+	member.IdEnterprise = IdEnterprise
 	return member
 }
 

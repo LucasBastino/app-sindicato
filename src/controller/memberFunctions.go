@@ -11,19 +11,20 @@ import (
 
 func CreateMember(c *fiber.Ctx) error {
 	// Creo un mapa con los errores de validacion
+	enterprises := getAllModelsCaller(models.Enterprise{})
 	errorMap := validateFieldsCaller(models.Member{}, c)
 	m := parserCaller(i.MemberParser{}, c)
 
 	// Verifico si el mapa tiene errores
 	if len(errorMap) > 0 {
 		// Si tiene errores renderizo nuevamente el form
-		data := fiber.Map{"member": m, "errorMap": errorMap}
+		data := fiber.Map{"member": m, "errorMap": errorMap, "enterprises": enterprises}
 		return c.Render("createMemberForm", data)
 
 	} else {
 		// Si no tiene errores inserto el member en la DB y renderizo el su archivo
 		m = insertModelCaller(m)
-		data := fiber.Map{"member": m}
+		data := fiber.Map{"member": m, "enterprises": enterprises}
 		return c.Render("memberFile", data)
 	}
 }
@@ -37,16 +38,23 @@ func DeleteMember(c *fiber.Ctx) error {
 }
 
 func EditMember(c *fiber.Ctx) error {
-	// falta hacer la validacion
-	// Parseo los datos obtenidos del form
+	enterprises := getAllModelsCaller(models.Enterprise{})
+	errorMap := validateFieldsCaller(models.Member{}, c)
 	m := parserCaller(i.MemberParser{}, c)
 	IdMember := getIdModelCaller(m, c)
-	m.IdMember = IdMember
+	// Parseo los datos obtenidos del form
 	// necesito poner esta linea ↑ para que se pueda editar 2 veces seguidas
-	editModelCaller(m)
-	// hacer esto esta bien? estoy mostrando datos del nuevo member, no estan sacados de la database.DB
-	data := fiber.Map{"member": m}
-	return c.Render("memberFile", data)
+	m.IdMember = IdMember
+	if len(errorMap) > 0 {
+		data := fiber.Map{"member": m, "enterprises": enterprises, "errorMap": errorMap}
+		return c.Render("memberFile", data)
+	} else {
+		editModelCaller(m)
+		// hacer esto esta bien? estoy mostrando datos del nuevo member, no estan sacados de la database.DB
+		data := fiber.Map{"member": m, "enterprises": enterprises}
+		return c.Render("memberFile", data)
+
+	}
 }
 
 func RenderMemberTable(c *fiber.Ctx) error {
