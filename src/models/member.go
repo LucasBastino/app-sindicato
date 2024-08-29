@@ -44,7 +44,7 @@ func (member Member) InsertModel() Member {
 }
 
 func (member Member) DeleteModel() {
-	delete, err := database.DB.Query(fmt.Sprintf("DELETE FROM MemberTable WHERE IdMember = '%v'", member.IdMember))
+	delete, err := database.DB.Query(fmt.Sprintf("DELETE FROM MemberTable WHERE IdMember = '%d'", member.IdMember))
 	if err != nil {
 		// DBError{"DELETE MEMBER"}.Error(err)
 		fmt.Println("error deleting member")
