@@ -22,7 +22,7 @@ func (m Member) Imprimir() {
 }
 
 func (member Member) InsertModel() Member {
-	insert, err := database.DB.Query(fmt.Sprintf("INSERT INTO MemberTable (Name, DNI, IdEnterprise) VALUES ('%s','%s', '%d')", member.Name, member.DNI, member.IdEnterprise))
+	insert, err := database.DB.Query(fmt.Sprintf("INSERT INTO MemberTable (Name, DNI, IdEnterprise) VALUES ('%s','%s','%d')", member.Name, member.DNI, member.IdEnterprise))
 	if err != nil {
 		// DBError{"INSERT MEMBER"}.Error(err)
 		fmt.Println("error insertando en la DB")
@@ -127,7 +127,7 @@ func (m Member) ValidateFields(c *fiber.Ctx) map[string]string {
 	if utf8.RuneCountInString(c.FormValue("dni")) > 8 {
 		errorMap["dni"] = "el DNI no puede tener mas de 8 caracteres"
 	}
-	if c.FormValue("enterprise") == "" {
+	if c.FormValue("id-enterprise") == "" {
 		errorMap["enterprise"] = "hay que elegir una empresa"
 	}
 	return errorMap

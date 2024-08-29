@@ -19,11 +19,16 @@ func (m MemberParser) ParseModel(c *fiber.Ctx) models.Member {
 	member.Name = c.FormValue("name")
 	member.DNI = c.FormValue("dni")
 	IdEnterpriseStr := c.FormValue("id-enterprise")
-	IdEnterprise, err := strconv.Atoi(IdEnterpriseStr)
-	if err != nil {
-		fmt.Println(err)
+	if IdEnterpriseStr == "" {
+		member.IdEnterprise = 0
+		// este valor igualmente no se usa
+	} else {
+		IdEnterprise, err := strconv.Atoi(IdEnterpriseStr)
+		if err != nil {
+			fmt.Println(err)
+		}
+		member.IdEnterprise = IdEnterprise
 	}
-	member.IdEnterprise = IdEnterprise
 	return member
 }
 
@@ -33,7 +38,7 @@ func (p ParentParser) ParseModel(c *fiber.Ctx) models.Parent {
 	parent := models.Parent{}
 	parent.Name = c.FormValue("name")
 	parent.Rel = c.FormValue("rel")
-	IdMemberStr := c.FormValue("idmember")
+	IdMemberStr := c.FormValue("id-member")
 	IdMember, err := strconv.Atoi(IdMemberStr)
 	if err != nil {
 		fmt.Println("error converting IdMemberStr to int")
