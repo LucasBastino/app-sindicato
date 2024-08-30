@@ -11,7 +11,7 @@
     <select name="id-enterprise" id="enterprise-select" disabled>
         {{range $_, $e := .enterprises}}
             {{if eq $e.IdEnterprise $.member.IdEnterprise}}
-                <option value="{{$e.IdEnterprise}}">{{$e.Name}}</option>
+                <option class="current-enterprise" value="{{$e.IdEnterprise}}">{{$e.Name}}</option>
             {{end}}
         {{end}}
         {{range $_, $e := .enterprises}}

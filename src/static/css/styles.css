@@ -78,6 +78,10 @@ select:disabled{
   opacity: 100%;
 }
 
+.current-enterprise{
+  background-color: lightgrey;
+}
+
 .show{
   display:inline
 }
@@ -115,3 +119,4 @@ margin: 10px
   display: flex;
   justify-content: center
 }
+

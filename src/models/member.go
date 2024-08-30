@@ -1,6 +1,7 @@
 package models
 
 import (
+	"database/sql"
 	"fmt"
 	"log"
 	"strings"
@@ -82,12 +83,14 @@ func (member Member) SearchOneModelById(c *fiber.Ctx) Member {
 	}
 
 	var m Member
+	var tempIdEnterprise sql.NullInt16
 	for result.Next() {
-		err = result.Scan(&m.IdMember, &m.Name, &m.DNI, &m.IdEnterprise)
+		err = result.Scan(&m.IdMember, &m.Name, &m.DNI, &tempIdEnterprise)
 		if err != nil {
 			fmt.Println("error scanning member")
 			panic(err)
 		}
+		m.IdEnterprise = CheckIdEnterprise(tempIdEnterprise)
 	}
 	defer result.Close()
 	return m
@@ -102,12 +105,14 @@ func (member Member) SearchModels(c *fiber.Ctx, offset int) ([]Member, string) {
 		fmt.Println("error searching member in DB")
 		panic(err)
 	}
+	var tempIdEnterprise sql.NullInt16
 	for result.Next() {
-		err = result.Scan(&m.IdMember, &m.Name, &m.DNI, &m.IdEnterprise)
+		err = result.Scan(&m.IdMember, &m.Name, &m.DNI, &tempIdEnterprise)
 		if err != nil {
 			fmt.Println("error scanning member")
 			panic(err)
 		}
+		m.IdEnterprise = CheckIdEnterprise(tempIdEnterprise)
 		members = append(members, m)
 	}
 	defer result.Close()
@@ -191,4 +196,12 @@ func (member Member) GetAllModels() []Member {
 	}
 	defer result.Close()
 	return members
+}
+
+func CheckIdEnterprise(tempIdEnterprise sql.NullInt16) int {
+	if tempIdEnterprise.Valid {
+		return int(tempIdEnterprise.Int16)
+	} else {
+		return 0
+	}
 }
