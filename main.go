@@ -8,13 +8,18 @@ import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/logger"
 	"github.com/gofiber/template/html/v2"
+	"github.com/masterminds/sprig"
 )
 
 func main() {
+	// engine config
+	engine := html.New("./src/views", ".html")
+	// sprig es un paquete con funciones para el template
+	engine.AddFuncMap(sprig.FuncMap())
 
 	// Initializing and config app
 	app := fiber.New(fiber.Config{
-		Views: html.New("./src/views", ".html"),
+		Views: engine,
 	})
 
 	// Middlewares

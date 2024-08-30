@@ -38,7 +38,7 @@ func RegisterRoutes(app *fiber.App) {
 	// app.Get("/parentTable", c.renderParentTable)
 
 	// app.Get("/form/createParent", c.renderCreateParentForm)
-	app.Get("/test/:Page", c.TestNull)
+	app.Get("/test", c.TestNull)
 	app.Get("/createMembers", c.CreateMembers)
 	app.Get("/createParents", c.CreateParents)
 	app.Get("/createEnterprises", c.CreateEnterprises)

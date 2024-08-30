@@ -9,7 +9,7 @@
     <title>Test</title>
 </head>
 <body>
-    {{ kindIs "invalid" .variable }}
+    {{ if kindIs "invalid" .variable }}
     <h2>es null</h2>
     {{else}}
     <h2>no es null</h2>
