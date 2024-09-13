@@ -2,10 +2,12 @@ package controller
 
 import (
 	"fmt"
+	"os"
 
 	"github.com/LucasBastino/app-sindicato/src/database"
 	"github.com/LucasBastino/app-sindicato/src/models"
 	"github.com/gofiber/fiber/v2"
+	"github.com/golang-jwt/jwt/v5"
 	// "syscall/js"
 )
 
@@ -122,4 +124,33 @@ func RenderPruebaEmpresas(c *fiber.Ctx) error {
 		enterprises = append(enterprises, enterprise)
 	}
 	return c.Render("pruebaEmpresas", fiber.Map{"enterprises": enterprises})
+}
+
+func validateToken(strToken string) (jwt.MapClaims, error) {
+	token, err := jwt.Parse(strToken, func(token *jwt.Token) (interface{}, error) {
+		return []byte(os.Getenv("JWT_SECRET")), nil
+	})
+	if err != nil {
+		return nil, err
+	}
+	return token.Claims.(jwt.MapClaims), nil
+}
+
+func RenderLogin(ctx *fiber.Ctx) error {
+	return ctx.Render("login", fiber.Map{})
+}
+
+func LoginUser(ctx *fiber.Ctx) error {
+	user := ctx.FormValue("user")
+	password := ctx.FormValue("password")
+	fmt.Println(user, password)
+
+	if user != "lucas" {
+		return ctx.Render("loginUnsuccesful", fiber.Map{"error": "the user doesn't exist"})
+	}
+	if password != "123" {
+		return ctx.Render("loginUnsuccesful", fiber.Map{"error": "incorrect password"})
+	}
+
+	return ctx.Render("loginSuccesful", fiber.Map{})
 }

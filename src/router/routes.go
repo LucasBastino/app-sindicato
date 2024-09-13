@@ -7,6 +7,8 @@ import (
 
 func RegisterRoutes(app *fiber.App) {
 	app.Get("/", c.RenderIndex)
+	app.Get("/login", c.RenderLogin)
+	app.Post("/login", c.LoginUser)
 
 	app.Get("/member/renderTable", c.RenderMemberTable)
 	app.Get("/member/renderTable/:Page", c.RenderMemberTable)

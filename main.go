@@ -5,10 +5,11 @@ import (
 
 	"github.com/LucasBastino/app-sindicato/src/database"
 	"github.com/LucasBastino/app-sindicato/src/router"
+	"github.com/Masterminds/sprig"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/logger"
 	"github.com/gofiber/template/html/v2"
-	"github.com/masterminds/sprig"
+	"github.com/joho/godotenv"
 )
 
 func main() {
@@ -33,6 +34,8 @@ func main() {
 
 	// Serve static files
 	app.Static("/static", "./src/static")
+
+	godotenv.Load()
 
 	// Listen
 	log.Fatal(app.Listen(":8085"))
