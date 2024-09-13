@@ -10,6 +10,10 @@ import (
 )
 
 func CreateMember(c *fiber.Ctx) error {
+	err := validateToken(c.Cookies("Authorization"))
+	if err != nil {
+		return c.SendStatus(fiber.StatusUnauthorized)
+	}
 	// Creo un mapa con los errores de validacion
 	enterprises := getAllModelsCaller(models.Enterprise{})
 	errorMap := validateFieldsCaller(models.Member{}, c)
@@ -30,6 +34,10 @@ func CreateMember(c *fiber.Ctx) error {
 }
 
 func DeleteMember(c *fiber.Ctx) error {
+	err := validateToken(c.Cookies("Authorization"))
+	if err != nil {
+		return c.SendStatus(fiber.StatusUnauthorized)
+	}
 	// Obtengo el ID desde el path y lo elimino
 	IdMember := getIdModelCaller(models.Member{}, c)
 	m := models.Member{IdMember: IdMember}
@@ -38,6 +46,10 @@ func DeleteMember(c *fiber.Ctx) error {
 }
 
 func EditMember(c *fiber.Ctx) error {
+	err := validateToken(c.Cookies("Authorization"))
+	if err != nil {
+		return c.SendStatus(fiber.StatusUnauthorized)
+	}
 	enterprises := getAllModelsCaller(models.Enterprise{})
 	errorMap := validateFieldsCaller(models.Member{}, c)
 	m := parserCaller(i.MemberParser{}, c)
@@ -58,6 +70,10 @@ func EditMember(c *fiber.Ctx) error {
 }
 
 func RenderMemberTable(c *fiber.Ctx) error {
+	err := validateToken(c.Cookies("Authorization"))
+	if err != nil {
+		return c.SendStatus(fiber.StatusUnauthorized)
+	}
 	// Busco todos los members por key y renderizo la tabla de miembros
 
 	// obtengo la currentPage del path
@@ -89,6 +105,10 @@ func RenderMemberTable(c *fiber.Ctx) error {
 }
 
 func RenderMemberFile(c *fiber.Ctx) error {
+	err := validateToken(c.Cookies("Authorization"))
+	if err != nil {
+		return c.SendStatus(fiber.StatusUnauthorized)
+	}
 	// Busco el miembro por ID y renderizo su archivo
 	enterprises := getAllModelsCaller(models.Enterprise{})
 	m := searchOneModelByIdCaller(models.Member{}, c)
@@ -97,6 +117,10 @@ func RenderMemberFile(c *fiber.Ctx) error {
 }
 
 func RenderCreateMemberForm(c *fiber.Ctx) error {
+	err := validateToken(c.Cookies("Authorization"))
+	if err != nil {
+		return c.SendStatus(fiber.StatusUnauthorized)
+	}
 	// le paso un member vacio para que los campos del form aparezcan vacios
 	enterprises := getAllModelsCaller(models.Enterprise{})
 	data := fiber.Map{"member": models.Member{}, "enterprises": enterprises}
@@ -104,6 +128,10 @@ func RenderCreateMemberForm(c *fiber.Ctx) error {
 }
 
 func RenderMemberParents(c *fiber.Ctx) error {
+	err := validateToken(c.Cookies("Authorization"))
+	if err != nil {
+		return c.SendStatus(fiber.StatusUnauthorized)
+	}
 	// Obtengo el ID del member mediante el path
 	IdMember := getIdModelCaller(models.Member{}, c)
 

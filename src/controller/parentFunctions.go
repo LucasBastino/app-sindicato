@@ -7,6 +7,10 @@ import (
 )
 
 func CreateParent(c *fiber.Ctx) error {
+	err := validateToken(c.Cookies("Authorization"))
+	if err != nil {
+		return c.SendStatus(fiber.StatusUnauthorized)
+	}
 	errorMap := validateFieldsCaller(models.Parent{}, c)
 	p := parserCaller(i.ParentParser{}, c)
 	if len(errorMap) > 0 {
@@ -20,6 +24,10 @@ func CreateParent(c *fiber.Ctx) error {
 }
 
 func DeleteParent(c *fiber.Ctx) error {
+	err := validateToken(c.Cookies("Authorization"))
+	if err != nil {
+		return c.SendStatus(fiber.StatusUnauthorized)
+	}
 	p := searchOneModelByIdCaller(models.Parent{}, c)
 	deleteModelCaller(p)
 	// renderiza de nuevo la tabla
@@ -28,6 +36,10 @@ func DeleteParent(c *fiber.Ctx) error {
 }
 
 func EditParent(c *fiber.Ctx) error {
+	err := validateToken(c.Cookies("Authorization"))
+	if err != nil {
+		return c.SendStatus(fiber.StatusUnauthorized)
+	}
 	// falta hacer la validacion
 	p := parserCaller(i.ParentParser{}, c)
 	IdParent := getIdModelCaller(p, c)
@@ -38,6 +50,10 @@ func EditParent(c *fiber.Ctx) error {
 }
 
 func RenderParentTable(c *fiber.Ctx) error {
+	err := validateToken(c.Cookies("Authorization"))
+	if err != nil {
+		return c.SendStatus(fiber.StatusUnauthorized)
+	}
 	// obtengo la currentPage del path
 	currentPage := GetPageFromPath(c)
 	// calculo la cantidad de resultados
@@ -66,12 +82,20 @@ func RenderParentTable(c *fiber.Ctx) error {
 }
 
 func RenderParentFile(c *fiber.Ctx) error {
+	err := validateToken(c.Cookies("Authorization"))
+	if err != nil {
+		return c.SendStatus(fiber.StatusUnauthorized)
+	}
 	p := searchOneModelByIdCaller(models.Parent{}, c)
 	data := fiber.Map{"parent": p}
 	return c.Render("parentFile", data)
 }
 
 func RenderCreateParentForm(c *fiber.Ctx) error {
+	err := validateToken(c.Cookies("Authorization"))
+	if err != nil {
+		return c.SendStatus(fiber.StatusUnauthorized)
+	}
 	IdMember := getIdModelCaller(models.Member{}, c)
 	// creo un parent nuevo para que el form aparezca con campos vacios
 	p := models.Parent{IdMember: IdMember}

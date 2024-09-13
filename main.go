@@ -35,6 +35,7 @@ func main() {
 	// Serve static files
 	app.Static("/static", "./src/static")
 
+	// Loading .env file
 	godotenv.Load()
 
 	// Listen

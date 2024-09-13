@@ -3,6 +3,7 @@ package controller
 import (
 	"fmt"
 	"os"
+	"time"
 
 	"github.com/LucasBastino/app-sindicato/src/database"
 	"github.com/LucasBastino/app-sindicato/src/models"
@@ -14,6 +15,11 @@ import (
 // ------------------------------------
 
 func RenderIndex(c *fiber.Ctx) error {
+	err := validateToken(c.Cookies("Authorization"))
+	if err != nil {
+		return c.SendStatus(fiber.StatusUnauthorized)
+	}
+
 	return c.Render("index", fiber.Map{})
 	// tmpl := template.Must(template.ParseFiles("src/views/index.html"))
 	// return tmpl.Execute(c, nil)
@@ -92,6 +98,10 @@ func GetTotalPagesArray(totalPages int) []int {
 }
 
 func RenderElectoralMemberList(c *fiber.Ctx) error {
+	err := validateToken(c.Cookies("Authorization"))
+	if err != nil {
+		return c.SendStatus(fiber.StatusUnauthorized)
+	}
 	var member models.Member
 	var members []models.Member
 	result, err := database.DB.Query("SELECT Name, DNI from MemberTable")
@@ -126,14 +136,14 @@ func RenderPruebaEmpresas(c *fiber.Ctx) error {
 	return c.Render("pruebaEmpresas", fiber.Map{"enterprises": enterprises})
 }
 
-func validateToken(strToken string) (jwt.MapClaims, error) {
-	token, err := jwt.Parse(strToken, func(token *jwt.Token) (interface{}, error) {
+func validateToken(strToken string) error {
+	_, err := jwt.Parse(strToken, func(token *jwt.Token) (interface{}, error) {
 		return []byte(os.Getenv("JWT_SECRET")), nil
 	})
 	if err != nil {
-		return nil, err
+		return err
 	}
-	return token.Claims.(jwt.MapClaims), nil
+	return nil
 }
 
 func RenderLogin(ctx *fiber.Ctx) error {
@@ -143,7 +153,6 @@ func RenderLogin(ctx *fiber.Ctx) error {
 func LoginUser(ctx *fiber.Ctx) error {
 	user := ctx.FormValue("user")
 	password := ctx.FormValue("password")
-	fmt.Println(user, password)
 
 	if user != "lucas" {
 		return ctx.Render("loginUnsuccesful", fiber.Map{"error": "the user doesn't exist"})
@@ -151,6 +160,30 @@ func LoginUser(ctx *fiber.Ctx) error {
 	if password != "123" {
 		return ctx.Render("loginUnsuccesful", fiber.Map{"error": "incorrect password"})
 	}
+
+	claims := jwt.MapClaims{
+		"user": user,
+		"exp":  time.Now().Add(time.Second * 60).Unix(),
+	}
+
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
+	signedToken, err := token.SignedString([]byte(os.Getenv("JWT_SECRET")))
+	if err != nil {
+		fmt.Println("error signing token")
+		panic(err)
+	}
+
+	cookie := fiber.Cookie{
+		Name:        "Authorization",
+		Value:       signedToken,
+		Path:        "/",
+		Secure:      true,
+		HTTPOnly:    true,
+		SameSite:    "Strict",
+		SessionOnly: true,
+	}
+
+	ctx.Cookie(&cookie)
 
 	return ctx.Render("loginSuccesful", fiber.Map{})
 }
