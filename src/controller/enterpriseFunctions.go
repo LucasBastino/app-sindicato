@@ -7,10 +7,6 @@ import (
 )
 
 func CreateEnterprise(c *fiber.Ctx) error {
-	err := validateToken(c.Cookies("Authorization"))
-	if err != nil {
-		return c.SendStatus(fiber.StatusUnauthorized)
-	}
 	errorMap := validateFieldsCaller(models.Enterprise{}, c)
 	e := parserCaller(i.EnterpriseParser{}, c)
 	if len(errorMap) > 0 {
@@ -24,10 +20,6 @@ func CreateEnterprise(c *fiber.Ctx) error {
 }
 
 func DeleteEnterprise(c *fiber.Ctx) error {
-	err := validateToken(c.Cookies("Authorization"))
-	if err != nil {
-		return c.SendStatus(fiber.StatusUnauthorized)
-	}
 	IdEnterprise := getIdModelCaller(models.Enterprise{}, c)
 	e := models.Enterprise{IdEnterprise: IdEnterprise}
 	deleteModelCaller(e)
@@ -35,10 +27,6 @@ func DeleteEnterprise(c *fiber.Ctx) error {
 }
 
 func EditEnterprise(c *fiber.Ctx) error {
-	err := validateToken(c.Cookies("Authorization"))
-	if err != nil {
-		return c.SendStatus(fiber.StatusUnauthorized)
-	}
 	// falta agregar la validacion
 	e := parserCaller(i.EnterpriseParser{}, c)
 	IdEnterprise := getIdModelCaller(e, c)
@@ -49,10 +37,6 @@ func EditEnterprise(c *fiber.Ctx) error {
 }
 
 func RenderEnterpriseTable(c *fiber.Ctx) error {
-	err := validateToken(c.Cookies("Authorization"))
-	if err != nil {
-		return c.SendStatus(fiber.StatusUnauthorized)
-	}
 	// obtengo la currentPage del path
 	currentPage := GetPageFromPath(c)
 	// calculo la cantidad de resultados
@@ -81,20 +65,12 @@ func RenderEnterpriseTable(c *fiber.Ctx) error {
 }
 
 func RenderEnterpriseFile(c *fiber.Ctx) error {
-	err := validateToken(c.Cookies("Authorization"))
-	if err != nil {
-		return c.SendStatus(fiber.StatusUnauthorized)
-	}
 	e := searchOneModelByIdCaller(models.Enterprise{}, c)
 	data := fiber.Map{"enterprise": e}
 	return c.Render("enterpriseFile", data)
 }
 
 func RenderCreateEnterpriseForm(c *fiber.Ctx) error {
-	err := validateToken(c.Cookies("Authorization"))
-	if err != nil {
-		return c.SendStatus(fiber.StatusUnauthorized)
-	}
 	// le paso un enterprise vacio para que los campos del form aparezcan vacios
 	data := fiber.Map{"enterprise": models.Enterprise{}}
 	return c.Render("createEnterpriseForm", data)
