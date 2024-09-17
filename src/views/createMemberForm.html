@@ -2,16 +2,46 @@
     <h2>Agregar afiliado</h2>
     <div class="form-container">
     <form class="input-container" hx-post="/member/create" hx-target="#tableDiv">
-            <input class="form-input" type="text" name="name" value="{{.member.Name}}" placeholder="Nombre">
+            <input class="form-input" type="text" name="name" value="{{.member.Name}}" placeholder="Nombres">
             {{with .errorMap.name}}
                 <p>{{.}}</p>
             {{end}}
+            <input class="field-6" type="text" name="lastname" placeholder="Apellidos" required>
             
             <input class="form-input" type="text" name="dni" value="{{.member.DNI}}" placeholder="DNI">
             {{with .errorMap.dni}}
                 <p>{{.}}</p>
             {{end}}
 
+            <input class="field-6" type="text" name="birthday" placeholder="Fecha de Nacimiento" required>
+
+            <select class="field-6" name="gender" id="gender" onchange="cambiarColorPorDefecto(value, id);" required>
+                <option value="">Género</option>
+                <option value="masculino">Masculino</option>
+                <option value="femenino">Femenino</option>
+                <option value="otro">Otro</option>
+            </select>
+
+            <select class="field-6" id="marital-status" name="marital-status" onchange="cambiarColorPorDefecto(value, id);" required>
+                <option value="">Estado Civil</option>
+                <option value="soltero">Soltero</option>
+                <option value="casado">Casado</option>
+                <option value="viudo">Viudo</option>
+            </select>
+
+            <input class="field-6" name="phone" type="text" placeholder="Teléfono" required></input>
+            <input class="field-6" name="email" type="text" placeholder="Email" required></input>
+
+            <div class="titulo field-12">Domicilio</div>
+                <input class="field-6" type="text" name="address" placeholder="Dirección" required>
+                <input class="field-6" type="text" name="flat-number" placeholder="Departamento" required>
+                <input class="field-6" type="text" name="postal-code" placeholder="Codigo Postal" required>
+                <input class="field-6" type="text" name="district" placeholder="Localidad" required>
+                <input class="field-6" type="text" name="town" placeholder="Partido" required>
+
+                <div class="titulo field-12">Datos de la Obra Social</div>
+                <input class="field-6" type="text" name="member-number" placeholder="Número de Afiliado" required >
+                <input class="field-6" type="text" name="cuil" placeholder="CUIL" required >
             <select name="id-enterprise" id="enterprise-select">
                 <option value="">--Elegir una empresa--</option>
                 {{range $_, $e := .enterprises}}
@@ -21,6 +51,13 @@
             {{with .errorMap.enterprise}}
                 <p>{{.}}</p>
             {{end}}
+            <input class="field-6" type="text" name="entry-date" id="entry-date" placeholder="Fecha de Ingreso" required>
+            <select class="field-6" name="category" id="category" onchange="cambiarColorPorDefecto(value, id);" required>
+                <option value="">--Elegir una categoría--</option>
+                {{range $_, $c := .categories}}
+                <option value="{{$c.IdCategory}}">{{$c.Level}}: {{$c.Name}}</option>
+            </select>
+            <input class="field-6" type="text" name="last-card-emition" placeholder="Ultima emision de Carnet" required>
         <button type="submit">Enviar</button>
     </form> 
 </div>
