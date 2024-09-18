@@ -22,6 +22,7 @@ func (m MemberParser) ParseModel(c *fiber.Ctx) models.Member {
 	if IdEnterpriseStr == "" {
 		member.IdEnterprise = 0
 		// este valor igualmente no se usa
+		// es solamente para que no aparezca un error
 	} else {
 		IdEnterprise, err := strconv.Atoi(IdEnterpriseStr)
 		if err != nil {

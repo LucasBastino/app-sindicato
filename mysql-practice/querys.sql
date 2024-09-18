@@ -66,40 +66,40 @@ SELECT P.Name, M.Name FROM ParentTable P INNER JOIN MemberTable M ON P.IdMember 
 
 CREATE TABLE MemberTable(
     IdMember INT PRIMARY KEY AUTO_INCREMENT NOT NULL,
-    Name VARCHAR(50),
-    LastName VARCHAR(50),
-    DNI VARCHAR(12),
-    Birthday DATE,
-    Gender VARCHAR(25),
-    MaritalStatus VARCHAR(15),
-    Phone VARCHAR(30),
+    Name VARCHAR(50) NOT NULL,
+    LastName VARCHAR(50) NOT NULL,
+    DNI VARCHAR(50) NOT NULL,
+    Birthday DATE NOT NULL,
+    Gender VARCHAR(50) NOT NULL,
+    MaritalStatus VARCHAR(50) NOT NULL,
+    Phone VARCHAR(50) NOT NULL,
     Email VARCHAR(50),
-    Address VARCHAR(50),
-    FlatNumber VARCHAR(20),
-    PostalCode INT,
-    District VARCHAR(50),
-    Town VARCHAR(50),
-    MemberNumber BIGINT,
-    CUIL VARCHAR(50),
-    IdEnterprise INT,
-    EntryDate DATE,
-    IdCategory INT,
-    LastCardEmition DATE,
+    Address VARCHAR(50) NOT NULL,
+    PostalCode INT NOT NULL,
+    District VARCHAR(50) NOT NULL,
+    MemberNumber VARCHAR(50) NOT NULL,
+    CUIL VARCHAR(50) NOT NULL,
+    IdEnterprise INT NOT NULL,
+    EntryDate DATE NOT NULL,
+    IdCategory INT NOT NULL,
     FOREIGN KEY (IdEnterprise) REFERENCES EnterpriseTable(IdEnterprise) ON DELETE SET NULL,
     FOREIGN KEY (IdCategory) REFERENCES CategoryTable(IdCategory)
 )
 
 CREATE TABLE ParentTable(
     IdParent INT PRIMARY KEY AUTO_INCREMENT NOT NULL,
-    Name VARCHAR(50),
-    Rel VARCHAR(20),
+    Name VARCHAR(50) NOT NULL,
+    LastName VARCHAR(50) NOT NULL,
+    Rel VARCHAR(50) NOT NULL,
+    Gender VARCHAR(50) NOT NULL,
+    Birthday DATE NOT NULL,
+    CUIL VARCHAR(50) NOT NULL,
     IdMember INT,
     FOREIGN KEY (IdMember) REFERENCES MemberTable(IdMember) ON DELETE CASCADE
 )
 
 CREATE TABLE CategoryTable(
     IdCategory PRIMARY KEY AUTO_INCREMENT NOT NULL,
-    Level INT,
     Name VARCHAR(100)
 )
 
@@ -108,10 +108,7 @@ CREATE TABLE EnterpriseTable(
     Name VARCHAR(50),
     Address VARCHAR(50),
     CUIT VARCHAR(50),
-    State VARCHAR(50),
     District VARCHAR(50),
-    Town VARCHAR(50),
     PostalCode INT,
     Phone VARCHAR(50),
-    StartDate DATE
 )
