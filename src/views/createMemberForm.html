@@ -15,7 +15,7 @@
                 <p>{{.}}</p>
             {{end}}
 
-            <input class="field-6" type="text" name="birthday" value="{{$.member.Birthday}}" placeholder="Fecha de Nacimiento" required>
+            <input class="field-6" type="date" name="birthday" value="{{$.member.Birthday}}" placeholder="Fecha de Nacimiento" required>
             {{with .errorMap.birthday}}
                 <p>{{.}}</p>
             {{end}}
@@ -60,7 +60,7 @@
                 {{with .errorMap.address}}
                 <p>{{.}}</p>
                 {{end}}
-                <input class="field-6" type="text" name="postal-code" value="{{$.member.PostalCode}}" placeholder="Codigo Postal" required>
+                <input class="field-6" type="number" name="postal-code" value="{{$.member.PostalCode}}" placeholder="Codigo Postal" required>
                 {{with .errorMap.postalCode}}
                 <p>{{.}}</p>
                 {{end}}
@@ -79,27 +79,25 @@
                 <p>{{.}}</p>
                 {{end}}
             <select name="id-enterprise" id="enterprise-select" required>
-                {{ if $.member.IdEnterprise is not null}}
                 {{range $_, $e := .enterprises}}
-                    {{if eq $e.IdEnterprise $.member.IdEnterprise}}
-                    <option class="current-enterprise" value="{{$e.IdEnterprise}}">{{$e.Name}}</option>
-                    {{end}}
+                {{if eq $e.IdEnterprise $.member.IdEnterprise}}
+                <option class="current-enterprise" value="{{$e.IdEnterprise}}">{{$e.Name}}</option>
                 {{end}}
-                {{else}}
-                <option value="">--Elegir una empresa--</option>
                 {{end}}
-                
                 {{range $_, $e := .enterprises}}
-                <option value="{{$e.IdEnterprise}}">{{$e.Name}}</option>
+                    <option value="{{$e.IdEnterprise}}">{{$e.Name}}</option>
+                {{end}}
+                {{with .errorMap.enterprise}}
+                    <p>{{.}}</p>
                 {{end}}
             </select>
             {{with .errorMap.enterprise}}
                 <p>{{.}}</p>
             {{end}}
-            <input class="field-6" type="text" name="entry-date" id="entry-date" value="{{$.member.EntryDate}}" placeholder="Fecha de Ingreso" required>
+            <input class="field-6" type="date" name="entry-date" id="entry-date" value="{{$.member.EntryDate}}" placeholder="Fecha de Ingreso" required>
             {{with .errorMap.entryDate}}
             <p>{{.}}</p>
-        {{end}}
+            {{end}}
             <select class="field-6" name="category" id="category" onchange="cambiarColorPorDefecto(value, id);" required>
                 {{if eq $.member.Category ""}}
                 <option value="">--Elegir una categoría</option>

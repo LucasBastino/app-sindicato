@@ -1,5 +1,10 @@
+{{if eq .mode "create" }}
+<div class="form-container">
+    <form class="input-container" hx-post="/member/create" hx-target="#tableDiv">
+{{else if eq .mode "edit"}}
 <h2>Ficha de {{$.member.Name}}</h2>
 <form hx-put="/member/{{$.member.IdMember}}/edit" hx-target="#tableDiv">
+{{end}}
     <input class="form-input" type="text" name="name" value="{{$.member.Name}}" placeholder="Nombres" required disabled>
     {{with .errorMap.name}}
         <p>{{.}}</p>
@@ -68,26 +73,8 @@
     {{with .errorMap.cuil}}
     <p>{{.}}</p>
     {{end}}
-    <select name="id-enterprise" id="enterprise-select" required disabled>
-        {{ if $.member.IdEnterprise is not null}}
-                {{range $_, $e := .enterprises}}
-                    {{if eq $e.IdEnterprise $.member.IdEnterprise}}
-                    <option class="current-enterprise" value="{{$e.IdEnterprise}}">{{$e.Name}}</option>
-                    {{end}}
-                {{end}}
-        {{range $_, $e := .enterprises}}
-            <option value="{{$e.IdEnterprise}}">{{$e.Name}}</option>
-        {{end}}
-        {{with .errorMap.enterprise}}
-            <p>{{.}}</p>
-        {{end}}
-    </select>
-    <input class="field-6" type="text" name="entry-date" id="entry-date" value="{{$.member.EntryDate}}" placeholder="Fecha de Ingreso" required disabled>
-        {{with .errorMap.entryDate}}
-        <p>{{.}}</p>
-        {{end}}
     <select class="field-6" name="category" id="category" onchange="cambiarColorPorDefecto(value, id);" required disabled>
-        {{if eq $.member.Category ""}}
+        {{if eq $.member.Category 0}}
         <option value="">--Elegir una categoría</option>
         {{else}}
         <option value="{{$.member.Category}}">{{$.member.Category}}</option>
@@ -106,9 +93,35 @@
     {{with .errorMap.lastCardEmition}}
         <p>{{.}}</p>
     {{end}}
+    <select name="id-enterprise" id="enterprise-select" required disabled>
+        <!-- fijarse que pasa cuando la empresa es borrada y queda NULL -->
+        {{range $_, $e := .enterprises}}
+            {{if eq $e.IdEnterprise $.member.IdEnterprise}}
+            <option class="current-enterprise" value="{{$e.IdEnterprise}}">{{$e.Name}}</option>
+            {{end}}
+        {{end}}
+        {{range $_, $e := .enterprises}}
+            <option value="{{$e.IdEnterprise}}">{{$e.Name}}</option>
+        {{end}}
+        {{with .errorMap.enterprise}}
+            <p>{{.}}</p>
+        {{end}}
+    </select>
+    
+    <input class="field-6" type="text" name="entry-date" id="entry-date" value="{{$.member.EntryDate}}" placeholder="Fecha de Ingreso" required disabled>
+    {{with .errorMap.entryDate}}
+    <p>{{.}}</p>
+    {{end}}
+   
+    
+    {{if eq .mode "create"}}
+    <button type="submit">Enviar</button>
+    {{else if eq .mode "edit"}}
     <button type="submit" class="btn-primary btn-submit hide">Confirmar</button>
+    {{end}}
 </form>
 
+{{if eq .mode "edit"}}
 <button class="btn-primary" onclick="enableInputs(); showConfirmButton(); hideMemberSearchInput(); enableSelect();">Editar</button>
 <button type="submit" hx-get="/member/{{$.member.IdMember}}/parentTable" hx-trigger="click" hx-target="#parentTableDiv" onclick="showAddParentButton();">Familiares</button>
 
@@ -116,3 +129,4 @@
 <div id="parentTableDiv"></div>
 
 <button class="btn-primary hide" id="add-parent-button" hx-get="/member/{{$.member.IdMember}}/form/createParent" hx-trigger="click" hx-target="#tableDiv">Agregar familiar</button>
+{{end}}

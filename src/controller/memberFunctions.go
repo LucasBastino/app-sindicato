@@ -18,13 +18,13 @@ func CreateMember(c *fiber.Ctx) error {
 	// Verifico si el mapa tiene errores
 	if len(errorMap) > 0 {
 		// Si tiene errores renderizo nuevamente el form
-		data := fiber.Map{"member": m, "errorMap": errorMap, "enterprises": enterprises}
-		return c.Render("createMemberForm", data)
+		data := fiber.Map{"member": m, "mode": "create", "errorMap": errorMap, "enterprises": enterprises}
+		return c.Render("memberFile", data)
 
 	} else {
 		// Si no tiene errores inserto el member en la DB y renderizo el su archivo
 		m = insertModelCaller(m)
-		data := fiber.Map{"member": m, "enterprises": enterprises}
+		data := fiber.Map{"member": m, "mode": "edit", "enterprises": enterprises}
 		return c.Render("memberFile", data)
 	}
 }
@@ -46,12 +46,12 @@ func EditMember(c *fiber.Ctx) error {
 	// necesito poner esta linea ↑ para que se pueda editar 2 veces seguidas
 	m.IdMember = IdMember
 	if len(errorMap) > 0 {
-		data := fiber.Map{"member": m, "enterprises": enterprises, "errorMap": errorMap}
+		data := fiber.Map{"member": m, "mode": "edit", "enterprises": enterprises, "errorMap": errorMap}
 		return c.Render("memberFile", data)
 	} else {
 		editModelCaller(m)
 		// hacer esto esta bien? estoy mostrando datos del nuevo member, no estan sacados de la database.DB
-		data := fiber.Map{"member": m, "enterprises": enterprises}
+		data := fiber.Map{"member": m, "mode": "edit", "enterprises": enterprises}
 		return c.Render("memberFile", data)
 
 	}
@@ -92,15 +92,15 @@ func RenderMemberFile(c *fiber.Ctx) error {
 	// Busco el miembro por ID y renderizo su archivo
 	enterprises := getAllModelsCaller(models.Enterprise{})
 	m := searchOneModelByIdCaller(models.Member{}, c)
-	data := fiber.Map{"member": m, "enterprises": enterprises}
+	data := fiber.Map{"member": m, "mode": "edit", "enterprises": enterprises}
 	return c.Render("memberFile", data)
 }
 
 func RenderCreateMemberForm(c *fiber.Ctx) error {
 	// le paso un member vacio para que los campos del form aparezcan vacios
 	enterprises := getAllModelsCaller(models.Enterprise{})
-	data := fiber.Map{"member": models.Member{}, "enterprises": enterprises}
-	return c.Render("createMemberForm", data)
+	data := fiber.Map{"member": models.Member{}, "mode": "create", "enterprises": enterprises}
+	return c.Render("memberFile", data)
 }
 
 func RenderMemberParents(c *fiber.Ctx) error {

@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"strings"
+	"time"
 	"unicode/utf8"
 
 	"github.com/LucasBastino/app-sindicato/src/database"
@@ -12,10 +13,23 @@ import (
 )
 
 type Member struct {
-	IdMember     int
-	Name         string
-	DNI          string
-	IdEnterprise int
+	IdMember      int
+	Name          string
+	LastName      string
+	DNI           string
+	Birthday      time.Time
+	Gender        string
+	MaritalStatus string
+	Phone         string
+	Email         string
+	Address       string
+	PostalCode    string
+	District      string
+	MemberNumber  string
+	CUIL          string
+	IdEnterprise  int
+	EntryDate     time.Time
+	IdCategory    int
 }
 
 func (m Member) Imprimir() {
