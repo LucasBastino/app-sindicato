@@ -80,8 +80,8 @@ CREATE TABLE MemberTable(
     MemberNumber VARCHAR(50) NOT NULL,
     CUIL VARCHAR(50) NOT NULL,
     IdEnterprise INT NOT NULL,
+    Category VARCHAR(100) NOT NULL,
     EntryDate DATE NOT NULL,
-    IdCategory INT NOT NULL,
     FOREIGN KEY (IdEnterprise) REFERENCES EnterpriseTable(IdEnterprise) ON DELETE SET NULL,
     FOREIGN KEY (IdCategory) REFERENCES CategoryTable(IdCategory)
 )

@@ -48,6 +48,7 @@ func (m MemberParser) ParseModel(c *fiber.Ctx) models.Member {
 		}
 		member.IdEnterprise = IdEnterprise
 	}
+	member.Category = c.FormValue("category")
 	EntryDateStr := c.FormValue("entry-date")
 	EntryDate, err := time.Parse(time.RFC3339, EntryDateStr)
 	if err != nil {
@@ -55,18 +56,6 @@ func (m MemberParser) ParseModel(c *fiber.Ctx) models.Member {
 		panic(err)
 	}
 	member.EntryDate = EntryDate
-	IdCategoryStr := c.FormValue("id-category")
-	if IdCategoryStr == "" {
-		member.IdCategory = 0
-		// este valor igualmente no se usa
-		// es solamente para que no aparezca un error
-	} else {
-		IdCategory, err := strconv.Atoi(IdCategoryStr)
-		if err != nil {
-			fmt.Println(err)
-		}
-		member.IdCategory = IdCategory
-	}
 	return member
 }
 

@@ -3,7 +3,7 @@ function enableInputs(){
     inputs.forEach(input => {
         input.disabled = false
     }); 
-
+    console.log("enable inputs executed")
 }
 
 function enableSelect(){

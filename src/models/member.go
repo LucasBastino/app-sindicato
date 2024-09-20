@@ -28,8 +28,8 @@ type Member struct {
 	MemberNumber  string
 	CUIL          string
 	IdEnterprise  int
+	Category      string
 	EntryDate     time.Time
-	IdCategory    int
 }
 
 func (m Member) Imprimir() {
