@@ -1,6 +1,7 @@
 package models
 
 import (
+	"database/sql"
 	"fmt"
 	"log"
 	"strings"
@@ -178,4 +179,8 @@ func (parent Parent) GetAllModels() []Parent {
 	}
 	defer result.Close()
 	return parents
+}
+
+func (p Parent) ScanResult(result *sql.Rows) Parent {
+	return Parent{}
 }

@@ -1,6 +1,8 @@
 package controller
 
 import (
+	"database/sql"
+
 	i "github.com/LucasBastino/app-sindicato/src/interfaces"
 	"github.com/LucasBastino/app-sindicato/src/models"
 	"github.com/gofiber/fiber/v2"
@@ -48,4 +50,8 @@ func getFiberMapCaller[M models.TypeModel](m i.IModel[M], models []M, searchKey 
 
 func getAllModelsCaller[M models.TypeModel](m i.IModel[M]) []M {
 	return m.GetAllModels()
+}
+
+func scanResultCaller[M models.TypeModel](m i.IModel[M], result *sql.Rows) M {
+	return m.ScanResult(result)
 }

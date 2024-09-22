@@ -1,6 +1,8 @@
 package interfaces
 
 import (
+	"database/sql"
+
 	"github.com/LucasBastino/app-sindicato/src/models"
 	"github.com/gofiber/fiber/v2"
 )
@@ -16,4 +18,5 @@ type IModel[M models.TypeModel] interface {
 	GetTotalRows(*fiber.Ctx) int
 	GetFiberMap([]M, string, int, int, int, int, []int) fiber.Map
 	GetAllModels() []M
+	ScanResult(*sql.Rows) M
 }

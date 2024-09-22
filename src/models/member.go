@@ -95,17 +95,7 @@ func (member Member) SearchOneModelById(c *fiber.Ctx) Member {
 		fmt.Println("error searching member by Id")
 		panic(err)
 	}
-
-	var m Member
-	var tempIdEnterprise sql.NullInt16
-	for result.Next() {
-		err = result.Scan(&m.IdMember, &m.Name, &m.DNI, &tempIdEnterprise)
-		if err != nil {
-			fmt.Println("error scanning member")
-			panic(err)
-		}
-		m.IdEnterprise = CheckIdEnterprise(tempIdEnterprise)
-	}
+	m := member.ScanResult(result)
 	defer result.Close()
 	return m
 }
@@ -218,4 +208,36 @@ func CheckIdEnterprise(tempIdEnterprise sql.NullInt16) int {
 	} else {
 		return 0
 	}
+}
+
+func (member Member) ScanResult(result *sql.Rows) Member {
+	var m Member
+	var tempIdEnterprise sql.NullInt16
+	for result.Next() {
+		err := result.Scan(
+			&m.IdMember,
+			&m.Name,
+			&m.LastName,
+			&m.DNI,
+			&m.Birthday,
+			&m.Gender,
+			&m.MaritalStatus,
+			&m.Phone,
+			&m.Email,
+			&m.Address,
+			&m.PostalCode,
+			&m.District,
+			&m.MemberNumber,
+			&m.CUIL,
+			&tempIdEnterprise,
+			&m.Category,
+			&m.EntryDate,
+		)
+		if err != nil {
+			fmt.Println("error scanning member")
+			panic(err)
+		}
+		m.IdEnterprise = CheckIdEnterprise(tempIdEnterprise)
+	}
+	return m
 }

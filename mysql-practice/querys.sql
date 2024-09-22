@@ -4,6 +4,7 @@ CREATE TABLE MemberTable(
     DNI VARCHAR(12),
     IdEnterprise INT,
     FOREIGN KEY (IdEnterprise) REFERENCES EnterpriseTable(IdEnterprise) ON DELETE SET NULL
+   
 )
 
 CREATE TABLE ParentTable(
@@ -79,10 +80,12 @@ CREATE TABLE MemberTable(
     District VARCHAR(50) NOT NULL,
     MemberNumber VARCHAR(50) NOT NULL,
     CUIL VARCHAR(50) NOT NULL,
-    IdEnterprise INT NOT NULL,
+    IdEnterprise INT,
+    -- aca va sin NOT NULL, por si borras la empresa
     Category VARCHAR(100) NOT NULL,
     EntryDate DATE NOT NULL,
     FOREIGN KEY (IdEnterprise) REFERENCES EnterpriseTable(IdEnterprise) ON DELETE SET NULL,
+     -- fijarse que onda en el ON UPDATE CASCADE
     FOREIGN KEY (IdCategory) REFERENCES CategoryTable(IdCategory)
 )
 

@@ -18,7 +18,7 @@
         <p>{{.}}</p>
     {{end}}
 
-    <input class="field-6" type="text" name="birthday" value="{{$.member.Birthday}}" placeholder="Fecha de Nacimiento" required disabled>
+    <input class="field-6" type="date" name="birthday" value="{{$.member.Birthday}}" placeholder="Fecha de Nacimiento" required disabled>
     {{with .errorMap.birthday}}
         <p>{{.}}</p>
     {{end}}
@@ -75,9 +75,17 @@
     {{end}}
     <select name="id-enterprise" id="enterprise-select" required disabled>
         <!-- fijarse que pasa cuando la empresa es borrada y queda NULL -->
-        {{range $_, $e := .enterprises}}
-            {{if eq $e.IdEnterprise $.member.IdEnterprise}}
-            <option class="current-enterprise" value="{{$e.IdEnterprise}}">{{$e.Name}}</option>
+        {{if eq $.member.IdEnterprise 0}}
+            {{if eq .mode "create" }}
+                <option value="0">--Elegir una empresa--</option>
+            {{else if eq .mode "edit" }}
+                <option value="0">SIN EMPRESA</option>
+            {{end}}
+        {{else}}
+            {{range $_, $e := .enterprises}}
+                {{if eq $e.IdEnterprise $.member.IdEnterprise}}
+                    <option class="current-enterprise" value="{{$e.IdEnterprise}}">{{$e.Name}}</option>
+                {{end}}
             {{end}}
         {{end}}
         {{range $_, $e := .enterprises}}
@@ -103,7 +111,7 @@
     {{with .errorMap.category}}
         <p>{{.}}</p>
     {{end}}
-    <input class="field-6" type="text" name="entry-date" id="entry-date" value="{{$.member.EntryDate}}" placeholder="Fecha de Ingreso" required disabled>
+    <input class="field-6" type="date" name="entry-date" id="entry-date" value="{{$.member.EntryDate}}" placeholder="Fecha de Ingreso" required disabled>
     {{with .errorMap.entryDate}}
     <p>{{.}}</p>
     {{end}}
@@ -125,5 +133,8 @@
 <button class="btn-primary hide" id="add-parent-button" hx-get="/member/{{$.member.IdMember}}/form/createParent" hx-trigger="click" hx-target="#tableDiv">Agregar familiar</button>
 {{end}}
 {{if eq .mode "create"}}
-<div class="hide" onload="enableInputs();"></div>
+<script type="text/javascript">
+    enableInputs();
+    enableSelects();
+ </script>
 {{end}}

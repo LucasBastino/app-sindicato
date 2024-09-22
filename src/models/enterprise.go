@@ -1,6 +1,7 @@
 package models
 
 import (
+	"database/sql"
 	"fmt"
 	"log"
 	"strings"
@@ -187,4 +188,8 @@ func (enterprise Enterprise) GetAllModels() []Enterprise {
 	}
 	defer result.Close()
 	return enterprises
+}
+
+func (e Enterprise) ScanResult(result *sql.Rows) Enterprise {
+	return Enterprise{}
 }
