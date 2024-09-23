@@ -14,6 +14,10 @@ type Enterprise struct {
 	IdEnterprise int
 	Name         string
 	Address      string
+	CUIT         string
+	District     string
+	PostalCode   int
+	Phone        string
 }
 
 func (enterprise Enterprise) InsertModel() Enterprise {
@@ -190,6 +194,22 @@ func (enterprise Enterprise) GetAllModels() []Enterprise {
 	return enterprises
 }
 
-func (e Enterprise) ScanResult(result *sql.Rows) Enterprise {
-	return Enterprise{}
+func (enterprise Enterprise) ScanResult(result *sql.Rows) Enterprise {
+	var e Enterprise
+	for result.Next() {
+		err := result.Scan(
+			&e.IdEnterprise,
+			&e.Name,
+			&e.Address,
+			&e.CUIT,
+			&e.District,
+			&e.PostalCode,
+			&e.Phone,
+		)
+		if err != nil {
+			fmt.Println("error scanning enterprise")
+			panic(err)
+		}
+	}
+	return e
 }

@@ -116,25 +116,18 @@
     <p>{{.}}</p>
     {{end}}
     
-    {{if eq .mode "create"}}
-    <button type="submit">Enviar</button>
-    {{else if eq .mode "edit"}}
-    <button type="submit" class="btn-primary btn-submit hide">Confirmar</button>
-    {{end}}
+    <button type="submit" class="btn-primary btn-submit">Confirmar</button>
 </form>
 
+<button class="btn-primary hide" id="add-parent-button" hx-get="/member/{{$.member.IdMember}}/form/createParent" hx-trigger="click" hx-target="#tableDiv">Agregar familiar</button>
 {{if eq .mode "edit"}}
 <button class="btn-primary" onclick="enableInputs(); showConfirmButton(); hideMemberSearchInput(); enableSelect();">Editar</button>
-<button type="submit" hx-get="/member/{{$.member.IdMember}}/parentTable" hx-trigger="click" hx-target="#parentTableDiv" onclick="showAddParentButton();">Familiares</button>
-
-
-<div id="parentTableDiv"></div>
-
-<button class="btn-primary hide" id="add-parent-button" hx-get="/member/{{$.member.IdMember}}/form/createParent" hx-trigger="click" hx-target="#tableDiv">Agregar familiar</button>
-{{end}}
-{{if eq .mode "create"}}
+{{else if eq .mode "create"}}
 <script type="text/javascript">
     enableInputs();
     enableSelects();
- </script>
+    </script>
 {{end}}
+
+<button type="submit" hx-get="/member/{{$.member.IdMember}}/parentTable" hx-trigger="click" hx-target="#parentTableDiv" onclick="showAddParentButton();">Familiares</button>
+<div id="parentTableDiv"></div>

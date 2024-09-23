@@ -10,11 +10,11 @@ func CreateEnterprise(c *fiber.Ctx) error {
 	errorMap := validateFieldsCaller(models.Enterprise{}, c)
 	e := parserCaller(i.EnterpriseParser{}, c)
 	if len(errorMap) > 0 {
-		data := fiber.Map{"enterprise": e, "errorMap": errorMap}
-		return c.Render("createEnterpriseForm", data)
+		data := fiber.Map{"enterprise": e, "mode": "create", "errorMap": errorMap}
+		return c.Render("enterpriseFile", data)
 	} else {
 		e = insertModelCaller(e)
-		data := fiber.Map{"enterprise": e}
+		data := fiber.Map{"enterprise": e, "mode": "edit"}
 		return c.Render("enterpriseFile", data)
 	}
 }
@@ -27,13 +27,18 @@ func DeleteEnterprise(c *fiber.Ctx) error {
 }
 
 func EditEnterprise(c *fiber.Ctx) error {
-	// falta agregar la validacion
+	errorMap := validateFieldsCaller(models.Enterprise{}, c)
 	e := parserCaller(i.EnterpriseParser{}, c)
 	IdEnterprise := getIdModelCaller(e, c)
 	e.IdEnterprise = IdEnterprise
-	editModelCaller(e)
-	data := fiber.Map{"enterprise": e}
-	return c.Render("enterpriseFile", data)
+	if len(errorMap) > 0 {
+		data := fiber.Map{"enterprise": e, "mode": "edit", "errorMap": errorMap}
+		return c.Render("enterpriseFile", data)
+	} else {
+		e = insertModelCaller(e)
+		data := fiber.Map{"enterprise": e, "mode": "edit"}
+		return c.Render("enterpriseFile", data)
+	}
 }
 
 func RenderEnterpriseTable(c *fiber.Ctx) error {
@@ -66,12 +71,12 @@ func RenderEnterpriseTable(c *fiber.Ctx) error {
 
 func RenderEnterpriseFile(c *fiber.Ctx) error {
 	e := searchOneModelByIdCaller(models.Enterprise{}, c)
-	data := fiber.Map{"enterprise": e}
+	data := fiber.Map{"enterprise": e, "mode": "edit"}
 	return c.Render("enterpriseFile", data)
 }
 
 func RenderCreateEnterpriseForm(c *fiber.Ctx) error {
 	// le paso un enterprise vacio para que los campos del form aparezcan vacios
-	data := fiber.Map{"enterprise": models.Enterprise{}}
-	return c.Render("createEnterpriseForm", data)
+	data := fiber.Map{"enterprise": models.Enterprise{}, "mode": "create"}
+	return c.Render("enterpriseFile", data)
 }

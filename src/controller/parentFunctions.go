@@ -10,11 +10,11 @@ func CreateParent(c *fiber.Ctx) error {
 	errorMap := validateFieldsCaller(models.Parent{}, c)
 	p := parserCaller(i.ParentParser{}, c)
 	if len(errorMap) > 0 {
-		data := fiber.Map{"parent": p, "errorMap": errorMap}
-		return c.Render("createParentForm", data)
+		data := fiber.Map{"parent": p, "mode": "create", "errorMap": errorMap}
+		return c.Render("parentFile", data)
 	} else {
 		p = insertModelCaller(p)
-		data := fiber.Map{"parent": p}
+		data := fiber.Map{"parent": p, "mode": "edit"}
 		return c.Render("parentFile", data)
 	}
 }
@@ -22,19 +22,22 @@ func CreateParent(c *fiber.Ctx) error {
 func DeleteParent(c *fiber.Ctx) error {
 	p := searchOneModelByIdCaller(models.Parent{}, c)
 	deleteModelCaller(p)
-	// renderiza de nuevo la tabla
-	// falla aca abajo, fijarse. Tambien probar agregar familiares
 	return RenderMemberParents(c)
 }
 
 func EditParent(c *fiber.Ctx) error {
-	// falta hacer la validacion
+	errorMap := validateFieldsCaller(models.Parent{}, c)
 	p := parserCaller(i.ParentParser{}, c)
 	IdParent := getIdModelCaller(p, c)
 	p.IdParent = IdParent
-	editModelCaller(p)
-	data := fiber.Map{"parent": p}
-	return c.Render("parentFile", data)
+	if len(errorMap) > 0 {
+		data := fiber.Map{"parent": p, "mode": "edit", "errorMap": errorMap}
+		return c.Render("parentFile", data)
+	} else {
+		editModelCaller(p)
+		data := fiber.Map{"parent": p, "mode": "edit"}
+		return c.Render("parentFile", data)
+	}
 }
 
 func RenderParentTable(c *fiber.Ctx) error {
@@ -67,7 +70,7 @@ func RenderParentTable(c *fiber.Ctx) error {
 
 func RenderParentFile(c *fiber.Ctx) error {
 	p := searchOneModelByIdCaller(models.Parent{}, c)
-	data := fiber.Map{"parent": p}
+	data := fiber.Map{"parent": p, "mode": "edit"}
 	return c.Render("parentFile", data)
 }
 
@@ -75,6 +78,6 @@ func RenderCreateParentForm(c *fiber.Ctx) error {
 	IdMember := getIdModelCaller(models.Member{}, c)
 	// creo un parent nuevo para que el form aparezca con campos vacios
 	p := models.Parent{IdMember: IdMember}
-	data := fiber.Map{"parent": p}
-	return c.Render("createParentForm", data)
+	data := fiber.Map{"parent": p, "mode": "create"}
+	return c.Render("parentFile", data)
 }

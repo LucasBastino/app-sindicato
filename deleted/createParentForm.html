@@ -1,0 +1,36 @@
+<body>
+    <h1>Agregar familiar:</h1>
+    <form hx-post="/parent/create" hx-target="#tableDiv">
+        <input type="text" name="name" value="{{$.parent.Name}}" placeholder="Nombres" required>
+        {{with .errorMap.name}}
+            <p>{{.}}</p>
+        {{end}}
+        <input type="text" name="last-name" value="{{$.parent.LastName}}" placeholder="Apellidos" required>
+        {{with .errorMap.lastName}}
+            <p>{{.}}</p>
+        {{end}}
+        <input type="text" name="rel" value="{{$.parent.Rel}}" placeholder="Parentesco" required>
+        {{with .errorMap.rel}}
+            <p>{{.}}</p>
+        {{end}}
+        <select class="field-6" name="gender" id="gender" onchange="cambiarColorPorDefecto(value, id);" required>
+            {{if eq $.parent.Gender ""}}
+            <option value="">Género</option>
+            {{else}}
+            <option value="{{$.parent.Gender}}">{{$.parent.Gender}}</option>
+            {{end}}               
+            <option value="Masculino">Masculino</option>
+            <option value="Femenino">Femenino</option>
+            <option value="Otro">Otro</option>
+        </select>
+        {{with .errorMap.gender}}
+            <p>{{.}}</p>
+        {{end}}
+        <input class="form-input" type="text" name="cuil" value="{{$.parent.CUIL}}" placeholder="DNI" required>
+        {{with .errorMap.cuil}}
+            <p>{{.}}</p>
+        {{end}}
+        <input class="hide" type="number" name="id-member" value="{{$.parent.IdMember}}">
+        <button class="btn-primary" type="submit">Enviar</button>
+    </form>
+</body>

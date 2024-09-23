@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"strings"
+	"time"
 
 	"github.com/LucasBastino/app-sindicato/src/database"
 	"github.com/gofiber/fiber/v2"
@@ -13,7 +14,11 @@ import (
 type Parent struct {
 	IdParent int
 	Name     string
+	LastName string
 	Rel      string
+	Gender   string
+	Birthday time.Time
+	CUIL     string
 	IdMember int
 }
 
@@ -181,6 +186,22 @@ func (parent Parent) GetAllModels() []Parent {
 	return parents
 }
 
-func (p Parent) ScanResult(result *sql.Rows) Parent {
-	return Parent{}
+func (parent Parent) ScanResult(result *sql.Rows) Parent {
+	var p Parent
+	for result.Next() {
+		err := result.Scan(
+			&p.Name,
+			&p.LastName,
+			&p.Rel,
+			&p.Gender,
+			&p.Birthday,
+			&p.CUIL,
+			&p.IdMember,
+		)
+		if err != nil {
+			fmt.Println("error scanning parent")
+			panic(err)
+		}
+	}
+	return p
 }

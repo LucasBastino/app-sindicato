@@ -1,8 +1,43 @@
-<h2>Ficha de {{$.enterprise.Name}}</h2>
-<form hx-put="/enterprise/{{$.enterprise.IdEnterprise}}/edit" hx-target="#tableDiv">
-    <input type="text" name="name" value="{{$.enterprise.Name}}" disabled>
-    <input type="text" name="address" value="{{$.enterprise.Address}}" disabled>
-    <button type="submit" class="btn-primary btn-submit hide">Confirmar</button>
-</form>
+{{if eq .mode "create"}}
+    <h2>Agregar empresa</h2>
+    <form hx-post="/enterprise/create" hx-target="#tableDiv">
+{{else if eq .mode "edit"}}
+    <h2>Ficha de {{$.enterprise.Name}}</h2>
+    <form hx-put="/enterprise/{{$.enterprise.IdEnterprise}}/edit" hx-target="#tableDiv">
+{{end}}
+        <input type="text" name="name" value="{{$.enterprise.Name}}" placeholder="Nombre">
+        {{with .errorMap.name}}
+            <p>{{.}}</p>
+        {{end}}
+        <input type="text" name="address" value="{{$.enterprise.Address}}" placeholder="Direccion">
+        {{with .errorMap.address}}
+            <p>{{.}}</p>
+        {{end}}
+        <input type="text" name="cuit" value="{{$.enterprise.CUIT}}" placeholder="CUIT">
+        {{with .errorMap.cuit}}
+            <p>{{.}}</p>
+        {{end}}
+        <input type="text" name="district" value="{{$.enterprise.District}}" placeholder="Localidad">
+        {{with .errorMap.district}}
+            <p>{{.}}</p>
+        {{end}}
+        <input type="text" name="postal-code" value="{{$.enterprise.PostalCode}}" placeholder="Código postal">
+        {{with .errorMap.postalCode}}
+            <p>{{.}}</p>
+        {{end}}
+        <input type="text" name="phone" value="{{$.enterprise.Phone}}" placeholder="Teléfono">
+        {{with .errorMap.phone}}
+            <p>{{.}}</p>
+        {{end}}
 
-<button class="btn-primary" onclick="enableInputs(); showConfirmButton(); disableBrowserInput();">Editar</button>
+        <button type="submit">Confirmar</button>
+    </form>
+
+{{if eq .mode "edit"}}
+    <button class="btn-primary" onclick="enableInputs(); showConfirmButton(); disableBrowserInput();">Editar</button>
+{{else if eq .mode "create"}}
+    <script type="text/javascript">
+        enableInputs();
+        enableSelects();
+    </script>
+{{end}}
