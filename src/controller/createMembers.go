@@ -39,10 +39,11 @@ import (
 
 func CreateMembers(c *fiber.Ctx) error {
 	type Member struct {
-		IdMember      int
-		Name          string
-		LastName      string
-		DNI           string
+		IdMember int
+		Name     string
+		LastName string
+		DNI      string
+		// fijarse lo de fecha
 		Birthday      string
 		Gender        string
 		MaritalStatus string
@@ -98,7 +99,7 @@ func CreateMembers(c *fiber.Ctx) error {
 	}
 	m.LastName = jsonData.LastNames[rand.IntN(len(jsonData.LastNames))]
 	m.DNI = strconv.Itoa(rand.IntN(3000000) + 2000000)
-	year := rand.IntN(114) + 1910
+	year := rand.IntN(104) + 1910
 	month := rand.IntN(11) + 1
 	var day int
 	switch month {
@@ -113,7 +114,7 @@ func CreateMembers(c *fiber.Ctx) error {
 	m.Birthday = fmt.Sprintf("%d/%d/%d", day, month, year)
 	m.MaritalStatus = jsonData.MaritalStatus[rand.IntN(len(jsonData.MaritalStatus))]
 	m.Phone = fmt.Sprintf("156%d", rand.IntN(9999999))
-	m.Email = fmt.Sprintf("%s%s%d@gmail.com", m.Name, m.LastName, year)
+	m.Email = fmt.Sprintf("%s%s%s@gmail.com", m.Name, m.LastName, strconv.Itoa(year)[2:])
 	m.PostalCode = strconv.Itoa(rand.IntN(8000) + 1000)
 	m.Address = fmt.Sprintf("%s %d", jsonData.Streets[rand.IntN(len(jsonData.Streets))].Name, rand.IntN(9999))
 	m.District = jsonData.Streets[rand.IntN(len(jsonData.Streets))].Name
@@ -122,7 +123,11 @@ func CreateMembers(c *fiber.Ctx) error {
 	m.IdEnterprise = rand.IntN(500)
 	fmt.Println(m)
 	m.Category = jsonData.Categories[rand.IntN(len(jsonData.Categories))]
-	entryYear := rand.IntN(64) + 1950
+	// que sea a los 18 años o mas, entre 18 y 48
+	entryYear := rand.IntN(30) + year + 18
+	if entryYear > 2024 {
+		entryYear = 2024
+	}
 	entryMonth := rand.IntN(11) + 1
 	var entryDay int
 	switch month {

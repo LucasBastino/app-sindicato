@@ -94,8 +94,8 @@ CREATE TABLE ParentTable(
     Name VARCHAR(50) NOT NULL,
     LastName VARCHAR(50) NOT NULL,
     Rel VARCHAR(50) NOT NULL,
-    Gender VARCHAR(50) NOT NULL,
     Birthday DATE NOT NULL,
+    Gender VARCHAR(50) NOT NULL,
     CUIL VARCHAR(50) NOT NULL,
     IdMember INT,
     FOREIGN KEY (IdMember) REFERENCES MemberTable(IdMember) ON DELETE CASCADE
