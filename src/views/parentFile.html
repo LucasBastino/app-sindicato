@@ -30,6 +30,10 @@
         {{with .errorMap.gender}}
             <p>{{.}}</p>
         {{end}}
+        <input type="text" name="birthday" value="{{$.parent.Birthday}}" placeholder="Fecha de Nacimiento" required>
+        {{with .errorMap.birthday}}
+            <p>{{.}}</p>
+        {{end}}
         <input class="form-input" type="text" name="cuil" value="{{$.parent.CUIL}}" placeholder="DNI" required>
         {{with .errorMap.cuil}}
             <p>{{.}}</p>

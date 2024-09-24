@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"log"
 	"strings"
-	"time"
 
 	"github.com/LucasBastino/app-sindicato/src/database"
 	"github.com/gofiber/fiber/v2"
@@ -17,7 +16,7 @@ type Parent struct {
 	LastName string
 	Rel      string
 	Gender   string
-	Birthday time.Time
+	Birthday string
 	CUIL     string
 	IdMember int
 }
@@ -69,7 +68,7 @@ func (parent Parent) GetIdModel(c *fiber.Ctx) int {
 
 func (parent Parent) SearchOneModelById(c *fiber.Ctx) Parent {
 	IdParent := parent.GetIdModel(c)
-	result, err := database.DB.Query(fmt.Sprintf("SELECT IdParent, Name, Rel, IdMember FROM ParentTable WHERE IdParent = '%v'", IdParent))
+	result, err := database.DB.Query(fmt.Sprintf("SELECT * FROM ParentTable WHERE IdParent = '%v'", IdParent))
 	if err != nil {
 		fmt.Println("error searching parent by id")
 		panic(err)

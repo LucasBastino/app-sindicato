@@ -83,7 +83,7 @@ func (member Member) GetIdModel(c *fiber.Ctx) int {
 
 func (member Member) SearchOneModelById(c *fiber.Ctx) Member {
 	IdMember := member.GetIdModel(c)
-	result, err := database.DB.Query(fmt.Sprintf("SELECT IdMember, Name, DNI, IdEnterprise FROM MemberTable WHERE IdMember = '%v'", IdMember))
+	result, err := database.DB.Query(fmt.Sprintf("SELECT * FROM MemberTable WHERE IdMember = '%v'", IdMember))
 	if err != nil {
 		fmt.Println("error searching member by Id")
 		panic(err)

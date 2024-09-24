@@ -18,7 +18,7 @@
         <p>{{.}}</p>
     {{end}}
 
-    <input class="field-6" type="date" name="birthday" value="{{$.member.Birthday}}" placeholder="Fecha de Nacimiento" required disabled>
+    <input class="field-6" type="text" name="birthday" value="{{$.member.Birthday}}" placeholder="Fecha de Nacimiento" required disabled>
     {{with .errorMap.birthday}}
         <p>{{.}}</p>
     {{end}}
@@ -111,7 +111,7 @@
     {{with .errorMap.category}}
         <p>{{.}}</p>
     {{end}}
-    <input class="field-6" type="date" name="entry-date" id="entry-date" value="{{$.member.EntryDate}}" placeholder="Fecha de Ingreso" required disabled>
+    <input class="field-6" type="text" name="entry-date" id="entry-date" value="{{$.member.EntryDate}}" placeholder="Fecha de Ingreso" required disabled>
     {{with .errorMap.entryDate}}
     <p>{{.}}</p>
     {{end}}

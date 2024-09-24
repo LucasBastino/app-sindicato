@@ -65,19 +65,11 @@ func (enterprise Enterprise) GetIdModel(c *fiber.Ctx) int {
 	c.ParamsParser(&params)
 
 	return params.IdEnterprise
-
-	// IdEnterpriseStr := c.PathValue("IdEnterprise")
-	// IdEnterprise, err := strconv.Atoi(IdEnterpriseStr)
-	// if err != nil {
-	// 	fmt.Println("error converting type")
-	// 	panic(err)
-	// }
-	// return IdEnterprise
 }
 
 func (enterprise Enterprise) SearchOneModelById(c *fiber.Ctx) Enterprise {
 	IdEnterprise := enterprise.GetIdModel(c)
-	result, err := database.DB.Query(fmt.Sprintf("SELECT IdEnterprise, Name, Address FROM EnterpriseTable WHERE IdEnterprise = '%v'", IdEnterprise))
+	result, err := database.DB.Query(fmt.Sprintf("SELECT * FROM EnterpriseTable WHERE IdEnterprise = '%v'", IdEnterprise))
 	if err != nil {
 		fmt.Println("error searching enterprise by id")
 		panic(err)
