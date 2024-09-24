@@ -3,7 +3,6 @@ package interfaces
 import (
 	"fmt"
 	"strconv"
-	"time"
 
 	"github.com/LucasBastino/app-sindicato/src/models"
 	"github.com/gofiber/fiber/v2"
@@ -20,13 +19,7 @@ func (m MemberParser) ParseModel(c *fiber.Ctx) models.Member {
 	member.Name = c.FormValue("name")
 	member.LastName = c.FormValue("last-name")
 	member.DNI = c.FormValue("dni")
-	BirthdayStr := c.FormValue("birthday")
-	Birthday, err := time.Parse(time.RFC3339, BirthdayStr)
-	if err != nil {
-		fmt.Println("error parsing birthday")
-		panic(err)
-	}
-	member.Birthday = Birthday
+	member.Birthday = c.FormValue("birthday")
 	member.Gender = c.FormValue("gender")
 	member.MaritalStatus = c.FormValue("marital-status")
 	member.Phone = c.FormValue("phone")
@@ -49,13 +42,7 @@ func (m MemberParser) ParseModel(c *fiber.Ctx) models.Member {
 		member.IdEnterprise = IdEnterprise
 	}
 	member.Category = c.FormValue("category")
-	EntryDateStr := c.FormValue("entry-date")
-	EntryDate, err := time.Parse(time.RFC3339, EntryDateStr)
-	if err != nil {
-		fmt.Println("error parsing entry date")
-		panic(err)
-	}
-	member.EntryDate = EntryDate
+	member.EntryDate = c.FormValue("entry-date")
 	return member
 }
 

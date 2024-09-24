@@ -18,5 +18,5 @@ type IModel[M models.TypeModel] interface {
 	GetTotalRows(*fiber.Ctx) int
 	GetFiberMap([]M, string, int, int, int, int, []int) fiber.Map
 	GetAllModels() []M
-	ScanResult(*sql.Rows) M
+	ScanResult(*sql.Rows, bool) (M, []M)
 }

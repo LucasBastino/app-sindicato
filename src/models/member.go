@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"log"
 	"strings"
-	"time"
 	"unicode/utf8"
 
 	"github.com/LucasBastino/app-sindicato/src/database"
@@ -17,7 +16,7 @@ type Member struct {
 	Name          string
 	LastName      string
 	DNI           string
-	Birthday      time.Time
+	Birthday      string
 	Gender        string
 	MaritalStatus string
 	Phone         string
@@ -29,7 +28,7 @@ type Member struct {
 	CUIL          string
 	IdEnterprise  int
 	Category      string
-	EntryDate     time.Time
+	EntryDate     string
 }
 
 func (m Member) Imprimir() {
@@ -44,17 +43,11 @@ func (member Member) InsertModel() Member {
 		panic(err)
 	}
 	insert.Close()
-	var m Member
 	result, err := database.DB.Query("SELECT * FROM MemberTable WHERE IdMember = (SELECT LAST_INSERT_ID())")
 	if err != nil {
 		fmt.Print(err)
 	}
-	result.Next()
-	err = result.Scan(&m.IdMember, &m.Name, &m.DNI, &m.IdEnterprise)
-	if err != nil {
-		fmt.Println(err)
-	}
-	result.Close()
+	m, _ := member.ScanResult(result, true)
 	return m
 }
 
@@ -95,31 +88,18 @@ func (member Member) SearchOneModelById(c *fiber.Ctx) Member {
 		fmt.Println("error searching member by Id")
 		panic(err)
 	}
-	m := member.ScanResult(result)
-	defer result.Close()
+	m, _ := member.ScanResult(result, true)
 	return m
 }
 
 func (member Member) SearchModels(c *fiber.Ctx, offset int) ([]Member, string) {
 	searchKey := c.FormValue("search-key")
-	var members []Member
-	var m Member
 	result, err := database.DB.Query(fmt.Sprintf(`SELECT * FROM MemberTable WHERE Name LIKE '%%%s%%' OR DNI LIKE '%%%s%%' LIMIT 10 OFFSET %d`, searchKey, searchKey, offset))
 	if err != nil {
 		fmt.Println("error searching member in DB")
 		panic(err)
 	}
-	var tempIdEnterprise sql.NullInt16
-	for result.Next() {
-		err = result.Scan(&m.IdMember, &m.Name, &m.DNI, &tempIdEnterprise)
-		if err != nil {
-			fmt.Println("error scanning member")
-			panic(err)
-		}
-		m.IdEnterprise = CheckIdEnterprise(tempIdEnterprise)
-		members = append(members, m)
-	}
-	defer result.Close()
+	_, members := member.ScanResult(result, false)
 	return members, searchKey
 }
 
@@ -182,23 +162,12 @@ func (m Member) GetFiberMap(members []Member, searchKey string, currentPage, som
 }
 
 func (member Member) GetAllModels() []Member {
-	var members []Member
-	var m Member
-
 	result, err := database.DB.Query("SELECT * FROM MemberTable")
 	if err != nil {
 		fmt.Println("error searching member in DB")
 		panic(err)
 	}
-	for result.Next() {
-		err = result.Scan(&m.IdMember, &m.Name, &m.DNI, &m.IdEnterprise)
-		if err != nil {
-			fmt.Println("error scanning enterprise")
-			panic(err)
-		}
-		members = append(members, m)
-	}
-	defer result.Close()
+	_, members := member.ScanResult(result, false)
 	return members
 }
 
@@ -210,8 +179,9 @@ func CheckIdEnterprise(tempIdEnterprise sql.NullInt16) int {
 	}
 }
 
-func (member Member) ScanResult(result *sql.Rows) Member {
+func (member Member) ScanResult(result *sql.Rows, onlyOne bool) (Member, []Member) {
 	var m Member
+	var members []Member
 	var tempIdEnterprise sql.NullInt16
 	for result.Next() {
 		err := result.Scan(
@@ -238,6 +208,10 @@ func (member Member) ScanResult(result *sql.Rows) Member {
 			panic(err)
 		}
 		m.IdEnterprise = CheckIdEnterprise(tempIdEnterprise)
+		if !onlyOne {
+			members = append(members, m)
+		}
 	}
-	return m
+	result.Close()
+	return m, members
 }

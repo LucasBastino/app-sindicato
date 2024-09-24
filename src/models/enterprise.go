@@ -28,17 +28,11 @@ func (enterprise Enterprise) InsertModel() Enterprise {
 		panic(err)
 	}
 	insert.Close()
-	var e Enterprise
 	result, err := database.DB.Query("SELECT * FROM EnterpriseTable WHERE IdEnterprise = (SELECT LAST_INSERT_ID())")
 	if err != nil {
 		fmt.Print(err)
 	}
-	result.Next()
-	err = result.Scan(&e.IdEnterprise, &e.Name, &e.Address)
-	if err != nil {
-		fmt.Println(err)
-	}
-	result.Close()
+	e, _ := enterprise.ScanResult(result, true)
 	return e
 }
 
@@ -89,37 +83,19 @@ func (enterprise Enterprise) SearchOneModelById(c *fiber.Ctx) Enterprise {
 		panic(err)
 	}
 
-	var e Enterprise
-	for result.Next() {
-		err = result.Scan(&e.IdEnterprise, &e.Name, &e.Address)
-		if err != nil {
-			fmt.Println("error scanning Enterprise")
-			panic(err)
-		}
-	}
-	defer result.Close()
+	e, _ := enterprise.ScanResult(result, true)
 	return e
+
 }
 
 func (enterprise Enterprise) SearchModels(c *fiber.Ctx, offset int) ([]Enterprise, string) {
 	searchKey := c.FormValue("search-key")
-	var enterprises []Enterprise
-	var e Enterprise
-
 	result, err := database.DB.Query(fmt.Sprintf(`SELECT * FROM EnterpriseTable WHERE Name LIKE '%%%s%%' OR Address LIKE '%%%s%%' LIMIT 10 OFFSET %d`, searchKey, searchKey, offset))
 	if err != nil {
 		fmt.Println("error searching Enterprise in DB")
 		panic(err)
 	}
-	for result.Next() {
-		err = result.Scan(&e.IdEnterprise, &e.Name, &e.Address)
-		if err != nil {
-			fmt.Println("error scanning Enterprise")
-			panic(err)
-		}
-		enterprises = append(enterprises, e)
-	}
-	defer result.Close()
+	_, enterprises := enterprise.ScanResult(result, false)
 	return enterprises, searchKey
 }
 
@@ -174,28 +150,18 @@ func (enterprise Enterprise) GetFiberMap(enterprises []Enterprise, searchKey str
 }
 
 func (enterprise Enterprise) GetAllModels() []Enterprise {
-	var enterprises []Enterprise
-	var e Enterprise
-
 	result, err := database.DB.Query("SELECT * FROM EnterpriseTable")
 	if err != nil {
 		fmt.Println("error searching enterprise in DB")
 		panic(err)
 	}
-	for result.Next() {
-		err = result.Scan(&e.IdEnterprise, &e.Name, &e.Address)
-		if err != nil {
-			fmt.Println("error scanning enterprise")
-			panic(err)
-		}
-		enterprises = append(enterprises, e)
-	}
-	defer result.Close()
+	_, enterprises := enterprise.ScanResult(result, false)
 	return enterprises
 }
 
-func (enterprise Enterprise) ScanResult(result *sql.Rows) Enterprise {
+func (enterprise Enterprise) ScanResult(result *sql.Rows, onlyOne bool) (Enterprise, []Enterprise) {
 	var e Enterprise
+	var enterprises []Enterprise
 	for result.Next() {
 		err := result.Scan(
 			&e.IdEnterprise,
@@ -210,6 +176,9 @@ func (enterprise Enterprise) ScanResult(result *sql.Rows) Enterprise {
 			fmt.Println("error scanning enterprise")
 			panic(err)
 		}
+		if !onlyOne {
+			enterprises = append(enterprises, e)
+		}
 	}
-	return e
+	return e, enterprises
 }

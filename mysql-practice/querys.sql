@@ -70,7 +70,7 @@ CREATE TABLE MemberTable(
     Name VARCHAR(100) NOT NULL,
     LastName VARCHAR(50) NOT NULL,
     DNI VARCHAR(50) NOT NULL,
-    Birthday DATE NOT NULL,
+    Birthday VARCHAR(50) NOT NULL,
     Gender VARCHAR(50) NOT NULL,
     MaritalStatus VARCHAR(50) NOT NULL,
     Phone VARCHAR(50) NOT NULL,
@@ -83,10 +83,8 @@ CREATE TABLE MemberTable(
     IdEnterprise INT,
     -- aca va sin NOT NULL, por si borras la empresa
     Category VARCHAR(100) NOT NULL,
-    EntryDate DATE NOT NULL,
-    FOREIGN KEY (IdEnterprise) REFERENCES EnterpriseTable(IdEnterprise) ON DELETE SET NULL,
-     -- fijarse que onda en el ON UPDATE CASCADE
-    FOREIGN KEY (IdCategory) REFERENCES CategoryTable(IdCategory)
+    EntryDate VARCHAR(50) NOT NULL,
+    FOREIGN KEY (IdEnterprise) REFERENCES EnterpriseTable(IdEnterprise) ON DELETE SET NULL
 )
 
 CREATE TABLE ParentTable(
@@ -94,7 +92,7 @@ CREATE TABLE ParentTable(
     Name VARCHAR(50) NOT NULL,
     LastName VARCHAR(50) NOT NULL,
     Rel VARCHAR(50) NOT NULL,
-    Birthday DATE NOT NULL,
+    Birthday VARCHAR(50) NOT NULL,
     Gender VARCHAR(50) NOT NULL,
     CUIL VARCHAR(50) NOT NULL,
     IdMember INT,

@@ -7,6 +7,8 @@ import (
 	"os"
 	"strconv"
 
+	"github.com/LucasBastino/app-sindicato/src/database"
+	"github.com/LucasBastino/app-sindicato/src/models"
 	"github.com/gofiber/fiber/v2"
 )
 
@@ -38,27 +40,6 @@ import (
 // }
 
 func CreateMembers(c *fiber.Ctx) error {
-	type Member struct {
-		IdMember int
-		Name     string
-		LastName string
-		DNI      string
-		// fijarse lo de fecha
-		Birthday      string
-		Gender        string
-		MaritalStatus string
-		Phone         string
-		Email         string
-		Address       string
-		PostalCode    string
-		District      string
-		MemberNumber  string
-		CUIL          string
-		IdEnterprise  int
-		Category      string
-		EntryDate     string
-	}
-
 	type StreetData struct {
 		Code string
 		Name string
@@ -73,7 +54,7 @@ func CreateMembers(c *fiber.Ctx) error {
 		Categories       []string
 	}
 
-	m := Member{}
+	m := models.Member{}
 	file, err := os.Open("./data/jsonData.json")
 	if err != nil {
 		fmt.Println("error opening file")
@@ -83,61 +64,68 @@ func CreateMembers(c *fiber.Ctx) error {
 	jsonData := JSONData{}
 	decoder.Decode(&jsonData)
 
-	m.IdMember = rand.IntN(1000)
-	m.Gender = jsonData.Genders[rand.IntN(len(jsonData.Genders))]
-	if m.Gender == "Hombre" {
-		m.Name = jsonData.MaleFirstNames[rand.IntN(len(jsonData.MaleFirstNames))]
-	} else if m.Gender == "Mujer" {
-		m.Name = jsonData.FemaleFirstNames[rand.IntN(len(jsonData.FemaleFirstNames))]
-	} else if m.Gender == "Otro" {
-		random := rand.IntN(1)
-		if random == 0 {
+	for i := 0; i < 200; i++ {
+		m.Gender = jsonData.Genders[rand.IntN(len(jsonData.Genders))]
+		if m.Gender == "Hombre" {
 			m.Name = jsonData.MaleFirstNames[rand.IntN(len(jsonData.MaleFirstNames))]
-		} else {
+		} else if m.Gender == "Mujer" {
 			m.Name = jsonData.FemaleFirstNames[rand.IntN(len(jsonData.FemaleFirstNames))]
+		} else if m.Gender == "Otro" {
+			random := rand.IntN(1)
+			if random == 0 {
+				m.Name = jsonData.MaleFirstNames[rand.IntN(len(jsonData.MaleFirstNames))]
+			} else {
+				m.Name = jsonData.FemaleFirstNames[rand.IntN(len(jsonData.FemaleFirstNames))]
+			}
 		}
+		m.LastName = jsonData.LastNames[rand.IntN(len(jsonData.LastNames))]
+		m.DNI = strconv.Itoa(rand.IntN(3000000) + 2000000)
+		year := rand.IntN(104) + 1910
+		month := rand.IntN(11) + 1
+		var day int
+		switch month {
+		case 2:
+			day = rand.IntN(27) + 1
+		case 4, 6, 9, 11:
+			day = rand.IntN(29) + 1
+		case 1, 3, 5, 7, 8, 10, 12:
+			day = rand.IntN(30) + 1
+		}
+		// fijarse bien desp lo del formato fecha
+		m.Birthday = fmt.Sprintf("%d-%d-%d", year, month, day)
+		m.MaritalStatus = jsonData.MaritalStatus[rand.IntN(len(jsonData.MaritalStatus))]
+		m.Phone = fmt.Sprintf("156%d", rand.IntN(9999999))
+		m.Email = fmt.Sprintf("%s%s%s@gmail.com", m.Name, m.LastName, strconv.Itoa(year)[2:])
+		m.PostalCode = strconv.Itoa(rand.IntN(8000) + 1000)
+		m.Address = fmt.Sprintf("%s %d", jsonData.Streets[rand.IntN(len(jsonData.Streets))].Name, rand.IntN(9999))
+		m.District = jsonData.Streets[rand.IntN(len(jsonData.Streets))].Name
+		m.MemberNumber = strconv.Itoa(rand.IntN(9999999999))
+		m.CUIL = fmt.Sprintf("%d-%s-%d", rand.IntN(9)+20, m.DNI, rand.IntN(8)+1)
+		m.IdEnterprise = rand.IntN(49) + 1
+		fmt.Println(m)
+		m.Category = jsonData.Categories[rand.IntN(len(jsonData.Categories))]
+		// que sea a los 18 años o mas, entre 18 y 48
+		entryYear := rand.IntN(30) + year + 18
+		if entryYear > 2024 {
+			entryYear = 2024
+		}
+		entryMonth := rand.IntN(11) + 1
+		var entryDay int
+		switch month {
+		case 2:
+			entryDay = rand.IntN(27) + 1
+		case 4, 6, 9, 11:
+			entryDay = rand.IntN(29) + 1
+		case 1, 3, 5, 7, 8, 10, 12:
+			entryDay = rand.IntN(30) + 1
+		}
+		m.EntryDate = fmt.Sprintf("%d-%d-%d", entryYear, entryMonth, entryDay)
+		insert, err := database.DB.Query(fmt.Sprintf("INSERT INTO MemberTable (Name, LastName, DNI, Birthday, Gender, MaritalStatus, Phone, Email, Address, PostalCode, District, MemberNumber, CUIL, IdEnterprise, Category, EntryDate) VALUES ('%s','%s','%s','%v','%s','%s','%s','%s','%s','%s','%s','%s','%s','%d','%s','%v')", m.Name, m.LastName, m.DNI, m.Birthday, m.Gender, m.MaritalStatus, m.Phone, m.Email, m.Address, m.PostalCode, m.District, m.MemberNumber, m.CUIL, m.IdEnterprise, m.Category, m.EntryDate))
+		if err != nil {
+			fmt.Println("error inserting member")
+			panic(err)
+		}
+		insert.Close()
 	}
-	m.LastName = jsonData.LastNames[rand.IntN(len(jsonData.LastNames))]
-	m.DNI = strconv.Itoa(rand.IntN(3000000) + 2000000)
-	year := rand.IntN(104) + 1910
-	month := rand.IntN(11) + 1
-	var day int
-	switch month {
-	case 2:
-		day = rand.IntN(27) + 1
-	case 4, 6, 9, 11:
-		day = rand.IntN(29) + 1
-	case 1, 3, 5, 7, 8, 10, 12:
-		day = rand.IntN(30) + 1
-	}
-	// fijarse bien desp lo del formato fecha
-	m.Birthday = fmt.Sprintf("%d/%d/%d", day, month, year)
-	m.MaritalStatus = jsonData.MaritalStatus[rand.IntN(len(jsonData.MaritalStatus))]
-	m.Phone = fmt.Sprintf("156%d", rand.IntN(9999999))
-	m.Email = fmt.Sprintf("%s%s%s@gmail.com", m.Name, m.LastName, strconv.Itoa(year)[2:])
-	m.PostalCode = strconv.Itoa(rand.IntN(8000) + 1000)
-	m.Address = fmt.Sprintf("%s %d", jsonData.Streets[rand.IntN(len(jsonData.Streets))].Name, rand.IntN(9999))
-	m.District = jsonData.Streets[rand.IntN(len(jsonData.Streets))].Name
-	m.MemberNumber = strconv.Itoa(rand.IntN(9999999999))
-	m.CUIL = fmt.Sprintf("%d-%s-%d", rand.IntN(9)+20, m.DNI, rand.IntN(8)+1)
-	m.IdEnterprise = rand.IntN(500)
-	fmt.Println(m)
-	m.Category = jsonData.Categories[rand.IntN(len(jsonData.Categories))]
-	// que sea a los 18 años o mas, entre 18 y 48
-	entryYear := rand.IntN(30) + year + 18
-	if entryYear > 2024 {
-		entryYear = 2024
-	}
-	entryMonth := rand.IntN(11) + 1
-	var entryDay int
-	switch month {
-	case 2:
-		entryDay = rand.IntN(27) + 1
-	case 4, 6, 9, 11:
-		entryDay = rand.IntN(29) + 1
-	case 1, 3, 5, 7, 8, 10, 12:
-		entryDay = rand.IntN(30) + 1
-	}
-	m.EntryDate = fmt.Sprintf("%d/%d/%d", entryDay, entryMonth, entryYear)
-	return c.Status(fiber.StatusOK).JSON(fiber.Map{"member": m})
+	return c.Status(fiber.StatusOK).JSON(fiber.Map{"status": "members hecho"})
 }

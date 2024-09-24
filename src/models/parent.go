@@ -30,17 +30,11 @@ func (parent Parent) InsertModel() Parent {
 		panic(err)
 	}
 	insert.Close()
-	var p Parent
 	result, err := database.DB.Query("SELECT * FROM ParentTable WHERE IdParent = (SELECT LAST_INSERT_ID())")
 	if err != nil {
 		fmt.Print(err)
 	}
-	result.Next()
-	err = result.Scan(&p.IdParent, &p.Name, &p.Rel, &p.IdMember)
-	if err != nil {
-		fmt.Println(err)
-	}
-	result.Close()
+	p, _ := parent.ScanResult(result, true)
 	return p
 }
 
@@ -80,38 +74,18 @@ func (parent Parent) SearchOneModelById(c *fiber.Ctx) Parent {
 		fmt.Println("error searching parent by id")
 		panic(err)
 	}
-
-	var p Parent
-	for result.Next() {
-		err = result.Scan(&p.IdParent, &p.Name, &p.Rel, &p.IdMember)
-		if err != nil {
-			fmt.Println("error scanning parent")
-			panic(err)
-		}
-	}
-	defer result.Close()
+	p, _ := parent.ScanResult(result, true)
 	return p
 }
 
 func (parent Parent) SearchModels(c *fiber.Ctx, offset int) ([]Parent, string) {
 	searchKey := c.FormValue("search-key")
-	var parents []Parent
-	var p Parent
-
 	result, err := database.DB.Query(fmt.Sprintf(`SELECT IdParent, Name, Rel FROM ParentTable WHERE Name LIKE '%%%s%%' OR Rel LIKE '%%%s%%' LIMIT 10 OFFSET %d`, searchKey, searchKey, offset))
 	if err != nil {
 		fmt.Println("error searching Parent in DB")
 		panic(err)
 	}
-	for result.Next() {
-		err = result.Scan(&p.IdParent, &p.Name, &p.Rel)
-		if err != nil {
-			fmt.Println("error scanning Parent")
-			panic(err)
-		}
-		parents = append(parents, p)
-	}
-	defer result.Close()
+	_, parents := parent.ScanResult(result, false)
 	return parents, searchKey
 }
 
@@ -166,28 +140,18 @@ func (parent Parent) GetFiberMap(parents []Parent, searchKey string, currentPage
 }
 
 func (parent Parent) GetAllModels() []Parent {
-	var parents []Parent
-	var p Parent
-
 	result, err := database.DB.Query("SELECT * FROM ParentTable")
 	if err != nil {
 		fmt.Println("error searching parent in DB")
 		panic(err)
 	}
-	for result.Next() {
-		err = result.Scan(&p.IdParent, &p.Name, &p.Rel, &p.IdMember)
-		if err != nil {
-			fmt.Println("error scanning enterprise")
-			panic(err)
-		}
-		parents = append(parents, p)
-	}
-	defer result.Close()
+	_, parents := parent.ScanResult(result, false)
 	return parents
 }
 
-func (parent Parent) ScanResult(result *sql.Rows) Parent {
+func (parent Parent) ScanResult(result *sql.Rows, onlyOne bool) (Parent, []Parent) {
 	var p Parent
+	var parents []Parent
 	for result.Next() {
 		err := result.Scan(
 			&p.Name,
@@ -202,6 +166,10 @@ func (parent Parent) ScanResult(result *sql.Rows) Parent {
 			fmt.Println("error scanning parent")
 			panic(err)
 		}
+		if !onlyOne {
+			parents = append(parents, p)
+		}
 	}
-	return p
+	result.Close()
+	return p, parents
 }
