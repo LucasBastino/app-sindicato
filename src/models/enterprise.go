@@ -16,7 +16,7 @@ type Enterprise struct {
 	Address      string
 	CUIT         string
 	District     string
-	PostalCode   int
+	PostalCode   string
 	Phone        string
 }
 

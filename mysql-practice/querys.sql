@@ -67,7 +67,7 @@ SELECT P.Name, M.Name FROM ParentTable P INNER JOIN MemberTable M ON P.IdMember 
 
 CREATE TABLE MemberTable(
     IdMember INT PRIMARY KEY AUTO_INCREMENT NOT NULL,
-    Name VARCHAR(50) NOT NULL,
+    Name VARCHAR(100) NOT NULL,
     LastName VARCHAR(50) NOT NULL,
     DNI VARCHAR(50) NOT NULL,
     Birthday DATE NOT NULL,
@@ -76,7 +76,7 @@ CREATE TABLE MemberTable(
     Phone VARCHAR(50) NOT NULL,
     Email VARCHAR(50),
     Address VARCHAR(50) NOT NULL,
-    PostalCode INT NOT NULL,
+    PostalCode VARCHAR(10) NOT NULL,
     District VARCHAR(50) NOT NULL,
     MemberNumber VARCHAR(50) NOT NULL,
     CUIL VARCHAR(50) NOT NULL,
@@ -104,10 +104,10 @@ CREATE TABLE ParentTable(
 
 CREATE TABLE EnterpriseTable(
     IdEnterprise INT PRIMARY KEY AUTO_INCREMENT NOT NULL,
-    Name VARCHAR(50),
+    Name VARCHAR(255),
     Address VARCHAR(50),
     CUIT VARCHAR(50),
     District VARCHAR(50),
-    PostalCode INT,
-    Phone VARCHAR(50),
+    PostalCode VARCHAR(10),
+    Phone VARCHAR(50)
 )
