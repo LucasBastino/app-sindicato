@@ -91,26 +91,32 @@ func CreateParents(c *fiber.Ctx) error {
 		}
 	}
 	p.LastName = jsonData.LastNames[rand.IntN(len(jsonData.LastNames))]
-	// SELECT CAST('2023-06-26' AS DATE) AS ConvertedDate;
 	// BUSCAR LA MANERA DE QUE SOLO TE APAREZCAN LOS MENORES DE 50
 	// con birthday formato fecha y una funcion en SQL que saque el año y que busque que sea mayor a 1974
 	// tambien hacer que el form de fechas sea con 3 input text y que despues de ahi se pase a fecha en backend
 	// y que para mostrarlo se obtenga de la DB en formato fecha, en backend se pase a string y de ahi se renderiza en los 3 inputs
 	// o en 1 input pero separados con barras (no se como se hace)
-	result, err := database.DB.Query(fmt.Sprintf("SELECT Birthday FROM MemberTable WHERE IdMember = '%d'", p.IdMember))
+	result, err := database.DB.Query("SELECT IdMember, Birthday FROM MemberTable WHERE CAST(Birthday AS DATE) > '1990-01-01'")
 	if err != nil {
 		fmt.Println("error consulting member table")
 		panic(err)
 	}
 	var memberBirthday string
+	var memberMap map[int]string
+	var idMemberTemp int
+	var memberBirthdayTemp string
 	for result.Next() {
-		err = result.Scan(&memberBirthday)
+		err = result.Scan(&idMemberTemp, &memberBirthdayTemp)
 		if err != nil {
-			fmt.Println("error scanning member birthday")
+			fmt.Println("error scanning member id and birthday")
 			panic(err)
 		}
+		fmt.Println(idMemberTemp, memberBirthdayTemp)
+		// memberMap[idMemberTemp] = memberBirthdayTemp
 	}
 	result.Close()
+	largodelmapa := len(memberMap)
+	fmt.Println("largo del mapa", largodelmapa)
 	// consulto la fecha de nacimiento del afiliado mayor y obtengo el año
 	memberYearStr := memberBirthday[(len(memberBirthday) - 4):]
 	memberYear, err := strconv.Atoi(memberYearStr)
