@@ -91,6 +91,7 @@ func CreateParents(c *fiber.Ctx) error {
 		}
 	}
 	p.LastName = jsonData.LastNames[rand.IntN(len(jsonData.LastNames))]
+	// SELECT CAST('2023-06-26' AS DATE) AS ConvertedDate;
 	// BUSCAR LA MANERA DE QUE SOLO TE APAREZCAN LOS MENORES DE 50
 	// con birthday formato fecha y una funcion en SQL que saque el año y que busque que sea mayor a 1974
 	// tambien hacer que el form de fechas sea con 3 input text y que despues de ahi se pase a fecha en backend
@@ -140,7 +141,7 @@ func CreateParents(c *fiber.Ctx) error {
 		day = rand.IntN(30) + 1
 	}
 	// fijarse bien desp lo del formato fecha
-	p.Birthday = fmt.Sprintf("%d/%d/%d", day, month, year)
+	p.Birthday = fmt.Sprintf("%d-%d-%d", day, month, year)
 	p.CUIL = fmt.Sprintf("%d-%s-%d", rand.IntN(9)+20, strconv.Itoa(rand.IntN(3000000)+2000000), rand.IntN(8)+1)
 
 	return c.Status(fiber.StatusOK).JSON(fiber.Map{"parent": p})

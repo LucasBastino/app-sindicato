@@ -109,3 +109,5 @@ CREATE TABLE EnterpriseTable(
     PostalCode VARCHAR(10),
     Phone VARCHAR(50)
 )
+
+SELECT * FROM MemberTable WHERE CAST(Birthday AS DATE) > '2022-01-01'
