@@ -5,6 +5,7 @@ import (
 	"github.com/gofiber/fiber/v2"
 )
 
+// FALTA HACER LOS GROUPS
 func RegisterRoutes(app *fiber.App) {
 	app.Get("/", c.VerifyToken, c.RenderIndex)
 	app.Get("/login", c.RenderLogin)
@@ -32,6 +33,7 @@ func RegisterRoutes(app *fiber.App) {
 	app.Get("/form/createEnterprise", c.VerifyToken, c.RenderCreateEnterpriseForm)
 	app.Post("/enterprise/create", c.VerifyToken, c.CreateEnterprise)
 	app.Get("/enterprise/:IdEnterprise/file", c.VerifyToken, c.RenderEnterpriseFile)
+	app.Get("/enterprise/:IdEnterprise/memberTable", c.VerifyToken, c.RenderEnterpriseMembers)
 	app.Delete("/enterprise/:IdEnterprise/delete", c.VerifyToken, c.DeleteEnterprise)
 	// cambiar el de abajo a PUT
 	app.Put("/enterprise/:IdEnterprise/edit", c.VerifyToken, c.EditEnterprise)

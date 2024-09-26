@@ -51,7 +51,6 @@ func CreateMembers(c *fiber.Ctx) error {
 		MaritalStatus    []string
 		Genders          []string
 		Streets          []StreetData
-		Categories       []string
 	}
 
 	m := models.Member{}
@@ -79,9 +78,8 @@ func CreateMembers(c *fiber.Ctx) error {
 			}
 		}
 		m.LastName = jsonData.LastNames[rand.IntN(len(jsonData.LastNames))]
-		m.DNI = strconv.Itoa(rand.IntN(3000000) + 2000000)
 		// año entre 1950 y 2006 (mayor de 18 años)
-		year := rand.IntN(65) + 1959
+		year := rand.IntN(56) + 1950
 		month := rand.IntN(11) + 1
 		var day int
 		switch month {
@@ -92,6 +90,8 @@ func CreateMembers(c *fiber.Ctx) error {
 		case 1, 3, 5, 7, 8, 10, 12:
 			day = rand.IntN(30) + 1
 		}
+		// creo el dni con la fecha de nacimiento
+		m.DNI = createDNI(year, month, day)
 
 		// en la base de datos: '1998-05-22' string
 		// consulta: SELECT > CAST('2023-06-26' AS DATE)
@@ -110,7 +110,22 @@ func CreateMembers(c *fiber.Ctx) error {
 		m.CUIL = fmt.Sprintf("%d-%s-%d", rand.IntN(9)+20, m.DNI, rand.IntN(8)+1)
 		m.IdEnterprise = rand.IntN(49) + 1
 		fmt.Println(m)
-		m.Category = jsonData.Categories[rand.IntN(len(jsonData.Categories))]
+
+		switch {
+		case year <= 1960:
+			m.Category = "Nivel 1: Oficial Múltiple"
+		case year <= 1970:
+			m.Category = "Nivel 2: Oficial Especializado"
+		case year <= 1980:
+			m.Category = "Nivel 3: Oficial General"
+		case year <= 1990:
+			m.Category = "Nivel 4: Medio Oficial"
+		case year <= 2000:
+			m.Category = "Nivel 5: Ayudante"
+		case year <= 2006:
+			m.Category = "Nivel 6: Operario Act. Industrial"
+		}
+
 		// que sea a los 18 años o mas, entre 18 y 48
 		entryYear := rand.IntN(30) + year + 18
 		if entryYear > 2024 {
