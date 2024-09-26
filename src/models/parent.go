@@ -153,6 +153,7 @@ func (parent Parent) ScanResult(result *sql.Rows, onlyOne bool) (Parent, []Paren
 	var parents []Parent
 	for result.Next() {
 		err := result.Scan(
+			&p.IdParent,
 			&p.Name,
 			&p.LastName,
 			&p.Rel,
