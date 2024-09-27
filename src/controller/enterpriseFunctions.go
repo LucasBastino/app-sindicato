@@ -39,7 +39,7 @@ func EditEnterprise(c *fiber.Ctx) error {
 		data := fiber.Map{"enterprise": e, "mode": "edit", "errorMap": errorMap}
 		return c.Render("enterpriseFile", data)
 	} else {
-		e = insertModelCaller(e)
+		editModelCaller(e)
 		data := fiber.Map{"enterprise": e, "mode": "edit"}
 		return c.Render("enterpriseFile", data)
 	}
@@ -107,6 +107,8 @@ func RenderEnterpriseMembers(c *fiber.Ctx) error {
 		log.Fatal(err)
 	}
 
+	fmt.Println("cantidad de resultados:", totalRows)
+
 	if totalRows == 0 {
 		// si no hay resultados renderizar esto
 		return c.Render("searchWithNoResults", fiber.Map{})
@@ -118,12 +120,13 @@ func RenderEnterpriseMembers(c *fiber.Ctx) error {
 
 		// busco los miembros y devuelvo el searchKey para usarlo nuevamente en la paginacion
 		searchKey := c.FormValue("search-key")
-		result, err := database.DB.Query(fmt.Sprintf(`SELECT * FROM MemberTable WHERE IdEnterprise = %d AND Name LIKE '%%%s%%' OR DNI LIKE '%%%s%%' LIMIT 10 OFFSET %d`, IdEnterprise, searchKey, searchKey, offset))
+		result, err := database.DB.Query(fmt.Sprintf(`SELECT * FROM MemberTable WHERE IdEnterprise = %d AND Name LIKE '%%%s%%' LIMIT 10 OFFSET %d`, IdEnterprise, searchKey, offset))
 		if err != nil {
 			fmt.Println("error searching member in DB")
 			panic(err)
 		}
 		_, members := models.Member{}.ScanResult(result, false)
+		// fmt.Println(members)
 
 		// hago un array para poder recorrerlo y crear botones cuando hay menos de 10 paginas en el template
 		totalPagesArray := GetTotalPagesArray(totalPages)

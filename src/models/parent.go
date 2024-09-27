@@ -22,7 +22,7 @@ type Parent struct {
 }
 
 func (parent Parent) InsertModel() Parent {
-	insert, err := database.DB.Query(fmt.Sprintf("INSERT INTO ParentTable (Name, Rel, IdMember) VALUES ('%s','%s','%d')", parent.Name, parent.Rel, parent.IdMember))
+	insert, err := database.DB.Query(fmt.Sprintf("INSERT INTO ParentTable (Name, LastName, Rel, Gender, Birthday, CUIL, IdMember) VALUES ('%s','%s','%s', '%s', '%s', '%s', '%d')", parent.Name, parent.LastName, parent.Rel, parent.Gender, parent.Birthday, parent.CUIL, parent.IdMember))
 	if err != nil {
 		// DBError{"INSERT Parent"}.Error(err)
 		fmt.Println("error inserting parent")
@@ -49,7 +49,7 @@ func (parent Parent) DeleteModel() {
 }
 
 func (parent Parent) EditModel() {
-	update, err := database.DB.Query(fmt.Sprintf("UPDATE ParentTable SET Name = '%s', Rel = '%s' WHERE IdParent = '%v'", parent.Name, parent.Rel, parent.IdParent))
+	update, err := database.DB.Query(fmt.Sprintf("UPDATE ParentTable SET Name = '%s', LastName = '%s', Rel = '%s', Gender = '%s', Birthday = '%s', CUIL = '%s', IdMember = '%d' WHERE IdParent = '%d'", parent.Name, parent.LastName, parent.Rel, parent.Gender, parent.Birthday, parent.CUIL, parent.IdMember, parent.IdParent))
 	if err != nil {
 		// DBError{"UPDATE Parent"}.Error(err)
 		fmt.Println("error updating parent")

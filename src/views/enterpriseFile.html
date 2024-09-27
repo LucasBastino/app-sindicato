@@ -5,36 +5,36 @@
     <h2>Ficha de {{$.enterprise.Name}}</h2>
     <form hx-put="/enterprise/{{$.enterprise.IdEnterprise}}/edit" hx-target="#tableDiv">
 {{end}}
-        <input type="text" name="name" value="{{$.enterprise.Name}}" placeholder="Nombre">
+        <input type="text" name="name" value="{{$.enterprise.Name}}" placeholder="Nombre" disabled>
         {{with .errorMap.name}}
             <p>{{.}}</p>
         {{end}}
-        <input type="text" name="address" value="{{$.enterprise.Address}}" placeholder="Direccion">
+        <input type="text" name="address" value="{{$.enterprise.Address}}" placeholder="Direccion" disabled>
         {{with .errorMap.address}}
             <p>{{.}}</p>
         {{end}}
-        <input type="text" name="cuit" value="{{$.enterprise.CUIT}}" placeholder="CUIT">
+        <input type="text" name="cuit" value="{{$.enterprise.CUIT}}" placeholder="CUIT" disabled>
         {{with .errorMap.cuit}}
             <p>{{.}}</p>
         {{end}}
-        <input type="text" name="district" value="{{$.enterprise.District}}" placeholder="Localidad">
+        <input type="text" name="district" value="{{$.enterprise.District}}" placeholder="Localidad" disabled>
         {{with .errorMap.district}}
             <p>{{.}}</p>
         {{end}}
-        <input type="text" name="postal-code" value="{{$.enterprise.PostalCode}}" placeholder="Código postal">
+        <input type="text" name="postal-code" value="{{$.enterprise.PostalCode}}" placeholder="Código postal" disabled>
         {{with .errorMap.postalCode}}
             <p>{{.}}</p>
         {{end}}
-        <input type="text" name="phone" value="{{$.enterprise.Phone}}" placeholder="Teléfono">
+        <input type="text" name="phone" value="{{$.enterprise.Phone}}" placeholder="Teléfono" disabled>
         {{with .errorMap.phone}}
             <p>{{.}}</p>
         {{end}}
 
-        <button type="submit">Confirmar</button>
+        <button type="submit" class="btn btn-primary btn-submit hide">Confirmar</button>
     </form>
 
 {{if eq .mode "edit"}}
-    <button class="btn-primary" onclick="enableInputs(); showConfirmButton(); disableBrowserInput();">Editar</button>
+    <button class="btn-primary" onclick="enableInputs(); showConfirmButton(); hideEnterpriseSearchInput();">Editar</button>
 {{else if eq .mode "create"}}
     <script type="text/javascript">
         enableInputs();
@@ -42,4 +42,5 @@
     </script>
 {{end}}
 
-<button class="btn btn-primary" hx-get="enterprise/{{$.enterprise.IdEnterprise}}/memberTable">Mostrar afiliados</button>
+<button class="btn btn-primary" hx-get="enterprise/{{$.enterprise.IdEnterprise}}/memberTable" hx-target="#memberTableDiv">Mostrar afiliados</button>
+<div id="memberTableDiv"></div>

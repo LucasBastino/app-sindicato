@@ -28,7 +28,7 @@ func (m MemberParser) ParseModel(c *fiber.Ctx) models.Member {
 	member.PostalCode = c.FormValue("postal-code")
 	member.District = c.FormValue("district")
 	member.MemberNumber = c.FormValue("member-number")
-	member.CUIL = c.FormValue("CUIL")
+	member.CUIL = c.FormValue("cuil")
 	IdEnterpriseStr := c.FormValue("id-enterprise")
 	if IdEnterpriseStr == "" {
 		member.IdEnterprise = 0
@@ -51,7 +51,11 @@ type ParentParser struct{}
 func (p ParentParser) ParseModel(c *fiber.Ctx) models.Parent {
 	parent := models.Parent{}
 	parent.Name = c.FormValue("name")
+	parent.LastName = c.FormValue("last-name")
 	parent.Rel = c.FormValue("rel")
+	parent.Gender = c.FormValue("gender")
+	parent.Birthday = c.FormValue("birthday")
+	parent.CUIL = c.FormValue("cuil")
 	IdMemberStr := c.FormValue("id-member")
 	IdMember, err := strconv.Atoi(IdMemberStr)
 	if err != nil {
@@ -69,5 +73,9 @@ func (p EnterpriseParser) ParseModel(c *fiber.Ctx) models.Enterprise {
 	enterprise := models.Enterprise{}
 	enterprise.Name = c.FormValue("name")
 	enterprise.Address = c.FormValue("address")
+	enterprise.CUIT = c.FormValue("cuit")
+	enterprise.District = c.FormValue("district")
+	enterprise.PostalCode = c.FormValue("postal-code")
+	enterprise.Phone = c.FormValue("phone")
 	return enterprise
 }

@@ -212,6 +212,7 @@ func (member Member) ScanResult(result *sql.Rows, onlyOne bool) (Member, []Membe
 			members = append(members, m)
 		}
 	}
+	fmt.Println(members)
 	result.Close()
 	return m, members
 }

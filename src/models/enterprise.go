@@ -21,7 +21,7 @@ type Enterprise struct {
 }
 
 func (enterprise Enterprise) InsertModel() Enterprise {
-	insert, err := database.DB.Query(fmt.Sprintf("INSERT INTO EnterpriseTable (Name, Address) VALUES ('%s','%s')", enterprise.Name, enterprise.Address))
+	insert, err := database.DB.Query(fmt.Sprintf("INSERT INTO EnterpriseTable (Name, Address, CUIT, District, PostalCode, Phone) VALUES ('%s','%s','%s','%s','%s','%s')", enterprise.Name, enterprise.Address, enterprise.CUIT, enterprise.District, enterprise.PostalCode, enterprise.Phone))
 	if err != nil {
 		// DBError{"INSERT Enterprise"}.Error(err)
 		fmt.Println("error insertando en la DB")
@@ -48,7 +48,7 @@ func (enterprise Enterprise) DeleteModel() {
 }
 
 func (enterprise Enterprise) EditModel() {
-	update, err := database.DB.Query(fmt.Sprintf("UPDATE EnterpriseTable SET Name = '%s', Address = '%s' WHERE IdEnterprise = '%v'", enterprise.Name, enterprise.Address, enterprise.IdEnterprise))
+	update, err := database.DB.Query(fmt.Sprintf("UPDATE EnterpriseTable SET Name = '%s', Address = '%s', CUIT = '%s', District = '%s', PostalCode = '%s', Phone = '%s' WHERE IdEnterprise = '%d'", enterprise.Name, enterprise.Address, enterprise.CUIT, enterprise.District, enterprise.PostalCode, enterprise.Phone, enterprise.IdEnterprise))
 	if err != nil {
 		// DBError{"UPDATE Enterprise"}.Error(err)
 		fmt.Println("error updating Enterprise")
