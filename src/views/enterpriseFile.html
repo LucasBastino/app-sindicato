@@ -35,16 +35,24 @@
         {{else if eq .mode "edit"}}
         <button type="submit" class="btn btn-primary btn-submit hide">Confirmar</button>
         {{end}}
-    </form>
 
-{{if eq .mode "edit"}}
+    </form>
+    
+    {{if eq .mode "edit"}}
     <button class="btn-primary" onclick="enableInputs(); showConfirmButton(); hideEnterpriseSearchInput();">Editar</button>
-{{else if eq .mode "create"}}
+    {{else if eq .mode "create"}}
     <script type="text/javascript">
         enableInputs();
         enableSelects();
-    </script>
+        </script>
 {{end}}
 
-<button class="btn btn-primary" hx-get="enterprise/{{$.enterprise.IdEnterprise}}/memberTable" hx-target="#memberTableDiv">Mostrar afiliados</button>
+<div>{{.numberOfMembers}} </div>
+<form hx-get="enterprise/{{$.enterprise.IdEnterprise}}/memberTable" hx-target="#memberTableDiv">
+    <input class="hide" type="text" name="search-key" value="">
+    <button type="submit" class="btn btn-primary" onclick="showEnterpriseMemberSearchInput()">Mostrar afiliados</button>
+</form>
+<input class="hide" id="enterprise-member-search-input" name="search-key" type="search" aria-label="Search" 
+    hx-get="enterprise/{{$.enterprise.IdEnterprise}}/memberTable" hx-trigger="keyup" hx-target="#memberTableDiv">
+<button hx-delete="/enterprise/{{$.enterprise.IdEnterprise}}/delete" hx-trigger="click" hx-confirm="¿Estás seguro que deseas eliminar la empresa?" hx-target="#tableDiv" class="btn btn-danger">Eliminar empresa</button>
 <div id="memberTableDiv"></div>

@@ -75,14 +75,17 @@ func RenderEnterpriseTable(c *fiber.Ctx) error {
 
 func RenderEnterpriseFile(c *fiber.Ctx) error {
 	e := searchOneModelByIdCaller(models.Enterprise{}, c)
-	numberOfMembers := getNumberOfMembers(e)
+	numberOfMembers := GetNumberOfMembers(e.IdEnterprise, "")
 	data := fiber.Map{"enterprise": e, "numberOfMembers": numberOfMembers, "mode": "edit"}
 	return c.Render("enterpriseFile", data)
 }
 
-func getNumberOfMembers(e models.Enterprise) int {
+func GetNumberOfMembers(IdEnterprise int, searchKey string) int {
 	var totalRows int
-	row := database.DB.QueryRow(fmt.Sprintf(`SELECT COUNT(*) FROM MemberTable WHERE IdEnterprise = %d AND Name LIKE '%%%s%%'`, IdEnterprise, searchKey))
+	row := database.DB.QueryRow(fmt.Sprintf(`
+		SELECT COUNT(*) FROM MemberTable 
+		WHERE IdEnterprise = %d AND (Name LIKE '%%%s%%' OR LastName LIKE '%%%s%%')`,
+		IdEnterprise, searchKey, searchKey))
 	// row.Scan copia el numero de fila en la variable count
 	err := row.Scan(&totalRows)
 	if err != nil {
@@ -103,8 +106,6 @@ func RenderEnterpriseMembers(c *fiber.Ctx) error {
 	// obtengo la currentPage del path
 	currentPage := GetPageFromPath(c)
 
-	// calculo la cantidad de resultados
-	var totalRows int
 	searchKey := c.FormValue("search-key")
 	params := struct {
 		IdEnterprise int `params:"IdEnterprise"`
@@ -112,7 +113,9 @@ func RenderEnterpriseMembers(c *fiber.Ctx) error {
 
 	c.ParamsParser(&params)
 	IdEnterprise := params.IdEnterprise
-	totalRows = getNumberOfMembers(e)
+
+	// calculo la cantidad de resultados
+	totalRows := GetNumberOfMembers(IdEnterprise, searchKey)
 
 	if totalRows == 0 {
 		// si no hay resultados renderizar esto
@@ -125,7 +128,10 @@ func RenderEnterpriseMembers(c *fiber.Ctx) error {
 
 		// busco los miembros y devuelvo el searchKey para usarlo nuevamente en la paginacion
 		searchKey := c.FormValue("search-key")
-		result, err := database.DB.Query(fmt.Sprintf(`SELECT * FROM MemberTable WHERE IdEnterprise = %d AND Name LIKE '%%%s%%' LIMIT 10 OFFSET %d`, IdEnterprise, searchKey, offset))
+		result, err := database.DB.Query(fmt.Sprintf(`
+			SELECT * FROM MemberTable 
+			WHERE IdEnterprise = %d
+			AND (Name LIKE '%%%s%%' OR LastName LIKE '%%%s%%') LIMIT 10 OFFSET %d`, IdEnterprise, searchKey, searchKey, offset))
 		if err != nil {
 			fmt.Println("error searching member in DB")
 			panic(err)

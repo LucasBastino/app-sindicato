@@ -51,6 +51,11 @@ function hideEnterpriseSearchInput(){
     document.getElementById('enterprise-search-input').style.display = 'none'
 }
 
+function showEnterpriseMemberSearchInput(){
+    document.getElementById('enterprise-member-search-input').style.display = 'inline'
+}
+
+
 function showParentSearchInput(){
     document.getElementById('parent-search-input').style.display = 'inline'
 }

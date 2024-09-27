@@ -133,5 +133,6 @@
     </script>
 {{end}}
 
+<button class="btn-danger" hx-delete="/member/{{$.member.IdMember}}/delete" hx-confirm="¿Estás seguro que deseas eliminar el afiliado?" hx-target="#tableDiv">Eliminar afiliado</button>
 <button type="submit" hx-get="/member/{{$.member.IdMember}}/parentTable" hx-trigger="click" hx-target="#parentTableDiv" onclick="showAddParentButton();">Familiares</button>
 <div id="parentTableDiv"></div>

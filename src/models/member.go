@@ -175,7 +175,7 @@ func (member Member) SearchModels(c *fiber.Ctx, offset int) ([]Member, string) {
 	result, err := database.DB.Query(fmt.Sprintf(`
 		SELECT * FROM MemberTable 
 		WHERE 
-		Name LIKE '%%%s%%' OR DNI LIKE '%%%s%%'
+		Name LIKE '%%%s%%' OR LastName LIKE '%%%s%%'
 		LIMIT 10 OFFSET %d`,
 		searchKey, searchKey, offset))
 	if err != nil {
