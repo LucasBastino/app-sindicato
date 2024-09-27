@@ -12,11 +12,11 @@
   <div class="container" id="main-container">
     <div class="nav-container">
       <nav class="navbar navbar-expand navbar-light bg-light">
-        <a class="navbar-brand" href="#" onclick="showAddMemberBtn(); hideAddEnterpriseBtn(); showMemberSearchInput(); hideParentSearchInput(); hideEnterpriseSearchInput();" hx-get="/member/renderTable" hx-trigger="click" hx-target="#tableDiv">Sindicato</a>
+        <a class="navbar-brand" href="#" onclick="showAddMemberBtn(); hideAddEnterpriseBtn();" hx-get="/member/renderTable" hx-trigger="click" hx-target="#tableDiv">Sindicato</a>
           <div class="navbar-nav">
             <!-- navbar links -->
-            <a class="nav-item nav-link active" href="#" onclick="showAddMemberBtn(); hideAddEnterpriseBtn(); showMemberSearchInput(); hideParentSearchInput(); hideEnterpriseSearchInput();" hx-get="/member/renderTable" hx-trigger="click" hx-target="#tableDiv">Afiliados</a>
-            <a class="nav-item nav-link active" href="#" onclick="showAddEnterpriseBtn(); hideAddMemberBtn(); hideMemberSearchInput(); hideParentSearchInput(); showEnterpriseSearchInput();" hx-get="/enterprise/renderTable" hx-trigger="click" hx-target="#tableDiv">Empresas</a>
+            <a class="nav-item nav-link active" href="#" hx-get="/member/renderTable" hx-trigger="click" hx-target="#tableDiv">Afiliados</a>
+            <a class="nav-item nav-link active" href="#" onclick="" hx-get="/enterprise/renderTable" hx-trigger="click" hx-target="#tableDiv">Empresas</a>
 
             <!-- 4 search inputs -->
             <div class="inner-addon right-addon" id="member-search-input">

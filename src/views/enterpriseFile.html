@@ -44,15 +44,21 @@
     <script type="text/javascript">
         enableInputs();
         enableSelects();
-        </script>
+    </script>
 {{end}}
+    <script>
+        hideMemberSearchInput();
+        hideEnterpriseSearchInput();
+        showAddEnterpriseBtn(); 
+        hideAddMemberBtn();
+    </script>
 
 <div>{{.numberOfMembers}} </div>
+<button hx-delete="/enterprise/{{$.enterprise.IdEnterprise}}/delete" hx-trigger="click" hx-confirm="¿Estás seguro que deseas eliminar la empresa?" hx-target="#tableDiv" class="btn btn-danger">Eliminar empresa</button>
 <form hx-get="enterprise/{{$.enterprise.IdEnterprise}}/memberTable" hx-target="#memberTableDiv">
     <input class="hide" type="text" name="search-key" value="">
-    <button type="submit" class="btn btn-primary" onclick="showEnterpriseMemberSearchInput()">Mostrar afiliados</button>
+    <button type="submit" class="btn btn-primary" onclick="showEnterpriseMemberSearchInput();">Mostrar afiliados</button>
 </form>
 <input class="hide" id="enterprise-member-search-input" name="search-key" type="search" aria-label="Search" 
-    hx-get="enterprise/{{$.enterprise.IdEnterprise}}/memberTable" hx-trigger="keyup" hx-target="#memberTableDiv">
-<button hx-delete="/enterprise/{{$.enterprise.IdEnterprise}}/delete" hx-trigger="click" hx-confirm="¿Estás seguro que deseas eliminar la empresa?" hx-target="#tableDiv" class="btn btn-danger">Eliminar empresa</button>
+    hx-get="enterprise/{{$.enterprise.IdEnterprise}}/memberTable" hx-trigger="keyup" hx-target="#memberTableDiv"></input>
 <div id="memberTableDiv"></div>

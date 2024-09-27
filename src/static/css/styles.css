@@ -1,5 +1,33 @@
-body{
-    background-color: #BBBBBB;
+body {
+  background-color: #aaa;
+  margin: 0px;
+  /* para que no tenga margen en ningun costado de la pagina */
+  display: flex;
+  /* estos 3 de abajo son para que el footer quede bien puesto */
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+section {
+  display: grid;
+  justify-content: center;
+  align-content: center;
+}
+
+
+
+input:focus, select:focus {
+    transition: transform 0.3s;
+    transform: scale(1.1);
+}
+
+input::placeholder {
+    color: #999;
+    opacity: 1;
+}
+
+select {
+    color: #999;
 }
 
 .container{
@@ -27,11 +55,11 @@ body{
 
 /* style icon */
 .inner-addon .input-icon {
-position: absolute;
-/* bottom 0 para alinearlo mas arriba */
-bottom: 0%;  
-padding: 10px;
-pointer-events: none;
+  position: absolute;
+  /* bottom 0 para alinearlo mas arriba */
+  bottom: 0%;  
+  padding: 10px;
+  pointer-events: none;
 }
 
 /* align icon */
@@ -90,19 +118,26 @@ select:disabled{
   display: none
 }
 
-.form-container{
-  display: flex;
-  justify-content: center;
-}
 
-.form-input{
+/* .form-input{
 display: block;
 padding: 5px;
 margin: 10px
-}
+} */
 
-.input-container{
-  text-align: center;
+
+.form-input, .form-select {
+  margin: 1.5em 2em;
+  font-size: 1em;
+  background-color: inherit;
+  border: none;
+  border-bottom: 2px solid #000;
+  outline: none;
+  color: #000;
+/*  */
+  display: block;
+  padding: 5px;
+  margin: 10px
 }
 
 .current-page{
@@ -120,3 +155,30 @@ margin: 10px
   justify-content: center
 }
 
+.form__section {
+  box-shadow: 0em 0em 1em 0px black;
+  align-self: center;
+  justify-self: center;
+  justify-content: center;
+  background-color: #fefefe;
+  color: #000;
+  max-width: 90%;
+  min-width: 375px;
+  margin: 3em 10vw 3em 10vw;
+  padding: 2em 2em;
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.titulo {
+  font-weight: 700;
+  margin: 1em 0;
+}
+
+.field-12 {
+  flex-basis: 87.7%;
+}
+
+.field-6 {
+  flex-basis: 40%;
+}

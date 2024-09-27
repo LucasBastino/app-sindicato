@@ -10,12 +10,20 @@
         <tr>
             <td>{{$m.LastName}}, {{$m.Name}}</td>
             <td>{{$m.DNI}} </td>
-            <td><button class="btn-primary" hx-get="/member/{{$m.IdMember}}/file" hx-trigger="click" hx-target="#tableDiv" onclick="hideMemberSearchInput();"><i class="bi bi-file-earmark-text"></i></button></form></td>
+            <td><button class="btn-primary" hx-get="/member/{{$m.IdMember}}/file" hx-trigger="click" hx-target="#tableDiv"><i class="bi bi-file-earmark-text"></i></button></form></td>
             <td><button class="btn-danger" hx-delete="/member/{{$m.IdMember}}/delete" hx-confirm="¿Estás seguro que deseas eliminar el afiliado?" hx-target="#tableDiv"><i class="bi bi-x-square"></i></button></td>  
          </tr>
         {{end}}
 
  </table>
-
+ <script>
+    hideEnterpriseSearchInput();
+    showMemberSearchInput();
+    showAddMemberBtn();
+    hideAddEnterpriseBtn();
+ </script>
+ {{if eq .mode "enterpriseMemberTable"}}
+ <script>hideMemberSearchInput();</script>
+ {{end}}
  <!-- se le pone el "." para que le pase la variable -->
  {{template "Pagination" .}}
