@@ -8,7 +8,7 @@
 
     {{range $_, $p := .parents}}
     <tr>
-        <td>{{$p.Name}}</td>
+        <td>{{$p.LastName}}, {{$p.Name}}</td>
         <td>{{$p.Rel}}</td>
         <td><button class="btn-primary" onclick="disableBrowserInput();" hx-get="/parent/{{$p.IdParent}}/file" hx-trigger="click" hx-target="#tableDiv"><i class="bi bi-file-earmark-text"></i></button></form></td>
      </tr>

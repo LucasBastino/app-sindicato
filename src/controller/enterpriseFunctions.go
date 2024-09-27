@@ -75,8 +75,20 @@ func RenderEnterpriseTable(c *fiber.Ctx) error {
 
 func RenderEnterpriseFile(c *fiber.Ctx) error {
 	e := searchOneModelByIdCaller(models.Enterprise{}, c)
-	data := fiber.Map{"enterprise": e, "mode": "edit"}
+	numberOfMembers := getNumberOfMembers(e)
+	data := fiber.Map{"enterprise": e, "numberOfMembers": numberOfMembers, "mode": "edit"}
 	return c.Render("enterpriseFile", data)
+}
+
+func getNumberOfMembers(e models.Enterprise) int {
+	var totalRows int
+	row := database.DB.QueryRow(fmt.Sprintf(`SELECT COUNT(*) FROM MemberTable WHERE IdEnterprise = %d AND Name LIKE '%%%s%%'`, IdEnterprise, searchKey))
+	// row.Scan copia el numero de fila en la variable count
+	err := row.Scan(&totalRows)
+	if err != nil {
+		log.Fatal(err)
+	}
+	return totalRows
 }
 
 func RenderCreateEnterpriseForm(c *fiber.Ctx) error {
@@ -100,14 +112,7 @@ func RenderEnterpriseMembers(c *fiber.Ctx) error {
 
 	c.ParamsParser(&params)
 	IdEnterprise := params.IdEnterprise
-	row := database.DB.QueryRow(fmt.Sprintf(`SELECT COUNT(*) FROM MemberTable WHERE IdEnterprise = %d AND Name LIKE '%%%s%%'`, IdEnterprise, searchKey))
-	// row.Scan copia el numero de fila en la variable count
-	err := row.Scan(&totalRows)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	fmt.Println("cantidad de resultados:", totalRows)
+	totalRows = getNumberOfMembers(e)
 
 	if totalRows == 0 {
 		// si no hay resultados renderizar esto
@@ -126,7 +131,6 @@ func RenderEnterpriseMembers(c *fiber.Ctx) error {
 			panic(err)
 		}
 		_, members := models.Member{}.ScanResult(result, false)
-		// fmt.Println(members)
 
 		// hago un array para poder recorrerlo y crear botones cuando hay menos de 10 paginas en el template
 		totalPagesArray := GetTotalPagesArray(totalPages)

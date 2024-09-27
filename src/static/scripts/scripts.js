@@ -12,9 +12,6 @@ function enableSelects(){
     }); 
 }
 
-function enableSelect(){
-    document.getElementById("enterprise-select").disabled = false
-}
 
 function showConfirmButton(){
     button = document.querySelector(".btn-submit")

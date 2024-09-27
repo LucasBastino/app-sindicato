@@ -116,12 +116,16 @@
     <p>{{.}}</p>
     {{end}}
     
-    <button type="submit" class="btn-primary btn-submit hide">Confirmar</button>
+    {{if eq .mode "create"}}
+        <button type="submit" class="btn btn-primary btn-submit">Enviar</button>
+    {{else if eq .mode "edit"}}
+        <button type="submit" class="btn btn-primary btn-submit hide">Confirmar</button>
+    {{end}}
 </form>
 
 <button class="btn-primary hide" id="add-parent-button" hx-get="/member/{{$.member.IdMember}}/form/createParent" hx-trigger="click" hx-target="#tableDiv">Agregar familiar</button>
 {{if eq .mode "edit"}}
-<button class="btn-primary" onclick="enableInputs(); showConfirmButton(); hideMemberSearchInput(); enableSelect();">Editar</button>
+<button class="btn-primary" onclick="enableInputs(); showConfirmButton(); hideMemberSearchInput(); enableSelects();">Editar</button>
 {{else if eq .mode "create"}}
 <script type="text/javascript">
     enableInputs();

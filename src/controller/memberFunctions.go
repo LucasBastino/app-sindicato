@@ -126,7 +126,7 @@ func RenderMemberParents(c *fiber.Ctx) error {
 		parents = append(parents, p)
 	}
 
-	data := fiber.Map{"parents": parents}
+	data := fiber.Map{"parents": parents, "mode": "edit"}
 	return c.Render("memberParentTable", data)
 
 }

@@ -22,14 +22,32 @@ type Parent struct {
 }
 
 func (parent Parent) InsertModel() Parent {
-	insert, err := database.DB.Query(fmt.Sprintf("INSERT INTO ParentTable (Name, LastName, Rel, Gender, Birthday, CUIL, IdMember) VALUES ('%s','%s','%s', '%s', '%s', '%s', '%d')", parent.Name, parent.LastName, parent.Rel, parent.Gender, parent.Birthday, parent.CUIL, parent.IdMember))
+	insert, err := database.DB.Query(fmt.Sprintf(`
+		INSERT INTO ParentTable 
+		(Name,
+		LastName,
+		Rel,
+		Gender,
+		Birthday,
+		CUIL,
+		IdMember)
+		VALUES ('%s','%s','%s', '%s', '%s', '%s', '%d')`,
+		parent.Name,
+		parent.LastName,
+		parent.Rel,
+		parent.Gender,
+		parent.Birthday,
+		parent.CUIL,
+		parent.IdMember))
 	if err != nil {
 		// DBError{"INSERT Parent"}.Error(err)
 		fmt.Println("error inserting parent")
 		panic(err)
 	}
 	insert.Close()
-	result, err := database.DB.Query("SELECT * FROM ParentTable WHERE IdParent = (SELECT LAST_INSERT_ID())")
+	result, err := database.DB.Query(`
+		SELECT * FROM ParentTable 
+		WHERE IdParent = (SELECT LAST_INSERT_ID())`)
 	if err != nil {
 		fmt.Print(err)
 	}
@@ -38,7 +56,10 @@ func (parent Parent) InsertModel() Parent {
 }
 
 func (parent Parent) DeleteModel() {
-	delete, err := database.DB.Query(fmt.Sprintf("DELETE FROM ParentTable WHERE IdParent = '%v'", parent.IdParent))
+	delete, err := database.DB.Query(fmt.Sprintf(`
+		DELETE FROM ParentTable 
+		WHERE IdParent = '%d'`,
+		parent.IdParent))
 	if err != nil {
 		// DBError{"DELETE Parent"}.Error(err)
 		fmt.Println("error deleting parent")
@@ -49,7 +70,24 @@ func (parent Parent) DeleteModel() {
 }
 
 func (parent Parent) EditModel() {
-	update, err := database.DB.Query(fmt.Sprintf("UPDATE ParentTable SET Name = '%s', LastName = '%s', Rel = '%s', Gender = '%s', Birthday = '%s', CUIL = '%s', IdMember = '%d' WHERE IdParent = '%d'", parent.Name, parent.LastName, parent.Rel, parent.Gender, parent.Birthday, parent.CUIL, parent.IdMember, parent.IdParent))
+	update, err := database.DB.Query(fmt.Sprintf(`
+		UPDATE ParentTable 
+		SET Name = '%s',
+		LastName = '%s',
+		Rel = '%s',
+		Gender = '%s',
+		Birthday = '%s',
+		CUIL = '%s',
+		IdMember = '%d'
+		WHERE IdParent = '%d'`,
+		parent.Name,
+		parent.LastName,
+		parent.Rel,
+		parent.Gender,
+		parent.Birthday,
+		parent.CUIL,
+		parent.IdMember,
+		parent.IdParent))
 	if err != nil {
 		// DBError{"UPDATE Parent"}.Error(err)
 		fmt.Println("error updating parent")
@@ -68,7 +106,9 @@ func (parent Parent) GetIdModel(c *fiber.Ctx) int {
 
 func (parent Parent) SearchOneModelById(c *fiber.Ctx) Parent {
 	IdParent := parent.GetIdModel(c)
-	result, err := database.DB.Query(fmt.Sprintf("SELECT * FROM ParentTable WHERE IdParent = '%v'", IdParent))
+	result, err := database.DB.Query(fmt.Sprintf(`
+		SELECT * FROM ParentTable
+		WHERE IdParent = '%d'`, IdParent))
 	if err != nil {
 		fmt.Println("error searching parent by id")
 		panic(err)
@@ -79,7 +119,14 @@ func (parent Parent) SearchOneModelById(c *fiber.Ctx) Parent {
 
 func (parent Parent) SearchModels(c *fiber.Ctx, offset int) ([]Parent, string) {
 	searchKey := c.FormValue("search-key")
-	result, err := database.DB.Query(fmt.Sprintf(`SELECT IdParent, Name, Rel FROM ParentTable WHERE Name LIKE '%%%s%%' OR Rel LIKE '%%%s%%' LIMIT 10 OFFSET %d`, searchKey, searchKey, offset))
+	result, err := database.DB.Query(fmt.Sprintf(`
+		SELECT IdParent,
+		Name,
+		Rel
+		FROM ParentTable 
+		WHERE Name LIKE '%%%s%%' OR Rel LIKE '%%%s%%'
+		LIMIT 10 OFFSET %d`,
+		searchKey, searchKey, offset))
 	if err != nil {
 		fmt.Println("error searching Parent in DB")
 		panic(err)
@@ -102,7 +149,9 @@ func (parent Parent) ValidateFields(c *fiber.Ctx) map[string]string {
 func (parent Parent) GetTotalRows(c *fiber.Ctx) int {
 	var totalRows int
 	searchKey := c.FormValue("search-key")
-	row := database.DB.QueryRow(fmt.Sprintf("SELECT COUNT(*) FROM ParentTable WHERE Name LIKE '%%%s%%'", searchKey))
+	row := database.DB.QueryRow(fmt.Sprintf(`
+		SELECT COUNT(*) FROM ParentTable 
+		WHERE Name LIKE '%%%s%%'`, searchKey))
 	// row.Scan copia el numero de fila en la variable count
 	err := row.Scan(&totalRows)
 	if err != nil {

@@ -40,7 +40,11 @@
         {{end}}
         <input class="hide" type="number" name="id-member" value="{{$.parent.IdMember}}">
 
-        <button type="submit" class="btn-primary btn-submit">Confirmar</button>
+        {{if eq .mode "create"}}
+        <button type="submit" class="btn btn-primary btn-submit">Enviar</button>
+        {{else if eq .mode "edit"}}
+        <button type="submit" class="btn btn-primary btn-submit hide">Confirmar</button>
+        {{end}}
     </form>
 
 {{if eq .mode "edit"}}

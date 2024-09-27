@@ -73,7 +73,7 @@
 			"Torres","Vargas","Vazquez","Vega","Velasco","Vicente","Vidal"
 		],
 	"Genders": [
-		"Hombre", "Mujer", "Otro"
+		"Masculino", "Femenino", "Otro"
 	],
 	"MaritalStatus":[
 		"Soltero", "Casado", "Viudo", "Divorciado", "Separado"

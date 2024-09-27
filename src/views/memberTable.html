@@ -8,7 +8,7 @@
 
         {{range $_, $m := .members}}
         <tr>
-            <td>{{$m.Name}} </td>
+            <td>{{$m.LastName}}, {{$m.Name}}</td>
             <td>{{$m.DNI}} </td>
             <td><button class="btn-primary" hx-get="/member/{{$m.IdMember}}/file" hx-trigger="click" hx-target="#tableDiv" onclick="hideMemberSearchInput();"><i class="bi bi-file-earmark-text"></i></button></form></td>
             <td><button class="btn-danger" hx-delete="/member/{{$m.IdMember}}/delete" hx-confirm="¿Estás seguro que deseas eliminar el afiliado?" hx-target="#tableDiv"><i class="bi bi-x-square"></i></button></td>  
@@ -19,11 +19,3 @@
 
  <!-- se le pone el "." para que le pase la variable -->
  {{template "Pagination" .}}
- 
-<h2>Valores:</h2>
-<p>currentPage: {{.currentPage}}</p>
-<p>previousPage: {{.previousPage}}</p>
-<p>nextPage: {{.nextPage}}</p>
-<p>totalPages: {{.totalPages}}</p>
-<p>lastPage: {{.lastPage}}</p>
-<p>searchKey: {{.searchKey}}</p>

@@ -36,14 +36,50 @@ func (m Member) Imprimir() {
 }
 
 func (member Member) InsertModel() Member {
-	insert, err := database.DB.Query(fmt.Sprintf("INSERT INTO MemberTable (Name, DNI, IdEnterprise) VALUES ('%s','%s','%d')", member.Name, member.DNI, member.IdEnterprise))
+	insert, err := database.DB.Query(fmt.Sprintf(`
+		INSERT INTO MemberTable
+		(Name,
+		LastName,
+		DNI,
+		Birthday,
+		Gender,
+		MaritalStatus,
+		Phone,
+		Email,
+		Address,
+		PostalCode,
+		District,
+		MemberNumber,
+		CUIL,
+		IdEnterprise,
+		Category,
+		EntryDate) 
+		VALUES ('%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%d','%s','%s')`,
+		member.Name,
+		member.LastName,
+		member.DNI,
+		member.Birthday,
+		member.Gender,
+		member.MaritalStatus,
+		member.Phone,
+		member.Email,
+		member.Address,
+		member.PostalCode,
+		member.District,
+		member.MemberNumber,
+		member.CUIL,
+		member.IdEnterprise,
+		member.Category,
+		member.EntryDate))
 	if err != nil {
 		// DBError{"INSERT MEMBER"}.Error(err)
 		fmt.Println("error insertando en la DB")
 		panic(err)
 	}
 	insert.Close()
-	result, err := database.DB.Query("SELECT * FROM MemberTable WHERE IdMember = (SELECT LAST_INSERT_ID())")
+	result, err := database.DB.Query(`
+		SELECT * FROM MemberTable 
+		WHERE IdMember = (SELECT LAST_INSERT_ID())`)
 	if err != nil {
 		fmt.Print(err)
 	}
@@ -52,7 +88,10 @@ func (member Member) InsertModel() Member {
 }
 
 func (member Member) DeleteModel() {
-	delete, err := database.DB.Query(fmt.Sprintf("DELETE FROM MemberTable WHERE IdMember = '%d'", member.IdMember))
+	delete, err := database.DB.Query(fmt.Sprintf(`
+		DELETE FROM MemberTable 
+		WHERE IdMember = '%d'`,
+		member.IdMember))
 	if err != nil {
 		// DBError{"DELETE MEMBER"}.Error(err)
 		fmt.Println("error deleting member")
@@ -63,7 +102,43 @@ func (member Member) DeleteModel() {
 }
 
 func (member Member) EditModel() {
-	update, err := database.DB.Query(fmt.Sprintf("UPDATE MemberTable SET Name = '%s', DNI = '%s', IdEnterprise = '%d' WHERE IdMember = '%v'", member.Name, member.DNI, member.IdEnterprise, member.IdMember))
+	update, err := database.DB.Query(fmt.Sprintf(`
+		UPDATE MemberTable
+		SET
+		Name = '%s',
+		LastName = '%s',
+		DNI = '%s',
+		Birthday = '%s',
+		Gender = '%s',
+		MaritalStatus = '%s',
+		Phone = '%s',
+		Email = '%s',
+		Address = '%s',
+		PostalCode = '%s',
+		District = '%s',
+		MemberNumber = '%s',
+		CUIL = '%s',
+		IdEnterprise = '%d',
+		Category = '%s',
+		EntryDate = '%s'
+		WHERE IdMember = '%d'`,
+		member.Name,
+		member.LastName,
+		member.DNI,
+		member.Birthday,
+		member.Gender,
+		member.MaritalStatus,
+		member.Phone,
+		member.Email,
+		member.Address,
+		member.PostalCode,
+		member.District,
+		member.MemberNumber,
+		member.CUIL,
+		member.IdEnterprise,
+		member.Category,
+		member.EntryDate,
+		member.IdMember))
 	if err != nil {
 		// DBError{"UPDATE MEMBER"}.Error(err)
 		fmt.Println("error updating member")
@@ -83,7 +158,10 @@ func (member Member) GetIdModel(c *fiber.Ctx) int {
 
 func (member Member) SearchOneModelById(c *fiber.Ctx) Member {
 	IdMember := member.GetIdModel(c)
-	result, err := database.DB.Query(fmt.Sprintf("SELECT * FROM MemberTable WHERE IdMember = '%v'", IdMember))
+	result, err := database.DB.Query(fmt.Sprintf(`
+		SELECT * FROM MemberTable 
+		WHERE IdMember = '%d'`,
+		IdMember))
 	if err != nil {
 		fmt.Println("error searching member by Id")
 		panic(err)
@@ -94,7 +172,12 @@ func (member Member) SearchOneModelById(c *fiber.Ctx) Member {
 
 func (member Member) SearchModels(c *fiber.Ctx, offset int) ([]Member, string) {
 	searchKey := c.FormValue("search-key")
-	result, err := database.DB.Query(fmt.Sprintf(`SELECT * FROM MemberTable WHERE Name LIKE '%%%s%%' OR DNI LIKE '%%%s%%' LIMIT 10 OFFSET %d`, searchKey, searchKey, offset))
+	result, err := database.DB.Query(fmt.Sprintf(`
+		SELECT * FROM MemberTable 
+		WHERE 
+		Name LIKE '%%%s%%' OR DNI LIKE '%%%s%%'
+		LIMIT 10 OFFSET %d`,
+		searchKey, searchKey, offset))
 	if err != nil {
 		fmt.Println("error searching member in DB")
 		panic(err)
@@ -125,7 +208,9 @@ func (m Member) ValidateFields(c *fiber.Ctx) map[string]string {
 func (member Member) GetTotalRows(c *fiber.Ctx) int {
 	var totalRows int
 	searchKey := c.FormValue("search-key")
-	row := database.DB.QueryRow(fmt.Sprintf("SELECT COUNT(*) FROM MemberTable WHERE Name LIKE '%%%s%%'", searchKey))
+	row := database.DB.QueryRow(fmt.Sprintf(`
+		SELECT COUNT(*) FROM MemberTable 
+		WHERE Name LIKE '%%%s%%'`, searchKey))
 	// row.Scan copia el numero de fila en la variable count
 	err := row.Scan(&totalRows)
 	if err != nil {
@@ -212,7 +297,6 @@ func (member Member) ScanResult(result *sql.Rows, onlyOne bool) (Member, []Membe
 			members = append(members, m)
 		}
 	}
-	fmt.Println(members)
 	result.Close()
 	return m, members
 }

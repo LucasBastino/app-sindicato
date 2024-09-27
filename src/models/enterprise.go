@@ -21,14 +21,30 @@ type Enterprise struct {
 }
 
 func (enterprise Enterprise) InsertModel() Enterprise {
-	insert, err := database.DB.Query(fmt.Sprintf("INSERT INTO EnterpriseTable (Name, Address, CUIT, District, PostalCode, Phone) VALUES ('%s','%s','%s','%s','%s','%s')", enterprise.Name, enterprise.Address, enterprise.CUIT, enterprise.District, enterprise.PostalCode, enterprise.Phone))
+	insert, err := database.DB.Query(fmt.Sprintf(`
+		INSERT INTO EnterpriseTable 
+		(Name,
+		Address, 
+		CUIT, 
+		District, 
+		PostalCode, 
+		Phone)
+		VALUES ('%s','%s','%s','%s','%s','%s')`,
+		enterprise.Name,
+		enterprise.Address,
+		enterprise.CUIT,
+		enterprise.District,
+		enterprise.PostalCode,
+		enterprise.Phone))
 	if err != nil {
 		// DBError{"INSERT Enterprise"}.Error(err)
 		fmt.Println("error insertando en la DB")
 		panic(err)
 	}
 	insert.Close()
-	result, err := database.DB.Query("SELECT * FROM EnterpriseTable WHERE IdEnterprise = (SELECT LAST_INSERT_ID())")
+	result, err := database.DB.Query(`
+		SELECT * FROM EnterpriseTable
+		WHERE IdEnterprise = (SELECT LAST_INSERT_ID())`)
 	if err != nil {
 		fmt.Print(err)
 	}
@@ -37,7 +53,9 @@ func (enterprise Enterprise) InsertModel() Enterprise {
 }
 
 func (enterprise Enterprise) DeleteModel() {
-	delete, err := database.DB.Query(fmt.Sprintf("DELETE FROM EnterpriseTable WHERE IdEnterprise = '%v'", enterprise.IdEnterprise))
+	delete, err := database.DB.Query(fmt.Sprintf(`
+		DELETE FROM EnterpriseTable
+		WHERE IdEnterprise = '%d'`, enterprise.IdEnterprise))
 	if err != nil {
 		// DBError{"DELETE Enterprise"}.Error(err)
 		fmt.Println("error deleting Enterprise")
@@ -48,7 +66,23 @@ func (enterprise Enterprise) DeleteModel() {
 }
 
 func (enterprise Enterprise) EditModel() {
-	update, err := database.DB.Query(fmt.Sprintf("UPDATE EnterpriseTable SET Name = '%s', Address = '%s', CUIT = '%s', District = '%s', PostalCode = '%s', Phone = '%s' WHERE IdEnterprise = '%d'", enterprise.Name, enterprise.Address, enterprise.CUIT, enterprise.District, enterprise.PostalCode, enterprise.Phone, enterprise.IdEnterprise))
+	update, err := database.DB.Query(fmt.Sprintf(`
+		UPDATE EnterpriseTable 
+		SET 
+		Name = '%s', 
+		Address = '%s', 
+		CUIT = '%s', 
+		District = '%s', 
+		PostalCode = '%s', 
+		Phone = '%s' 
+		WHERE IdEnterprise = '%d'`,
+		enterprise.Name,
+		enterprise.Address,
+		enterprise.CUIT,
+		enterprise.District,
+		enterprise.PostalCode,
+		enterprise.Phone,
+		enterprise.IdEnterprise))
 	if err != nil {
 		// DBError{"UPDATE Enterprise"}.Error(err)
 		fmt.Println("error updating Enterprise")
@@ -69,7 +103,9 @@ func (enterprise Enterprise) GetIdModel(c *fiber.Ctx) int {
 
 func (enterprise Enterprise) SearchOneModelById(c *fiber.Ctx) Enterprise {
 	IdEnterprise := enterprise.GetIdModel(c)
-	result, err := database.DB.Query(fmt.Sprintf("SELECT * FROM EnterpriseTable WHERE IdEnterprise = '%v'", IdEnterprise))
+	result, err := database.DB.Query(fmt.Sprintf(`
+		SELECT * FROM EnterpriseTable 
+		WHERE IdEnterprise = '%d'`, IdEnterprise))
 	if err != nil {
 		fmt.Println("error searching enterprise by id")
 		panic(err)
@@ -82,7 +118,12 @@ func (enterprise Enterprise) SearchOneModelById(c *fiber.Ctx) Enterprise {
 
 func (enterprise Enterprise) SearchModels(c *fiber.Ctx, offset int) ([]Enterprise, string) {
 	searchKey := c.FormValue("search-key")
-	result, err := database.DB.Query(fmt.Sprintf(`SELECT * FROM EnterpriseTable WHERE Name LIKE '%%%s%%' OR Address LIKE '%%%s%%' LIMIT 10 OFFSET %d`, searchKey, searchKey, offset))
+	result, err := database.DB.Query(fmt.Sprintf(`
+		SELECT * FROM EnterpriseTable 
+		WHERE 
+		Name LIKE '%%%s%%' OR Address LIKE '%%%s%%' 
+		LIMIT 10 OFFSET %d`,
+		searchKey, searchKey, offset))
 	if err != nil {
 		fmt.Println("error searching Enterprise in DB")
 		panic(err)
@@ -105,7 +146,9 @@ func (enterprise Enterprise) ValidateFields(c *fiber.Ctx) map[string]string {
 func (enterprise Enterprise) GetTotalRows(c *fiber.Ctx) int {
 	var totalRows int
 	searchKey := c.FormValue("search-key")
-	row := database.DB.QueryRow(fmt.Sprintf("SELECT COUNT(*) FROM EnterpriseTable WHERE Name LIKE '%%%s%%'", searchKey))
+	row := database.DB.QueryRow(fmt.Sprintf(`
+		SELECT COUNT(*) FROM EnterpriseTable 
+		WHERE Name LIKE '%%%s%%'`, searchKey))
 	// row.Scan copia el numero de fila en la variable count
 	err := row.Scan(&totalRows)
 	if err != nil {
@@ -165,7 +208,7 @@ func (enterprise Enterprise) ScanResult(result *sql.Rows, onlyOne bool) (Enterpr
 			&e.Phone,
 		)
 		if err != nil {
-			fmt.Println("error scanning enterprise")
+			fmt.Println("error scanning enterprise 2")
 			panic(err)
 		}
 		if !onlyOne {
