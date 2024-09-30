@@ -16,7 +16,7 @@ section {
 
 
 
-input:focus, select:focus {
+input:focus {
     transition: transform 0.3s;
     transform: scale(1.1);
 }

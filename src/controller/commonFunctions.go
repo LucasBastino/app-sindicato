@@ -175,7 +175,9 @@ func VerifyToken(c *fiber.Ctx) error {
 		return []byte(os.Getenv("JWT_SECRET")), nil
 	})
 	if err != nil {
-		return c.SendStatus(fiber.StatusUnauthorized)
+		return c.Status(fiber.StatusUnauthorized).Render("loginUnsuccesful", fiber.Map{
+			"error": "user unauthorized",
+		})
 	}
 	return c.Next()
 }

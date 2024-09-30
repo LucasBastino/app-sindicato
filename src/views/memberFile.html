@@ -25,7 +25,11 @@
             <p>{{.}}</p>
         {{end}}
         <select class="form-input field-6" name="gender" id="gender" onchange="cambiarColorPorDefecto(value, id);" required disabled>
+            {{if eq .mode "create"}}
+            <option value="0">--Elegir un genero--</option>
+            {{else if eq .mode "edit"}}
             <option value="{{$.member.Gender}}">{{$.member.Gender}}</option>
+            {{end}}
             <option value="Masculino">Masculino</option>
             <option value="Femenino">Femenino</option>
             <option value="Otro">Otro</option>
@@ -35,7 +39,11 @@
         {{end}}
 
         <select class="form-input field-6" id="marital-status" name="marital-status" onchange="cambiarColorPorDefecto(value, id);" required disabled>
+            {{if eq .mode "create"}}
+            <option value="0">--Elegir un estado civil--</option>
+            {{else if eq .mode "edit"}}
             <option value="{{$.member.MaritalStatus}}">{{$.member.MaritalStatus}}</option>
+            {{end}}
             <option value="Soltero">Soltero</option>
             <option value="Casado">Casado</option>
             <option value="Viudo">Viudo</option>
@@ -62,7 +70,7 @@
         {{with .errorMap.postalCode}}
         <p>{{.}}</p>
         {{end}}
-        <input class="form-input field-6" type="text" name="district" value="{{$.member.District}}" placeholder="Localidad" required disabled>
+        <input class="form-input field-12" type="text" name="district" value="{{$.member.District}}" placeholder="Localidad" required disabled>
         {{with .errorMap.district}}
         <p>{{.}}</p>
         {{end}}
@@ -76,7 +84,7 @@
         {{with .errorMap.cuil}}
         <p>{{.}}</p>
         {{end}}
-        <select name="id-enterprise" id="enterprise-select" required disabled>
+        <select class="form-input field-12" name="id-enterprise" id="enterprise-select" required disabled>
             <!-- fijarse que pasa cuando la empresa es borrada y queda NULL -->
             {{if eq $.member.IdEnterprise 0}}
             {{if eq .mode "create" }}
@@ -120,7 +128,7 @@
         {{end}}
         
     {{if eq .mode "create"}}
-        <button type="submit" class="btn btn-primary btn-submit">Enviar</button>
+        <button type="submit" class="btn btn-primary btn-submit field-6">Enviar</button>
     {{else if eq .mode "edit"}}
         <button type="submit" class="btn btn-primary btn-submit hide">Confirmar</button>
         {{end}}
