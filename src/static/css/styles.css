@@ -14,7 +14,15 @@ section {
   align-content: center;
 }
 
+/* .titulo{
+  text-align: center;
+} */
 
+.page-title{
+  text-align: center;
+  font-size: 2em;
+  font-weight: 700;
+}
 
 input:focus {
     transition: transform 0.3s;
@@ -164,7 +172,7 @@ margin: 10px
   color: #000;
   max-width: 90%;
   min-width: 375px;
-  margin: 3em 10vw 3em 10vw;
+  margin: 0.5em 10vw 1em 10vw;
   padding: 2em 2em;
   display: flex;
   flex-wrap: wrap;
@@ -182,3 +190,21 @@ margin: 10px
 .field-6 {
   flex-basis: 40%;
 }
+
+.btn-container{
+  display: flex;
+  justify-content: center;
+  width: 100%;
+}
+
+.item-btn{
+  margin: 2em
+}
+
+
+
+.center-btn{
+  align-self: center;
+}
+
+

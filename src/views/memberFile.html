@@ -2,7 +2,7 @@
 {{if eq .mode "create" }}
 <form  hx-post="/member/create" hx-target="#tableDiv">
     {{else if eq .mode "edit"}}
-    <h2>Ficha de {{$.member.Name}}</h2>
+    <div class="page-title">Ficha de {{$.member.LastName}}</div>
     <form hx-put="/member/{{$.member.IdMember}}/edit" hx-target="#tableDiv">
         {{end}}
         <section class="form__section">
@@ -26,7 +26,7 @@
         {{end}}
         <select class="form-input field-6" name="gender" id="gender" onchange="cambiarColorPorDefecto(value, id);" required disabled>
             {{if eq .mode "create"}}
-            <option value="0">--Elegir un genero--</option>
+            <option value="0">--Elegir un género--</option>
             {{else if eq .mode "edit"}}
             <option value="{{$.member.Gender}}">{{$.member.Gender}}</option>
             {{end}}
@@ -135,11 +135,12 @@
     </section>
     </form>
 </section>
+<div class="btn-container">
 {{if eq .mode "edit"}}
-<button class="btn-danger" hx-delete="/member/{{$.member.IdMember}}/delete" hx-confirm="¿Estás seguro que deseas eliminar el afiliado?" hx-target="#tableDiv">Eliminar afiliado</button>
-<button type="submit" hx-get="/member/{{$.member.IdMember}}/parentTable" hx-trigger="click" hx-target="#parentTableDiv" onclick="showAddParentButton();">Familiares</button>
-<button class="btn-primary" onclick="enableInputs(); showConfirmButton(); enableSelects();">Editar</button>
-<button class="btn-primary hide" id="add-parent-button" hx-get="/member/{{$.member.IdMember}}/form/createParent" hx-trigger="click" hx-target="#tableDiv">Agregar familiar</button>
+<button class="btn-primary item-btn" type="submit" hx-get="/member/{{$.member.IdMember}}/parentTable" hx-trigger="click" hx-target="#parentTableDiv" onclick="showAddParentButton();">Familiares</button>
+<button class="btn-primary item-btn" onclick="enableInputs(); showConfirmButton(); enableSelects();">Editar</button>
+<button class="btn-danger item-btn" hx-delete="/member/{{$.member.IdMember}}/delete" hx-confirm="¿Estás seguro que deseas eliminar el afiliado?" hx-target="#tableDiv">Eliminar afiliado</button>
+</div>
 {{else if eq .mode "create"}}
 <script type="text/javascript">
     enableInputs();
@@ -153,3 +154,4 @@
     hideAddEnterpriseBtn();
 </script>
 <div id="parentTableDiv"></div>
+<button class="btn-primary hide .center-btn" id="add-parent-button" hx-get="/member/{{$.member.IdMember}}/form/createParent" hx-trigger="click" hx-target="#tableDiv">Agregar familiar</button>
