@@ -1,14 +1,20 @@
 body {
-  background-color: #aaa;
+  /* background-color: #aaa; */
   margin: 0px;
   /* para que no tenga margen en ningun costado de la pagina */
   display: flex;
   /* estos 3 de abajo son para que el footer quede bien puesto */
   flex-direction: column;
   min-height: 100vh;
+  background-image: url("./background-image.jpg");
 }
 
+/* html{
+  background-image: url("../../../data/background-image.jpg");
+} */
+
 section {
+  width: 100%;
   display: grid;
   justify-content: center;
   align-content: center;
@@ -40,9 +46,14 @@ select {
 
 .container{
   background-color: #EFEFEF;
+  box-shadow: 0em 0em 1em 0px black;
   margin-top: 5%;
   padding: 0;
   border-radius: 20px;
+}
+
+.table {
+  --bs-table-striped-color: #85d1ee;
 }
 
 .navbar{
@@ -139,7 +150,7 @@ margin: 10px
   font-size: 1em;
   background-color: inherit;
   border: none;
-  border-bottom: 2px solid #000;
+  border-bottom: 2px solid #000000;
   outline: none;
   color: #000;
 /*  */
@@ -163,16 +174,20 @@ margin: 10px
   justify-content: center
 }
 
+form{
+  width: 100%;
+}
+
 .form__section {
-  box-shadow: 0em 0em 1em 0px black;
+  /* box-shadow: 0em 0em 1em 0px black; */
   align-self: center;
   justify-self: center;
   justify-content: center;
-  background-color: #fefefe;
+  background-color: #ffeeff;
   color: #000;
-  max-width: 90%;
-  min-width: 375px;
-  margin: 0.5em 10vw 1em 10vw;
+  max-width: 100%;
+  min-width: 30%;
+  /* margin: 0.5em 10vw 1em 10vw; */
   padding: 2em 2em;
   display: flex;
   flex-wrap: wrap;
@@ -184,7 +199,7 @@ margin: 10px
 }
 
 .field-12 {
-  flex-basis: 87.7%;
+  flex-basis: 83%;
 }
 
 .field-6 {
@@ -200,8 +215,6 @@ margin: 10px
 .item-btn{
   margin: 2em
 }
-
-
 
 .center-btn{
   align-self: center;

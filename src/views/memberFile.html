@@ -1,145 +1,145 @@
-<section>
 {{if eq .mode "create" }}
-<form  hx-post="/member/create" hx-target="#tableDiv">
-    {{else if eq .mode "edit"}}
-    <div class="page-title">Ficha de {{$.member.LastName}}</div>
+    <form hx-post="/member/create" hx-target="#tableDiv">
+        <div class="form__section">
+            <div class="page-title">Formulario de ingreso de afiliados</div>
+{{else if eq .mode "edit"}}
     <form hx-put="/member/{{$.member.IdMember}}/edit" hx-target="#tableDiv">
-        {{end}}
-        <section class="form__section">
-        <div class="titulo field-12">Datos personales</div>
-        <input class="form-input field-6" type="text" name="name" value="{{$.member.Name}}" placeholder="Nombres" required disabled>
-        {{with .errorMap.name}}
-            <p>{{.}}</p>
-        {{end}}
-        <input class="form-input field-6" type="text" name="last-name" value="{{$.member.LastName}}" placeholder="Apellidos" required disabled>
-        {{with .errorMap.lastName}}
-            <p>{{.}}</p>
-        {{end}}
-        <input class="form-input field-6" type="text" name="dni" value="{{$.member.DNI}}" placeholder="DNI" required disabled>
-        {{with .errorMap.dni}}
-            <p>{{.}}</p>
-        {{end}}
+        <div class="form__section">
+            <div class="page-title">Ficha de {{$.member.LastName}}</div>
+{{end}}
+                <div class="titulo field-12">Datos personales</div>
+                <input class="form-input field-6" type="text" name="name" value="{{$.member.Name}}" placeholder="Nombres" required disabled>
+                {{with .errorMap.name}}
+                    <p>{{.}}</p>
+                {{end}}
+                <input class="form-input field-6" type="text" name="last-name" value="{{$.member.LastName}}" placeholder="Apellidos" required disabled>
+                {{with .errorMap.lastName}}
+                    <p>{{.}}</p>
+                {{end}}
+                <input class="form-input field-6" type="text" name="dni" value="{{$.member.DNI}}" placeholder="DNI" required disabled>
+                {{with .errorMap.dni}}
+                    <p>{{.}}</p>
+                {{end}}
 
-        <input class="form-input field-6" type="text" name="birthday" value="{{$.member.Birthday}}" placeholder="Fecha de Nacimiento" required disabled>
-        {{with .errorMap.birthday}}
-            <p>{{.}}</p>
-        {{end}}
-        <select class="form-input field-6" name="gender" id="gender" onchange="cambiarColorPorDefecto(value, id);" required disabled>
+                <input class="form-input field-6" type="text" name="birthday" value="{{$.member.Birthday}}" placeholder="Fecha de Nacimiento" required disabled>
+                {{with .errorMap.birthday}}
+                    <p>{{.}}</p>
+                {{end}}
+                <select class="form-input field-6" name="gender" id="gender" onchange="cambiarColorPorDefecto(value, id);" required disabled>
+                    {{if eq .mode "create"}}
+                    <option value="0">--Elegir un género--</option>
+                    {{else if eq .mode "edit"}}
+                    <option value="{{$.member.Gender}}">{{$.member.Gender}}</option>
+                    {{end}}
+                    <option value="Masculino">Masculino</option>
+                    <option value="Femenino">Femenino</option>
+                    <option value="Otro">Otro</option>
+                </select>
+                {{with .errorMap.gender}}
+                    <p>{{.}}</p>
+                {{end}}
+
+                <select class="form-input field-6" id="marital-status" name="marital-status" onchange="cambiarColorPorDefecto(value, id);" required disabled>
+                    {{if eq .mode "create"}}
+                    <option value="0">--Elegir un estado civil--</option>
+                    {{else if eq .mode "edit"}}
+                    <option value="{{$.member.MaritalStatus}}">{{$.member.MaritalStatus}}</option>
+                    {{end}}
+                    <option value="Soltero">Soltero</option>
+                    <option value="Casado">Casado</option>
+                    <option value="Viudo">Viudo</option>
+                    <option value="Separado">Separado</option>
+                    <option value="Divorciado">Divorciado</option>
+                </select>
+                {{with .errorMap.maritalStatus}}
+                    <p>{{.}}</p>
+                {{end}}
+
+                <input class="form-input field-6" name="phone" type="text" value="{{$.member.Phone}}" placeholder="Teléfono" required disabled></input>
+                {{with .errorMap.phone}}
+                    <p>{{.}}</p>
+                {{end}}
+                <input class="form-input field-6" name="email" type="text" value="{{$.member.Email}}" placeholder="Email" disabled></input>
+
+
+                <div class="titulo field-12">Domicilio</div>
+                <input class="form-input field-6" type="text" name="address" value="{{$.member.Address}}" placeholder="Dirección" required disabled>
+                {{with .errorMap.address}}
+                <p>{{.}}</p>
+                {{end}}
+                <input class="form-input field-6" type="text" name="postal-code" value="{{$.member.PostalCode}}" placeholder="Codigo Postal" required disabled>
+                {{with .errorMap.postalCode}}
+                <p>{{.}}</p>
+                {{end}}
+                <input class="form-input field-12" type="text" name="district" value="{{$.member.District}}" placeholder="Localidad" required disabled>
+                {{with .errorMap.district}}
+                <p>{{.}}</p>
+                {{end}}
+
+                <div class="titulo field-12">Datos de la Obra Social</div>
+                <input class="form-input field-6" type="text" name="member-number" value="{{$.member.MemberNumber}}" placeholder="Número de Afiliado" required disabled>
+                {{with .errorMap.memberNumber}}
+                <p>{{.}}</p>
+                {{end}}
+                <input class="form-input field-6" type="text" name="cuil" value="{{$.member.CUIL}}" placeholder="CUIL" required disabled>
+                {{with .errorMap.cuil}}
+                <p>{{.}}</p>
+                {{end}}
+                <select class="form-input field-12" name="id-enterprise" id="enterprise-select" required disabled>
+                    <!-- fijarse que pasa cuando la empresa es borrada y queda NULL -->
+                    {{if eq $.member.IdEnterprise 0}}
+                    {{if eq .mode "create" }}
+                    <option value="0">--Elegir una empresa--</option>
+                    {{else if eq .mode "edit" }}
+                    <option value="0">SIN EMPRESA</option>
+                    {{end}}
+                    {{else}}
+                    {{range $_, $e := .enterprises}}
+                    {{if eq $e.IdEnterprise $.member.IdEnterprise}}
+                    <option class="current-enterprise" value="{{$e.IdEnterprise}}">{{$e.Name}}</option>
+                    {{end}}
+                    {{end}}
+                    {{end}}
+                    {{range $_, $e := .enterprises}}
+                    <option value="{{$e.IdEnterprise}}">{{$e.Name}}</option>
+                    {{end}}
+                    {{with .errorMap.enterprise}}
+                    <p>{{.}}</p>
+                    {{end}}
+                </select>
+                <select class="form-input field-6" name="category" id="category" onchange="cambiarColorPorDefecto(value, id);" required disabled>
+                    {{if eq $.member.Category ""}}
+                    <option value="">--Elegir una categoría--</option>
+                    {{else}}
+                    <option value="{{$.member.Category}}">{{$.member.Category}}</option>
+                    {{end}}
+                    <option value="Nivel 1: Oficial Múltiple">Nivel 1: Oficial Múltiple</option>
+                    <option value="Nivel 2: Oficial Especializado">Nivel 2: Oficial Especializado</option>
+                    <option value="Nivel 3: Oficial General">Nivel 3: Oficial General</option>
+                    <option value="Nivel 4: Medio Oficial">Nivel 4: Medio Oficial</option>
+                    <option value="Nivel 5: Ayudante">Nivel 5: Ayudante</option>
+                    <option value="Nivel 6: Operario Act. Industrial">Nivel 6: Operario Act. Industrial</option>
+                </select>
+                {{with .errorMap.category}}
+                <p>{{.}}</p>
+                {{end}}
+                <input class="form-input field-6" type="text" name="entry-date" id="entry-date" value="{{$.member.EntryDate}}" placeholder="Fecha de Ingreso" required disabled>
+                {{with .errorMap.entryDate}}
+                <p>{{.}}</p>
+                {{end}}
+                
             {{if eq .mode "create"}}
-            <option value="0">--Elegir un género--</option>
+                <button type="submit" class="btn btn-primary btn-submit field-6">Enviar</button>
             {{else if eq .mode "edit"}}
-            <option value="{{$.member.Gender}}">{{$.member.Gender}}</option>
-            {{end}}
-            <option value="Masculino">Masculino</option>
-            <option value="Femenino">Femenino</option>
-            <option value="Otro">Otro</option>
-        </select>
-        {{with .errorMap.gender}}
-            <p>{{.}}</p>
-        {{end}}
-
-        <select class="form-input field-6" id="marital-status" name="marital-status" onchange="cambiarColorPorDefecto(value, id);" required disabled>
-            {{if eq .mode "create"}}
-            <option value="0">--Elegir un estado civil--</option>
-            {{else if eq .mode "edit"}}
-            <option value="{{$.member.MaritalStatus}}">{{$.member.MaritalStatus}}</option>
-            {{end}}
-            <option value="Soltero">Soltero</option>
-            <option value="Casado">Casado</option>
-            <option value="Viudo">Viudo</option>
-            <option value="Separado">Separado</option>
-            <option value="Divorciado">Divorciado</option>
-        </select>
-        {{with .errorMap.maritalStatus}}
-            <p>{{.}}</p>
-        {{end}}
-
-        <input class="form-input field-6" name="phone" type="text" value="{{$.member.Phone}}" placeholder="Teléfono" required disabled></input>
-        {{with .errorMap.phone}}
-            <p>{{.}}</p>
-        {{end}}
-        <input class="form-input field-6" name="email" type="text" value="{{$.member.Email}}" placeholder="Email" disabled></input>
-
-
-        <div class="titulo field-12">Domicilio</div>
-        <input class="form-input field-6" type="text" name="address" value="{{$.member.Address}}" placeholder="Dirección" required disabled>
-        {{with .errorMap.address}}
-        <p>{{.}}</p>
-        {{end}}
-        <input class="form-input field-6" type="text" name="postal-code" value="{{$.member.PostalCode}}" placeholder="Codigo Postal" required disabled>
-        {{with .errorMap.postalCode}}
-        <p>{{.}}</p>
-        {{end}}
-        <input class="form-input field-12" type="text" name="district" value="{{$.member.District}}" placeholder="Localidad" required disabled>
-        {{with .errorMap.district}}
-        <p>{{.}}</p>
-        {{end}}
-
-        <div class="titulo field-12">Datos de la Obra Social</div>
-        <input class="form-input field-6" type="text" name="member-number" value="{{$.member.MemberNumber}}" placeholder="Número de Afiliado" required disabled>
-        {{with .errorMap.memberNumber}}
-        <p>{{.}}</p>
-        {{end}}
-        <input class="form-input field-6" type="text" name="cuil" value="{{$.member.CUIL}}" placeholder="CUIL" required disabled>
-        {{with .errorMap.cuil}}
-        <p>{{.}}</p>
-        {{end}}
-        <select class="form-input field-12" name="id-enterprise" id="enterprise-select" required disabled>
-            <!-- fijarse que pasa cuando la empresa es borrada y queda NULL -->
-            {{if eq $.member.IdEnterprise 0}}
-            {{if eq .mode "create" }}
-            <option value="0">--Elegir una empresa--</option>
-            {{else if eq .mode "edit" }}
-            <option value="0">SIN EMPRESA</option>
-            {{end}}
-            {{else}}
-            {{range $_, $e := .enterprises}}
-            {{if eq $e.IdEnterprise $.member.IdEnterprise}}
-            <option class="current-enterprise" value="{{$e.IdEnterprise}}">{{$e.Name}}</option>
-            {{end}}
-            {{end}}
-            {{end}}
-            {{range $_, $e := .enterprises}}
-            <option value="{{$e.IdEnterprise}}">{{$e.Name}}</option>
-            {{end}}
-            {{with .errorMap.enterprise}}
-            <p>{{.}}</p>
-            {{end}}
-        </select>
-        <select class="form-input field-6" name="category" id="category" onchange="cambiarColorPorDefecto(value, id);" required disabled>
-            {{if eq $.member.Category ""}}
-            <option value="">--Elegir una categoría--</option>
-            {{else}}
-            <option value="{{$.member.Category}}">{{$.member.Category}}</option>
-            {{end}}
-            <option value="Nivel 1: Oficial Múltiple">Nivel 1: Oficial Múltiple</option>
-            <option value="Nivel 2: Oficial Especializado">Nivel 2: Oficial Especializado</option>
-            <option value="Nivel 3: Oficial General">Nivel 3: Oficial General</option>
-            <option value="Nivel 4: Medio Oficial">Nivel 4: Medio Oficial</option>
-            <option value="Nivel 5: Ayudante">Nivel 5: Ayudante</option>
-            <option value="Nivel 6: Operario Act. Industrial">Nivel 6: Operario Act. Industrial</option>
-        </select>
-        {{with .errorMap.category}}
-        <p>{{.}}</p>
-        {{end}}
-        <input class="form-input field-6" type="text" name="entry-date" id="entry-date" value="{{$.member.EntryDate}}" placeholder="Fecha de Ingreso" required disabled>
-        {{with .errorMap.entryDate}}
-        <p>{{.}}</p>
-        {{end}}
-        
-    {{if eq .mode "create"}}
-        <button type="submit" class="btn btn-primary btn-submit field-6">Enviar</button>
-    {{else if eq .mode "edit"}}
-        <button type="submit" class="btn btn-primary btn-submit hide">Confirmar</button>
-        {{end}}
-    </section>
-    </form>
-</section>
+                <button type="submit" class="btn btn-primary btn-submit hide">Confirmar</button>
+                {{end}}
+    </div>
+</form>
 <div class="btn-container">
 {{if eq .mode "edit"}}
-<button class="btn-primary item-btn" type="submit" hx-get="/member/{{$.member.IdMember}}/parentTable" hx-trigger="click" hx-target="#parentTableDiv" onclick="showAddParentButton();">Familiares</button>
-<button class="btn-primary item-btn" onclick="enableInputs(); showConfirmButton(); enableSelects();">Editar</button>
-<button class="btn-danger item-btn" hx-delete="/member/{{$.member.IdMember}}/delete" hx-confirm="¿Estás seguro que deseas eliminar el afiliado?" hx-target="#tableDiv">Eliminar afiliado</button>
+    <button class="btn-primary item-btn" type="submit" hx-get="/member/{{$.member.IdMember}}/parentTable" hx-trigger="click" hx-target="#parentTableDiv" onclick="showAddParentButton();">Familiares</button>
+    <button class="btn-primary item-btn" onclick="enableInputs(); showConfirmButton(); enableSelects();">Editar</button>
+    <button class="btn-danger item-btn" hx-delete="/member/{{$.member.IdMember}}/delete" hx-confirm="¿Estás seguro que deseas eliminar el afiliado?" hx-target="#tableDiv">Eliminar afiliado</button>
 </div>
 {{else if eq .mode "create"}}
 <script type="text/javascript">
