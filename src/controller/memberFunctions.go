@@ -98,7 +98,8 @@ func RenderMemberFile(c *fiber.Ctx) error {
 	enterprises := getAllModelsCaller(models.Enterprise{})
 	m := searchOneModelByIdCaller(models.Member{}, c)
 	data := fiber.Map{"member": m, "mode": "edit", "enterprises": enterprises}
-	fmt.Println(c.OriginalURL())
+	originalUrl := c.OriginalURL()
+	data["originalUrl"] = originalUrl
 	return c.Render("memberFile", data)
 }
 

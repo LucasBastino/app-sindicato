@@ -22,7 +22,9 @@
                     {{end}}
                 {{end}}
             {{end}}
-            <td><button class="btn-file" hx-get="/member/{{$m.IdMember}}/file" hx-trigger="click" hx-target="#tableDiv"><i class="bi bi-file-earmark-text"></i></button></form></td>
+            <td><button class="btn-file">
+                <a href="/member/{{$m.IdMember}}/file"><i class="bi bi-file-earmark-text"></i></a>
+            </button></td>
             <td><button class="btn-delete" hx-delete="/member/{{$m.IdMember}}/delete" hx-confirm="¿Estás seguro que deseas eliminar el afiliado?" hx-target="#tableDiv"><i class="bi bi-x-square"></i></button></td>  
         </tr>
         {{end}}
