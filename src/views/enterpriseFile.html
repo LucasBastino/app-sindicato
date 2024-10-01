@@ -1,7 +1,7 @@
 {{if eq .mode "create"}}
     <form hx-post="/enterprise/create" hx-target="#tableDiv">
         <div class="form__section">
-            <div class="page-title">Formulario de empresa</div>
+            <div class="page-title">Agregar nueva empresa</div>
 {{else if eq .mode "edit"}}
     <form hx-put="/enterprise/{{$.enterprise.IdEnterprise}}/edit" hx-target="#tableDiv">
         <div class="form__section">

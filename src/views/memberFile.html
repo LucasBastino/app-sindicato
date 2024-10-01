@@ -1,7 +1,7 @@
 {{if eq .mode "create" }}
     <form hx-post="/member/create" hx-target="#tableDiv">
         <div class="form__section">
-            <div class="page-title">Formulario de ingreso de afiliados</div>
+            <div class="page-title">Agregar nuevo afiliado</div>
 {{else if eq .mode "edit"}}
     <form hx-put="/member/{{$.member.IdMember}}/edit" hx-target="#tableDiv">
         <div class="form__section">

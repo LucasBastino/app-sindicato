@@ -25,7 +25,7 @@ CREATE TABLE EnterpriseTable(
 INSERT INTO EnterpriseTable (Name, Address) VALUES ('coto', 'valenzuela 223')
 
 
-SELECT * FROM MemberTable
+SELECT * FROM MemberTable WHERE Name = "Mohamed"
 
 SELECT * FROM ParentTable
 

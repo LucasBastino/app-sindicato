@@ -1,19 +1,30 @@
+{{$enterprises := .enterprises}}
+
 <table class="table table-striped w-90 ">
         <tr>
             <th>Afiliado</th>
             <th>DNI</th>
-            <th> </th>
-            <th> </th>
+            <th>Empresa</th>
+            <th>Ficha</th>
+            <th>Eliminar</th>
         </tr>
 
         {{range $_, $m := .members}}
         <tr>
             <td>{{$m.LastName}}, {{$m.Name}}</td>
             <td>{{$m.DNI}} </td>
+            {{range $_, $e := $enterprises}}
+                {{if eq $e.IdEnterprise $m.IdEnterprise}}
+                    <td>{{$e.Name}}</td>
+                {{else if eq $e.IdEnterprise 0}}
+                <td>SIN EMPRESA</td>
+                {{end}}
+            {{end}}
             <td><button class="btn-primary" hx-get="/member/{{$m.IdMember}}/file" hx-trigger="click" hx-target="#tableDiv"><i class="bi bi-file-earmark-text"></i></button></form></td>
             <td><button class="btn-danger" hx-delete="/member/{{$m.IdMember}}/delete" hx-confirm="¿Estás seguro que deseas eliminar el afiliado?" hx-target="#tableDiv"><i class="bi bi-x-square"></i></button></td>  
-         </tr>
+        </tr>
         {{end}}
+        
 
  </table>
  <script>

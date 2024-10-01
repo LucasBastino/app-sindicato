@@ -1,12 +1,12 @@
 body {
-  /* background-color: #aaa; */
+  background-color: #aaa; 
   margin: 0px;
   /* para que no tenga margen en ningun costado de la pagina */
   display: flex;
   /* estos 3 de abajo son para que el footer quede bien puesto */
   flex-direction: column;
   min-height: 100vh;
-  background-image: url("./background-image.jpg");
+  /* background-image: url("./background-image.jpg"); */
 }
 
 /* html{
@@ -183,7 +183,8 @@ form{
   align-self: center;
   justify-self: center;
   justify-content: center;
-  background-color: #ffeeff;
+  /* background-color: #ffeeff; */
+  background-color: #EFEFEF;
   color: #000;
   max-width: 100%;
   min-width: 30%;

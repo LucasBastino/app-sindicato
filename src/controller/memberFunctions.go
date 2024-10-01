@@ -80,9 +80,11 @@ func RenderMemberTable(c *fiber.Ctx) error {
 		// hago un array para poder recorrerlo y crear botones cuando hay menos de 10 paginas en el template
 		totalPagesArray := GetTotalPagesArray(totalPages)
 
+		enterprises := getAllModelsCaller(models.Enterprise{})
+
 		// creo un map con todas las variables
 		data := getFiberMapCaller(models.Member{}, members, searchKey, currentPage, someBefore, someAfter, totalPages, totalPagesArray)
-
+		data["enterprises"] = enterprises
 		// renderizo la tabla y le envio el map con las variables
 		return c.Render("memberTable", data)
 	}
