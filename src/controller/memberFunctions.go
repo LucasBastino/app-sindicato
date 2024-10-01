@@ -85,6 +85,9 @@ func RenderMemberTable(c *fiber.Ctx) error {
 		// creo un map con todas las variables
 		data := getFiberMapCaller(models.Member{}, members, searchKey, currentPage, someBefore, someAfter, totalPages, totalPagesArray)
 		data["enterprises"] = enterprises
+
+		// fmt.Println(c.BaseURL())
+		fmt.Println(c.OriginalURL())
 		// renderizo la tabla y le envio el map con las variables
 		return c.Render("memberTable", data)
 	}
@@ -95,6 +98,7 @@ func RenderMemberFile(c *fiber.Ctx) error {
 	enterprises := getAllModelsCaller(models.Enterprise{})
 	m := searchOneModelByIdCaller(models.Member{}, c)
 	data := fiber.Map{"member": m, "mode": "edit", "enterprises": enterprises}
+	fmt.Println(c.OriginalURL())
 	return c.Render("memberFile", data)
 }
 

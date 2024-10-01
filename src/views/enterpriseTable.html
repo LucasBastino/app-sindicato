@@ -11,8 +11,8 @@
         <td>{{$e.Name}} </td>
         <td>{{$e.Address}} </td>
         
-        <td><button class="btn-primary" hx-get="/enterprise/{{$e.IdEnterprise}}/file" hx-trigger="click" hx-target="#tableDiv" onclick="hideEnterpriseSearchInput();"><i class="bi bi-file-earmark-text"></i></button></form></td>
-        <td><button class="btn-danger" hx-delete="/enterprise/{{$e.IdEnterprise}}/delete" hx-confirm="¿Estás seguro que deseas eliminar el afiliado?" hx-target="#tableDiv"><i class="bi bi-x-square"></i></button></td>
+        <td><button class="btn-file" hx-get="/enterprise/{{$e.IdEnterprise}}/file" hx-trigger="click" hx-target="#tableDiv" onclick="hideEnterpriseSearchInput();"><i class="bi bi-file-earmark-text"></i></button></form></td>
+        <td><button class="btn-delete" hx-delete="/enterprise/{{$e.IdEnterprise}}/delete" hx-confirm="¿Estás seguro que deseas eliminar el afiliado?" hx-target="#tableDiv"><i class="bi bi-x-square"></i></button></td>
         
      </tr>
     {{end}}

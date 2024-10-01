@@ -41,20 +41,25 @@
             {{end}}
     </form>
     
-    {{if eq .mode "edit"}}
+{{if eq .mode "edit"}}
     <button class="btn-primary" onclick="enableInputs(); showConfirmButton(); hideEnterpriseSearchInput();">Editar</button>
-    {{else if eq .mode "create"}}
+{{end}}
+
+{{if eq .mode "create"}}
     <script type="text/javascript">
         enableInputs();
         enableSelects();
+        hideAddEnterpriseBtn();
+        hideAddMemberBtn();
     </script>
-{{end}}
+{{else if eq .mode "edit"}}
     <script>
         hideMemberSearchInput();
         hideEnterpriseSearchInput();
         showAddEnterpriseBtn(); 
         hideAddMemberBtn();
     </script>
+{{end}}
 
 <div>{{.numberOfMembers}} </div>
 <button hx-delete="/enterprise/{{$.enterprise.IdEnterprise}}/delete" hx-trigger="click" hx-confirm="¿Estás seguro que deseas eliminar la empresa?" hx-target="#tableDiv" class="btn btn-danger">Eliminar empresa</button>

@@ -129,29 +129,35 @@
                 {{end}}
                 
             {{if eq .mode "create"}}
-                <button type="submit" class="btn btn-primary btn-submit field-6">Enviar</button>
+                <button type="submit" class="btn btn-submit field-6">Enviar</button>
             {{else if eq .mode "edit"}}
-                <button type="submit" class="btn btn-primary btn-submit hide field-6">Confirmar</button>
+                <button type="submit" class="btn btn-submit hide field-6">Confirmar</button>
             {{end}}
     </div>
 </form>
 <div class="btn-container">
 {{if eq .mode "edit"}}
-    <button class="btn-primary item-btn" type="submit" hx-get="/member/{{$.member.IdMember}}/parentTable" hx-trigger="click" hx-target="#parentTableDiv" onclick="showAddParentButton();">Familiares</button>
-    <button class="btn-primary item-btn" onclick="enableInputs(); showConfirmButton(); enableSelects();">Editar</button>
+    <button class="item-btn" type="submit" hx-get="/member/{{$.member.IdMember}}/parentTable" hx-trigger="click" hx-target="#parentTableDiv" onclick="showAddParentButton();">Familiares</button>
+    <button class="item-btn" onclick="enableInputs(); showConfirmButton(); enableSelects();">Editar</button>
     <button class="btn-danger item-btn" hx-delete="/member/{{$.member.IdMember}}/delete" hx-confirm="¿Estás seguro que deseas eliminar el afiliado?" hx-target="#tableDiv">Eliminar afiliado</button>
 </div>
-{{else if eq .mode "create"}}
-<script type="text/javascript">
-    enableInputs();
-    enableSelects();
+{{end}}
+
+{{if eq .mode "create"}}
+    <script type="text/javascript">
+        enableInputs();
+        enableSelects();
+        hideAddEnterpriseBtn();
+        hideAddMemberBtn();
+
+    </script>
+{{else if eq .mode "edit"}}
+    <script>
+        hideMemberSearchInput();
+        hideEnterpriseSearchInput();
+        hideAddEnterpriseBtn();
+        showAddMemberBtn();
     </script>
 {{end}}
-<script>
-    hideMemberSearchInput();
-    hideEnterpriseSearchInput();
-    showAddMemberBtn();
-    hideAddEnterpriseBtn();
-</script>
 <div id="parentTableDiv"></div>
-<button class="btn-primary hide .center-btn" id="add-parent-button" hx-get="/member/{{$.member.IdMember}}/form/createParent" hx-trigger="click" hx-target="#tableDiv">Agregar familiar</button>
+<button class="hide .center-btn" id="add-parent-button" hx-get="/member/{{$.member.IdMember}}/form/createParent" hx-trigger="click" hx-target="#tableDiv">Agregar familiar</button>
