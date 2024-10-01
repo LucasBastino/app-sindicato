@@ -13,11 +13,13 @@
         <tr>
             <td>{{$m.LastName}}, {{$m.Name}}</td>
             <td>{{$m.DNI}} </td>
-            {{range $_, $e := $enterprises}}
-                {{if eq $e.IdEnterprise $m.IdEnterprise}}
-                    <td>{{$e.Name}}</td>
-                {{else if eq $e.IdEnterprise 0}}
+            {{if eq $m.IdEnterprise 0}}
                 <td>SIN EMPRESA</td>
+            {{else}}
+                {{range $_, $e := $enterprises}}
+                    {{if eq $e.IdEnterprise $m.IdEnterprise}}
+                        <td>{{$e.Name}}</td>
+                    {{end}}
                 {{end}}
             {{end}}
             <td><button class="btn-primary" hx-get="/member/{{$m.IdMember}}/file" hx-trigger="click" hx-target="#tableDiv"><i class="bi bi-file-earmark-text"></i></button></form></td>

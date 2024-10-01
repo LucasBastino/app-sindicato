@@ -1,3 +1,7 @@
+:root{
+  --main-color: #FEFEFE;
+}
+
 body {
   background-color: #aaa; 
   margin: 0px;
@@ -45,7 +49,7 @@ select {
 }
 
 .container{
-  background-color: #EFEFEF;
+  background-color: var(--main-color);
   box-shadow: 0em 0em 1em 0px black;
   margin-top: 5%;
   padding: 0;
@@ -56,13 +60,7 @@ select {
   --bs-table-striped-color: #85d1ee;
 }
 
-.navbar{
-  border-top-left-radius: 20px;
-  border-top-right-radius: 20px ;
-  /* padding-left: 40px;
-  padding-right: 40px; */
-  width: 100%;
-}
+
 
 /* enable relative positioning */
 .inner-addon { 
@@ -115,12 +113,12 @@ tr:last-child td:last-child{
 }
 
 input:disabled{
-  background-color: white;
+  background-color: var(--main-color);
   color: black
 }
 
 select:disabled{
-  background-color: white;
+  background-color: var(--main-color);
   color: black;
   opacity: 100%;
 }
@@ -169,10 +167,6 @@ margin: 10px
   width: 2.8em;
 }
 
-.nav-container{
-  display: flex;
-  justify-content: center
-}
 
 form{
   width: 100%;
@@ -184,7 +178,7 @@ form{
   justify-self: center;
   justify-content: center;
   /* background-color: #ffeeff; */
-  background-color: #EFEFEF;
+  background-color: var(--main-color);
   color: #000;
   max-width: 100%;
   min-width: 30%;
@@ -222,3 +216,18 @@ form{
 }
 
 
+.nav-container{
+  border-top-left-radius: 20px;
+  border-top-right-radius: 20px ;
+  display: flex;
+  justify-content: center
+}
+
+.navbar{
+  background-color: #EEEEEE !important;
+  border-top-left-radius: 20px;
+  border-top-right-radius: 20px ;
+  /* padding-left: 40px;
+  padding-right: 40px; */
+  width: 100%;
+}
