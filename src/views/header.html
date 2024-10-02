@@ -1,49 +1,37 @@
 {{define "Header"}}
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.4.1/dist/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-    <link rel="stylesheet" href="/static/css/styles.css">
-    <title>Sindicato San Martín</title>
-</head>
-<header>
-<div class="container" id="main-container"></div>
-    <div class="nav-container">
-      <nav class="navbar navbar-expand navbar-light bg-light">
-        <a class="navbar-brand" href="#" onclick="showAddMemberBtn(); hideAddEnterpriseBtn();" hx-get="/member/renderTable" hx-trigger="click" hx-target="#tableDiv">Sindicato</a>
-          <div class="navbar-nav">
-            <!-- navbar links -->
-            <a class="nav-item nav-link active" href="#" hx-get="/member/renderTable" hx-trigger="click" hx-target="#tableDiv">Afiliados</a>
-            <a class="nav-item nav-link active" href="#" onclick="" hx-get="/enterprise/renderTable" hx-trigger="click" hx-target="#tableDiv">Empresas</a>
-
-            <!-- 4 search inputs -->
-            <div class="inner-addon right-addon" id="member-search-input">
-              <i class="bi bi-search input-icon"></i>
-              <input class="form-control mr-sm-2 input-field" name="search-key" type="search" aria-label="Search" 
-              hx-get="/member/renderTable" hx-trigger="keyup" hx-target="#tableDiv">
-            </div> 
-            <div class="inner-addon right-addon hide" id="enterprise-search-input">
-              <i class="bi bi-search input-icon"></i>
-              <input class="form-control mr-sm-2 input-field" name="search-key" type="search" aria-label="Search" 
-              hx-get="/enterprise/renderTable" hx-trigger="keyup" hx-target="#tableDiv">
-            </div> 
-            <div class="inner-addon right-addon hide" id="parent-search-input">
-              <i class="bi bi-search input-icon"></i>
-              <input class="form-control mr-sm-2 input-field" name="search-key" type="search" aria-label="Search" 
-              hx-get="/parent/renderTable" hx-trigger="keyup" hx-target="#tableDiv">
-            </div> 
-          </div>
-
-          <!-- buttons -->
-          <a class="nav-item nav-link active py-0" href="#" id="add-member-btn" onclick="hideAddMemberBtn(); hideAddEnterpriseBtn();" hx-get="/form/createMember" hx-replace-url="/form/createMember" hx-trigger="click" hx-target="#tableDiv"><button class="btn-add">Agregar afiliado</button> 
-          <a class="nav-item nav-link active py-0 hide" href="#" id="add-enterprise-btn" onclick="hideAddMemberBtn(); hideAddEnterpriseBtn();" hx-get="/form/createEnterprise" hx-trigger="click" hx-target="#tableDiv"><button class="btn-add">Agregar empresa</button> 
-
-
-          <a class="nav-item-right" href="/renderElectoralMemberList">Padrón</a>
-        </div>
-      </nav>
-
-  </div>
-</header>
+    <header>
+            <div class="nav-container">
+            <nav class="navbar navbar-expand navbar-light bg-light">
+                <a class="navbar-brand" href="#" onclick="showAddMemberBtn(); hideAddEnterpriseBtn();" hx-get="/member/renderTable" hx-trigger="click" hx-target="#tableDiv">Sindicato</a>
+                <div class="navbar-nav">
+                    <!-- navbar links -->
+                        <a class="nav-item nav-link active" href="#" hx-get="/member/renderTable" hx-trigger="click" hx-target="#tableDiv">Afiliados</a>
+                        <a class="nav-item nav-link active" href="#" hx-get="/enterprise/renderTable" hx-trigger="click" hx-target="#tableDiv">Empresas</a>
+                    <!-- 4 search inputs -->
+                    <div class="inner-addon right-addon" id="member-search-input">
+                    <i class="bi bi-search input-icon"></i>
+                    <input class="form-control mr-sm-2 input-field" name="search-key" type="search" aria-label="Search" 
+                    hx-get="/member/renderTable" hx-trigger="keyup" hx-target="#tableDiv">
+                    </div> 
+                    <div class="inner-addon right-addon hide" id="enterprise-search-input">
+                    <i class="bi bi-search input-icon"></i>
+                    <input class="form-control mr-sm-2 input-field" name="search-key" type="search" aria-label="Search" 
+                    hx-get="/enterprise/renderTable" hx-trigger="keyup" hx-target="#tableDiv">
+                    </div> 
+                    <div class="inner-addon right-addon hide" id="parent-search-input">
+                    <i class="bi bi-search input-icon"></i>
+                    <input class="form-control mr-sm-2 input-field" name="search-key" type="search" aria-label="Search" 
+                    hx-get="/parent/renderTable" hx-trigger="keyup" hx-target="#tableDiv">
+                    </div> 
+                </div>
+        
+                <!-- buttons -->
+                <a class="nav-item nav-link active py-0" href="/form/createMember" id="add-member-btn"><button class="btn-add">Agregar un afiliado</button> 
+                <a class="nav-item nav-link active py-0 hide" href="/form/createEnterprise" id="add-enterprise-btn"><button class="btn-add">Agregar una empresa</button> 
+        
+        
+                <a class="nav-item-right" href="/renderElectoralMemberList">Padrón</a>
+                </div>
+            </nav>
+    </header>
 {{end}}

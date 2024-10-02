@@ -1,3 +1,19 @@
+{{template "Head"}}
+<div class="container" id="main-container">
+    <header>
+        <div class="nav-container">
+        <nav class="navbar navbar-expand navbar-light bg-light">
+            <a class="navbar-brand" href="/">←Volver</a>
+            <!-- <div class="navbar-nav"> -->
+                    <!-- <a class="nav-item nav-link active" href="/">Volver</a> -->
+            <!-- </div>  -->
+            {{if eq .mode "edit"}}
+                <a class="nav-item nav-link active py-0" href="/form/createEnterprise" id="add-member-btn"><button class="btn-add">Agregar una empresa</button> 
+            {{end}}
+        </div> 
+            <!-- buttons -->
+        </nav>
+    </header>
 {{if eq .mode "create"}}
     <form hx-post="/enterprise/create" hx-target="#tableDiv">
         <div class="form__section">
@@ -40,6 +56,8 @@
             <button type="submit" class="btn btn-primary btn-submit hide">Confirmar</button>
             {{end}}
     </form>
+
+{{template "Scripts"}}
     
 {{if eq .mode "edit"}}
     <button class="btn-primary" onclick="enableInputs(); showConfirmButton(); hideEnterpriseSearchInput();">Editar</button>

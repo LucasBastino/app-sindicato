@@ -1,8 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
-{{template "Header"}}
-<div id="tableDiv" hx-get="/member/renderTable" hx-trigger="load"></div>
-{{template "Footer"}}
+    <body>
+        {{template "Head"}}
+        <div class="container" id="main-container">
+            {{template "Header"}}
+            <div id="tableDiv" hx-get="/member/renderTable" hx-trigger="load"></div>
+        </div>
+        {{template "Scripts"}}
+    </body>
 </html>
 
 
