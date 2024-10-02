@@ -10,7 +10,6 @@
     <tr>
         <td>{{$e.Name}} </td>
         <td>{{$e.Address}} </td>
-        
         <td>
             <a href="/enterprise/{{$e.IdEnterprise}}/file">
                 <button class="btn-file">
@@ -18,7 +17,6 @@
                 </button>
             </a>
         <td><button class="btn-delete" hx-delete="/enterprise/{{$e.IdEnterprise}}/delete" hx-confirm="¿Estás seguro que deseas eliminar el afiliado?" hx-target="#tableDiv"><i class="bi bi-x-square"></i></button></td>
-        
      </tr>
     {{end}}
 
