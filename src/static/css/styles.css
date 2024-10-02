@@ -271,3 +271,28 @@ form{
 a{
   color:black
 }
+
+/* .inner-addon input:focus{
+  outline: none !important;
+  box-shadow: none !important;
+  transition: none !important;
+  transform: none !important;
+  border: none !important;
+} */
+
+/* .search-input:focus{
+  outline: none !important;
+  box-shadow: none !important;
+  transition: none !important;
+  transform: none !important;
+  border: none !important;
+} */
+
+.form-control:focus{
+  outline: none;
+  box-shadow: none;
+  transition: none;
+  transform: none;
+  border-color: #ced4da;
+}
+
