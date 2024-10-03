@@ -284,3 +284,14 @@ input[type="search"]::-webkit-search-results-button,
 input[type="search"]::-webkit-search-results-decoration {
     display: none;
 }
+
+.parent-table-container{
+  margin: 3em;
+  border: 1px solid black;
+  border-radius: 5px;
+}
+
+.parent-table tr:first-child{
+  border-top : 0px;
+}
+

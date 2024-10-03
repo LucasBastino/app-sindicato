@@ -1,4 +1,12 @@
-{{template "Head"}}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    {{template "Head"}}
 <div id="target-div">
     <div class="container" id="main-container">
         <header>
@@ -18,7 +26,7 @@
     {{else if eq .mode "edit"}}
         <form hx-put="/enterprise/{{$.enterprise.IdEnterprise}}/edit" hx-target="#target-div">
             <div class="form__section">
-                <div class="page-title">Ficha {{$.enterprise.Name}}</div>
+                <div class="page-title">{{$.enterprise.Name}}</div>
     {{end}}
                 <div class="titulo field-12">Datos personales</div>
                     <input class="form-input field-12" type="text" name="name" value="{{$.enterprise.Name}}" placeholder="Nombre" disabled>
@@ -85,3 +93,5 @@
 <input class="hide" id="enterprise-member-search-input" name="search-key" type="search" aria-label="Search" 
     hx-get="enterprise/{{$.enterprise.IdEnterprise}}/memberTable" hx-trigger="keyup" hx-target="#memberTableDiv"></input>
 <div id="memberTableDiv"></div>
+</body>
+</html>

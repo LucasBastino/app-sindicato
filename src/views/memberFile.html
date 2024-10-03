@@ -1,4 +1,12 @@
-{{template "Head"}}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ficha de {{$.member.LastName}}, {{$.member.Name}}</title>
+</head>
+<body>
+    {{template "Head"}}
 <div id="target-div">
     <div class="container" id="main-container">
         <header>
@@ -21,7 +29,7 @@
         {{else if eq .mode "edit"}}
             <form hx-put="/member/{{$.member.IdMember}}/edit" hx-target="#target-div">
                 <div class="form__section">
-                    <div class="page-title">Ficha de {{$.member.LastName}}</div>
+                    <div class="page-title">{{$.member.LastName}}, {{$.member.Name}}</div>
         {{end}}
                         <div class="titulo field-12">Datos personales</div>
                         <input class="form-input field-6" type="text" name="name" value="{{$.member.Name}}" placeholder="Nombres" required disabled>
@@ -162,6 +170,8 @@
             <button class="btn-danger item-btn" hx-delete="/member/{{$.member.IdMember}}/delete" hx-confirm="¿Estás seguro que deseas eliminar el afiliado?" hx-target="#tableDiv">Eliminar afiliado</button>
         </div>
     {{end}}
+    <div id="parentTableDiv"></div>
+    <button class="hide .center-btn" id="add-parent-button" hx-get="/member/{{$.member.IdMember}}/form/createParent" hx-trigger="click" hx-target="#tableDiv">Agregar familiar</button>
     </div>
 </div>
 
@@ -181,6 +191,7 @@
         showAddMemberBtn();
     </script>
 {{end}}
-<div id="parentTableDiv"></div>
-<button class="hide .center-btn" id="add-parent-button" hx-get="/member/{{$.member.IdMember}}/form/createParent" hx-trigger="click" hx-target="#tableDiv">Agregar familiar</button>
+
+</body>
+</html>
 

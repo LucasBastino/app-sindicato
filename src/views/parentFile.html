@@ -1,9 +1,17 @@
-{{template "Header"}}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ficha de {{$.parent.LastName}}, {{$.parent.Name}}</title>
+</head>
+<body>
+    {{template "Header"}}
 {{if eq .mode "create"}}
     <h1>Agregar familiar:</h1>
     <form hx-post="/parent/create" hx-target="#tableDiv">
 {{else if eq .mode "edit"}}
-    <h2>Ficha de {{$.parent.Name}}</h2>
+    <h2>{{$.parent.LastName}}, {{$.parent.Name}}</h2>
     <form hx-put="/parent/{{$.parent.IdParent}}/edit" hx-target="#tableDiv">
 {{end}}
         <input type="text" name="name" value="{{$.parent.Name}}" placeholder="Nombres" required>
@@ -57,3 +65,5 @@
         enableSelects();
      </script>
 {{end}}
+</body>
+</html>
