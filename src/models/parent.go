@@ -118,21 +118,27 @@ func (parent Parent) SearchOneModelById(c *fiber.Ctx) Parent {
 }
 
 func (parent Parent) SearchModels(c *fiber.Ctx, offset int) ([]Parent, string) {
-	searchKey := c.FormValue("search-key")
+	params := struct {
+		IdMember int `params:"IdMember"`
+	}{}
+	c.ParamsParser(&params)
 	result, err := database.DB.Query(fmt.Sprintf(`
 		SELECT IdParent,
 		Name,
-		Rel
+		LastName,
+		Rel,
+		Gender,
+		Birthday,
+		CUIL,
+		IdMember
 		FROM ParentTable 
-		WHERE Name LIKE '%%%s%%' OR Rel LIKE '%%%s%%'
-		LIMIT 10 OFFSET %d`,
-		searchKey, searchKey, offset))
+		WHERE IdMember = %d`, params.IdMember))
 	if err != nil {
-		fmt.Println("error searching Parent in DB")
+		fmt.Println("error searching member parents in DB")
 		panic(err)
 	}
 	_, parents := parent.ScanResult(result, false)
-	return parents, searchKey
+	return parents, ""
 }
 
 func (parent Parent) ValidateFields(c *fiber.Ctx) map[string]string {
@@ -148,10 +154,13 @@ func (parent Parent) ValidateFields(c *fiber.Ctx) map[string]string {
 
 func (parent Parent) GetTotalRows(c *fiber.Ctx) int {
 	var totalRows int
-	searchKey := c.FormValue("search-key")
+	params := struct {
+		IdMember int `params:"IdMember"`
+	}{}
+	c.ParamsParser(&params)
 	row := database.DB.QueryRow(fmt.Sprintf(`
-		SELECT COUNT(*) FROM ParentTable 
-		WHERE Name LIKE '%%%s%%'`, searchKey))
+		SELECT COUNT(*) FROM ParentTable  
+		WHERE IdMember = %d`, params.IdMember))
 	// row.Scan copia el numero de fila en la variable count
 	err := row.Scan(&totalRows)
 	if err != nil {
@@ -188,13 +197,7 @@ func (parent Parent) GetFiberMap(parents []Parent, searchKey string, currentPage
 }
 
 func (parent Parent) GetAllModels() []Parent {
-	result, err := database.DB.Query("SELECT * FROM ParentTable")
-	if err != nil {
-		fmt.Println("error searching parent in DB")
-		panic(err)
-	}
-	_, parents := parent.ScanResult(result, false)
-	return parents
+	return nil
 }
 
 func (parent Parent) ScanResult(result *sql.Rows, onlyOne bool) (Parent, []Parent) {

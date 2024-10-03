@@ -46,7 +46,6 @@ func RegisterRoutes(app *fiber.App) {
 	app.Get("/createMembers", c.CreateMembers)
 	app.Get("/createParents", c.CreateParents)
 	app.Get("/createEnterprises", c.CreateEnterprises)
-	app.Get("/prueba", c.Prueba)
 	app.Get("/renderElectoralMemberList", c.VerifyToken, c.RenderElectoralMemberList)
 	app.Get("/pruebaEmpresas", c.RenderPruebaEmpresas)
 }

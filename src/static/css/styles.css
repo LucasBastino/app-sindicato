@@ -226,13 +226,22 @@ form{
   margin: 1em 0;
 }
 
-.field-12 {
-  flex-basis: 83%;
+.field-3{
+  flex-basis: 30%
 }
 
 .field-6 {
   flex-basis: 40%;
 }
+
+.field-9{
+  flex-basis: 60%;
+}
+
+.field-12 {
+  flex-basis: 83%;
+}
+
 
 .btn-container{
   display: flex;

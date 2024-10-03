@@ -28,9 +28,13 @@
             <div class="form__section">
                 <div class="page-title">{{$.enterprise.Name}}</div>
     {{end}}
-                <div class="titulo field-12">Datos personales</div>
+                <div class="titulo field-12">Datos de la empresa</div>
                     <input class="form-input field-12" type="text" name="name" value="{{$.enterprise.Name}}" placeholder="Nombre" disabled>
                     {{with .errorMap.name}}
+                        <p>{{.}}</p>
+                    {{end}}
+                    <input class="form-input field-12" type="text" name="number" value="{{$.enterprise.Number}}" placeholder="Numero de empresa" disabled>
+                    {{with .errorMap.number}}
                         <p>{{.}}</p>
                     {{end}}
                     <input class="form-input field-12" type="text" name="address" value="{{$.enterprise.Address}}" placeholder="Direccion" disabled>

@@ -1,6 +1,7 @@
 <table class="table table-striped w-90 ">
     <tr>
         <th>Empresa</th>
+        <th>N° Empresa</th>
         <th>Direccion</th>
         <th> </th>
         <th> </th>
@@ -9,6 +10,7 @@
     {{range $_, $e := .enterprises}}
     <tr>
         <td>{{$e.Name}} </td>
+        <td>{{$e.Number}}</td>
         <td>{{$e.Address}} </td>
         <td>
             <a href="/enterprise/{{$e.IdEnterprise}}/file">

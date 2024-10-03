@@ -3,7 +3,6 @@ package controller
 import (
 	"fmt"
 
-	"github.com/LucasBastino/app-sindicato/src/database"
 	i "github.com/LucasBastino/app-sindicato/src/interfaces"
 	"github.com/LucasBastino/app-sindicato/src/models"
 	"github.com/gofiber/fiber/v2"
@@ -111,33 +110,15 @@ func RenderCreateMemberForm(c *fiber.Ctx) error {
 }
 
 func RenderMemberParents(c *fiber.Ctx) error {
-	// Obtengo el ID del member mediante el path
-	IdMember := getIdModelCaller(models.Member{}, c)
-
-	// Busco los parents asociados a ese member
-	result, err := database.DB.Query(fmt.Sprintf("SELECT Name, Rel, IdParent, IdMember FROM ParentTable WHERE IdMember = '%d'", IdMember))
-	if err != nil {
-		fmt.Println("error searching parents from database.db")
-		panic(err)
+	// calculo la cantidad de resultados
+	totalRows := getTotalRowsCaller(models.Parent{}, c)
+	if totalRows == 0 {
+		// si no hay resultados renderizar esto
+		return c.Render("searchWithNoResults", fiber.Map{})
+	} else {
+		// Busco los parents asociados a ese member
+		parents, _ := searchModelsCaller(models.Parent{}, c, 0)
+		data := fiber.Map{"parents": parents, "mode": "edit"}
+		return c.Render("memberParentTable", data)
 	}
-
-	var p models.Parent
-	var parents []models.Parent
-	for result.Next() {
-		// Scanneo los datos y los agrego a un slice
-		err = result.Scan(&p.Name, &p.Rel, &p.IdParent, &p.IdMember)
-		if err != nil {
-			fmt.Println("error scanning parent")
-			panic(err)
-		}
-		parents = append(parents, p)
-	}
-
-	data := fiber.Map{"parents": parents, "mode": "edit"}
-	return c.Render("memberParentTable", data)
-
-}
-
-func Prueba(c *fiber.Ctx) error {
-	return c.Render("prueba", fiber.Map{})
 }

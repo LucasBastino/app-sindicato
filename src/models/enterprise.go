@@ -13,6 +13,7 @@ import (
 type Enterprise struct {
 	IdEnterprise int
 	Name         string
+	Number       string
 	Address      string
 	CUIT         string
 	District     string
@@ -24,13 +25,15 @@ func (enterprise Enterprise) InsertModel() Enterprise {
 	insert, err := database.DB.Query(fmt.Sprintf(`
 		INSERT INTO EnterpriseTable 
 		(Name,
+		Number,
 		Address, 
 		CUIT, 
 		District, 
 		PostalCode, 
 		Phone)
-		VALUES ('%s','%s','%s','%s','%s','%s')`,
+		VALUES ('%s','%s','%s','%s','%s','%s', '%s')`,
 		enterprise.Name,
+		enterprise.Number,
 		enterprise.Address,
 		enterprise.CUIT,
 		enterprise.District,
@@ -70,6 +73,7 @@ func (enterprise Enterprise) EditModel() {
 		UPDATE EnterpriseTable 
 		SET 
 		Name = '%s', 
+		Number = '%s',
 		Address = '%s', 
 		CUIT = '%s', 
 		District = '%s', 
@@ -77,6 +81,7 @@ func (enterprise Enterprise) EditModel() {
 		Phone = '%s' 
 		WHERE IdEnterprise = '%d'`,
 		enterprise.Name,
+		enterprise.Number,
 		enterprise.Address,
 		enterprise.CUIT,
 		enterprise.District,
@@ -201,6 +206,7 @@ func (enterprise Enterprise) ScanResult(result *sql.Rows, onlyOne bool) (Enterpr
 		err := result.Scan(
 			&e.IdEnterprise,
 			&e.Name,
+			&e.Number,
 			&e.Address,
 			&e.CUIT,
 			&e.District,

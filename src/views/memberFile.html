@@ -179,19 +179,13 @@
     <script type="text/javascript">
         enableInputs();
         enableSelects();
-        hideAddEnterpriseBtn();
         hideAddMemberBtn();
-
     </script>
 {{else if eq .mode "edit"}}
     <script>
-        hideMemberSearchInput();
-        hideEnterpriseSearchInput();
-        hideAddEnterpriseBtn();
         showAddMemberBtn();
     </script>
 {{end}}
-
 </body>
 </html>
 
