@@ -3,17 +3,13 @@
     <div class="container" id="main-container">
         <header>
             <div class="nav-container">
-            <nav class="navbar navbar-expand navbar-light bg-light">
-                <a class="navbar-brand" href="/">←Volver</a>
-                <!-- <div class="navbar-nav"> -->
-                        <!-- <a class="nav-item nav-link active" href="/">Volver</a> -->
-                <!-- </div>  -->
-                {{if eq .mode "edit"}}
-                    <a class="nav-item nav-link active py-0" href="/form/createEnterprise" id="add-member-btn"><button class="btn-add">Agregar una empresa</button> 
-                {{end}}
-            </div> 
-                <!-- buttons -->
-            </nav>
+                <nav class="navbar navbar-expand navbar-light bg-light">
+                    <a class="navbar-brand" href="/">←Volver</a>              
+                    {{if eq .mode "edit"}}
+                        <a class="nav-item nav-link active py-0" href="/form/createEnterprise" id="add-enterprise-btn"><button class="btn-add">Agregar una empresa</button></a>
+                    {{end}} 
+                </nav>
+            </div>
         </header>
     {{if eq .mode "create"}}
         <form hx-post="/enterprise/create" hx-target="#target-div">
@@ -56,13 +52,13 @@
                 {{end}}
             </div>
         </form>
+        {{if eq .mode "edit"}}
+            <button class="btn-primary" onclick="enableInputs(); showConfirmButton();">Editar</button>
+        {{end}}
     </div>
 </div>
 {{template "Scripts"}}
     
-{{if eq .mode "edit"}}
-    <button class="btn-primary" onclick="enableInputs(); showConfirmButton(); hideEnterpriseSearchInput();">Editar</button>
-{{end}}
 
 {{if eq .mode "create"}}
     <script type="text/javascript">
@@ -82,7 +78,7 @@
 
 <div>{{.numberOfMembers}} </div>
 <button hx-delete="/enterprise/{{$.enterprise.IdEnterprise}}/delete" hx-trigger="click" hx-confirm="¿Estás seguro que deseas eliminar la empresa?" hx-target="#tableDiv" class="btn btn-danger">Eliminar empresa</button>
-<form hx-get="enterprise/{{$.enterprise.IdEnterprise}}/memberTable" hx-target="#memberTableDiv">
+<form hx-get="/enterprise/{{$.enterprise.IdEnterprise}}/memberTable" hx-target="#memberTableDiv">
     <input class="hide" type="text" name="search-key" value="">
     <button type="submit" class="btn btn-primary" onclick="showEnterpriseMemberSearchInput();">Mostrar afiliados</button>
 </form>
