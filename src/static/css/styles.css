@@ -291,7 +291,7 @@ input[type="search"]::-webkit-search-results-decoration {
   border-radius: 5px;
 }
 
-.parent-table tr:first-child{
+.parent-table th{
   border-top : 0px;
 }
 

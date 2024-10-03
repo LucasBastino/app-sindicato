@@ -173,11 +173,12 @@ func (member Member) SearchOneModelById(c *fiber.Ctx) Member {
 func (member Member) SearchModels(c *fiber.Ctx, offset int) ([]Member, string) {
 	searchKey := c.FormValue("search-key")
 	result, err := database.DB.Query(fmt.Sprintf(`
-		SELECT * FROM MemberTable 
+		SELECT M.* FROM MemberTable M INNER JOIN EnterpriseTable E ON M.IdEnterprise = E.IdEnterprise 
 		WHERE 
-		Name LIKE '%%%s%%' OR LastName LIKE '%%%s%%'
+		M.Name LIKE '%%%s%%' OR M.LastName LIKE '%%%s%%' OR M.DNI LIKE '%%%s%%' 
+		OR E.Name LIKE '%%%s%%' OR E.Number LIKE '%%%s%%'
 		LIMIT 10 OFFSET %d`,
-		searchKey, searchKey, offset))
+		searchKey, searchKey, searchKey, searchKey, searchKey, offset))
 	if err != nil {
 		fmt.Println("error searching member in DB")
 		panic(err)
@@ -209,8 +210,11 @@ func (member Member) GetTotalRows(c *fiber.Ctx) int {
 	var totalRows int
 	searchKey := c.FormValue("search-key")
 	row := database.DB.QueryRow(fmt.Sprintf(`
-		SELECT COUNT(*) FROM MemberTable 
-		WHERE Name LIKE '%%%s%%'`, searchKey))
+		SELECT COUNT(*) FROM MemberTable M INNER JOIN EnterpriseTable E ON M.IdEnterprise = E.IdEnterprise 
+		WHERE 
+		M.Name LIKE '%%%s%%' OR M.LastName LIKE '%%%s%%' OR M.DNI LIKE '%%%s%%' 
+		OR E.Name LIKE '%%%s%%' OR E.Number LIKE '%%%s%%'`,
+		searchKey, searchKey, searchKey, searchKey, searchKey))
 	// row.Scan copia el numero de fila en la variable count
 	err := row.Scan(&totalRows)
 	if err != nil {

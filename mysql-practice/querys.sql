@@ -103,6 +103,7 @@ CREATE TABLE ParentTable(
 CREATE TABLE EnterpriseTable(
     IdEnterprise INT PRIMARY KEY AUTO_INCREMENT NOT NULL,
     Name VARCHAR(255),
+    Number VARCHAR(50),
     Address VARCHAR(50),
     CUIT VARCHAR(50),
     District VARCHAR(50),
