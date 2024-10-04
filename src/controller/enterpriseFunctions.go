@@ -3,6 +3,7 @@ package controller
 import (
 	"fmt"
 	"log"
+	"strconv"
 
 	"github.com/LucasBastino/app-sindicato/src/database"
 	i "github.com/LucasBastino/app-sindicato/src/interfaces"
@@ -107,12 +108,21 @@ func RenderEnterpriseMembers(c *fiber.Ctx) error {
 	currentPage := GetPageFromPath(c)
 
 	searchKey := c.FormValue("search-key")
-	params := struct {
-		IdEnterprise int `params:"IdEnterprise"`
-	}{}
-
-	c.ParamsParser(&params)
-	IdEnterprise := params.IdEnterprise
+	IdEnterprise := func() int {
+		if c.Get("from") == "edit" {
+			return getIdModelCaller(models.Enterprise{}, c)
+		} else if c.Get("from") == "enterpriseMemberTable" {
+			IdEnterpriseStr := c.Get("idEnterprise")
+			IdEnterprise, err := strconv.Atoi(IdEnterpriseStr)
+			if err != nil {
+				fmt.Println("error converting IdEnterpriseStr to INT")
+				panic(err)
+			}
+			return IdEnterprise
+		} else {
+			return 0
+		}
+	}()
 
 	// calculo la cantidad de resultados
 	totalRows := GetNumberOfMembers(IdEnterprise, searchKey)

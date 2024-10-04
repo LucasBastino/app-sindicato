@@ -32,32 +32,33 @@ func DeleteMember(c *fiber.Ctx) error {
 	m := models.Member{IdMember: IdMember}
 	deleteModelCaller(m)
 
-	// i get the route from the request was send
-	from := c.Get("from")
-
+	// check if the member was deleted
 	checkDeleted := checkDeletedCaller(models.Member{}, IdMember)
 	if !checkDeleted {
 		return c.Render("deleteUnsuccesfull", fiber.Map{"error": "error eliminando afiliado"})
 	} else {
-		if from == "table" {
+
+		// "from" was the route from the request was send
+		switch c.Get("from") {
+		case "table":
 			return RenderMemberTable(c)
-		} else if from == "file" {
-			path := "/"
-			return c.Render("redirect", fiber.Map{"path": path})
-			// return c.Redirect().Status(fiber.StatusPermanentRedirect).To("/")
-			// return c.Get()
-		} else {
-			return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": "error interno de server"})
+		case "edit":
+			return c.Render("redirect", fiber.Map{"path": "/"})
+		case "enterpriseMemberTable":
+			return RenderEnterpriseMembers(c)
+		default:
+			return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "error deleting member"})
 		}
+
 	}
 }
 
 func EditMember(c *fiber.Ctx) error {
 	enterprises := getAllModelsCaller(models.Enterprise{})
 	errorMap := validateFieldsCaller(models.Member{}, c)
+	// Parseo los datos obtenidos del form
 	m := parserCaller(i.MemberParser{}, c)
 	IdMember := getIdModelCaller(m, c)
-	// Parseo los datos obtenidos del form
 	// necesito poner esta linea ↑ para que se pueda editar 2 veces seguidas
 	m.IdMember = IdMember
 	if len(errorMap) > 0 {
@@ -100,6 +101,7 @@ func RenderMemberTable(c *fiber.Ctx) error {
 		// creo un map con todas las variables
 		data := getFiberMapCaller(models.Member{}, members, searchKey, currentPage, someBefore, someAfter, totalPages, totalPagesArray)
 		data["enterprises"] = enterprises
+		data["mode"] = "table"
 
 		// renderizo la tabla y le envio el map con las variables
 		return c.Render("memberTable", data)

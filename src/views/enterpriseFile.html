@@ -57,10 +57,11 @@
                     {{with .errorMap.phone}}
                         <p>{{.}}</p>
                     {{end}}
-                {{if eq .mode "create"}}
-                <button type="submit" class="btn btn-primary btn-submit">Enviar</button>
-                {{else if eq .mode "edit"}}
-                <button type="submit" class="btn btn-primary btn-submit hide">Confirmar</button>
+                    <div class="form-input field-12">{{.numberOfMembers}}</div>
+                    {{if eq .mode "create"}}
+                    <button type="submit" class="btn btn-primary btn-submit">Enviar</button>
+                    {{else if eq .mode "edit"}}
+                    <button type="submit" class="btn btn-primary btn-submit hide">Confirmar</button>
                 {{end}}
             </div>
         </form>
@@ -88,14 +89,13 @@
     </script>
 {{end}}
 
-<div>{{.numberOfMembers}} </div>
-<button hx-delete="/enterprise/{{$.enterprise.IdEnterprise}}/delete" hx-trigger="click" hx-confirm="¿Estás seguro que deseas eliminar la empresa?" hx-target="#tableDiv" class="btn btn-danger">Eliminar empresa</button>
-<form hx-get="/enterprise/{{$.enterprise.IdEnterprise}}/memberTable" hx-target="#memberTableDiv">
+<button hx-delete="/enterprise/{{$.enterprise.IdEnterprise}}/delete" hx-headers='{"from": "edit"}' hx-trigger="click" hx-confirm="¿Estás seguro que deseas eliminar la empresa?" hx-target="#target-div" class="btn btn-danger">Eliminar empresa</button>
+<form hx-get="/enterprise/{{$.enterprise.IdEnterprise}}/memberTable" hx-headers='{"from": "edit"}' hx-target="#tableDiv">
     <input class="hide" type="text" name="search-key" value="">
     <button type="submit" class="btn btn-primary" onclick="showEnterpriseMemberSearchInput();">Mostrar afiliados</button>
 </form>
 <input class="hide" id="enterprise-member-search-input" name="search-key" type="search" aria-label="Search" 
-    hx-get="enterprise/{{$.enterprise.IdEnterprise}}/memberTable" hx-trigger="keyup" hx-target="#memberTableDiv"></input>
-<div id="memberTableDiv"></div>
+    hx-get="enterprise/{{$.enterprise.IdEnterprise}}/memberTable" hx-trigger="keyup" hx-target="#tableDiv"></input>
+<div id="tableDiv"></div>
 </body>
 </html>
