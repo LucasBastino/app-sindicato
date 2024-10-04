@@ -1,9 +1,6 @@
 package controller
 
 import (
-	"fmt"
-	"time"
-
 	i "github.com/LucasBastino/app-sindicato/src/interfaces"
 	"github.com/LucasBastino/app-sindicato/src/models"
 	"github.com/gofiber/fiber/v2"
@@ -35,23 +32,26 @@ func DeleteMember(c *fiber.Ctx) error {
 	m := models.Member{IdMember: IdMember}
 	deleteModelCaller(m)
 
-	params := struct {
-		From string `params:"From"`
-	}{}
-	c.ParamsParser(&params)
-	if params.From == "table" {
-		// checkDeleted
-		return RenderMemberTable(c)
-	} else if params.From == "file" {
-		if checkDeletedCaller(models.Member{}, IdMember) {
-			c.Render("deletedSuccesfully", fiber.Map{})
-		} else {
-			c.Render("deletedUnsuccesfully", fiber.Map{})
-		}
-		time.Sleep(2 * time.Second)
-		return c.Redirect("/")
+	// params := struct {
+	// 	From string `params:"From"`
+	// }{}
+	// c.ParamsParser(&params)
+
+	from := c.Get("from")
+
+	checkDeleted := checkDeletedCaller(models.Member{}, IdMember)
+	if !checkDeleted {
+		return c.Render("deleteUnsuccesfull", fiber.Map{"error": "error eliminando afiliado"})
 	} else {
-		return c.SendStatus(fiber.ErrInternalServerError.Code)
+		if from == "table" {
+			return RenderMemberTable(c)
+		} else if from == "file" {
+			return c.Redirect("/")
+			// return c.Redirect().Status(fiber.StatusPermanentRedirect).To("/")
+			// return c.Get()
+		} else {
+			return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": "error interno de server"})
+		}
 	}
 }
 
@@ -104,8 +104,6 @@ func RenderMemberTable(c *fiber.Ctx) error {
 		data := getFiberMapCaller(models.Member{}, members, searchKey, currentPage, someBefore, someAfter, totalPages, totalPagesArray)
 		data["enterprises"] = enterprises
 
-		// fmt.Println(c.BaseURL())
-		fmt.Println(c.OriginalURL())
 		// renderizo la tabla y le envio el map con las variables
 		return c.Render("memberTable", data)
 	}

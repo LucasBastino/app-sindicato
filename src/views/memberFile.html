@@ -167,7 +167,7 @@
         <div class="btn-container">
             <button class="item-btn" type="submit" hx-get="/member/{{$.member.IdMember}}/parentTable" hx-trigger="click" hx-target="#parentTableDiv" onclick="showAddParentButton();">Familiares</button>
             <button class="item-btn" onclick="enableInputs(); showConfirmButton(); enableSelects();">Editar</button>
-            <button class="btn-danger item-btn" hx-delete="/member/{{$.member.IdMember}}/delete" hx-confirm="¿Estás seguro que deseas eliminar el afiliado?" hx-target="#target-div">Eliminar afiliado</button>
+            <button class="btn-danger item-btn" hx-delete="/member/{{$.member.IdMember}}/delete" hx-headers='{"from": "file"}' hx-confirm="¿Estás seguro que deseas eliminar el afiliado?" hx-target="#target-div">Eliminar afiliado</button>
         </div>
     {{end}}
     <div id="parentTableDiv"></div>

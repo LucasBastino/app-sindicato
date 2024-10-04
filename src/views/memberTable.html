@@ -29,7 +29,7 @@
                     </button>
                 </a>
             </td>
-            <td><button class="btn-delete" hx-delete="/member/{{$m.IdMember}}/delete" hx-confirm="¿Estás seguro que deseas eliminar el afiliado?" hx-target="#tableDiv"><i class="bi bi-x-square"></i></button></td>  
+            <td><button class="btn-delete" hx-delete="/member/{{$m.IdMember}}/delete" hx-headers='{"from": "table"}' hx-confirm="¿Estás seguro que deseas eliminar el afiliado?" hx-target="#tableDiv"><i class="bi bi-x-square"></i></button></td>  
         </tr>
         {{end}}
         
