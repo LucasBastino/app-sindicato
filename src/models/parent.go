@@ -225,3 +225,23 @@ func (parent Parent) ScanResult(result *sql.Rows, onlyOne bool) (Parent, []Paren
 	result.Close()
 	return p, parents
 }
+
+func (parent Parent) CheckDeleted(idParent int) bool {
+	var totalRows int
+	// row := database.DB.QueryRow(fmt.Sprintf(`
+	// 	SELECT COUNT(*) FROM ParentTable
+	// 	WHERE IdParent = '%d'`, parent.IdParent))
+	row := database.DB.QueryRow(fmt.Sprintf(`
+		SELECT COUNT(*) FROM ParentTable 
+		WHERE IdParent = '%d'`, idParent))
+	// row.Scan copia el numero de fila en la variable count
+	err := row.Scan(&totalRows)
+	if err != nil {
+		log.Fatal(err)
+	}
+	if totalRows == 0 {
+		return true
+	} else {
+		return false
+	}
+}

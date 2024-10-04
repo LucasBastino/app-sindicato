@@ -2,6 +2,7 @@ package controller
 
 import (
 	"fmt"
+	"time"
 
 	i "github.com/LucasBastino/app-sindicato/src/interfaces"
 	"github.com/LucasBastino/app-sindicato/src/models"
@@ -33,7 +34,25 @@ func DeleteMember(c *fiber.Ctx) error {
 	IdMember := getIdModelCaller(models.Member{}, c)
 	m := models.Member{IdMember: IdMember}
 	deleteModelCaller(m)
-	return RenderMemberTable(c)
+
+	params := struct {
+		From string `params:"From"`
+	}{}
+	c.ParamsParser(&params)
+	if params.From == "table" {
+		// checkDeleted
+		return RenderMemberTable(c)
+	} else if params.From == "file" {
+		if checkDeletedCaller(models.Member{}, IdMember) {
+			c.Render("deletedSuccesfully", fiber.Map{})
+		} else {
+			c.Render("deletedUnsuccesfully", fiber.Map{})
+		}
+		time.Sleep(2 * time.Second)
+		return c.Redirect("/")
+	} else {
+		return c.SendStatus(fiber.ErrInternalServerError.Code)
+	}
 }
 
 func EditMember(c *fiber.Ctx) error {

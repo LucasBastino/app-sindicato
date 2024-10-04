@@ -49,3 +49,7 @@ func getFiberMapCaller[M models.TypeModel](m i.IModel[M], models []M, searchKey 
 func getAllModelsCaller[M models.TypeModel](m i.IModel[M]) []M {
 	return m.GetAllModels()
 }
+
+func checkDeletedCaller[M models.TypeModel](m i.IModel[M], idModel int) bool {
+	return m.CheckDeleted(idModel)
+}

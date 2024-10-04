@@ -177,7 +177,7 @@ func (member Member) SearchModels(c *fiber.Ctx, offset int) ([]Member, string) {
 		WHERE 
 		M.Name LIKE '%%%s%%' OR M.LastName LIKE '%%%s%%' OR M.DNI LIKE '%%%s%%' 
 		OR E.Name LIKE '%%%s%%' OR E.Number LIKE '%%%s%%'
-		LIMIT 10 OFFSET %d`,
+		ORDER BY M.LastName ASC LIMIT 10 OFFSET %d`,
 		searchKey, searchKey, searchKey, searchKey, searchKey, offset))
 	if err != nil {
 		fmt.Println("error searching member in DB")
@@ -303,4 +303,24 @@ func (member Member) ScanResult(result *sql.Rows, onlyOne bool) (Member, []Membe
 	}
 	result.Close()
 	return m, members
+}
+
+func (member Member) CheckDeleted(idMember int) bool {
+	var totalRows int
+	// row := database.DB.QueryRow(fmt.Sprintf(`
+	// 	SELECT COUNT(*) FROM MemberTable
+	// 	WHERE IdMember = '%d'`, member.IdMember))
+	row := database.DB.QueryRow(fmt.Sprintf(`
+		SELECT COUNT(*) FROM MemberTable 
+		WHERE IdMember = '%d'`, idMember))
+	// row.Scan copia el numero de fila en la variable count
+	err := row.Scan(&totalRows)
+	if err != nil {
+		log.Fatal(err)
+	}
+	if totalRows == 0 {
+		return true
+	} else {
+		return false
+	}
 }

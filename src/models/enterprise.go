@@ -223,3 +223,23 @@ func (enterprise Enterprise) ScanResult(result *sql.Rows, onlyOne bool) (Enterpr
 	}
 	return e, enterprises
 }
+
+func (enterprise Enterprise) CheckDeleted(idEnterprise int) bool {
+	var totalRows int
+	// row := database.DB.QueryRow(fmt.Sprintf(`
+	// 	SELECT COUNT(*) FROM EnterpriseTable
+	// 	WHERE IdEnterprise = '%d'`, enterprise.IdEnterprise))
+	row := database.DB.QueryRow(fmt.Sprintf(`
+		SELECT COUNT(*) FROM EnterpriseTable 
+		WHERE IdEnterprise = '%d'`, idEnterprise))
+	// row.Scan copia el numero de fila en la variable count
+	err := row.Scan(&totalRows)
+	if err != nil {
+		log.Fatal(err)
+	}
+	if totalRows == 0 {
+		return true
+	} else {
+		return false
+	}
+}

@@ -19,4 +19,5 @@ type IModel[M models.TypeModel] interface {
 	GetFiberMap([]M, string, int, int, int, int, []int) fiber.Map
 	GetAllModels() []M
 	ScanResult(*sql.Rows, bool) (M, []M)
+	CheckDeleted(int) bool
 }

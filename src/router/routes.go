@@ -18,11 +18,9 @@ func RegisterRoutes(app *fiber.App) {
 	app.Get("/member/:IdMember/file", c.VerifyToken, c.RenderMemberFile)
 	app.Get("/member/:IdMember/parentTable", c.VerifyToken, c.RenderMemberParents)
 	app.Put("/member/:IdMember/edit", c.VerifyToken, c.EditMember)
-	app.Delete("/member/:IdMember/delete", c.VerifyToken, c.DeleteMember)
+	app.Delete("/member/:IdMember/delete/:From", c.VerifyToken, c.DeleteMember)
 	app.Get("/member/:IdMember/form/createParent", c.VerifyToken, c.RenderCreateParentForm)
 
-	app.Get("/parent/renderTable", c.VerifyToken, c.RenderParentTable)
-	app.Get("/parent/renderTable/:Page", c.VerifyToken, c.RenderParentTable)
 	app.Post("/parent/create", c.VerifyToken, c.CreateParent)
 	app.Get("/parent/:IdParent/file", c.VerifyToken, c.RenderParentFile)
 	app.Delete("/parent/:IdMember/:IdParent/delete", c.VerifyToken, c.DeleteParent)
