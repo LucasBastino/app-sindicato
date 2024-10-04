@@ -32,11 +32,7 @@ func DeleteMember(c *fiber.Ctx) error {
 	m := models.Member{IdMember: IdMember}
 	deleteModelCaller(m)
 
-	// params := struct {
-	// 	From string `params:"From"`
-	// }{}
-	// c.ParamsParser(&params)
-
+	// i get the route from the request was send
 	from := c.Get("from")
 
 	checkDeleted := checkDeletedCaller(models.Member{}, IdMember)
@@ -46,7 +42,8 @@ func DeleteMember(c *fiber.Ctx) error {
 		if from == "table" {
 			return RenderMemberTable(c)
 		} else if from == "file" {
-			return c.Redirect("/")
+			path := "/"
+			return c.Render("redirect", fiber.Map{"path": path})
 			// return c.Redirect().Status(fiber.StatusPermanentRedirect).To("/")
 			// return c.Get()
 		} else {

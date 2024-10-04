@@ -221,6 +221,7 @@ func (enterprise Enterprise) ScanResult(result *sql.Rows, onlyOne bool) (Enterpr
 			enterprises = append(enterprises, e)
 		}
 	}
+	result.Close()
 	return e, enterprises
 }
 
