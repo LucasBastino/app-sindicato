@@ -1,44 +1,44 @@
 {{$enterprises := .enterprises}}
 {{$mode := .mode}}
-<table class="table table-striped w-90 ">
-        <tr>
-            <th>Afiliado</th>
-            <th>DNI</th>
-            {{if eq $mode "table"}}
-            <th>Empresa</th>
-            {{end}}
-            <th>Ficha</th>
-            <th>Eliminar</th>
-        </tr>
 
-        {{range $_, $m := .members}}
-        <tr>
-            <td>{{$m.LastName}}, {{$m.Name}}</td>
-            <td>{{$m.DNI}} </td>
-            {{if eq $mode "table"}}
-                {{if eq $m.IdEnterprise 0}}
-                    <td>SIN EMPRESA</td>
-                {{else}}
-                    {{range $_, $e := $enterprises}}
-                        {{if eq $e.IdEnterprise $m.IdEnterprise}}
-                            <td>{{$e.Name}}</td>
-                        {{end}}
+<table class="table table-striped w-90 ">
+    <tr>
+        <th>Afiliado</th>
+        <th>DNI</th>
+        {{if eq $mode "table"}}
+        <th>Empresa</th>
+        {{end}}
+        <th>Ficha</th>
+        <th>Eliminar</th>
+    </tr>
+
+    {{range $_, $m := .members}}
+    <tr>
+        <td>{{$m.LastName}}, {{$m.Name}}</td>
+        <td>{{$m.DNI}} </td>
+        {{if eq $mode "table"}}
+            {{if eq $m.IdEnterprise 0}}
+                <td>SIN EMPRESA</td>
+            {{else}}
+                {{range $_, $e := $enterprises}}
+                    {{if eq $e.IdEnterprise $m.IdEnterprise}}
+                        <td>{{$e.Name}}</td>
                     {{end}}
                 {{end}}
             {{end}}
-            <td>
-                <a href="/member/{{$m.IdMember}}/file">
-                    <button class="btn-file">
-                <i class="bi bi-file-earmark-text"></i>
-                    </button>
-                </a>
-            </td>
-            <td><button class="btn-delete" hx-delete="/member/{{$m.IdMember}}/delete" hx-headers='{"mode": "{{$.mode}}", "idEnterprise": "{{$m.IdEnterprise}}"}' hx-confirm="¿Estás seguro que deseas eliminar el afiliado?" hx-target="#tableDiv"><i class="bi bi-x-square"></i></button></td>  
-        </tr>
         {{end}}
-        
-
+        <td>
+            <a href="/member/{{$m.IdMember}}/file">
+                <button class="btn-file">
+            <i class="bi bi-file-earmark-text"></i>
+                </button>
+            </a>
+        </td>
+        <td><button class="btn-delete" hx-delete="/member/{{$m.IdMember}}/delete" hx-headers='{"mode": "{{$.mode}}", "idEnterprise": "{{$m.IdEnterprise}}"}' hx-confirm="¿Estás seguro que deseas eliminar el afiliado?" hx-target="#tableDiv"><i class="bi bi-x-square"></i></button></td>  
+    </tr>
+    {{end}}
  </table>
+
  <script>
     hideEnterpriseSearchInput();
     showMemberSearchInput();

@@ -1,26 +1,30 @@
-<div class="parent-table-container">
-<table class="table table-striped w-90 parent-table">
-    <tr>
-        <th>Nombre</th>
-        <th>Parentesco</th>
-        <th> </th>
-        <th> </th>
-    </tr>
-
-    {{range $_, $p := .parents}}
-    <tr>
-        <td>{{$p.Name}} </td>
-        <td>{{$p.Rel}} </td>
-        <td>
-            <a href="/parent/{{$p.IdParent}}/file">
-                <button class="btn-file">
-            <i class="bi bi-file-earmark-text"></i>
-                </button>
-            </a>
-        </td>
-        <td><button class="btn-danger" hx-delete="/parent/{{$p.IdMember}}/{{$p.IdParent}}/delete" hx-confirm="¿Estás seguro que deseas eliminar el familiar?" hx-target="#parentTableDiv"><i class="bi bi-x-square"></i></button></td>
-        
-     </tr>
-    {{end}}
+<div class="nav-container">
+    <nav class="navbar navbar-file navbar-expand navbar-light bg-light">
+        <div class="navbar-nav">
+            <button class="center-btn" id="add-parent-button" hx-get="/member/{{$.member.IdMember}}/form/createParent" hx-trigger="click" hx-target="#tableDiv">Agregar familiar</button>
+        </div>
+    </nav>
 </div>
-</table>
+<table class="table table-striped w-90 sub-table">
+        <tr>
+            <th>Nombre</th>
+            <th>Parentesco</th>
+            <th> </th>
+            <th> </th>
+        </tr>
+
+        {{range $_, $p := .parents}}
+        <tr>
+            <td>{{$p.Name}} </td>
+            <td>{{$p.Rel}} </td>
+            <td>
+                <a href="/parent/{{$p.IdParent}}/file">
+                    <button class="btn-file">
+                <i class="bi bi-file-earmark-text"></i>
+                    </button>
+                </a>
+            </td>
+            <td><button class="btn-danger" hx-delete="/parent/{{$p.IdMember}}/{{$p.IdParent}}/delete" hx-confirm="¿Estás seguro que deseas eliminar el familiar?" hx-target="#parentTableDiv"><i class="bi bi-x-square"></i></button></td>  
+        </tr>
+        {{end}}
+    </table>    

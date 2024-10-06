@@ -170,8 +170,7 @@
             <button class="btn-danger item-btn" hx-delete="/member/{{$.member.IdMember}}/delete" hx-headers='{"mode": "file"}' hx-confirm="¿Estás seguro que deseas eliminar el afiliado?" hx-target="#target-div">Eliminar afiliado</button>
         </div>
     {{end}}
-    <div id="parentTableDiv"></div>
-    <button class="hide .center-btn" id="add-parent-button" hx-get="/member/{{$.member.IdMember}}/form/createParent" hx-trigger="click" hx-target="#tableDiv">Agregar familiar</button>
+        <div id="parentTableDiv"></div>
     </div>
 </div>
 

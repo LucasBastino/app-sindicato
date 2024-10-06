@@ -154,6 +154,7 @@ func RenderEnterpriseMembers(c *fiber.Ctx) error {
 		// creo un map con todas las variables
 		data := getFiberMapCaller(models.Member{}, members, searchKey, currentPage, someBefore, someAfter, totalPages, totalPagesArray)
 		data["mode"] = "enterpriseMemberTable"
+		data["IdEnterprise"] = IdEnterprise
 		// renderizo la tabla y le envio el map con las variables
 		return c.Render("memberTable", data)
 	}

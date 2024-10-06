@@ -51,7 +51,8 @@ select {
 .container{
   background-color: var(--main-color);
   box-shadow: 0em 0em 1em 0px black;
-  margin-top: 5%;
+  margin-top: 2em;
+  margin-bottom: 2em;
   padding: 0;
   border-radius: 20px;
 }
@@ -101,14 +102,6 @@ select {
   text-decoration-line: none 
 }
 
-/* tr:last-child td:first-child{
-  border-bottom-left-radius: 20px;
-}
-
-tr:last-child td:last-child{
-  border-bottom-right-radius: 20px;
-} */
-
 input:disabled{
   background-color: var(--main-color);
   color: black
@@ -132,14 +125,6 @@ select:disabled{
   display: none
 }
 
-
-/* .form-input{
-display: block;
-padding: 5px;
-margin: 10px
-} */
-
-
 .form-input, .form-select {
   margin: 1.5em 2em;
   font-size: 1em;
@@ -154,12 +139,12 @@ margin: 10px
   margin: 10px
 }
 
-
 .btn-pagination.disabled{
   background-color: #fefefe;
   border: 1px;
   border-color: black
 }
+
 .btn-pagination{
   background-color: #EEEEEE ;
   border: none;
@@ -242,7 +227,6 @@ form{
   flex-basis: 83%;
 }
 
-
 .btn-container{
   display: flex;
   justify-content: center;
@@ -256,7 +240,6 @@ form{
 .center-btn{
   align-self: center;
 }
-
 
 .nav-container{
   border-top-left-radius: 20px;
@@ -294,13 +277,7 @@ input[type="search"]::-webkit-search-results-decoration {
     display: none;
 }
 
-.parent-table-container{
-  margin: 3em;
-  border: 1px solid black;
-  border-radius: 5px;
-}
 
-.parent-table th{
-  border-top : 0px;
+.navbar-file{
+  border-radius: 0;
 }
-
