@@ -109,9 +109,9 @@ func RenderEnterpriseMembers(c *fiber.Ctx) error {
 
 	searchKey := c.FormValue("search-key")
 	IdEnterprise := func() int {
-		if c.Get("from") == "edit" {
+		if c.Get("mode") == "edit" {
 			return getIdModelCaller(models.Enterprise{}, c)
-		} else if c.Get("from") == "enterpriseMemberTable" {
+		} else if c.Get("mode") == "enterpriseMemberTable" {
 			IdEnterpriseStr := c.Get("idEnterprise")
 			IdEnterprise, err := strconv.Atoi(IdEnterpriseStr)
 			if err != nil {

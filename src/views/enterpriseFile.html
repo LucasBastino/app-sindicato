@@ -66,12 +66,22 @@
             </div>
         </form>
         {{if eq .mode "edit"}}
-            <button class="btn-primary" onclick="enableInputs(); showConfirmButton();">Editar</button>
+            <div class="btn-container"></div>
+                <button clas="item-btn" hx-get="/enterprise/{{$.enterprise.IdEnterprise}}/memberTable" hx-trigger="click" hx-headers='{"mode": "edit"}' hx-target="#tableDiv" onclick="showEnterpriseMemberSearchInput();">Mostrar afiliados</button>
+                <button class="item-btn" onclick="enableInputs(); showConfirmButton();">Editar</button>
+                <button class="item-btn btn-danger" hx-delete="/enterprise/{{$.enterprise.IdEnterprise}}/delete" hx-headers='{"mode": "edit"}' hx-trigger="click" hx-confirm="¿Estás seguro que deseas eliminar la empresa?" hx-target="#target-div" class="btn btn-danger">Eliminar empresa</button>
+                <input class="hide" type="text" name="search-key" value="">
+                <input class="hide input-field field-6" id="enterprise-member-search-input" name="search-key" type="search" aria-label="Search" 
+                hx-get="/enterprise/{{$.enterprise.IdEnterprise}}/memberTable" hx-trigger="keyup" hx-headers='{"mode": "edit"}' hx-target="#tableDiv"></input>
+            </div>
+                <div id="tableDiv"></div>
         {{end}}
     </div>
 </div>
 {{template "Scripts"}}
     
+
+
 
 {{if eq .mode "create"}}
     <script type="text/javascript">
@@ -89,13 +99,5 @@
     </script>
 {{end}}
 
-<button hx-delete="/enterprise/{{$.enterprise.IdEnterprise}}/delete" hx-headers='{"from": "edit"}' hx-trigger="click" hx-confirm="¿Estás seguro que deseas eliminar la empresa?" hx-target="#target-div" class="btn btn-danger">Eliminar empresa</button>
-<form hx-get="/enterprise/{{$.enterprise.IdEnterprise}}/memberTable" hx-headers='{"from": "edit"}' hx-target="#tableDiv">
-    <input class="hide" type="text" name="search-key" value="">
-    <button type="submit" class="btn btn-primary" onclick="showEnterpriseMemberSearchInput();">Mostrar afiliados</button>
-</form>
-<input class="hide" id="enterprise-member-search-input" name="search-key" type="search" aria-label="Search" 
-    hx-get="enterprise/{{$.enterprise.IdEnterprise}}/memberTable" hx-trigger="keyup" hx-target="#tableDiv"></input>
-<div id="tableDiv"></div>
 </body>
 </html>

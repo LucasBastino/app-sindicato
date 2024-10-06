@@ -39,7 +39,7 @@ func DeleteMember(c *fiber.Ctx) error {
 	} else {
 
 		// "from" was the route from the request was send
-		switch c.Get("from") {
+		switch c.Get("mode") {
 		case "table":
 			return RenderMemberTable(c)
 		case "edit":
