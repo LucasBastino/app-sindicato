@@ -134,7 +134,11 @@ func RenderMemberParents(c *fiber.Ctx) error {
 	} else {
 		// Busco los parents asociados a ese member
 		parents, _ := searchModelsCaller(models.Parent{}, c, 0)
-		data := fiber.Map{"parents": parents, "mode": "edit"}
+		params := struct {
+			IdMember int `params:"IdMember"`
+		}{}
+		c.ParamsParser(&params)
+		data := fiber.Map{"idMember": params.IdMember, "parents": parents, "mode": "edit"}
 		return c.Render("memberParentTable", data)
 	}
 }

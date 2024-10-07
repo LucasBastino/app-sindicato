@@ -1,12 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ficha de {{$.parent.LastName}}, {{$.parent.Name}}</title>
-</head>
+{{template "Head"}}
 <body>
-    {{template "Header"}}
 {{if eq .mode "create"}}
     <h1>Agregar familiar:</h1>
     <form hx-post="/parent/create" hx-target="#tableDiv">
