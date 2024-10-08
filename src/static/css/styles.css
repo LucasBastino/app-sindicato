@@ -227,7 +227,12 @@ form{
 }
 
 .item-btn{
-  margin: 2em
+  margin: 2em;
+  align-self: center;
+}
+
+.btn-submit{
+  width: 40%;
 }
 
 .center-btn{

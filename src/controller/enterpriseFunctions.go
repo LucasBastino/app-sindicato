@@ -139,15 +139,7 @@ func RenderEnterpriseMembers(c *fiber.Ctx) error {
 
 		// busco los miembros y devuelvo el searchKey para usarlo nuevamente en la paginacion
 		searchKey := c.FormValue("search-key")
-		result, err := database.DB.Query(fmt.Sprintf(`
-			SELECT * FROM MemberTable 
-			WHERE IdEnterprise = %d
-			AND (Name LIKE '%%%s%%' OR LastName LIKE '%%%s%%') LIMIT 10 OFFSET %d`, IdEnterprise, searchKey, searchKey, offset))
-		if err != nil {
-			fmt.Println("error searching member in DB")
-			panic(err)
-		}
-		_, members := models.Member{}.ScanResult(result, false)
+		members := GetEnterpriseMembers(IdEnterprise, searchKey, offset)
 
 		// hago un array para poder recorrerlo y crear botones cuando hay menos de 10 paginas en el template
 		totalPagesArray := GetTotalPagesArray(totalPages)
@@ -159,4 +151,17 @@ func RenderEnterpriseMembers(c *fiber.Ctx) error {
 		// renderizo la tabla y le envio el map con las variables
 		return c.Render("memberTable", data)
 	}
+}
+
+func GetEnterpriseMembers(IdEnterprise int, searchKey string, offset int) []models.Member {
+	result, err := database.DB.Query(fmt.Sprintf(`
+			SELECT * FROM MemberTable 
+			WHERE IdEnterprise = %d
+			AND (Name LIKE '%%%s%%' OR LastName LIKE '%%%s%%') LIMIT 10 OFFSET %d`, IdEnterprise, searchKey, searchKey, offset))
+	if err != nil {
+		fmt.Println("error searching member in DB")
+		panic(err)
+	}
+	_, members := models.Member{}.ScanResult(result, false)
+	return members
 }
