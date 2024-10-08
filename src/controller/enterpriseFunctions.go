@@ -41,7 +41,8 @@ func EditEnterprise(c *fiber.Ctx) error {
 		return c.Render("enterpriseFile", data)
 	} else {
 		editModelCaller(e)
-		data := fiber.Map{"enterprise": e, "mode": "edit"}
+		numberOfMembers := GetNumberOfMembers(e.IdEnterprise, "")
+		data := fiber.Map{"enterprise": e, "numberOfMembers": numberOfMembers, "mode": "edit"}
 		return c.Render("enterpriseFile", data)
 	}
 }

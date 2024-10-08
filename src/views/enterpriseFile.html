@@ -28,7 +28,7 @@
             <div class="form__section">
                 <div class="page-title">{{$.enterprise.Name}}</div>
     {{end}}
-                <div class="titulo field-12">Datos de la empresa</div>
+                <div class="title-div field-12">Datos de la empresa</div>
                     <input class="form-input field-12" type="text" name="name" value="{{$.enterprise.Name}}" placeholder="Nombre" disabled>
                     {{with .errorMap.name}}
                         <p>{{.}}</p>
@@ -57,11 +57,11 @@
                     {{with .errorMap.phone}}
                         <p>{{.}}</p>
                     {{end}}
-                    <div class="form-input field-12">{{.numberOfMembers}}</div>
+                    <div class="form-input field-12">Número de afiliados: {{.numberOfMembers}}</div>
                     {{if eq .mode "create"}}
-                    <button type="submit" class="btn btn-primary btn-submit">Enviar</button>
+                    <button type="submit" class="item-btn">Enviar</button>
                     {{else if eq .mode "edit"}}
-                    <button type="submit" class="btn btn-primary btn-submit hide">Confirmar</button>
+                    <button type="submit" class="item-btn btn-submit hide">Confirmar</button>
                     {{end}}
             </div>
         </form>

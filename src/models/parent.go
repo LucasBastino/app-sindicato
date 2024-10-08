@@ -107,7 +107,16 @@ func (parent Parent) GetIdModel(c *fiber.Ctx) int {
 func (parent Parent) SearchOneModelById(c *fiber.Ctx) Parent {
 	IdParent := parent.GetIdModel(c)
 	result, err := database.DB.Query(fmt.Sprintf(`
-		SELECT * FROM ParentTable
+		SELECT
+		IdParent,
+		Name,
+		LastName,
+		Rel,
+		Gender,
+		Birthday,
+		CUIL,
+		IdMember
+		FROM ParentTable
 		WHERE IdParent = '%d'`, IdParent))
 	if err != nil {
 		fmt.Println("error searching parent by id")

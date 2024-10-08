@@ -72,6 +72,7 @@ type EnterpriseParser struct{}
 func (p EnterpriseParser) ParseModel(c *fiber.Ctx) models.Enterprise {
 	enterprise := models.Enterprise{}
 	enterprise.Name = c.FormValue("name")
+	enterprise.Number = c.FormValue("number")
 	enterprise.Address = c.FormValue("address")
 	enterprise.CUIT = c.FormValue("cuit")
 	enterprise.District = c.FormValue("district")

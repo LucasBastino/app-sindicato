@@ -24,19 +24,19 @@
                 <div class="form__section">
                     <div class="page-title">{{$.parent.LastName}}, {{$.parent.Name}}</div>
             {{end}}
-            <input class="form-input field-12" type="text" name="name" value="{{$.parent.Name}}" placeholder="Nombres" required>
+            <input class="form-input field-12" type="text" name="name" value="{{$.parent.Name}}" placeholder="Nombres" disabled required>
             {{with .errorMap.name}}
                 <p>{{.}}</p>
             {{end}}
-            <input class="form-input field-12" type="text" name="last-name" value="{{$.parent.LastName}}" placeholder="Apellidos" required>
+            <input class="form-input field-12" type="text" name="last-name" value="{{$.parent.LastName}}" placeholder="Apellidos" disabled required>
             {{with .errorMap.lastName}}
                 <p>{{.}}</p>
             {{end}}
-            <input class="form-input field-12" type="text" name="rel" value="{{$.parent.Rel}}" placeholder="Parentesco" required>
+            <input class="form-input field-12" type="text" name="rel" value="{{$.parent.Rel}}" placeholder="Parentesco" disabled required>
             {{with .errorMap.rel}}
                 <p>{{.}}</p>
             {{end}}
-            <select class="form-input field-12" name="gender" id="gender" onchange="cambiarColorPorDefecto(value, id);" required>
+            <select class="form-input field-12" name="gender" id="gender" onchange="cambiarColorPorDefecto(value, id);" disabled required>
             {{if eq $.parent.Gender ""}}
                 <option value="">Género</option>
             {{else}}
@@ -49,11 +49,11 @@
             {{with .errorMap.gender}}
                 <p>{{.}}</p>
             {{end}}
-            <input class="form-input field-12" type="text" name="birthday" value="{{$.parent.Birthday}}" placeholder="Fecha de Nacimiento" required>
+            <input class="form-input field-12" type="text" name="birthday" value="{{$.parent.Birthday}}" placeholder="Fecha de Nacimiento" disabled required>
             {{with .errorMap.birthday}}
                 <p>{{.}}</p>
             {{end}}
-            <input class="form-input field-12" type="text" name="cuil" value="{{$.parent.CUIL}}" placeholder="DNI" required>
+            <input class="form-input field-12" type="text" name="cuil" value="{{$.parent.CUIL}}" placeholder="DNI" disabled required>
             {{with .errorMap.cuil}}
                 <p>{{.}}</p>
             {{end}}
@@ -69,7 +69,7 @@
     
     {{if eq .mode "edit"}}
     <div class="btn-container">
-        <button class="item-btn" onclick="enableInputs(); showConfirmButton(); disableBrowserInput();">Editar</button>
+        <button class="item-btn" onclick="enableInputs(); enableSelects(); showConfirmButton();">Editar</button>
         <a href="/member/{{$.parent.IdMember}}/file"><button class="item-btn">Volver al afiliado</button></a>
     </div>
     {{else if eq .mode "create"}}
@@ -80,5 +80,6 @@
     {{end}}
 </div>
 </div>
+{{template "Scripts"}}
 </body>
 </html>

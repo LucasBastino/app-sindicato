@@ -26,7 +26,7 @@
                 <div class="form__section">
                     <div class="page-title">{{$.member.LastName}}, {{$.member.Name}}</div>
         {{end}}
-                        <div class="titulo field-12">Datos personales</div>
+                        <div class="title-div field-12">Datos personales</div>
                         <input class="form-input field-6" type="text" name="name" value="{{$.member.Name}}" placeholder="Nombres" required disabled>
                         {{with .errorMap.name}}
                             <p>{{.}}</p>
@@ -81,7 +81,7 @@
                         <input class="form-input field-6" name="email" type="text" value="{{$.member.Email}}" placeholder="Email" disabled></input>
 
 
-                        <div class="titulo field-12">Domicilio</div>
+                        <div class="title-div field-12">Domicilio</div>
                         <input class="form-input field-6" type="text" name="address" value="{{$.member.Address}}" placeholder="Dirección" required disabled>
                         {{with .errorMap.address}}
                         <p>{{.}}</p>
@@ -95,7 +95,7 @@
                         <p>{{.}}</p>
                         {{end}}
 
-                        <div class="titulo field-12">Datos de la Obra Social</div>
+                        <div class="title-div field-12">Datos de la Obra Social</div>
                         <input class="form-input field-6" type="text" name="member-number" value="{{$.member.MemberNumber}}" placeholder="Número de Afiliado" required disabled>
                         {{with .errorMap.memberNumber}}
                         <p>{{.}}</p>

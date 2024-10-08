@@ -46,7 +46,16 @@ func (enterprise Enterprise) InsertModel() Enterprise {
 	}
 	insert.Close()
 	result, err := database.DB.Query(`
-		SELECT * FROM EnterpriseTable
+		SELECT
+		IdEnterprise,
+		Name,
+		Number,
+		Address, 
+		CUIT, 
+		District, 
+		PostalCode, 
+		Phone
+		FROM EnterpriseTable
 		WHERE IdEnterprise = (SELECT LAST_INSERT_ID())`)
 	if err != nil {
 		fmt.Print(err)
@@ -109,7 +118,16 @@ func (enterprise Enterprise) GetIdModel(c *fiber.Ctx) int {
 func (enterprise Enterprise) SearchOneModelById(c *fiber.Ctx) Enterprise {
 	IdEnterprise := enterprise.GetIdModel(c)
 	result, err := database.DB.Query(fmt.Sprintf(`
-		SELECT * FROM EnterpriseTable 
+		SELECT
+		IdEnterprise, 
+		Name,
+		Number,
+		Address, 
+		CUIT, 
+		District, 
+		PostalCode, 
+		Phone
+		FROM EnterpriseTable 
 		WHERE IdEnterprise = '%d'`, IdEnterprise))
 	if err != nil {
 		fmt.Println("error searching enterprise by id")
@@ -124,7 +142,16 @@ func (enterprise Enterprise) SearchOneModelById(c *fiber.Ctx) Enterprise {
 func (enterprise Enterprise) SearchModels(c *fiber.Ctx, offset int) ([]Enterprise, string) {
 	searchKey := c.FormValue("search-key")
 	result, err := database.DB.Query(fmt.Sprintf(`
-		SELECT * FROM EnterpriseTable 
+		SELECT
+		IdEnterprise,
+		Name,
+		Number,
+		Address, 
+		CUIT, 
+		District, 
+		PostalCode, 
+		Phone
+		FROM EnterpriseTable 
 		WHERE 
 		Name LIKE '%%%s%%' OR Address LIKE '%%%s%%' 
 		LIMIT 10 OFFSET %d`,
