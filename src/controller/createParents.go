@@ -97,8 +97,8 @@ func CreateParents(c *fiber.Ctx) error {
 		case 1, 3, 5, 7, 8, 10, 12:
 			day = rand.IntN(30) + 1
 		}
-		p.Birthday = fmt.Sprintf("%d-%d-%d", year, month, day)
-		p.CUIL = fmt.Sprintf("%d-%s-%d", rand.IntN(9)+20, createDNI(year, month, day), rand.IntN(8)+1)
+		p.Birthday = fmt.Sprintf("%d/%d/%d", day, month, year)
+		p.CUIL = fmt.Sprintf("%d-%s-%d", rand.IntN(9)+20, createDNI(day, month, year), rand.IntN(8)+1)
 
 		// para que sea mas probable que sea hombre o mujer
 		r := rand.IntN(6)
@@ -144,7 +144,7 @@ func CreateParents(c *fiber.Ctx) error {
 
 }
 
-func createDNI(year, month, day int) string {
+func createDNI(day, month, year int) string {
 	birthdayDate := time.Date(year, time.Month(month), day, 0, 0, 0, 0, time.UTC)
 	diff := math.Round(birthdayDate.Sub(time.Date(1900, 01, 01, 0, 0, 0, 0, time.UTC)).Hours())
 

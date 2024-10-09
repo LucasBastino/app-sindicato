@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"fmt"
 	"log"
+	"strconv"
 	"strings"
 	"unicode/utf8"
 
@@ -190,16 +191,51 @@ func (member Member) SearchModels(c *fiber.Ctx, offset int) ([]Member, string) {
 func (m Member) ValidateFields(c *fiber.Ctx) map[string]string {
 	errorMap := map[string]string{}
 
+	// Name
 	if strings.TrimSpace(c.FormValue("name")) == "" {
 		errorMap["name"] = "el campo Nombre no puede estar vacio"
 	}
-	// consultar que sea alfanumerico
+	// LastName
+	if strings.TrimSpace(c.FormValue("last-name")) == "" {
+		errorMap["name"] = "el campo Apellido no puede estar vacio"
+	}
+	// DNI
 	if strings.TrimSpace(c.FormValue("dni")) == "" {
 		errorMap["dni"] = "el campo DNI no puede estar vacio"
 	}
 	if utf8.RuneCountInString(c.FormValue("dni")) > 8 {
 		errorMap["dni"] = "el DNI no puede tener mas de 8 caracteres"
 	}
+
+	// Birthday
+	if strings.TrimSpace(c.FormValue("birthday")) == "" {
+		errorMap["birthday"] = "el campo Fecha de nacimiento no puede estar vacio"
+	}
+
+	birthday := c.FormValue("birthday")
+	_, dayErr := strconv.Atoi(birthday)[0:2]
+	_, monthErr := strconv.Atoi(birthday)[3:5]
+	_, yearErr := strconv.Atoi(birthday)[6:]
+	if dayErr != nil || monthErr != nil || yearErr != nil || birthday[2] !=   {
+		errorMap["birthday"] = "formato de fecha erróneo"
+	}
+
+
+	// Birthday VARCHAR(50) NOT NULL,
+	// Gender VARCHAR(50) NOT NULL,
+	// MaritalStatus VARCHAR(50) NOT NULL,
+	// Phone VARCHAR(50) NOT NULL,
+	// Email VARCHAR(50),
+	// Address VARCHAR(50) NOT NULL,
+	// PostalCode VARCHAR(10) NOT NULL,
+	// District VARCHAR(50) NOT NULL,
+	// MemberNumber VARCHAR(50) NOT NULL,
+	// CUIL VARCHAR(50) NOT NULL,
+	// IdEnterprise INT,
+	// -- aca va sin NOT NULL, por si borras la empresa
+	// Category VARCHAR(100) NOT NULL,
+	// EntryDate VARCHAR(50) NOT NULL,
+	// consultar que sea alfanumerico
 	if c.FormValue("id-enterprise") == "" {
 		errorMap["enterprise"] = "hay que elegir una empresa"
 	}
@@ -307,9 +343,6 @@ func (member Member) ScanResult(result *sql.Rows, onlyOne bool) (Member, []Membe
 
 func (member Member) CheckDeleted(idMember int) bool {
 	var totalRows int
-	// row := database.DB.QueryRow(fmt.Sprintf(`
-	// 	SELECT COUNT(*) FROM MemberTable
-	// 	WHERE IdMember = '%d'`, member.IdMember))
 	row := database.DB.QueryRow(fmt.Sprintf(`
 		SELECT COUNT(*) FROM MemberTable 
 		WHERE IdMember = '%d'`, idMember))
