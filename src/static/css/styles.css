@@ -201,7 +201,7 @@ form{
 
 .title-div {
   font-weight: 700;
-  margin: 1em 0;
+  margin: 3em 0 0.7em 0;
 }
 
 .field-3{
@@ -281,6 +281,7 @@ input[type="search"]::-webkit-search-results-decoration {
 }
 
 .error-div{
-  display: flex;
-  align-self: center;
+  color: #dd2222
+  /* display: flex;
+  align-self: center; */
 }

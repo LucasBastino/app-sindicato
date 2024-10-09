@@ -24,24 +24,24 @@
                     <div class="page-title">{{$.member.LastName}}, {{$.member.Name}}</div>
         {{end}}
                         <div class="title-div field-12">Datos personales</div>
-                        <input class="form-input field-6" type="text" name="name" value="{{$.member.Name}}" placeholder="Nombres" required disabled>
+                        <input class="form-input field-12" type="text" name="name" value="{{$.member.Name}}" placeholder="Nombres"  disabled>
                         {{with .errorMap.name}}
-                            <p>{{.}}</p>
+                            <div class="error-div field-12">{{.}}</div>
                         {{end}}
-                        <input class="form-input field-6" type="text" name="last-name" value="{{$.member.LastName}}" placeholder="Apellidos" required disabled>
+                        <input class="form-input field-12" type="text" name="last-name" value="{{$.member.LastName}}" placeholder="Apellidos"  disabled>
                         {{with .errorMap.lastName}}
-                            <p>{{.}}</p>
+                            <div class="error-div field-12">{{.}}</div>
                         {{end}}
-                        <input class="form-input field-6" type="text" name="dni" value="{{$.member.DNI}}" placeholder="DNI" required disabled>
+                        <input class="form-input field-12" type="text" name="dni" value="{{$.member.DNI}}" placeholder="DNI"  disabled>
                         {{with .errorMap.dni}}
-                            <p class="field-12 error-div">{{.}}</p>
+                            <p class="error-div field-12">{{.}}</p>
                         {{end}}
 
-                        <input class="form-input field-6" type="text" name="birthday" value="{{$.member.Birthday}}" placeholder="Fecha de Nacimiento" required disabled>
+                        <input class="form-input field-12" type="text" name="birthday" value="{{$.member.Birthday}}" placeholder="Fecha de Nacimiento"  disabled>
                         {{with .errorMap.birthday}}
-                            <p>{{.}}</p>
+                            <div class="error-div field-12">{{.}}</div>
                         {{end}}
-                        <select class="form-input field-6" name="gender" id="gender" onchange="cambiarColorPorDefecto(value, id);" required disabled>
+                        <select class="form-input field-12" name="gender" id="gender" onchange="cambiarColorPorDefecto(value, id);"  disabled>
                             {{if eq .mode "create"}}
                             <option value="0">--Elegir un género--</option>
                             {{else if eq .mode "edit"}}
@@ -52,10 +52,10 @@
                             <option value="Otro">Otro</option>
                         </select>
                         {{with .errorMap.gender}}
-                            <p>{{.}}</p>
+                            <div class="error-div field-12">{{.}}</div>
                         {{end}}
 
-                        <select class="form-input field-6" id="marital-status" name="marital-status" onchange="cambiarColorPorDefecto(value, id);" required disabled>
+                        <select class="form-input field-12" id="marital-status" name="marital-status" onchange="cambiarColorPorDefecto(value, id);"  disabled>
                             {{if eq .mode "create"}}
                             <option value="0">--Elegir un estado civil--</option>
                             {{else if eq .mode "edit"}}
@@ -68,40 +68,40 @@
                             <option value="Divorciado">Divorciado</option>
                         </select>
                         {{with .errorMap.maritalStatus}}
-                            <p>{{.}}</p>
+                            <div class="error-div field-12">{{.}}</div>
                         {{end}}
 
-                        <input class="form-input field-6" name="phone" type="text" value="{{$.member.Phone}}" placeholder="Teléfono" required disabled></input>
+                        <input class="form-input field-12" name="phone" type="text" value="{{$.member.Phone}}" placeholder="Teléfono"  disabled></input>
                         {{with .errorMap.phone}}
-                            <p>{{.}}</p>
+                            <div class="error-div field-12">{{.}}</div>
                         {{end}}
-                        <input class="form-input field-6" name="email" type="text" value="{{$.member.Email}}" placeholder="Email" disabled></input>
+                        <input class="form-input field-12" name="email" type="text" value="{{$.member.Email}}" placeholder="Email" disabled></input>
 
 
                         <div class="title-div field-12">Domicilio</div>
-                        <input class="form-input field-6" type="text" name="address" value="{{$.member.Address}}" placeholder="Dirección" required disabled>
+                        <input class="form-input field-12" type="text" name="address" value="{{$.member.Address}}" placeholder="Dirección"  disabled>
                         {{with .errorMap.address}}
-                        <p>{{.}}</p>
+                        <div class="error-div field-12">{{.}}</div>
                         {{end}}
-                        <input class="form-input field-6" type="text" name="postal-code" value="{{$.member.PostalCode}}" placeholder="Codigo Postal" required disabled>
+                        <input class="form-input field-12" type="text" name="postal-code" value="{{$.member.PostalCode}}" placeholder="Codigo Postal"  disabled>
                         {{with .errorMap.postalCode}}
-                        <p>{{.}}</p>
+                        <div class="error-div field-12">{{.}}</div>
                         {{end}}
-                        <input class="form-input field-12" type="text" name="district" value="{{$.member.District}}" placeholder="Localidad" required disabled>
+                        <input class="form-input field-12" type="text" name="district" value="{{$.member.District}}" placeholder="Localidad"  disabled>
                         {{with .errorMap.district}}
-                        <p>{{.}}</p>
+                        <div class="error-div field-12">{{.}}</div>
                         {{end}}
 
                         <div class="title-div field-12">Datos de la Obra Social</div>
-                        <input class="form-input field-6" type="text" name="member-number" value="{{$.member.MemberNumber}}" placeholder="Número de Afiliado" required disabled>
+                        <input class="form-input field-12" type="text" name="member-number" value="{{$.member.MemberNumber}}" placeholder="Número de Afiliado"  disabled>
                         {{with .errorMap.memberNumber}}
-                        <p>{{.}}</p>
+                        <div class="error-div field-12">{{.}}</div>
                         {{end}}
-                        <input class="form-input field-6" type="text" name="cuil" value="{{$.member.CUIL}}" placeholder="CUIL" required disabled>
+                        <input class="form-input field-12" type="text" name="cuil" value="{{$.member.CUIL}}" placeholder="CUIL"  disabled>
                         {{with .errorMap.cuil}}
-                        <p>{{.}}</p>
+                        <div class="error-div field-12">{{.}}</div>
                         {{end}}
-                        <select class="form-input field-12" name="id-enterprise" id="enterprise-select" required disabled>
+                        <select class="form-input field-12" name="id-enterprise" id="enterprise-select"  disabled>
                             <!-- fijarse que pasa cuando la empresa es borrada y queda NULL -->
                             {{if eq $.member.IdEnterprise 0}}
                                 {{if eq .mode "create" }}
@@ -120,10 +120,10 @@
                                 <option value="{{$e.IdEnterprise}}">{{$e.Name}}</option>
                             {{end}}
                             {{with .errorMap.enterprise}}
-                            <p>{{.}}</p>
+                            <div class="error-div field-12">{{.}}</div>
                             {{end}}
                         </select>
-                        <select class="form-input field-6" name="category" id="category" onchange="cambiarColorPorDefecto(value, id);" required disabled>
+                        <select class="form-input field-12" name="category" id="category" onchange="cambiarColorPorDefecto(value, id);"  disabled>
                             {{if eq $.member.Category ""}}
                                 <option value="">--Elegir una categoría--</option>
                             {{else}}
@@ -137,11 +137,11 @@
                             <option value="Nivel 6: Operario Act. Industrial">Nivel 6: Operario Act. Industrial</option>
                         </select>
                         {{with .errorMap.category}}
-                        <p>{{.}}</p>
+                        <div class="error-div field-12">{{.}}</div>
                         {{end}}
-                        <input class="form-input field-6" type="text" name="entry-date" id="entry-date" value="{{$.member.EntryDate}}" placeholder="Fecha de Ingreso" required disabled>
+                        <input class="form-input field-12" type="text" name="entry-date" id="entry-date" value="{{$.member.EntryDate}}" placeholder="Fecha de Ingreso"  disabled>
                         {{with .errorMap.entryDate}}
-                        <p>{{.}}</p>
+                        <div class="error-div field-12">{{.}}</div>
                         {{end}}
                         
                     {{if eq .mode "create"}}

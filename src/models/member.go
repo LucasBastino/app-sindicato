@@ -4,10 +4,6 @@ import (
 	"database/sql"
 	"fmt"
 	"log"
-	"strconv"
-	"strings"
-	"time"
-	"unicode/utf8"
 
 	"github.com/LucasBastino/app-sindicato/src/database"
 	"github.com/gofiber/fiber/v2"
@@ -192,84 +188,46 @@ func (member Member) SearchModels(c *fiber.Ctx, offset int) ([]Member, string) {
 func (m Member) ValidateFields(c *fiber.Ctx) map[string]string {
 	errorMap := map[string]string{}
 
-	// falta chequear que sea alfanumerico
-
-	// Name
-	// if strings.TrimSpace(c.FormValue("name")) == "" {
-	// 	errorMap["name"] = "el campo Nombre no puede estar vacio"
-	// }
-	// LastName
-	// if strings.TrimSpace(c.FormValue("last-name")) == "" {
-	// 	errorMap["name"] = "el campo Apellido no puede estar vacio"
-	// }
-	// DNI
-	// if strings.TrimSpace(c.FormValue("dni")) == "" {
-	// 	errorMap["dni"] = "el campo DNI no puede estar vacio"
-	// }
-	if utf8.RuneCountInString(c.FormValue("dni")) > 8 {
-		errorMap["dni"] = "el DNI no puede tener mas de 8 caracteres"
-	}
-
-	// Birthday
-	if strings.TrimSpace(c.FormValue("birthday")) == "" {
-		errorMap["birthday"] = "el campo Fecha de nacimiento no puede estar vacio"
-	}
-
-	birthday := c.FormValue("birthday")
-	day, dayErr := strconv.Atoi(birthday[0:2])
-	month, monthErr := strconv.Atoi(birthday[3:5])
-	year, yearErr := strconv.Atoi(birthday[6:])
-	if dayErr != nil || monthErr != nil || yearErr != nil ||
-		string(birthday[2]) != "/" || string(birthday[5]) != "/" {
-		errorMap["birthday"] = "formato de fecha erróneo"
-	}
-
-	if month < 1 || month > 12 {
-		errorMap["birthday"] = "fecha errónea"
-	}
-	if day < 1 {
-		errorMap["birthday"] = "fecha errónea"
-	}
-
-	switch day {
-	case 2:
-		if day > 29 {
-			errorMap["birthday"] = "fecha errónea"
-		}
-	case 4, 6, 9, 11:
-		if day > 30 {
-			errorMap["birthday"] = "fecha errónea"
-		}
-	case 1, 3, 5, 7, 8, 10, 12:
-		if day > 31 {
-			errorMap["birthday"] = "fecha errónea"
-		}
-	}
-
-	if year < 1900 || year > int(time.Now().Year()) {
-		errorMap["birthday"] = "fecha errónea"
-	}
-
-	// Birthday VARCHAR(50) NOT NULL,
-	// Gender VARCHAR(50) NOT NULL,
-	// MaritalStatus VARCHAR(50) NOT NULL,
-	// Phone VARCHAR(50) NOT NULL,
-	// Email VARCHAR(50),
-	// Address VARCHAR(50) NOT NULL,
-	// PostalCode VARCHAR(10) NOT NULL,
-	// District VARCHAR(50) NOT NULL,
-	// MemberNumber VARCHAR(50) NOT NULL,
-	// CUIL VARCHAR(50) NOT NULL,
-	// IdEnterprise INT,
-	// -- aca va sin NOT NULL, por si borras la empresa
-	// Category VARCHAR(100) NOT NULL,
-	// EntryDate VARCHAR(50) NOT NULL,
-	// consultar que sea alfanumerico
-	if c.FormValue("id-enterprise") == "" {
-		errorMap["enterprise"] = "hay que elegir una empresa"
-	}
+	errorMap["name"] = ValidateName(c)
+	errorMap["lastName"] = ValidateLastName(c)
+	errorMap["dni"] = ValidateDNI(c)
+	errorMap["birthday"] = ValidateBirthday(c)
+	// errorMap["gender"] = ValidateGender(c)
+	// errorMap["maritalStatus"] = ValidateMaritalStatus(c)
+	// errorMap["phone"] = ValidatePhone(c)
+	// errorMap["email"] = ValidateEmail(c)
+	// errorMap["address"] = ValidateAddress(c)
+	// errorMap["postalCode"] = ValidatePostalCode(c)
+	// errorMap["district"] = ValidateDistrict(c)
+	// errorMap["memberNumber"] = ValidateMemberNumber(c)
+	// errorMap["cuil"] = ValidateCUIL(c)
+	// errorMap["idEnterprise"] = ValidateIdEnterprise(c)
+	// errorMap["category"] = ValidateCategory(c)
+	// errorMap["entryDate"] = ValidateEntryDate(c)
 	return errorMap
 }
+
+// falta chequear que sea alfanumerico
+
+// Gender VARCHAR(50) NOT NULL,
+// MaritalStatus VARCHAR(50) NOT NULL,
+// Phone VARCHAR(50) NOT NULL,
+// Email VARCHAR(50),
+// Address VARCHAR(50) NOT NULL,
+// PostalCode VARCHAR(10) NOT NULL,
+// District VARCHAR(50) NOT NULL,
+// MemberNumber VARCHAR(50) NOT NULL,
+// CUIL VARCHAR(50) NOT NULL,
+// IdEnterprise INT,
+// -- aca va sin NOT NULL, por si borras la empresa
+// Category VARCHAR(100) NOT NULL,
+// EntryDate VARCHAR(50) NOT NULL,
+// consultar que sea alfanumerico
+// 	if c.FormValue("id-enterprise") == "" {
+// 		errorMap["enterprise"] = "hay que elegir una empresa"
+// 	}
+// 	return errorMap
+// }
 
 func (member Member) GetTotalRows(c *fiber.Ctx) int {
 	var totalRows int
