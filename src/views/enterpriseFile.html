@@ -57,10 +57,10 @@
                     {{with .errorMap.phone}}
                         <p>{{.}}</p>
                     {{end}}
-                    <div class="form-input field-12">Número de afiliados: {{.numberOfMembers}}</div>
                     {{if eq .mode "create"}}
                     <button type="submit" class="item-btn btn-submit">Enviar</button>
                     {{else if eq .mode "edit"}}
+                    <div class="form-input field-12">Número de afiliados: {{.numberOfMembers}}</div>
                     <button type="submit" class="item-btn btn-submit hide">Confirmar</button>
                     {{end}}
             </div>

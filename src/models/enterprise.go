@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"strings"
+	"unicode/utf8"
 
 	"github.com/LucasBastino/app-sindicato/src/database"
 	"github.com/gofiber/fiber/v2"
@@ -171,6 +172,9 @@ func (enterprise Enterprise) ValidateFields(c *fiber.Ctx) map[string]string {
 	}
 	if strings.TrimSpace(c.FormValue("address")) == "" {
 		errorMap["address"] = "el campo Direccion no puede estar vacio"
+	}
+	if utf8.RuneCountInString(c.FormValue("number")) > 4 {
+		errorMap["number"] = "el DNI no puede tener mas de 4 caracteres"
 	}
 	return errorMap
 }

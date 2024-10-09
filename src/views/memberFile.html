@@ -15,7 +15,7 @@
             </div> 
         </header>
         {{if eq .mode "create" }}
-            <form hx-post="/member/create" hx-swap="#target-div">
+            <form hx-post="/member/create" hx-target="#target-div">
                 <div class="form__section" id="form-section">
                     <div class="page-title">Agregar nuevo afiliado</div>
         {{else if eq .mode "edit"}}
@@ -34,7 +34,7 @@
                         {{end}}
                         <input class="form-input field-6" type="text" name="dni" value="{{$.member.DNI}}" placeholder="DNI" required disabled>
                         {{with .errorMap.dni}}
-                            <p>{{.}}</p>
+                            <p class="field-12 error-div">{{.}}</p>
                         {{end}}
 
                         <input class="form-input field-6" type="text" name="birthday" value="{{$.member.Birthday}}" placeholder="Fecha de Nacimiento" required disabled>
