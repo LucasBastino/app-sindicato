@@ -43,7 +43,7 @@
                         {{end}}
                         <select class="form-input field-12" name="gender" id="gender" onchange="cambiarColorPorDefecto(value, id);"  disabled>
                             {{if eq .mode "create"}}
-                            <option value="0">--Elegir un género--</option>
+                            <option value="">--Elegir un género--</option>
                             {{else if eq .mode "edit"}}
                             <option value="{{$.member.Gender}}">{{$.member.Gender}}</option>
                             {{end}}
@@ -57,7 +57,7 @@
 
                         <select class="form-input field-12" id="marital-status" name="marital-status" onchange="cambiarColorPorDefecto(value, id);"  disabled>
                             {{if eq .mode "create"}}
-                            <option value="0">--Elegir un estado civil--</option>
+                            <option value="">--Elegir un estado civil--</option>
                             {{else if eq .mode "edit"}}
                             <option value="{{$.member.MaritalStatus}}">{{$.member.MaritalStatus}}</option>
                             {{end}}
@@ -76,8 +76,9 @@
                             <div class="error-div field-12">{{.}}</div>
                         {{end}}
                         <input class="form-input field-12" name="email" type="text" value="{{$.member.Email}}" placeholder="Email" disabled></input>
-
-
+                        {{with .errorMap.email}}
+                            <div class="error-div field-12">{{.}}</div>
+                        {{end}}
                         <div class="title-div field-12">Domicilio</div>
                         <input class="form-input field-12" type="text" name="address" value="{{$.member.Address}}" placeholder="Dirección"  disabled>
                         {{with .errorMap.address}}
@@ -105,7 +106,7 @@
                             <!-- fijarse que pasa cuando la empresa es borrada y queda NULL -->
                             {{if eq $.member.IdEnterprise 0}}
                                 {{if eq .mode "create" }}
-                                    <option value="0">--Elegir una empresa--</option>
+                                    <option value="">--Elegir una empresa--</option>
                                 {{else if eq .mode "edit" }}
                                     <option value="0">SIN EMPRESA</option>
                                 {{end}}
@@ -119,10 +120,12 @@
                             {{range $_, $e := .enterprises}}
                                 <option value="{{$e.IdEnterprise}}">{{$e.Name}}</option>
                             {{end}}
-                            {{with .errorMap.enterprise}}
+                            {{.errorMap.idEnterprise}}
+                            {{with .errorMap.idEnterprise}}
                             <div class="error-div field-12">{{.}}</div>
                             {{end}}
                         </select>
+                        <p>id empresa: {{$.member.IdEnterprise}}</p>
                         <select class="form-input field-12" name="category" id="category" onchange="cambiarColorPorDefecto(value, id);"  disabled>
                             {{if eq $.member.Category ""}}
                                 <option value="">--Elegir una categoría--</option>
