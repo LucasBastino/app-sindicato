@@ -1,8 +1,6 @@
 package controller
 
 import (
-	"fmt"
-
 	i "github.com/LucasBastino/app-sindicato/src/interfaces"
 	"github.com/LucasBastino/app-sindicato/src/models"
 	"github.com/gofiber/fiber/v2"
@@ -124,7 +122,6 @@ func RenderCreateMemberForm(c *fiber.Ctx) error {
 	// le paso un member vacio para que los campos del form aparezcan vacios
 	enterprises := getAllModelsCaller(models.Enterprise{})
 	data := fiber.Map{"member": models.Member{}, "mode": "create", "enterprises": enterprises}
-	fmt.Printf("%+v\n", models.Member{})
 	return c.Render("memberFile", data)
 }
 
