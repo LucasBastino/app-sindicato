@@ -33,8 +33,8 @@
                     {{with .errorMap.name}}
                         <p>{{.}}</p>
                     {{end}}
-                    <input class="form-input field-12" type="text" name="number" value="{{$.enterprise.Number}}" placeholder="Numero de empresa" disabled>
-                    {{with .errorMap.number}}
+                    <input class="form-input field-12" type="text" name="enterprise-number" value="{{$.enterprise.EnterpriseNumber}}" placeholder="Numero de empresa" disabled>
+                    {{with .errorMap.enterpriseNumber}}
                         <p>{{.}}</p>
                     {{end}}
                     <input class="form-input field-12" type="text" name="address" value="{{$.enterprise.Address}}" placeholder="Direccion" disabled>

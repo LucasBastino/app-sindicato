@@ -4,22 +4,20 @@ import (
 	"database/sql"
 	"fmt"
 	"log"
-	"strings"
-	"unicode/utf8"
 
 	"github.com/LucasBastino/app-sindicato/src/database"
 	"github.com/gofiber/fiber/v2"
 )
 
 type Enterprise struct {
-	IdEnterprise int
-	Name         string
-	Number       string
-	Address      string
-	CUIT         string
-	District     string
-	PostalCode   string
-	Phone        string
+	IdEnterprise     int
+	Name             string
+	EnterpriseNumber string
+	Address          string
+	CUIT             string
+	District         string
+	PostalCode       string
+	Phone            string
 }
 
 func (enterprise Enterprise) InsertModel() Enterprise {
@@ -167,15 +165,14 @@ func (enterprise Enterprise) SearchModels(c *fiber.Ctx, offset int) ([]Enterpris
 
 func (enterprise Enterprise) ValidateFields(c *fiber.Ctx) map[string]string {
 	errorMap := map[string]string{}
-	if strings.TrimSpace(c.FormValue("name")) == "" {
-		errorMap["name"] = "el campo Nombre no puede estar vacio"
-	}
-	if strings.TrimSpace(c.FormValue("address")) == "" {
-		errorMap["address"] = "el campo Direccion no puede estar vacio"
-	}
-	if utf8.RuneCountInString(c.FormValue("number")) > 4 {
-		errorMap["number"] = "el DNI no puede tener mas de 4 caracteres"
-	}
+
+	errorMap["name"] = ValidateName(c)
+	errorMap["enterpriseNumber"] = ValidateEnterpriseNumber(c)
+	errorMap["address"] = ValidateAddress(c)
+	errorMap["cuit"] = ValidateCUIT(c)
+	errorMap["district"] = ValidateDistrict(c)
+	errorMap["postalCode"] = ValidatePostalCode(c)
+	errorMap["phone"] = ValidatePhone(c)
 	return errorMap
 }
 

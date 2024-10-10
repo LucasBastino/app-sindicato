@@ -17,22 +17,12 @@ func ValidateName(c *fiber.Ctx) string {
 	return isLetter(name)
 }
 
-func isLetter(value string) string {
-	letters := "abcdefghijklmnñopqrstuvwxyzáéíóúü"
-	for i := range value {
-		if !strings.Contains(letters, string(value[i])) {
-			return "El campo posee un caracter erróneo"
-		}
-	}
-	return ""
-}
-
 func ValidateLastName(c *fiber.Ctx) string {
 	lastName := strings.TrimSpace(c.FormValue("last-name"))
 	if lastName == "" {
 		return "El campo Apellido no puede estar vacío"
 	}
-	return ""
+	return isLetter(lastName)
 }
 
 func ValidateDNI(c *fiber.Ctx) string {
@@ -43,8 +33,7 @@ func ValidateDNI(c *fiber.Ctx) string {
 	if utf8.RuneCountInString(dni) > 8 {
 		return "El DNI no puede tener mas de 8 caracteres"
 	}
-	// chequear que sean numeros
-	return ""
+	return isNumber(dni)
 }
 
 func ValidateBirthday(c *fiber.Ctx) string {
@@ -72,6 +61,14 @@ func ValidateGender(c *fiber.Ctx) string {
 	return ""
 }
 
+func ValidateRel(c *fiber.Ctx) string {
+	rel := strings.TrimSpace(c.FormValue("rel"))
+	if rel == "" {
+		return "El campo Parentesco no puede estar vacío"
+	}
+	return isLetter(rel)
+}
+
 func ValidateMaritalStatus(c *fiber.Ctx) string {
 	maritalStatus := strings.TrimSpace(c.FormValue("marital-status"))
 	if maritalStatus == "" {
@@ -85,7 +82,7 @@ func ValidatePhone(c *fiber.Ctx) string {
 	if phone == "" {
 		return "El campo Teléfono no puede estar vacío"
 	}
-	return ""
+	return isNumber(phone)
 }
 
 func ValidateEmail(c *fiber.Ctx) string {
@@ -112,7 +109,10 @@ func ValidatePostalCode(c *fiber.Ctx) string {
 	if postalCode == "" {
 		return "El campo Codigo postal no puede estar vacío"
 	}
-	return ""
+	if utf8.RuneCountInString(postalCode) > 4 {
+		return "El Codigo postal no puede tener mas de 4 numeros"
+	}
+	return isNumber(postalCode)
 }
 
 func ValidateDistrict(c *fiber.Ctx) string {
@@ -128,15 +128,33 @@ func ValidateMemberNumber(c *fiber.Ctx) string {
 	if memberNumber == "" {
 		return "El campo Numero de afiliado no puede estar vacío"
 	}
-	return ""
+	return isNumber(memberNumber)
+}
+
+func ValidateEnterpriseNumber(c *fiber.Ctx) string {
+	number := strings.TrimSpace(c.FormValue("number"))
+	if number == "" {
+		return "El campo Numero de empresa no puede estar vacío"
+	}
+	return isNumber(number)
 }
 
 func ValidateCUIL(c *fiber.Ctx) string {
 	cuil := strings.TrimSpace(c.FormValue("cuil"))
+	cuil = strings.Trim(cuil, "-")
 	if cuil == "" {
 		return "El campo CUIL no puede estar vacío"
 	}
-	return ""
+	return isNumber(cuil)
+}
+
+func ValidateCUIT(c *fiber.Ctx) string {
+	cuit := strings.TrimSpace(c.FormValue("cuit"))
+	cuit = strings.Trim(cuit, "-")
+	if cuit == "" {
+		return "El campo CUIT no puede estar vacío"
+	}
+	return isNumber(cuit)
 }
 
 func ValidateIdEnterprise(c *fiber.Ctx) string {
@@ -224,10 +242,20 @@ func validateDateValue(date string) string {
 	return ""
 }
 
-func isNumber(value string) string {
-	letters := "0123456789"
+func isLetter(value string) string {
+	letters := "abcdefghijklmnñopqrstuvwxyzáéíóúü"
 	for i := range value {
 		if !strings.Contains(letters, string(value[i])) {
+			return "El campo posee un caracter erróneo"
+		}
+	}
+	return ""
+}
+
+func isNumber(value string) string {
+	numbers := "0123456789"
+	for i := range value {
+		if !strings.Contains(numbers, string(value[i])) {
 			return "El campo posee un caracter erróneo"
 		}
 	}

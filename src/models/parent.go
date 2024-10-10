@@ -4,7 +4,6 @@ import (
 	"database/sql"
 	"fmt"
 	"log"
-	"strings"
 
 	"github.com/LucasBastino/app-sindicato/src/database"
 	"github.com/gofiber/fiber/v2"
@@ -152,12 +151,15 @@ func (parent Parent) SearchModels(c *fiber.Ctx, offset int) ([]Parent, string) {
 
 func (parent Parent) ValidateFields(c *fiber.Ctx) map[string]string {
 	errorMap := map[string]string{}
-	if strings.TrimSpace(c.FormValue("name")) == "" {
-		errorMap["name"] = "el campo Nombre no puede estar vacio"
-	}
-	if strings.TrimSpace(c.FormValue("rel")) == "" {
-		errorMap["rel"] = "el campo Parentesco no puede estar vacio"
-	}
+
+	errorMap["name"] = ValidateName(c)
+	errorMap["lastName"] = ValidateLastName(c)
+	errorMap["rel"] = ValidateRel(c)
+	errorMap["birthday"] = ValidateBirthday(c)
+	errorMap["gender"] = ValidateGender(c)
+	// los parientes tienen un numero de afiliado?
+	// errorMap["number"] = ValidateNumber(c)
+	errorMap["cuil"] = ValidateCUIL(c)
 	return errorMap
 }
 
