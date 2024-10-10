@@ -157,8 +157,6 @@ func (parent Parent) ValidateFields(c *fiber.Ctx) map[string]string {
 	errorMap["rel"] = ValidateRel(c)
 	errorMap["birthday"] = ValidateBirthday(c)
 	errorMap["gender"] = ValidateGender(c)
-	// los parientes tienen un numero de afiliado?
-	// errorMap["number"] = ValidateNumber(c)
 	errorMap["cuil"] = ValidateCUIL(c)
 	return errorMap
 }
