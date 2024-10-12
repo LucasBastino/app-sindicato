@@ -19,7 +19,6 @@ func CreateParents(c *fiber.Ctx) error {
 	type JSONData struct {
 		MaleFirstNames   []string
 		FemaleFirstNames []string
-		LastNames        []string
 		Genders          []string
 	}
 
@@ -64,7 +63,6 @@ func CreateParents(c *fiber.Ctx) error {
 		memberDateInfoList = append(memberDateInfoList, memberDateInfo)
 	}
 	result.Close()
-
 	// creo 500 familiares y se los asigno a un afiliado
 	for i := 0; i < 500; i++ {
 		randomMember := memberDateInfoList[rand.IntN(len(memberDateInfoList))]
@@ -97,24 +95,33 @@ func CreateParents(c *fiber.Ctx) error {
 		case 1, 3, 5, 7, 8, 10, 12:
 			day = rand.IntN(30) + 1
 		}
-		p.Birthday = fmt.Sprintf("%d/%d/%d", day, month, year)
 		p.CUIL = fmt.Sprintf("%d-%s-%d", rand.IntN(9)+20, createDNI(day, month, year), rand.IntN(8)+1)
+		dayStr := strconv.Itoa(day)
+		monthStr := strconv.Itoa(month)
+		yearStr := strconv.Itoa(year)
+		if day < 10 {
+			dayStr = "0" + dayStr
+		}
+		if month < 10 {
+			monthStr = "0" + monthStr
+		}
+		p.Birthday = fmt.Sprintf("%s/%s/%s", yearStr, monthStr, dayStr)
 
 		// para que sea mas probable que sea hombre o mujer
 		r := rand.IntN(6)
 		if slices.Contains([]int{0, 1, 2}, r) {
-			p.Gender = "Hombre"
+			p.Gender = "Masculino"
 		} else if slices.Contains([]int{3, 4, 5}, r) {
-			p.Gender = "Mujer"
+			p.Gender = "Femenino"
 		} else {
 			p.Gender = "Otro"
 		}
 
 		// depende el genero le doy un nombre
-		if p.Gender == "Hombre" {
+		if p.Gender == "Masculino" {
 			p.Name = jsonData.MaleFirstNames[rand.IntN(len(jsonData.MaleFirstNames))]
 			p.Rel = "Hijo"
-		} else if p.Gender == "Mujer" {
+		} else if p.Gender == "Femenino" {
 			p.Name = jsonData.FemaleFirstNames[rand.IntN(len(jsonData.FemaleFirstNames))]
 			p.Rel = "Hija"
 		} else if p.Gender == "Otro" {
@@ -144,6 +151,7 @@ func CreateParents(c *fiber.Ctx) error {
 
 }
 
+// hacer de nuevo esto
 func createDNI(day, month, year int) string {
 	birthdayDate := time.Date(year, time.Month(month), day, 0, 0, 0, 0, time.UTC)
 	diff := math.Round(birthdayDate.Sub(time.Date(1900, 01, 01, 0, 0, 0, 0, time.UTC)).Hours())

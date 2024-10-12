@@ -25,7 +25,7 @@ CREATE TABLE EnterpriseTable(
 INSERT INTO EnterpriseTable (Name, Address) VALUES ('coto', 'valenzuela 223')
 
 
-SELECT * FROM MemberTable WHERE Name = "Mohamed"
+SELECT * FROM MemberTable
 
 SELECT * FROM ParentTable
 
@@ -103,7 +103,7 @@ CREATE TABLE ParentTable(
 CREATE TABLE EnterpriseTable(
     IdEnterprise INT PRIMARY KEY AUTO_INCREMENT NOT NULL,
     Name VARCHAR(255),
-    Number VARCHAR(50),
+    EnterpriseNumber VARCHAR(50),
     Address VARCHAR(50),
     CUIT VARCHAR(50),
     District VARCHAR(50),

@@ -34,6 +34,8 @@ func (m Member) Imprimir() {
 }
 
 func (member Member) InsertModel() Member {
+	// formateo la fecha nac para que empiece con el año
+	member.Birthday = FormatToYYYYMMDD(member.Birthday)
 	insert, err := database.DB.Query(fmt.Sprintf(`
 		INSERT INTO MemberTable
 		(Name,
@@ -100,6 +102,8 @@ func (member Member) DeleteModel() {
 }
 
 func (member Member) EditModel() {
+	// formateo la fecha nac para que empiece con el año
+	member.Birthday = FormatToYYYYMMDD(member.Birthday)
 	update, err := database.DB.Query(fmt.Sprintf(`
 		UPDATE MemberTable
 		SET
@@ -174,7 +178,7 @@ func (member Member) SearchModels(c *fiber.Ctx, offset int) ([]Member, string) {
 		SELECT M.* FROM MemberTable M INNER JOIN EnterpriseTable E ON M.IdEnterprise = E.IdEnterprise 
 		WHERE 
 		M.Name LIKE '%%%s%%' OR M.LastName LIKE '%%%s%%' OR M.DNI LIKE '%%%s%%' 
-		OR E.Name LIKE '%%%s%%' OR E.Number LIKE '%%%s%%'
+		OR E.Name LIKE '%%%s%%' OR E.EnterpriseNumber LIKE '%%%s%%'
 		ORDER BY M.LastName ASC LIMIT 10 OFFSET %d`,
 		searchKey, searchKey, searchKey, searchKey, searchKey, offset))
 	if err != nil {
@@ -236,7 +240,7 @@ func (member Member) GetTotalRows(c *fiber.Ctx) int {
 		SELECT COUNT(*) FROM MemberTable M INNER JOIN EnterpriseTable E ON M.IdEnterprise = E.IdEnterprise 
 		WHERE 
 		M.Name LIKE '%%%s%%' OR M.LastName LIKE '%%%s%%' OR M.DNI LIKE '%%%s%%' 
-		OR E.Name LIKE '%%%s%%' OR E.Number LIKE '%%%s%%'`,
+		OR E.Name LIKE '%%%s%%' OR E.EnterpriseNumber LIKE '%%%s%%'`,
 		searchKey, searchKey, searchKey, searchKey, searchKey))
 	// row.Scan copia el numero de fila en la variable count
 	err := row.Scan(&totalRows)
@@ -315,6 +319,9 @@ func (member Member) ScanResult(result *sql.Rows, onlyOne bool) (Member, []Membe
 			&m.Category,
 			&m.EntryDate,
 		)
+		// formateo las fechas en formato argentino
+		m.Birthday = FormatToDDMMYYYY(m.Birthday)
+		m.EntryDate = FormatToDDMMYYYY(m.EntryDate)
 		if err != nil {
 			fmt.Println("error scanning member")
 			panic(err)

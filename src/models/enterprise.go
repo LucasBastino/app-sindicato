@@ -24,7 +24,7 @@ func (enterprise Enterprise) InsertModel() Enterprise {
 	insert, err := database.DB.Query(fmt.Sprintf(`
 		INSERT INTO EnterpriseTable 
 		(Name,
-		Number,
+		EnterpriseNumber,
 		Address, 
 		CUIT, 
 		District, 
@@ -32,7 +32,7 @@ func (enterprise Enterprise) InsertModel() Enterprise {
 		Phone)
 		VALUES ('%s','%s','%s','%s','%s','%s', '%s')`,
 		enterprise.Name,
-		enterprise.Number,
+		enterprise.EnterpriseNumber,
 		enterprise.Address,
 		enterprise.CUIT,
 		enterprise.District,
@@ -48,7 +48,7 @@ func (enterprise Enterprise) InsertModel() Enterprise {
 		SELECT
 		IdEnterprise,
 		Name,
-		Number,
+		EnterpriseNumber,
 		Address, 
 		CUIT, 
 		District, 
@@ -81,7 +81,7 @@ func (enterprise Enterprise) EditModel() {
 		UPDATE EnterpriseTable 
 		SET 
 		Name = '%s', 
-		Number = '%s',
+		EnterpriseNumber = '%s',
 		Address = '%s', 
 		CUIT = '%s', 
 		District = '%s', 
@@ -89,7 +89,7 @@ func (enterprise Enterprise) EditModel() {
 		Phone = '%s' 
 		WHERE IdEnterprise = '%d'`,
 		enterprise.Name,
-		enterprise.Number,
+		enterprise.EnterpriseNumber,
 		enterprise.Address,
 		enterprise.CUIT,
 		enterprise.District,
@@ -120,7 +120,7 @@ func (enterprise Enterprise) SearchOneModelById(c *fiber.Ctx) Enterprise {
 		SELECT
 		IdEnterprise, 
 		Name,
-		Number,
+		EnterpriseNumber,
 		Address, 
 		CUIT, 
 		District, 
@@ -144,7 +144,7 @@ func (enterprise Enterprise) SearchModels(c *fiber.Ctx, offset int) ([]Enterpris
 		SELECT
 		IdEnterprise,
 		Name,
-		Number,
+		EnterpriseNumber,
 		Address, 
 		CUIT, 
 		District, 
@@ -166,7 +166,7 @@ func (enterprise Enterprise) SearchModels(c *fiber.Ctx, offset int) ([]Enterpris
 func (enterprise Enterprise) ValidateFields(c *fiber.Ctx) map[string]string {
 	errorMap := map[string]string{}
 
-	errorMap["name"] = ValidateName(c)
+	errorMap["enterpriseName"] = ValidateEnterpriseName(c)
 	errorMap["enterpriseNumber"] = ValidateEnterpriseNumber(c)
 	errorMap["address"] = ValidateAddress(c)
 	errorMap["cuit"] = ValidateCUIT(c)
@@ -234,7 +234,7 @@ func (enterprise Enterprise) ScanResult(result *sql.Rows, onlyOne bool) (Enterpr
 		err := result.Scan(
 			&e.IdEnterprise,
 			&e.Name,
-			&e.Number,
+			&e.EnterpriseNumber,
 			&e.Address,
 			&e.CUIT,
 			&e.District,

@@ -30,32 +30,32 @@
     {{end}}
                 <div class="title-div field-12">Datos de la empresa</div>
                     <input class="form-input field-12" type="text" name="name" value="{{$.enterprise.Name}}" placeholder="Nombre" disabled>
-                    {{with .errorMap.name}}
-                        <p>{{.}}</p>
+                    {{with .errorMap.enterpriseName}}
+                        <div class="error-div field-12">{{.}}</div>
                     {{end}}
                     <input class="form-input field-12" type="text" name="enterprise-number" value="{{$.enterprise.EnterpriseNumber}}" placeholder="Numero de empresa" disabled>
                     {{with .errorMap.enterpriseNumber}}
-                        <p>{{.}}</p>
+                    <div class="error-div field-12">{{.}}</div>
                     {{end}}
                     <input class="form-input field-12" type="text" name="address" value="{{$.enterprise.Address}}" placeholder="Direccion" disabled>
                     {{with .errorMap.address}}
-                        <p>{{.}}</p>
+                    <div class="error-div field-12">{{.}}</div>
                     {{end}}
                     <input class="form-input field-12" type="text" name="cuit" value="{{$.enterprise.CUIT}}" placeholder="CUIT" disabled>
                     {{with .errorMap.cuit}}
-                        <p>{{.}}</p>
+                    <div class="error-div field-12">{{.}}</div>
                     {{end}}
                     <input class="form-input field-12" type="text" name="district" value="{{$.enterprise.District}}" placeholder="Localidad" disabled>
                     {{with .errorMap.district}}
-                        <p>{{.}}</p>
+                    <div class="error-div field-12">{{.}}</div>
                     {{end}}
                     <input class="form-input field-12" type="text" name="postal-code" value="{{$.enterprise.PostalCode}}" placeholder="Código postal" disabled>
                     {{with .errorMap.postalCode}}
-                        <p>{{.}}</p>
+                    <div class="error-div field-12">{{.}}</div>
                     {{end}}
                     <input class="form-input field-12" type="text" name="phone" value="{{$.enterprise.Phone}}" placeholder="Teléfono" disabled>
                     {{with .errorMap.phone}}
-                        <p>{{.}}</p>
+                    <div class="error-div field-12">{{.}}</div>
                     {{end}}
                     {{if eq .mode "create"}}
                     <button type="submit" class="item-btn btn-submit">Enviar</button>

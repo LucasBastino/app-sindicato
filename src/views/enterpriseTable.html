@@ -10,7 +10,7 @@
     {{range $_, $e := .enterprises}}
     <tr>
         <td>{{$e.Name}} </td>
-        <td>{{$e.Number}}</td>
+        <td>{{$e.EnterpriseNumber}}</td>
         <td>{{$e.Address}} </td>
         <td>
             <a href="/enterprise/{{$e.IdEnterprise}}/file">

@@ -1,6 +1,7 @@
 package models
 
 import (
+	"fmt"
 	"strconv"
 	"strings"
 	"time"
@@ -14,7 +15,7 @@ func ValidateName(c *fiber.Ctx) string {
 	if name == "" {
 		return "El campo Nombre no puede estar vacío"
 	}
-	return isLetter(name)
+	return isLetter(name, "")
 }
 
 func ValidateLastName(c *fiber.Ctx) string {
@@ -22,7 +23,15 @@ func ValidateLastName(c *fiber.Ctx) string {
 	if lastName == "" {
 		return "El campo Apellido no puede estar vacío"
 	}
-	return isLetter(lastName)
+	return isLetter(lastName, "")
+}
+
+func ValidateEnterpriseName(c *fiber.Ctx) string {
+	name := strings.TrimSpace(c.FormValue("name"))
+	if name == "" {
+		return "El campo Nombre no puede estar vacío"
+	}
+	return isAlphanumeric(name, ".")
 }
 
 func ValidateDNI(c *fiber.Ctx) string {
@@ -33,7 +42,7 @@ func ValidateDNI(c *fiber.Ctx) string {
 	if utf8.RuneCountInString(dni) > 8 {
 		return "El DNI no puede tener mas de 8 caracteres"
 	}
-	return isNumber(dni)
+	return isNumber(dni, "")
 }
 
 func ValidateBirthday(c *fiber.Ctx) string {
@@ -66,7 +75,7 @@ func ValidateRel(c *fiber.Ctx) string {
 	if rel == "" {
 		return "El campo Parentesco no puede estar vacío"
 	}
-	return isLetter(rel)
+	return isLetter(rel, "")
 }
 
 func ValidateMaritalStatus(c *fiber.Ctx) string {
@@ -82,7 +91,7 @@ func ValidatePhone(c *fiber.Ctx) string {
 	if phone == "" {
 		return "El campo Teléfono no puede estar vacío"
 	}
-	return isNumber(phone)
+	return isNumber(phone, "+")
 }
 
 func ValidateEmail(c *fiber.Ctx) string {
@@ -101,7 +110,9 @@ func ValidateAddress(c *fiber.Ctx) string {
 	if address == "" {
 		return "El campo Dirección no puede estar vacío"
 	}
-	return ""
+	fmt.Println(address)
+	return isAlphanumeric(address, ".")
+
 }
 
 func ValidatePostalCode(c *fiber.Ctx) string {
@@ -112,7 +123,7 @@ func ValidatePostalCode(c *fiber.Ctx) string {
 	if utf8.RuneCountInString(postalCode) > 4 {
 		return "El Codigo postal no puede tener mas de 4 numeros"
 	}
-	return isNumber(postalCode)
+	return isNumber(postalCode, "")
 }
 
 func ValidateDistrict(c *fiber.Ctx) string {
@@ -120,7 +131,7 @@ func ValidateDistrict(c *fiber.Ctx) string {
 	if district == "" {
 		return "El campo Localidad no puede estar vacío"
 	}
-	return ""
+	return isAlphanumeric(district, ".")
 }
 
 func ValidateMemberNumber(c *fiber.Ctx) string {
@@ -128,15 +139,15 @@ func ValidateMemberNumber(c *fiber.Ctx) string {
 	if memberNumber == "" {
 		return "El campo Numero de afiliado no puede estar vacío"
 	}
-	return isNumber(memberNumber)
+	return isNumber(memberNumber, "")
 }
 
 func ValidateEnterpriseNumber(c *fiber.Ctx) string {
-	number := strings.TrimSpace(c.FormValue("number"))
-	if number == "" {
+	enterpriseNumber := strings.TrimSpace(c.FormValue("enterprise-number"))
+	if enterpriseNumber == "" {
 		return "El campo Numero de empresa no puede estar vacío"
 	}
-	return isNumber(number)
+	return isNumber(enterpriseNumber, "")
 }
 
 func ValidateCUIL(c *fiber.Ctx) string {
@@ -145,7 +156,7 @@ func ValidateCUIL(c *fiber.Ctx) string {
 	if cuil == "" {
 		return "El campo CUIL no puede estar vacío"
 	}
-	return isNumber(cuil)
+	return isNumber(cuil, "-")
 }
 
 func ValidateCUIT(c *fiber.Ctx) string {
@@ -154,7 +165,7 @@ func ValidateCUIT(c *fiber.Ctx) string {
 	if cuit == "" {
 		return "El campo CUIT no puede estar vacío"
 	}
-	return isNumber(cuit)
+	return isNumber(cuit, "-")
 }
 
 func ValidateIdEnterprise(c *fiber.Ctx) string {
@@ -189,25 +200,14 @@ func ValidateEntryDate(c *fiber.Ctx) string {
 	return ""
 }
 
-func getDay(date string) (int, error) {
-	return strconv.Atoi(date[0:2])
-}
-
-func getMonth(date string) (int, error) {
-	return strconv.Atoi(date[3:5])
-}
-
-func getYear(date string) (int, error) {
-	return strconv.Atoi(date[6:])
-}
-
 func validateDateFormat(date string) string {
 	if len(date) != 10 {
 		return "Formato de fecha erróneo"
 	}
-	_, dayErr := getDay(date)
-	_, monthErr := getMonth(date)
-	_, yearErr := getYear(date)
+	// verifico que sean numeros
+	_, dayErr := strconv.Atoi(date[0:2])
+	_, monthErr := strconv.Atoi(date[3:5])
+	_, yearErr := strconv.Atoi(date[6:])
 	if dayErr != nil || monthErr != nil || yearErr != nil ||
 		string(date[2]) != "/" || string(date[5]) != "/" {
 		return "Formato de fecha erróneo"
@@ -216,9 +216,10 @@ func validateDateFormat(date string) string {
 }
 
 func validateDateValue(date string) string {
-	day, _ := getDay(date)
-	month, _ := getDay(date)
-	year, _ := getDay(date)
+	// verifico que sean fechas validas
+	day, _ := strconv.Atoi(date[0:2])
+	month, _ := strconv.Atoi(date[3:5])
+	year, _ := strconv.Atoi(date[6:])
 
 	if month < 1 || month > 12 {
 		return "Fecha errónea"
@@ -242,8 +243,11 @@ func validateDateValue(date string) string {
 	return ""
 }
 
-func isLetter(value string) string {
-	letters := "abcdefghijklmnñopqrstuvwxyzáéíóúü"
+func isLetter(value, allowed string) string {
+	// se incluye Ã por la codificacion
+	letters := " abcdefghijklmnñopqrstuvwxyzáéíóúüÃ"
+	letters += allowed
+	value = strings.ToLower(value)
 	for i := range value {
 		if !strings.Contains(letters, string(value[i])) {
 			return "El campo posee un caracter erróneo"
@@ -252,12 +256,42 @@ func isLetter(value string) string {
 	return ""
 }
 
-func isNumber(value string) string {
-	numbers := "0123456789"
+func isNumber(value, allowed string) string {
+	numbers := " 0123456789"
+	numbers += allowed
 	for i := range value {
 		if !strings.Contains(numbers, string(value[i])) {
 			return "El campo posee un caracter erróneo"
 		}
 	}
 	return ""
+}
+
+func isAlphanumeric(value, allowed string) string {
+	// se incluye Ã por la codificacion
+	characters := " abcdefghijklmnñopqrstuvwxyzáéíóúüÃ0123456789"
+	characters += allowed
+	value = strings.ToLower(value)
+	for i := range value {
+		if !strings.Contains(characters, string(value[i])) {
+			return "El campo posee un caracter erróneo2"
+		}
+	}
+	return ""
+}
+
+func FormatToYYYYMMDD(date string) string {
+	day := date[0:2]
+	month := date[3:5]
+	year := date[6:]
+	date = year + "/" + month + "/" + day
+	return date
+}
+
+func FormatToDDMMYYYY(date string) string {
+	year := date[0:4]
+	month := date[5:7]
+	day := date[8:]
+	date = day + "/" + month + "/" + year
+	return date
 }

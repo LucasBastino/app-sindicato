@@ -21,6 +21,7 @@ type Parent struct {
 }
 
 func (parent Parent) InsertModel() Parent {
+	parent.Birthday = FormatToYYYYMMDD(parent.Birthday)
 	insert, err := database.DB.Query(fmt.Sprintf(`
 		INSERT INTO ParentTable 
 		(Name,
@@ -69,6 +70,7 @@ func (parent Parent) DeleteModel() {
 }
 
 func (parent Parent) EditModel() {
+	parent.Birthday = FormatToYYYYMMDD(parent.Birthday)
 	update, err := database.DB.Query(fmt.Sprintf(`
 		UPDATE ParentTable 
 		SET Name = '%s',
@@ -223,6 +225,8 @@ func (parent Parent) ScanResult(result *sql.Rows, onlyOne bool) (Parent, []Paren
 			&p.CUIL,
 			&p.IdMember,
 		)
+		// formateo las fechas en formato argentino
+		p.Birthday = FormatToDDMMYYYY(p.Birthday)
 		if err != nil {
 			fmt.Println("error scanning parent")
 			panic(err)

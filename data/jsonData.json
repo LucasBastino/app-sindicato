@@ -72,9 +72,6 @@
 			"Santana","Santiago","Santos","Sanz","Serrano","Soler","Soto","Suarez",
 			"Torres","Vargas","Vazquez","Vega","Velasco","Vicente","Vidal"
 		],
-	"Genders": [
-		"Masculino", "Femenino", "Otro"
-	],
 	"MaritalStatus":[
 		"Soltero", "Casado", "Viudo", "Divorciado", "Separado"
 	],

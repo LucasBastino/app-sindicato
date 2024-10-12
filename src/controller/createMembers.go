@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"math/rand/v2"
 	"os"
+	"slices"
 	"strconv"
 
 	"github.com/LucasBastino/app-sindicato/src/database"
@@ -45,8 +46,8 @@ func CreateMembers(c *fiber.Ctx) error {
 		Name string
 	}
 	type JSONData struct {
-		MaleFirstNames   []string
 		FemaleFirstNames []string
+		MaleFirstNames   []string
 		LastNames        []string
 		MaritalStatus    []string
 		Genders          []string
@@ -64,10 +65,18 @@ func CreateMembers(c *fiber.Ctx) error {
 	decoder.Decode(&jsonData)
 
 	for i := 0; i < 200; i++ {
-		m.Gender = jsonData.Genders[rand.IntN(len(jsonData.Genders))]
-		if m.Gender == "Hombre" {
+		// para que sea mas probable que sea hombre o mujer
+		r := rand.IntN(6)
+		if slices.Contains([]int{0, 1, 2}, r) {
+			m.Gender = "Masculino"
+		} else if slices.Contains([]int{3, 4, 5}, r) {
+			m.Gender = "Hombre"
+		} else {
+			m.Gender = "Otro"
+		}
+		if m.Gender == "Masculino" {
 			m.Name = jsonData.MaleFirstNames[rand.IntN(len(jsonData.MaleFirstNames))]
-		} else if m.Gender == "Mujer" {
+		} else if m.Gender == "Femenino" {
 			m.Name = jsonData.FemaleFirstNames[rand.IntN(len(jsonData.FemaleFirstNames))]
 		} else if m.Gender == "Otro" {
 			random := rand.IntN(1)
@@ -91,14 +100,23 @@ func CreateMembers(c *fiber.Ctx) error {
 			day = rand.IntN(30) + 1
 		}
 		// creo el dni con la fecha de nacimiento
-		m.DNI = createDNI(year, month, day)
+		m.DNI = createDNI(day, month, year)
+		dayStr := strconv.Itoa(day)
+		monthStr := strconv.Itoa(month)
+		yearStr := strconv.Itoa(year)
+		if day < 10 {
+			dayStr = "0" + dayStr
+		}
+		if month < 10 {
+			monthStr = "0" + monthStr
+		}
 
 		// en la base de datos: '1998-05-22' string
 		// consulta: SELECT > CAST('2023-06-26' AS DATE)
 		// si lo quiero mostrar en el input lo doy vuelta y listo
 		//
 		// fijarse bien desp lo del formato fecha
-		m.Birthday = fmt.Sprintf("%d/%d/%d", day, month, year)
+		m.Birthday = fmt.Sprintf("%s/%s/%s", yearStr, monthStr, dayStr)
 		// m.Birthday = time.Date(year, time.Month(month), day)
 		m.MaritalStatus = jsonData.MaritalStatus[rand.IntN(len(jsonData.MaritalStatus))]
 		m.Phone = fmt.Sprintf("156%d", rand.IntN(9999999))
@@ -109,7 +127,6 @@ func CreateMembers(c *fiber.Ctx) error {
 		m.MemberNumber = strconv.Itoa(rand.IntN(9999999999))
 		m.CUIL = fmt.Sprintf("%d-%s-%d", rand.IntN(9)+20, m.DNI, rand.IntN(8)+1)
 		m.IdEnterprise = rand.IntN(49) + 1
-		fmt.Println(m)
 
 		switch {
 		case year <= 1960:
@@ -141,15 +158,22 @@ func CreateMembers(c *fiber.Ctx) error {
 		case 1, 3, 5, 7, 8, 10, 12:
 			entryDay = rand.IntN(30) + 1
 		}
-		m.EntryDate = fmt.Sprintf("%d/%d/%d", entryDay, entryMonth, entryYear)
-		// m.EntryDate = fmt.Sprintf("%d%d/%d", entryDay, entryMonth, entryYear)
+		entryDayStr := strconv.Itoa(entryDay)
+		entryMonthStr := strconv.Itoa(entryMonth)
+		entryYearStr := strconv.Itoa(entryYear)
+		if entryDay < 10 {
+			entryDayStr = "0" + entryDayStr
+		}
+		if entryMonth < 10 {
+			entryMonthStr = "0" + entryMonthStr
+		}
+		m.EntryDate = fmt.Sprintf("%s/%s/%s", entryYearStr, entryMonthStr, entryDayStr)
 		insert, err := database.DB.Query(fmt.Sprintf("INSERT INTO MemberTable (Name, LastName, DNI, Birthday, Gender, MaritalStatus, Phone, Email, Address, PostalCode, District, MemberNumber, CUIL, IdEnterprise, Category, EntryDate) VALUES ('%s','%s','%s','%v','%s','%s','%s','%s','%s','%s','%s','%s','%s','%d','%s','%v')", m.Name, m.LastName, m.DNI, m.Birthday, m.Gender, m.MaritalStatus, m.Phone, m.Email, m.Address, m.PostalCode, m.District, m.MemberNumber, m.CUIL, m.IdEnterprise, m.Category, m.EntryDate))
 		if err != nil {
 			fmt.Println("error inserting member")
 			panic(err)
 		}
 		insert.Close()
-
 	}
 	return c.Status(fiber.StatusOK).JSON(fiber.Map{"status": "members hecho"})
 }
