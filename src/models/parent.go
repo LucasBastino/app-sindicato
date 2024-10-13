@@ -14,8 +14,8 @@ type Parent struct {
 	Name     string
 	LastName string
 	Rel      string
-	Gender   string
 	Birthday string
+	Gender   string
 	CUIL     string
 	IdMember int
 }
@@ -27,16 +27,16 @@ func (parent Parent) InsertModel() Parent {
 		(Name,
 		LastName,
 		Rel,
-		Gender,
 		Birthday,
+		Gender,
 		CUIL,
 		IdMember)
 		VALUES ('%s','%s','%s', '%s', '%s', '%s', '%d')`,
 		parent.Name,
 		parent.LastName,
 		parent.Rel,
-		parent.Gender,
 		parent.Birthday,
+		parent.Gender,
 		parent.CUIL,
 		parent.IdMember))
 	if err != nil {
@@ -76,16 +76,16 @@ func (parent Parent) EditModel() {
 		SET Name = '%s',
 		LastName = '%s',
 		Rel = '%s',
-		Gender = '%s',
 		Birthday = '%s',
+		Gender = '%s',
 		CUIL = '%s',
 		IdMember = '%d'
 		WHERE IdParent = '%d'`,
 		parent.Name,
 		parent.LastName,
 		parent.Rel,
-		parent.Gender,
 		parent.Birthday,
+		parent.Gender,
 		parent.CUIL,
 		parent.IdMember,
 		parent.IdParent))
@@ -113,8 +113,8 @@ func (parent Parent) SearchOneModelById(c *fiber.Ctx) Parent {
 		Name,
 		LastName,
 		Rel,
-		Gender,
 		Birthday,
+		Gender,
 		CUIL,
 		IdMember
 		FROM ParentTable
@@ -137,8 +137,8 @@ func (parent Parent) SearchModels(c *fiber.Ctx, offset int) ([]Parent, string) {
 		Name,
 		LastName,
 		Rel,
-		Gender,
 		Birthday,
+		Gender,
 		CUIL,
 		IdMember
 		FROM ParentTable 
@@ -154,12 +154,27 @@ func (parent Parent) SearchModels(c *fiber.Ctx, offset int) ([]Parent, string) {
 func (parent Parent) ValidateFields(c *fiber.Ctx) map[string]string {
 	errorMap := map[string]string{}
 
-	errorMap["name"] = ValidateName(c)
-	errorMap["lastName"] = ValidateLastName(c)
-	errorMap["rel"] = ValidateRel(c)
-	errorMap["birthday"] = ValidateBirthday(c)
-	errorMap["gender"] = ValidateGender(c)
-	errorMap["cuil"] = ValidateCUIL(c)
+	var valid bool
+	var err string
+
+	if valid, err = ValidateName(c); !valid {
+		errorMap["name"] = err
+	}
+	if valid, err = ValidateLastName(c); !valid {
+		errorMap["lastName"] = err
+	}
+	if valid, err = ValidateRel(c); !valid {
+		errorMap["rel"] = err
+	}
+	if valid, err = ValidateBirthday(c); !valid {
+		errorMap["birthday"] = err
+	}
+	if valid, err = ValidateGender(c); !valid {
+		errorMap["gender"] = err
+	}
+	if valid, err = ValidateCUIL(c); !valid {
+		errorMap["cuil"] = err
+	}
 	return errorMap
 }
 
@@ -220,8 +235,8 @@ func (parent Parent) ScanResult(result *sql.Rows, onlyOne bool) (Parent, []Paren
 			&p.Name,
 			&p.LastName,
 			&p.Rel,
-			&p.Gender,
 			&p.Birthday,
+			&p.Gender,
 			&p.CUIL,
 			&p.IdMember,
 		)

@@ -15,6 +15,7 @@ func CreateEnterprise(c *fiber.Ctx) error {
 	errorMap := validateFieldsCaller(models.Enterprise{}, c)
 	e := parserCaller(i.EnterpriseParser{}, c)
 	if len(errorMap) > 0 {
+		// Si tiene errores renderizo nuevamente el form
 		data := fiber.Map{"enterprise": e, "mode": "create", "errorMap": errorMap}
 		return c.Render("enterpriseFile", data)
 	} else {

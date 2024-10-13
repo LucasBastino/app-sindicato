@@ -13,18 +13,13 @@ func CreateMember(c *fiber.Ctx) error {
 	enterprises := getAllModelsCaller(models.Enterprise{})
 	errorMap := validateFieldsCaller(models.Member{}, c)
 	m := parserCaller(i.MemberParser{}, c)
-	fmt.Println(m)
 	// Verifico si el mapa tiene errores
 	if len(errorMap) > 0 {
-		// VER QUE PASA ACA
-		// Si tiene errores renderizo nuevamente el form
-		fmt.Println("tiene errores", errorMap)
 		fmt.Println(m)
 		data := fiber.Map{"member": m, "mode": "create", "errorMap": errorMap, "enterprises": enterprises}
 		return c.Render("memberFile", data)
 
 	} else {
-		fmt.Println("no tiene errores")
 		// Si no tiene errores inserto el member en la DB y renderizo el su archivo
 		m = insertModelCaller(m)
 		data := fiber.Map{"member": m, "mode": "edit", "enterprises": enterprises}

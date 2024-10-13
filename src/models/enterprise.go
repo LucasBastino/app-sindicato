@@ -165,14 +165,29 @@ func (enterprise Enterprise) SearchModels(c *fiber.Ctx, offset int) ([]Enterpris
 
 func (enterprise Enterprise) ValidateFields(c *fiber.Ctx) map[string]string {
 	errorMap := map[string]string{}
-
-	errorMap["enterpriseName"] = ValidateEnterpriseName(c)
-	errorMap["enterpriseNumber"] = ValidateEnterpriseNumber(c)
-	errorMap["address"] = ValidateAddress(c)
-	errorMap["cuit"] = ValidateCUIT(c)
-	errorMap["district"] = ValidateDistrict(c)
-	errorMap["postalCode"] = ValidatePostalCode(c)
-	errorMap["phone"] = ValidatePhone(c)
+	var valid bool
+	var err string
+	if valid, err = ValidateEnterpriseName(c); !valid {
+		errorMap["enterpriseName"] = err
+	}
+	if valid, err = ValidateEnterpriseNumber(c); !valid {
+		errorMap["enterpriseNumber"] = err
+	}
+	if valid, err = ValidateAddress(c); !valid {
+		errorMap["address"] = err
+	}
+	if valid, err = ValidateCUIT(c); !valid {
+		errorMap["cuit"] = err
+	}
+	if valid, err = ValidateDistrict(c); !valid {
+		errorMap["district"] = err
+	}
+	if valid, err = ValidatePostalCode(c); !valid {
+		errorMap["postalCode"] = err
+	}
+	if valid, err = ValidatePhone(c); !valid {
+		errorMap["phone"] = err
+	}
 	return errorMap
 }
 

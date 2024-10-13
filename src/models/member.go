@@ -191,47 +191,60 @@ func (member Member) SearchModels(c *fiber.Ctx, offset int) ([]Member, string) {
 
 func (m Member) ValidateFields(c *fiber.Ctx) map[string]string {
 	errorMap := map[string]string{}
+	var valid bool
+	var err string
 
-	errorMap["name"] = ValidateName(c)
-	errorMap["lastName"] = ValidateLastName(c)
-	errorMap["dni"] = ValidateDNI(c)
-	errorMap["birthday"] = ValidateBirthday(c)
-	errorMap["gender"] = ValidateGender(c)
-	errorMap["maritalStatus"] = ValidateMaritalStatus(c)
-	errorMap["phone"] = ValidatePhone(c)
-	errorMap["email"] = ValidateEmail(c)
-	errorMap["address"] = ValidateAddress(c)
-	errorMap["postalCode"] = ValidatePostalCode(c)
-	errorMap["district"] = ValidateDistrict(c)
-	errorMap["memberNumber"] = ValidateMemberNumber(c)
-	errorMap["cuil"] = ValidateCUIL(c)
-	errorMap["idEnterprise"] = ValidateIdEnterprise(c)
-	errorMap["category"] = ValidateCategory(c)
-	errorMap["entryDate"] = ValidateEntryDate(c)
+	if valid, err = ValidateName(c); !valid {
+		errorMap["name"] = err
+	}
+	if valid, err = ValidateLastName(c); !valid {
+		errorMap["lastName"] = err
+	}
+	if valid, err = ValidateDNI(c); !valid {
+		errorMap["dni"] = err
+	}
+	if valid, err = ValidateBirthday(c); !valid {
+		errorMap["birthday"] = err
+	}
+	if valid, err = ValidateGender(c); !valid {
+		errorMap["gender"] = err
+	}
+	if valid, err = ValidateMaritalStatus(c); !valid {
+		errorMap["maritalStatus"] = err
+	}
+	if valid, err = ValidatePhone(c); !valid {
+		errorMap["phone"] = err
+	}
+	if valid, err = ValidateEmail(c); !valid {
+		errorMap["email"] = err
+	}
+	if valid, err = ValidateAddress(c); !valid {
+		errorMap["address"] = err
+	}
+	if valid, err = ValidatePostalCode(c); !valid {
+		errorMap["postalCode"] = err
+	}
+	if valid, err = ValidateDistrict(c); !valid {
+		errorMap["district"] = err
+	}
+	if valid, err = ValidateMemberNumber(c); !valid {
+		errorMap["memberNumber"] = err
+	}
+	if valid, err = ValidateCUIL(c); !valid {
+		errorMap["cuil"] = err
+	}
+	if valid, err = ValidateIdEnterprise(c); !valid {
+		errorMap["idEnterprise"] = err
+	}
+	if valid, err = ValidateCategory(c); !valid {
+		errorMap["category"] = err
+	}
+	if valid, err = ValidateEntryDate(c); !valid {
+		errorMap["entryDate"] = err
+	}
+
 	return errorMap
 }
-
-// falta chequear que sea alfanumerico
-
-// Gender VARCHAR(50) NOT NULL,
-// MaritalStatus VARCHAR(50) NOT NULL,
-// Phone VARCHAR(50) NOT NULL,
-// Email VARCHAR(50),
-// Address VARCHAR(50) NOT NULL,
-// PostalCode VARCHAR(10) NOT NULL,
-// District VARCHAR(50) NOT NULL,
-// MemberNumber VARCHAR(50) NOT NULL,
-// CUIL VARCHAR(50) NOT NULL,
-// IdEnterprise INT,
-// -- aca va sin NOT NULL, por si borras la empresa
-// Category VARCHAR(100) NOT NULL,
-// EntryDate VARCHAR(50) NOT NULL,
-// consultar que sea alfanumerico
-// 	if c.FormValue("id-enterprise") == "" {
-// 		errorMap["enterprise"] = "hay que elegir una empresa"
-// 	}
-// 	return errorMap
-// }
 
 func (member Member) GetTotalRows(c *fiber.Ctx) int {
 	var totalRows int

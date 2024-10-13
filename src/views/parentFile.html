@@ -16,7 +16,7 @@
                 </div> 
             </header>
             {{if eq .mode "create" }}
-            <form hx-post="/parent/{{$.parent.IdMember}}/create" hx-swap="#target-div">
+            <form hx-post="/parent/{{$.parent.IdMember}}/create" hx-target="#target-div">
                 <div class="form__section" id="form-section">
                     <div class="page-title">Agregar nuevo familiar</div>
             {{else if eq .mode "edit"}}
@@ -24,21 +24,25 @@
                 <div class="form__section">
                     <div class="page-title">{{$.parent.LastName}}, {{$.parent.Name}}</div>
             {{end}}
-            <input class="form-input field-12" type="text" name="name" value="{{$.parent.Name}}" placeholder="Nombres" disabled required>
+            <input class="form-input field-12" type="text" name="name" value="{{$.parent.Name}}" placeholder="Nombres" disabled>
             {{with .errorMap.name}}
-                <p>{{.}}</p>
+            <div class="error-div field-12">{{.}}</div>
             {{end}}
-            <input class="form-input field-12" type="text" name="last-name" value="{{$.parent.LastName}}" placeholder="Apellidos" disabled required>
+            <input class="form-input field-12" type="text" name="last-name" value="{{$.parent.LastName}}" placeholder="Apellidos" disabled>
             {{with .errorMap.lastName}}
-                <p>{{.}}</p>
+            <div class="error-div field-12">{{.}}</div>
             {{end}}
-            <input class="form-input field-12" type="text" name="rel" value="{{$.parent.Rel}}" placeholder="Parentesco" disabled required>
+            <input class="form-input field-12" type="text" name="rel" value="{{$.parent.Rel}}" placeholder="Parentesco" disabled>
             {{with .errorMap.rel}}
-                <p>{{.}}</p>
+            <div class="error-div field-12">{{.}}</div>
             {{end}}
-            <select class="form-input field-12" name="gender" id="gender" onchange="cambiarColorPorDefecto(value, id);" disabled required>
+            <input class="form-input field-12" type="text" name="birthday" value="{{$.parent.Birthday}}" placeholder="Fecha de Nacimiento" disabled>
+            {{with .errorMap.birthday}}
+            <div class="error-div field-12">{{.}}</div>
+            {{end}}
+            <select class="form-input field-12" name="gender" id="gender" onchange="cambiarColorPorDefecto(value, id);" disabled>
             {{if eq $.parent.Gender ""}}
-                <option value="">Género</option>
+                <option value="">--Elegir un género--</option>
             {{else}}
                 <option value="{{$.parent.Gender}}">{{$.parent.Gender}}</option>
             {{end}}               
@@ -47,15 +51,11 @@
                 <option value="Otro">Otro</option>
             </select>
             {{with .errorMap.gender}}
-                <p>{{.}}</p>
+            <div class="error-div field-12">{{.}}</div>
             {{end}}
-            <input class="form-input field-12" type="text" name="birthday" value="{{$.parent.Birthday}}" placeholder="Fecha de Nacimiento" disabled required>
-            {{with .errorMap.birthday}}
-                <p>{{.}}</p>
-            {{end}}
-            <input class="form-input field-12" type="text" name="cuil" value="{{$.parent.CUIL}}" placeholder="DNI" disabled required>
+            <input class="form-input field-12" type="text" name="cuil" value="{{$.parent.CUIL}}" placeholder="CUIL" disabled>
             {{with .errorMap.cuil}}
-                <p>{{.}}</p>
+            <div class="error-div field-12">{{.}}</div>
             {{end}}
             <input class="hide" type="number" name="id-member" value="{{$.parent.IdMember}}">
 
@@ -67,6 +67,8 @@
         </div>
     </form>
     
+    {{template "Scripts"}}
+
     {{if eq .mode "edit"}}
     <div class="btn-container">
         <button class="item-btn" onclick="enableInputs(); enableSelects(); showConfirmButton();">Editar</button>
@@ -76,10 +78,10 @@
     <script type="text/javascript">
         enableInputs();
         enableSelects();
-        </script>
+    </script>
     {{end}}
+    </div>
 </div>
-</div>
-{{template "Scripts"}}
+
 </body>
 </html>

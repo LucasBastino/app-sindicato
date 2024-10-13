@@ -24,27 +24,27 @@
                     <div class="page-title">{{$.member.LastName}}, {{$.member.Name}}</div>
         {{end}}
                         <div class="title-div field-12">Datos personales</div>
-                        <input class="form-input field-12" type="text" name="name" value="{{$.member.Name}}" placeholder="Nombres"  disabled>
+                        <input class="form-input field-12" type="text" name="name" value="{{$.member.Name}}" placeholder="Nombres" disabled>
                         {{with .errorMap.name}}
                             <div class="error-div field-12">{{.}}</div>
                         {{end}}
-                        <input class="form-input field-12" type="text" name="last-name" value="{{$.member.LastName}}" placeholder="Apellidos"  disabled>
+                        <input class="form-input field-12" type="text" name="last-name" value="{{$.member.LastName}}" placeholder="Apellidos" disabled>
                         {{with .errorMap.lastName}}
                             <div class="error-div field-12">{{.}}</div>
                         {{end}}
-                        <input class="form-input field-12" type="text" name="dni" value="{{$.member.DNI}}" placeholder="DNI"  disabled>
+                        <input class="form-input field-12" type="text" name="dni" value="{{$.member.DNI}}" placeholder="DNI" disabled>
                         {{with .errorMap.dni}}
                             <p class="error-div field-12">{{.}}</p>
                         {{end}}
 
-                        <input class="form-input field-12" type="text" name="birthday" value="{{$.member.Birthday}}" placeholder="Fecha de Nacimiento (DD/MM/AAAA)"  disabled>
+                        <input class="form-input field-12" type="text" name="birthday" value="{{$.member.Birthday}}" placeholder="Fecha de Nacimiento (DD/MM/AAAA)" disabled>
                         {{with .errorMap.birthday}}
                             <div class="error-div field-12">{{.}}</div>
                         {{end}}
-                        <select class="form-input field-12" name="gender" id="gender" onchange="cambiarColorPorDefecto(value, id);"  disabled>
-                            {{if eq .mode "create"}}
+                        <select class="form-input field-12" name="gender" id="gender" onchange="cambiarColorPorDefecto(value, id);" disabled>
+                            {{if eq $.member.Gender ""}}
                             <option value="">--Elegir un género--</option>
-                            {{else if eq .mode "edit"}}
+                            {{else}}
                             <option value="{{$.member.Gender}}">{{$.member.Gender}}</option>
                             {{end}}
                             <option value="Masculino">Masculino</option>
@@ -55,10 +55,10 @@
                             <div class="error-div field-12">{{.}}</div>
                         {{end}}
 
-                        <select class="form-input field-12" id="marital-status" name="marital-status" onchange="cambiarColorPorDefecto(value, id);"  disabled>
-                            {{if eq .mode "create"}}
+                        <select class="form-input field-12" id="marital-status" name="marital-status" onchange="cambiarColorPorDefecto(value, id);" disabled>
+                            {{if eq $.member.MaritalStatus ""}}
                             <option value="">--Elegir un estado civil--</option>
-                            {{else if eq .mode "edit"}}
+                            {{else}}
                             <option value="{{$.member.MaritalStatus}}">{{$.member.MaritalStatus}}</option>
                             {{end}}
                             <option value="Soltero">Soltero</option>
@@ -71,7 +71,7 @@
                             <div class="error-div field-12">{{.}}</div>
                         {{end}}
 
-                        <input class="form-input field-12" name="phone" type="text" value="{{$.member.Phone}}" placeholder="Teléfono"  disabled></input>
+                        <input class="form-input field-12" name="phone" type="text" value="{{$.member.Phone}}" placeholder="Teléfono" disabled></input>
                         {{with .errorMap.phone}}
                             <div class="error-div field-12">{{.}}</div>
                         {{end}}
@@ -80,29 +80,29 @@
                             <div class="error-div field-12">{{.}}</div>
                         {{end}}
                         <div class="title-div field-12">Domicilio</div>
-                        <input class="form-input field-12" type="text" name="address" value="{{$.member.Address}}" placeholder="Dirección"  disabled>
+                        <input class="form-input field-12" type="text" name="address" value="{{$.member.Address}}" placeholder="Dirección" disabled>
                         {{with .errorMap.address}}
                         <div class="error-div field-12">{{.}}</div>
                         {{end}}
-                        <input class="form-input field-12" type="text" name="postal-code" value="{{$.member.PostalCode}}" placeholder="Codigo Postal"  disabled>
+                        <input class="form-input field-12" type="text" name="postal-code" value="{{$.member.PostalCode}}" placeholder="Codigo Postal" disabled>
                         {{with .errorMap.postalCode}}
                         <div class="error-div field-12">{{.}}</div>
                         {{end}}
-                        <input class="form-input field-12" type="text" name="district" value="{{$.member.District}}" placeholder="Localidad"  disabled>
+                        <input class="form-input field-12" type="text" name="district" value="{{$.member.District}}" placeholder="Localidad" disabled>
                         {{with .errorMap.district}}
                         <div class="error-div field-12">{{.}}</div>
                         {{end}}
 
                         <div class="title-div field-12">Datos de la Obra Social</div>
-                        <input class="form-input field-12" type="text" name="member-number" value="{{$.member.MemberNumber}}" placeholder="Número de Afiliado"  disabled>
+                        <input class="form-input field-12" type="text" name="member-number" value="{{$.member.MemberNumber}}" placeholder="Número de Afiliado" disabled>
                         {{with .errorMap.memberNumber}}
                         <div class="error-div field-12">{{.}}</div>
                         {{end}}
-                        <input class="form-input field-12" type="text" name="cuil" value="{{$.member.CUIL}}" placeholder="CUIL"  disabled>
+                        <input class="form-input field-12" type="text" name="cuil" value="{{$.member.CUIL}}" placeholder="CUIL" disabled>
                         {{with .errorMap.cuil}}
                         <div class="error-div field-12">{{.}}</div>
                         {{end}}
-                        <select class="form-input field-12" name="id-enterprise" id="enterprise-select"  disabled>
+                        <select class="form-input field-12" name="id-enterprise" id="enterprise-select" disabled>
                             <!-- fijarse que pasa cuando la empresa es borrada y queda NULL -->
                             {{if eq $.member.IdEnterprise 0}}
                                 {{if eq .mode "create" }}
@@ -152,6 +152,8 @@
                     {{end}}
                 </div>
             </form>
+
+            AGREGAR FAMILIAR CUANDO BUSCAS Y NO HAY FAMILIARES
             
 
     {{template "Scripts"}}
