@@ -131,7 +131,7 @@ func RenderMemberParents(c *fiber.Ctx) error {
 	totalRows := getTotalRowsCaller(models.Parent{}, c)
 	if totalRows == 0 {
 		// si no hay resultados renderizar esto
-		return c.Render("searchWithNoResults", fiber.Map{})
+		return c.Render("noResultsParents", fiber.Map{})
 	} else {
 		// Busco los parents asociados a ese member
 		IdMember := getIdModelCaller(models.Member{}, c)
