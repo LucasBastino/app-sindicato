@@ -104,6 +104,8 @@ func RenderMemberTable(c *fiber.Ctx) error {
 		data := getFiberMapCaller(models.Member{}, members, searchKey, currentPage, someBefore, someAfter, totalPages, totalPagesArray)
 		data["enterprises"] = enterprises
 		data["mode"] = "table"
+		role := c.Locals("claims").(jwt.MapClaims)["role"]
+		data["role"] = role
 
 		// renderizo la tabla y le envio el map con las variables
 		return c.Render("memberTable", data)
@@ -116,8 +118,6 @@ func RenderMemberFile(c *fiber.Ctx) error {
 	m := searchOneModelByIdCaller(models.Member{}, c)
 	role := c.Locals("claims").(jwt.MapClaims)["role"]
 	data := fiber.Map{"member": m, "mode": "edit", "role": role, "enterprises": enterprises}
-	originalUrl := c.OriginalURL()
-	data["originalUrl"] = originalUrl
 	return c.Render("memberFile", data)
 }
 
@@ -130,15 +130,16 @@ func RenderCreateMemberForm(c *fiber.Ctx) error {
 
 func RenderMemberParents(c *fiber.Ctx) error {
 	// calculo la cantidad de resultados
+	role := c.Locals("claims").(jwt.MapClaims)["role"]
 	totalRows := getTotalRowsCaller(models.Parent{}, c)
 	if totalRows == 0 {
 		// si no hay resultados renderizar esto
-		return c.Render("noResultsParents", fiber.Map{})
+		return c.Render("noResultsParents", fiber.Map{"role": role})
 	} else {
 		// Busco los parents asociados a ese member
 		IdMember := getIdModelCaller(models.Member{}, c)
 		parents, _ := searchModelsCaller(models.Parent{}, c, 0)
-		data := fiber.Map{"idMember": IdMember, "parents": parents, "mode": "edit"}
+		data := fiber.Map{"idMember": IdMember, "role": role, "parents": parents, "mode": "edit"}
 		return c.Render("memberParentTable", data)
 	}
 }

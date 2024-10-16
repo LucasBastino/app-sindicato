@@ -9,7 +9,9 @@
                 <nav class="navbar navbar-expand navbar-light bg-light">
                     <a class="navbar-brand" href="/">Sindicato</a>
                     {{if eq .mode "edit"}}
+                        {{if eq .role "admin"}}
                         <a class="nav-item nav-link active py-0" href="/form/createMember" id="add-member-btn"><button class="btn-add">Agregar un afiliado</button></a>
+                        {{end}}
                     {{end}}
                 </nav>
             </div> 
@@ -159,8 +161,10 @@
     {{if eq .mode "edit"}}
         <div class="btn-container">
             <button class="item-btn" type="submit" hx-get="/member/{{$.member.IdMember}}/parentTable" hx-trigger="click" hx-target="#parentTableDiv" onclick="showAddParentButton();">Familiares</button>
+            {{if eq .role "admin"}}
             <button class="item-btn" onclick="enableInputs(); showConfirmButton(); enableSelects();">Editar</button>
             <button class="btn-danger item-btn" hx-delete="/member/{{$.member.IdMember}}/delete" hx-headers='{"mode": "file"}' hx-confirm="¿Estás seguro que deseas eliminar el afiliado?" hx-target="#target-div">Eliminar afiliado</button>
+            {{end}}
         </div>
     {{end}}
         <div id="parentTableDiv"></div>

@@ -8,17 +8,15 @@
                 <div class="nav-container">
                     <nav class="navbar navbar-expand navbar-light bg-light">
                         <a class="navbar-brand" href="/">Sindicato</a>
-                        {{if eq .mode "edit"}}
-                        <!-- cambiar esto -->
-                            <a class="nav-item nav-link active py-0" href="/form/createMember" id="add-parent-btn"><button class="btn-add">Agregar un familiar</button></a>
-                        {{end}}
                     </nav>
                 </div> 
             </header>
             {{if eq .mode "create" }}
             <form hx-post="/parent/{{$.parent.IdMember}}/create" hx-target="#target-div">
                 <div class="form__section" id="form-section">
+                    {{if eq .role "admin"}}
                     <div class="page-title">Agregar nuevo familiar</div>
+                    {{end}}
             {{else if eq .mode "edit"}}
             <form hx-put="/parent/{{$.parent.IdMember}}/{{$.parent.IdParent}}/edit" hx-target="#target-div">
                 <div class="form__section">
@@ -71,7 +69,10 @@
 
     {{if eq .mode "edit"}}
     <div class="btn-container">
+        {{if eq .role "admin"}}
         <button class="item-btn" onclick="enableInputs(); enableSelects(); showConfirmButton();">Editar</button>
+        <!-- falta BOTON ELIMINAR -->
+         {{end}}
         <a href="/member/{{$.parent.IdMember}}/file"><button class="item-btn">Volver al afiliado</button></a>
     </div>
     {{else if eq .mode "create"}}

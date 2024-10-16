@@ -4,6 +4,7 @@ import (
 	i "github.com/LucasBastino/app-sindicato/src/interfaces"
 	"github.com/LucasBastino/app-sindicato/src/models"
 	"github.com/gofiber/fiber/v2"
+	"github.com/golang-jwt/jwt/v5"
 )
 
 func CreateParent(c *fiber.Ctx) error {
@@ -40,37 +41,10 @@ func EditParent(c *fiber.Ctx) error {
 	}
 }
 
-func RenderParentTable(c *fiber.Ctx) error {
-	// obtengo la currentPage del path
-	currentPage := GetPageFromPath(c)
-	// calculo la cantidad de resultados
-	totalRows := getTotalRowsCaller(models.Parent{}, c)
-	if totalRows == 0 {
-		// si no hay resultados renderizar esto
-		return c.Render("searchWithNoResults", fiber.Map{})
-	} else {
-		// si hay resultados...
-
-		// calcular totalPages
-		totalPages, offset, someBefore, someAfter := GetPaginationData(currentPage, totalRows)
-
-		// busco los miembros y devuelvo el searchKey para usarlo nuevamente en la paginacion
-		parents, searchKey := searchModelsCaller(models.Parent{}, c, offset)
-
-		// hago un array para poder recorrerlo y crear botones cuando hay menos de 10 paginas en el template
-		totalPagesArray := GetTotalPagesArray(totalPages)
-
-		// creo un map con todas las variables
-		mapData := getFiberMapCaller(models.Parent{}, parents, searchKey, currentPage, someBefore, someAfter, totalPages, totalPagesArray)
-
-		// renderizo la tabla y le envio el map con las variables
-		return c.Render("parentTable", mapData)
-	}
-}
-
 func RenderParentFile(c *fiber.Ctx) error {
 	p := searchOneModelByIdCaller(models.Parent{}, c)
-	data := fiber.Map{"parent": p, "mode": "edit"}
+	role := c.Locals("claims").(jwt.MapClaims)["role"]
+	data := fiber.Map{"parent": p, "role": role, "mode": "edit"}
 	return c.Render("parentFile", data)
 }
 

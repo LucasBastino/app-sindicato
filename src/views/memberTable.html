@@ -1,5 +1,6 @@
 {{$enterprises := .enterprises}}
 {{$mode := .mode}}
+{{$role := .role}}
 
 <table class="table table-striped w-90 ">
     <tr>
@@ -9,7 +10,9 @@
         <th>Empresa</th>
         {{end}}
         <th>Ficha</th>
+        {{if eq $role "admin"}}
         <th>Eliminar</th>
+        {{end}}
     </tr>
 
     {{range $_, $m := .members}}
@@ -34,7 +37,9 @@
                 </button>
             </a>
         </td>
+        {{if eq $role "admin"}}
         <td><button class="btn-delete" hx-delete="/member/{{$m.IdMember}}/delete" hx-headers='{"mode": "{{$.mode}}", "idEnterprise": "{{$m.IdEnterprise}}"}' hx-confirm="¿Estás seguro que deseas eliminar el afiliado?" hx-target="#tableDiv"><i class="bi bi-x-square"></i></button></td>  
+        {{end}}
     </tr>
     {{end}}
  </table>

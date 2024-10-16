@@ -22,9 +22,10 @@
                 </div>
         
                 <!-- buttons -->
+                {{if eq .role "admin"}}
                 <a class="nav-item nav-link active py-0" href="/form/createMember" id="add-member-btn"><button class="btn-add">Agregar un afiliado</button> 
                 <a class="nav-item nav-link active py-0 hide" href="/form/createEnterprise" id="add-enterprise-btn"><button class="btn-add">Agregar una empresa</button> 
-        
+                {{end}}
         
                 <a class="nav-item-right" href="/renderElectoralMemberList">Padrón</a>
             </nav>

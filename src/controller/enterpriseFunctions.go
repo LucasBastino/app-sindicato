@@ -9,6 +9,7 @@ import (
 	i "github.com/LucasBastino/app-sindicato/src/interfaces"
 	"github.com/LucasBastino/app-sindicato/src/models"
 	"github.com/gofiber/fiber/v2"
+	"github.com/golang-jwt/jwt/v5"
 )
 
 func CreateEnterprise(c *fiber.Ctx) error {
@@ -70,7 +71,8 @@ func RenderEnterpriseTable(c *fiber.Ctx) error {
 
 		// creo un map con todas las variables
 		data := getFiberMapCaller(models.Enterprise{}, enterprises, searchKey, currentPage, someBefore, someAfter, totalPages, totalPagesArray)
-
+		role := c.Locals("claims").(jwt.MapClaims)["role"]
+		data["role"] = role
 		// renderizo la tabla y le envio el map con las variables
 		return c.Render("enterpriseTable", data)
 	}
@@ -79,7 +81,8 @@ func RenderEnterpriseTable(c *fiber.Ctx) error {
 func RenderEnterpriseFile(c *fiber.Ctx) error {
 	e := searchOneModelByIdCaller(models.Enterprise{}, c)
 	numberOfMembers := GetNumberOfMembers(e.IdEnterprise, "")
-	data := fiber.Map{"enterprise": e, "numberOfMembers": numberOfMembers, "mode": "edit"}
+	role := c.Locals("claims").(jwt.MapClaims)["role"]
+	data := fiber.Map{"enterprise": e, "role": role, "numberOfMembers": numberOfMembers, "mode": "edit"}
 	return c.Render("enterpriseFile", data)
 }
 
@@ -149,6 +152,8 @@ func RenderEnterpriseMembers(c *fiber.Ctx) error {
 		data := getFiberMapCaller(models.Member{}, members, searchKey, currentPage, someBefore, someAfter, totalPages, totalPagesArray)
 		data["mode"] = "enterpriseMemberTable"
 		data["IdEnterprise"] = IdEnterprise
+		role := c.Locals("claims").(jwt.MapClaims)["role"]
+		data["role"] = role
 		// renderizo la tabla y le envio el map con las variables
 		return c.Render("memberTable", data)
 	}

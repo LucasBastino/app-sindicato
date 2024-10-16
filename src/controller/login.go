@@ -47,23 +47,22 @@ func LoginUser(ctx *fiber.Ctx) error {
 	return ctx.Render("loginSuccesful", fiber.Map{})
 }
 
-// func VerifyAdminToken(c *fiber.Ctx) error {
-// 	tokenStr := c.Cookies("Authorization")
-// 	token, err := jwt.Parse(tokenStr, func(t *jwt.Token) (interface{}, error) {
-// 		return []byte(os.Getenv("JWT_SECRET")), nil
-// 	})
-// 	if err != nil {
-// 		return c.Render("sessionExpired", fiber.Map{"error": "session expired"})
-// 	}
-// 	claims := token.Claims.(jwt.MapClaims)
-// 	c.Locals("claims", claims)
-// 	fmt.Println(claims)
-// 	// if claims["role"] != "admin" {
-// 	// 	return c.Render("sessionExpired", fiber.Map{"error": "user is not admin"})
-// 	// }
-// 	return c.Next()
+func VerifyAdmin(c *fiber.Ctx) error {
+	role := c.Locals("claims").(jwt.MapClaims)["role"]
+	if role == "admin" {
+		return c.Next()
+	} else {
+		return c.Render("sessionExpired", fiber.Map{"error": "user is not admin"})
+	}
+}
 
-// }
+func VerifyAdminOrGuest(c *fiber.Ctx) error {
+	role := c.Locals("claims").(jwt.MapClaims)["role"]
+	if role == "admin" || role == "guest" {
+		return c.Next()
+	}
+	return c.Render("sessionExpired", fiber.Map{"error": "user is not admin or guest"})
+}
 
 func VerifyToken(c *fiber.Ctx) error {
 	tokenStr := c.Cookies("Authorization")
@@ -75,6 +74,5 @@ func VerifyToken(c *fiber.Ctx) error {
 	}
 	claims := token.Claims.(jwt.MapClaims)
 	c.Locals("claims", claims)
-	fmt.Println(claims)
 	return c.Next()
 }
