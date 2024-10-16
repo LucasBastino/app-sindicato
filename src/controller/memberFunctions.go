@@ -6,6 +6,7 @@ import (
 	i "github.com/LucasBastino/app-sindicato/src/interfaces"
 	"github.com/LucasBastino/app-sindicato/src/models"
 	"github.com/gofiber/fiber/v2"
+	"github.com/golang-jwt/jwt/v5"
 )
 
 func CreateMember(c *fiber.Ctx) error {
@@ -113,7 +114,8 @@ func RenderMemberFile(c *fiber.Ctx) error {
 	// Busco el miembro por ID y renderizo su archivo
 	enterprises := getAllModelsCaller(models.Enterprise{})
 	m := searchOneModelByIdCaller(models.Member{}, c)
-	data := fiber.Map{"member": m, "mode": "edit", "enterprises": enterprises}
+	role := c.Locals("claims").(jwt.MapClaims)["role"]
+	data := fiber.Map{"member": m, "mode": "edit", "role": role, "enterprises": enterprises}
 	originalUrl := c.OriginalURL()
 	data["originalUrl"] = originalUrl
 	return c.Render("memberFile", data)
