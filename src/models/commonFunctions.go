@@ -271,7 +271,7 @@ func isAlphanumeric(value, allowed string) (bool, string) {
 	value = strings.ToLower(value)
 	for i := range value {
 		if !strings.Contains(characters, string(value[i])) {
-			return false, "El campo posee un caracter erróneo2"
+			return false, "El campo posee un caracter erróneo"
 		}
 	}
 	return true, ""

@@ -31,12 +31,13 @@ func EditParent(c *fiber.Ctx) error {
 	p := parserCaller(i.ParentParser{}, c)
 	IdParent := getIdModelCaller(p, c)
 	p.IdParent = IdParent
+	role := c.Locals("claims").(jwt.MapClaims)["role"]
 	if len(errorMap) > 0 {
-		data := fiber.Map{"parent": p, "mode": "edit", "errorMap": errorMap}
+		data := fiber.Map{"parent": p, "mode": "edit", "role": role, "errorMap": errorMap}
 		return c.Render("parentFile", data)
 	} else {
 		editModelCaller(p)
-		data := fiber.Map{"parent": p, "mode": "edit"}
+		data := fiber.Map{"parent": p, "mode": "edit", "role": role}
 		return c.Render("parentFile", data)
 	}
 }

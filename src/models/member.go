@@ -36,6 +36,7 @@ func (m Member) Imprimir() {
 func (member Member) InsertModel() Member {
 	// formateo la fecha nac para que empiece con el año
 	member.Birthday = FormatToYYYYMMDD(member.Birthday)
+	member.EntryDate = FormatToYYYYMMDD(member.EntryDate)
 	insert, err := database.DB.Query(fmt.Sprintf(`
 		INSERT INTO MemberTable
 		(Name,
@@ -104,6 +105,7 @@ func (member Member) DeleteModel() {
 func (member Member) EditModel() {
 	// formateo la fecha nac para que empiece con el año
 	member.Birthday = FormatToYYYYMMDD(member.Birthday)
+	member.EntryDate = FormatToYYYYMMDD(member.EntryDate)
 	update, err := database.DB.Query(fmt.Sprintf(`
 		UPDATE MemberTable
 		SET

@@ -71,3 +71,19 @@ function showAddParentButton(){
 function hideAddParentButton(){
     document.getElementById('add-parent-button').style.display = 'none'
 }
+
+function showEnterpriseSelect(){
+    document.getElementById('enterprise-select').style.display = 'inline'
+}
+
+function hideEnterpriseSelect(){
+    document.getElementById('enterprise-select').style.display = 'none'
+}
+
+function showEnterpriseButton(){
+    document.getElementById('enterprise-button').style.display = 'inline'
+}
+
+function hideEnterpriseButton(){
+    document.getElementById('enterprise-button').style.display = 'none'
+}

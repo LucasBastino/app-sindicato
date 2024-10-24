@@ -63,13 +63,14 @@ func EditMember(c *fiber.Ctx) error {
 	IdMember := getIdModelCaller(m, c)
 	// necesito poner esta linea ↑ para que se pueda editar 2 veces seguidas
 	m.IdMember = IdMember
+	role := c.Locals("claims").(jwt.MapClaims)["role"]
 	if len(errorMap) > 0 {
-		data := fiber.Map{"member": m, "mode": "edit", "enterprises": enterprises, "errorMap": errorMap}
+		data := fiber.Map{"member": m, "mode": "edit", "role": role, "enterprises": enterprises, "errorMap": errorMap}
 		return c.Render("memberFile", data)
 	} else {
 		editModelCaller(m)
 		// hacer esto esta bien? estoy mostrando datos del nuevo member, no estan sacados de la database.DB
-		data := fiber.Map{"member": m, "mode": "edit", "enterprises": enterprises}
+		data := fiber.Map{"member": m, "mode": "edit", "role": role, "enterprises": enterprises}
 		return c.Render("memberFile", data)
 
 	}

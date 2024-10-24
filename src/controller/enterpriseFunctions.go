@@ -38,13 +38,14 @@ func EditEnterprise(c *fiber.Ctx) error {
 	e := parserCaller(i.EnterpriseParser{}, c)
 	IdEnterprise := getIdModelCaller(e, c)
 	e.IdEnterprise = IdEnterprise
+	role := c.Locals("claims").(jwt.MapClaims)["role"]
 	if len(errorMap) > 0 {
-		data := fiber.Map{"enterprise": e, "mode": "edit", "errorMap": errorMap}
+		data := fiber.Map{"enterprise": e, "mode": "edit", "role": role, "errorMap": errorMap}
 		return c.Render("enterpriseFile", data)
 	} else {
 		editModelCaller(e)
 		numberOfMembers := GetNumberOfMembers(e.IdEnterprise, "")
-		data := fiber.Map{"enterprise": e, "numberOfMembers": numberOfMembers, "mode": "edit"}
+		data := fiber.Map{"enterprise": e, "numberOfMembers": numberOfMembers, "role": role, "mode": "edit"}
 		return c.Render("enterpriseFile", data)
 	}
 }

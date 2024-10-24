@@ -105,7 +105,24 @@
                         {{with .errorMap.cuil}}
                         <div class="error-div field-12">{{.}}</div>
                         {{end}}
-                        <select class="form-input field-12" name="id-enterprise" id="enterprise-select" disabled>
+                        {{if eq .mode "edit" }}
+                            {{if eq $.member.IdEnterprise 0}}
+                                    <div class="item-btn btn-primary" id="enterprise-button">SIN EMPRESA</div>
+                            {{else}}
+                                {{range $_, $e := .enterprises}}
+                                    {{if eq $e.IdEnterprise $.member.IdEnterprise}}
+                                    <div id="enterprise-button"><a href="/enterprise/{{$e.IdEnterprise}}/file"><div class="item-btn btn-primary">{{$e.Name}}</div></a></div>
+                                    {{end}}
+                                {{end}}
+                            {{end}}
+                        {{end}}
+                        
+                        {{if eq .mode "edit"}}
+                            <select class="hide form-input field-12 " name="id-enterprise" id="enterprise-select" disabled>
+                        {{else if eq .mode "create"}}
+                            <select class="form-input field-12" name="id-enterprise" id="enterprise-select" disabled></select>
+                        {{end}}
+
                             <!-- fijarse que pasa cuando la empresa es borrada y queda NULL -->
                             {{if eq $.member.IdEnterprise 0}}
                                 {{if eq .mode "create" }}
@@ -151,7 +168,7 @@
                     {{if eq .mode "create"}}
                         <button type="submit" class="item-btn btn-submit">Enviar</button>
                     {{else if eq .mode "edit"}}
-                        <button type="submit" class="item-btn hide btn-submit">Confirmar</button>
+                        <button type="submit" class="item-btn hide btn-submit" onclick="hideEnterpriseSelect(); showEnterpriseButton();">Confirmar</button>
                     {{end}}
                 </div>
             </form>            
@@ -162,7 +179,7 @@
         <div class="btn-container">
             <button class="item-btn" type="submit" hx-get="/member/{{$.member.IdMember}}/parentTable" hx-trigger="click" hx-target="#parentTableDiv" onclick="showAddParentButton();">Familiares</button>
             {{if eq .role "admin"}}
-            <button class="item-btn" onclick="enableInputs(); showConfirmButton(); enableSelects();">Editar</button>
+            <button class="item-btn" onclick="enableInputs(); showConfirmButton(); enableSelects(); hideEnterpriseButton(); showEnterpriseSelect();">Editar</button>
             <button class="btn-danger item-btn" hx-delete="/member/{{$.member.IdMember}}/delete" hx-headers='{"mode": "file"}' hx-confirm="¿Estás seguro que deseas eliminar el afiliado?" hx-target="#target-div">Eliminar afiliado</button>
             {{end}}
         </div>
@@ -170,7 +187,8 @@
         <div id="parentTableDiv"></div>
     </div>
 </div>
-
+<h2>{{.role}} </h2>
+<h2>{{.mode}} </h2>
 {{if eq .mode "create"}}
     <script type="text/javascript">
         enableInputs();

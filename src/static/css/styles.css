@@ -114,9 +114,7 @@ select:disabled{
   display:inline
 }
 
-.hide{
-  display: none
-}
+
 
 .form-input, .form-select {
   margin: 3em 2em;
@@ -131,6 +129,10 @@ select:disabled{
   padding: 5px;
   margin: 10px
 }
+
+.hide{
+  display: none
+} 
 
 .btn-pagination.disabled{
   background-color: #fefefe;

@@ -3,7 +3,7 @@ CREATE TABLE MemberTable(
     Name VARCHAR(50),
     DNI VARCHAR(12),
     IdEnterprise INT,
-    FOREIGN KEY (IdEnterprise) REFERENCES EnterpriseTable(IdEnterprise) ON DELETE SET NULL
+    FOREIGN KEY (IdEnterprise) REFERENCES EnterpriseTable(IdEnterprise) ON DELETE NO ACTION
    
 )
 
