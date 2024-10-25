@@ -6,13 +6,15 @@ import (
 	"github.com/LucasBastino/app-sindicato/src/database"
 	"github.com/LucasBastino/app-sindicato/src/models"
 	"github.com/gofiber/fiber/v2"
+	"github.com/golang-jwt/jwt/v5"
 	// "syscall/js"
 )
 
 // ------------------------------------
 
 func RenderIndex(c *fiber.Ctx) error {
-	return c.Render("index", fiber.Map{})
+	role := c.Locals("claims").(jwt.MapClaims)["role"]
+	return c.Render("index", fiber.Map{"role": role})
 	// tmpl := template.Must(template.ParseFiles("src/views/index.html"))
 	// return tmpl.Execute(c, nil)
 }

@@ -29,8 +29,17 @@ func CreateEnterprise(c *fiber.Ctx) error {
 func DeleteEnterprise(c *fiber.Ctx) error {
 	IdEnterprise := getIdModelCaller(models.Enterprise{}, c)
 	e := models.Enterprise{IdEnterprise: IdEnterprise}
+	// members := getAllEnterpriseMembers(IdEnterprise)
 	deleteModelCaller(e)
-	return RenderEnterpriseTable(c)
+	// setIdEnterpriseToZero(members)
+	switch c.Get("mode") {
+	case "table":
+		return RenderEnterpriseTable(c)
+	case "edit":
+		return c.Render("redirect", fiber.Map{"path": "/"})
+	default:
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "error with deleting mode"})
+	}
 }
 
 func EditEnterprise(c *fiber.Ctx) error {
@@ -44,7 +53,7 @@ func EditEnterprise(c *fiber.Ctx) error {
 		return c.Render("enterpriseFile", data)
 	} else {
 		editModelCaller(e)
-		numberOfMembers := GetNumberOfMembers(e.IdEnterprise, "")
+		numberOfMembers := getNumberOfMembers(e.IdEnterprise, "")
 		data := fiber.Map{"enterprise": e, "numberOfMembers": numberOfMembers, "role": role, "mode": "edit"}
 		return c.Render("enterpriseFile", data)
 	}
@@ -81,13 +90,13 @@ func RenderEnterpriseTable(c *fiber.Ctx) error {
 
 func RenderEnterpriseFile(c *fiber.Ctx) error {
 	e := searchOneModelByIdCaller(models.Enterprise{}, c)
-	numberOfMembers := GetNumberOfMembers(e.IdEnterprise, "")
+	numberOfMembers := getNumberOfMembers(e.IdEnterprise, "")
 	role := c.Locals("claims").(jwt.MapClaims)["role"]
 	data := fiber.Map{"enterprise": e, "role": role, "numberOfMembers": numberOfMembers, "mode": "edit"}
 	return c.Render("enterpriseFile", data)
 }
 
-func GetNumberOfMembers(IdEnterprise int, searchKey string) int {
+func getNumberOfMembers(IdEnterprise int, searchKey string) int {
 	var totalRows int
 	row := database.DB.QueryRow(fmt.Sprintf(`
 		SELECT COUNT(*) FROM MemberTable 
@@ -131,7 +140,7 @@ func RenderEnterpriseMembers(c *fiber.Ctx) error {
 	}()
 
 	// calculo la cantidad de resultados
-	totalRows := GetNumberOfMembers(IdEnterprise, searchKey)
+	totalRows := getNumberOfMembers(IdEnterprise, searchKey)
 
 	if totalRows == 0 {
 		// si no hay resultados renderizar esto
@@ -144,7 +153,7 @@ func RenderEnterpriseMembers(c *fiber.Ctx) error {
 
 		// busco los miembros y devuelvo el searchKey para usarlo nuevamente en la paginacion
 		searchKey := c.FormValue("search-key")
-		members := GetEnterpriseMembers(IdEnterprise, searchKey, offset)
+		members := getEnterpriseMembers(IdEnterprise, searchKey, offset)
 
 		// hago un array para poder recorrerlo y crear botones cuando hay menos de 10 paginas en el template
 		totalPagesArray := GetTotalPagesArray(totalPages)
@@ -160,7 +169,7 @@ func RenderEnterpriseMembers(c *fiber.Ctx) error {
 	}
 }
 
-func GetEnterpriseMembers(IdEnterprise int, searchKey string, offset int) []models.Member {
+func getEnterpriseMembers(IdEnterprise int, searchKey string, offset int) []models.Member {
 	result, err := database.DB.Query(fmt.Sprintf(`
 			SELECT * FROM MemberTable 
 			WHERE IdEnterprise = %d
@@ -172,3 +181,27 @@ func GetEnterpriseMembers(IdEnterprise int, searchKey string, offset int) []mode
 	_, members := models.Member{}.ScanResult(result, false)
 	return members
 }
+
+func getAllEnterpriseMembers(IdEnterprise int) []models.Member {
+	result, err := database.DB.Query(fmt.Sprintf(`
+			SELECT * FROM MemberTable WHERE IdEnterprise = %d`, IdEnterprise))
+	if err != nil {
+		fmt.Println("error searching member in DB")
+		panic(err)
+	}
+	_, members := models.Member{}.ScanResult(result, false)
+	return members
+}
+
+
+// func setIdEnterpriseToZero(members []models.Member){
+// 	for _, m := range members{
+// 		update, err := database.DB.Query(fmt.Sprintf(`
+// 		UPDATE MemberTable SET IdEnterprise = 0 WHERE IdMember = %d`, m.IdMember))
+// 		if err!=nil{
+// 			fmt.Println("error setting IdEnterprise to '0'")
+// 			panic(err)
+// 		}
+// 		update.Close()
+// 	}
+// }

@@ -111,4 +111,4 @@ CREATE TABLE EnterpriseTable(
     Phone VARCHAR(50)
 )
 
-SELECT * FROM MemberTable WHERE CAST(Birthday AS DATE) > '2022-01-01'
+SELECT * FROM MemberTable WHERE `LastName` = 'Alonso'

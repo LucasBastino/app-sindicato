@@ -24,7 +24,7 @@ section {
 
 .page-title{
   text-align: center;
-  font-size: 2em;
+  font-size: 3em;
   font-weight: 700;
   width: 100%;
 }
@@ -114,20 +114,22 @@ select:disabled{
   display:inline
 }
 
+.input-container{
+  display:flex;
+}
 
 
 .form-input, .form-select {
-  margin: 3em 2em;
   font-size: 1em;
   background-color: inherit;
   border: none;
   border-bottom: 2px solid #000000;
   outline: none;
   color: #000;
-/*  */
-  display: block;
-  padding: 5px;
-  margin: 10px
+  /* display: inline; */
+  padding: 5px 0px 5px 5px;
+  margin: 10px 0px 10px 10px;
+  /* justify-self: right; */
 }
 
 .hide{
@@ -202,20 +204,26 @@ form{
 }
 
 .title-div {
+  font-size: 1.5em;
   font-weight: 700;
-  margin: 3em 0 0.7em 0;
+  margin: 1.6em 0 0.7em 0;
 }
 
-.field-3{
-  flex-basis: 30%
+.field-tag{
+  align-self: center;
+  font-weight: 500;
+}
+
+.field-2{
+  flex-basis: 15%
 }
 
 .field-6 {
   flex-basis: 40%;
 }
 
-.field-9{
-  flex-basis: 60%;
+.field-100{
+  flex-basis: 100%;
 }
 
 .field-12 {
@@ -231,6 +239,15 @@ form{
 .item-btn{
   margin: 2em;
   align-self: center;
+}
+
+.enterprise-btn{
+  background-color:#EEEEEE;
+  border: 2px solid black;
+  margin-top: 1.5em;
+  margin-bottom: 1em;
+  align-self: center;
+  padding: 5px 10px;
 }
 
 .btn-submit{
@@ -259,6 +276,11 @@ form{
 
 a{
   color:black
+}
+
+a:hover{
+  color:black;
+  text-decoration: none;
 }
 
 .static-input:focus{

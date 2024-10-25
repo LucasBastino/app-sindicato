@@ -35,12 +35,12 @@ func DeleteMember(c *fiber.Ctx) error {
 	deleteModelCaller(m)
 
 	// check if the member was deleted
+	
 	checkDeleted := checkDeletedCaller(models.Member{}, IdMember)
 	if !checkDeleted {
 		return c.Render("deleteUnsuccesfull", fiber.Map{"error": "error eliminando afiliado"})
 	} else {
 
-		// "from" was the route from the request was send
 		switch c.Get("mode") {
 		case "table":
 			return RenderMemberTable(c)
@@ -49,7 +49,7 @@ func DeleteMember(c *fiber.Ctx) error {
 		case "enterpriseMemberTable":
 			return RenderEnterpriseMembers(c)
 		default:
-			return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "error deleting member"})
+			return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "error with deleting mode"})
 		}
 
 	}

@@ -176,13 +176,19 @@ func (member Member) SearchOneModelById(c *fiber.Ctx) Member {
 
 func (member Member) SearchModels(c *fiber.Ctx, offset int) ([]Member, string) {
 	searchKey := c.FormValue("search-key")
+	// no se puede hacer asi porque los members con id enterprise null no aparecen
+	// result, err := database.DB.Query(fmt.Sprintf(`
+	// 	SELECT M.* FROM MemberTable M INNER JOIN EnterpriseTable E ON M.IdEnterprise = E.IdEnterprise 
+	// 	WHERE 
+	// 	M.Name LIKE '%%%s%%' OR M.LastName LIKE '%%%s%%' OR M.DNI LIKE '%%%s%%' 
+	// 	OR E.Name LIKE '%%%s%%' OR E.EnterpriseNumber LIKE '%%%s%%'
+	// 	ORDER BY M.LastName ASC LIMIT 10 OFFSET %d`,
+	// 	searchKey, searchKey, searchKey, searchKey, searchKey, offset))
 	result, err := database.DB.Query(fmt.Sprintf(`
-		SELECT M.* FROM MemberTable M INNER JOIN EnterpriseTable E ON M.IdEnterprise = E.IdEnterprise 
-		WHERE 
-		M.Name LIKE '%%%s%%' OR M.LastName LIKE '%%%s%%' OR M.DNI LIKE '%%%s%%' 
-		OR E.Name LIKE '%%%s%%' OR E.EnterpriseNumber LIKE '%%%s%%'
-		ORDER BY M.LastName ASC LIMIT 10 OFFSET %d`,
-		searchKey, searchKey, searchKey, searchKey, searchKey, offset))
+		SELECT * FROM MemberTable WHERE 
+		Name LIKE '%%%s%%' OR LastName LIKE '%%%s%%' OR DNI LIKE '%%%s%%' 
+		ORDER BY LastName ASC LIMIT 10 OFFSET %d`,
+		searchKey, searchKey, searchKey, offset))
 	if err != nil {
 		fmt.Println("error searching member in DB")
 		panic(err)
@@ -251,13 +257,18 @@ func (m Member) ValidateFields(c *fiber.Ctx) map[string]string {
 func (member Member) GetTotalRows(c *fiber.Ctx) int {
 	var totalRows int
 	searchKey := c.FormValue("search-key")
-	row := database.DB.QueryRow(fmt.Sprintf(`
-		SELECT COUNT(*) FROM MemberTable M INNER JOIN EnterpriseTable E ON M.IdEnterprise = E.IdEnterprise 
-		WHERE 
-		M.Name LIKE '%%%s%%' OR M.LastName LIKE '%%%s%%' OR M.DNI LIKE '%%%s%%' 
-		OR E.Name LIKE '%%%s%%' OR E.EnterpriseNumber LIKE '%%%s%%'`,
-		searchKey, searchKey, searchKey, searchKey, searchKey))
+	// no puedo hacer asi porque sino los afiliados con id enterprise null no aparecen
+	// row := database.DB.QueryRow(fmt.Sprintf(`
+	// 	SELECT COUNT(*) FROM MemberTable M INNER JOIN EnterpriseTable E ON M.IdEnterprise = E.IdEnterprise 
+	// 	WHERE 
+	// 	M.Name LIKE '%%%s%%' OR M.LastName LIKE '%%%s%%' OR M.DNI LIKE '%%%s%%' 
+	// 	OR E.Name LIKE '%%%s%%' OR E.EnterpriseNumber LIKE '%%%s%%'`,
+	// 	searchKey, searchKey, searchKey, searchKey, searchKey))
 	// row.Scan copia el numero de fila en la variable count
+	row := database.DB.QueryRow(fmt.Sprintf(`
+		SELECT COUNT(*) FROM MemberTable WHERE
+		Name LIKE '%%%s%%' OR LastName LIKE '%%%s%%' OR DNI LIKE '%%%s%%'`,
+		searchKey, searchKey, searchKey))
 	err := row.Scan(&totalRows)
 	if err != nil {
 		log.Fatal(err)
