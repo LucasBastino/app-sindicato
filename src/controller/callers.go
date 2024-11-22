@@ -18,8 +18,8 @@ func deleteModelCaller[M models.TypeModel](m i.IModel[M]) {
 	m.DeleteModel()
 }
 
-func editModelCaller[M models.TypeModel](m i.IModel[M]) {
-	m.EditModel()
+func updateModelCaller[M models.TypeModel](m i.IModel[M]) {
+	m.UpdateModel()
 }
 
 func getIdModelCaller[M models.TypeModel](m i.IModel[M], c *fiber.Ctx) int {

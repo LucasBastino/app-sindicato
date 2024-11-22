@@ -1,6 +1,6 @@
 {{define "Header"}}
     <header>
-            <div class="nav-container">
+        <div class="nav-container">
             <nav class="navbar navbar-expand navbar-light bg-light">
                 <a class="navbar-brand" href="#" onclick="showAddMemberBtn(); hideAddEnterpriseBtn();" hx-get="/member/renderTable" hx-trigger="click" hx-target="#tableDiv">Sindicato</a>
                 <div class="navbar-nav">
@@ -23,11 +23,11 @@
         
                 <!-- buttons -->
                 {{if eq .role "admin"}}
-                <a class="nav-item nav-link active py-0" href="/form/createMember" id="add-member-btn"><button class="btn-add">Agregar un afiliado</button> 
-                <a class="nav-item nav-link active py-0 hide" href="/form/createEnterprise" id="add-enterprise-btn"><button class="btn-add">Agregar una empresa</button> 
+                <a class="nav-item nav-link active py-0" href="/member/addForm" id="add-member-btn"><button class="btn-add">Agregar un afiliado</button> 
+                <a class="nav-item nav-link active py-0 hide" href="/enterprise/addForm" id="add-enterprise-btn"><button class="btn-add">Agregar una empresa</button> 
                 {{end}}
-        
-                <a class="nav-item-right" href="/renderElectoralMemberList">Padrón</a>
+                <a href="/renderElectoralMemberList"><div class="nav-item-right">Padrón</div></a>
+                <a class="nav-item-right" href="/logout">Salir</a>
             </nav>
         </div>
     </header>

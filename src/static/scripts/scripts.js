@@ -14,7 +14,10 @@ function enableSelects(){
 
 
 function showConfirmButton(){
-    button = document.querySelector(".btn-submit")
+    buttons = Array.from(document.querySelectorAll(".btn-submit"))
+    console.log(buttons)
+    // agarro el ultimo de los botones
+    button = buttons.pop()
     button.style.display = 'inline'
 }
 
@@ -86,4 +89,12 @@ function showEnterpriseButton(){
 
 function hideEnterpriseButton(){
     document.getElementById('enterprise-button').style.display = 'none'
+}
+
+function hideAddPaymentButton(){
+    document.getElementById('add-payment-btn').style.display = 'none'
+}
+
+function showAddPaymentBtn(){
+    document.getElementById('add-payment-btn').style.display = 'inline'
 }

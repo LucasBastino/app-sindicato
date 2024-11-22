@@ -10,7 +10,7 @@ import (
 type IModel[M models.TypeModel] interface {
 	InsertModel() M
 	DeleteModel()
-	EditModel()
+	UpdateModel()
 	GetIdModel(*fiber.Ctx) int
 	SearchOneModelById(*fiber.Ctx) M
 	SearchModels(*fiber.Ctx, int) ([]M, string)

@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"fmt"
 	"log"
+	"time"
 
 	"github.com/LucasBastino/app-sindicato/src/database"
 	"github.com/gofiber/fiber/v2"
@@ -18,6 +19,8 @@ type Enterprise struct {
 	District         string
 	PostalCode       string
 	Phone            string
+	CreatedAt        time.Time
+	UpdatedAt        time.Time
 }
 
 func (enterprise Enterprise) InsertModel() Enterprise {
@@ -46,14 +49,7 @@ func (enterprise Enterprise) InsertModel() Enterprise {
 	insert.Close()
 	result, err := database.DB.Query(`
 		SELECT
-		IdEnterprise,
-		Name,
-		EnterpriseNumber,
-		Address, 
-		CUIT, 
-		District, 
-		PostalCode, 
-		Phone
+		*
 		FROM EnterpriseTable
 		WHERE IdEnterprise = (SELECT LAST_INSERT_ID())`)
 	if err != nil {
@@ -64,6 +60,10 @@ func (enterprise Enterprise) InsertModel() Enterprise {
 }
 
 func (enterprise Enterprise) DeleteModel() {
+	if enterprise.IdEnterprise == 1 {
+		fmt.Println("internal error: cannot delete enterprise 1")
+		return
+	}
 	delete, err := database.DB.Query(fmt.Sprintf(`
 		DELETE FROM EnterpriseTable
 		WHERE IdEnterprise = '%d'`, enterprise.IdEnterprise))
@@ -76,7 +76,7 @@ func (enterprise Enterprise) DeleteModel() {
 
 }
 
-func (enterprise Enterprise) EditModel() {
+func (enterprise Enterprise) UpdateModel() {
 	update, err := database.DB.Query(fmt.Sprintf(`
 		UPDATE EnterpriseTable 
 		SET 
@@ -118,14 +118,7 @@ func (enterprise Enterprise) SearchOneModelById(c *fiber.Ctx) Enterprise {
 	IdEnterprise := enterprise.GetIdModel(c)
 	result, err := database.DB.Query(fmt.Sprintf(`
 		SELECT
-		IdEnterprise, 
-		Name,
-		EnterpriseNumber,
-		Address, 
-		CUIT, 
-		District, 
-		PostalCode, 
-		Phone
+		*
 		FROM EnterpriseTable 
 		WHERE IdEnterprise = '%d'`, IdEnterprise))
 	if err != nil {
@@ -142,25 +135,19 @@ func (enterprise Enterprise) SearchModels(c *fiber.Ctx, offset int) ([]Enterpris
 	searchKey := c.FormValue("search-key")
 	result, err := database.DB.Query(fmt.Sprintf(`
 		SELECT
-		IdEnterprise,
-		Name,
-		EnterpriseNumber,
-		Address, 
-		CUIT, 
-		District, 
-		PostalCode, 
-		Phone
+		*
 		FROM EnterpriseTable 
 		WHERE 
 		Name LIKE '%%%s%%' OR Address LIKE '%%%s%%' 
+		ORDER BY Name ASC
 		LIMIT 10 OFFSET %d`,
 		searchKey, searchKey, offset))
 	if err != nil {
 		fmt.Println("error searching Enterprise in DB")
 		panic(err)
 	}
-	_, enterprises := enterprise.ScanResult(result, false)
-	return enterprises, searchKey
+	_, ee := enterprise.ScanResult(result, false)
+	return ee, searchKey
 }
 
 func (enterprise Enterprise) ValidateFields(c *fiber.Ctx) map[string]string {
@@ -233,18 +220,21 @@ func (enterprise Enterprise) GetFiberMap(enterprises []Enterprise, searchKey str
 }
 
 func (enterprise Enterprise) GetAllModels() []Enterprise {
-	result, err := database.DB.Query("SELECT * FROM EnterpriseTable")
+	result, err := database.DB.Query(`
+		SELECT 
+		*
+		FROM EnterpriseTable`)
 	if err != nil {
 		fmt.Println("error searching enterprise in DB")
 		panic(err)
 	}
-	_, enterprises := enterprise.ScanResult(result, false)
-	return enterprises
+	_, ee := enterprise.ScanResult(result, false)
+	return ee
 }
 
 func (enterprise Enterprise) ScanResult(result *sql.Rows, onlyOne bool) (Enterprise, []Enterprise) {
 	var e Enterprise
-	var enterprises []Enterprise
+	var ee []Enterprise
 	for result.Next() {
 		err := result.Scan(
 			&e.IdEnterprise,
@@ -255,17 +245,19 @@ func (enterprise Enterprise) ScanResult(result *sql.Rows, onlyOne bool) (Enterpr
 			&e.District,
 			&e.PostalCode,
 			&e.Phone,
+			&e.CreatedAt,
+			&e.UpdatedAt,
 		)
 		if err != nil {
-			fmt.Println("error scanning enterprise 2")
+			fmt.Println("error scanning enterprise")
 			panic(err)
 		}
 		if !onlyOne {
-			enterprises = append(enterprises, e)
+			ee = append(ee, e)
 		}
 	}
 	result.Close()
-	return e, enterprises
+	return e, ee
 }
 
 func (enterprise Enterprise) CheckDeleted(idEnterprise int) bool {

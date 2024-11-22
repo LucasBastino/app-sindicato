@@ -1,5 +1,6 @@
-<!-- <script>
-    window.location.href = "/"
-</script> -->
+<script>
+    window.location.href = "{{.path}}"
+</script>
 
-<div hx-get={{.path}} hx-target="body" hx-trigger="load"></div>
+<!-- cambiar por load -->
+<div hx-get={{.path}} hx-target="body" hx-trigger="click"></div>

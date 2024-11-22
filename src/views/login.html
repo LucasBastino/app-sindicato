@@ -1,8 +1,22 @@
+{{template "Head"}}
 <body>
-    <form hx-post="/login" hx-target="body">
-        <input type="text" name="user" placeholder="user"></input>
-        <input type="text" name="password" placeholder="password"></input>
-        <button type="submit">login</button>
-    </form>
+    <div class="form-container">
+        <form class="login-form" hx-post="/login" hx-target="body">
+            <div class="page-title form-title">Iniciar sesión</div>
+            <div class="form-body">
+                <input class="form-input login-form-input" type="text" value="{{.user}}" name="user" placeholder="Usuario"></input>
+                <br>
+                {{with .userError}}
+                <div class="error-div field-12">{{.}}</div>
+                {{end}}
+                <input class="form-input login-form-input"  type="password" value="{{.password}}" name="password" placeholder="Contraseña"></input>
+                <br>
+                {{with .passwordError}}
+                <div class="error-div field-12">{{.}}</div>
+                {{end}}
+                <button class="login-submit" type="submit">INGRESAR</button>
+            </div>
+            </form>
+        </div>
     <script src="https://unpkg.com/htmx.org@1.9.12" integrity="sha384-ujb1lZYygJmzgSwoxRggbCHcjc0rB2XoQrxeTUQyRjrOnlCoYta87iKBWq3EsdM2" crossorigin="anonymous"></script>
 </body>

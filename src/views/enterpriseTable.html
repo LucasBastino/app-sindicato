@@ -11,20 +11,28 @@
     </tr>
 
     {{range $_, $e := .enterprises}}
-    <tr>
-        <td>{{$e.Name}} </td>
-        <td>{{$e.EnterpriseNumber}}</td>
-        <td>{{$e.Address}} </td>
-        <td>
-            <a href="/enterprise/{{$e.IdEnterprise}}/file">
-                <button class="btn-file">
-            <i class="bi bi-file-earmark-text"></i>
-                </button>
-            </a>
-        {{if eq $role "admin"}}
-        <td><button class="btn-delete" hx-delete="/enterprise/{{$e.IdEnterprise}}/delete" hx-header='{"mode":"table"}' hx-confirm="¿Estás seguro que deseas eliminar el afiliado?" hx-target="#tableDiv"><i class="bi bi-x-square"></i></button></td>
+        {{if eq $e.IdEnterprise 1}}
+        <!-- si es la empresa 1, es decir SIN EMPRESA, que no aparezca -->
+        {{else}}
+        <tr>
+            <td>{{$e.Name}} </td>
+            <td>{{$e.EnterpriseNumber}}</td>
+            <td>{{$e.Address}} </td>
+            <td>
+                <a href="/enterprise/{{$e.IdEnterprise}}/file">
+                    <button class="btn-file">
+                <i class="bi bi-file-earmark-text"></i>
+                    </button>
+                </a>
+            {{if eq $role "admin"}}
+                <td>
+                    <button class="btn-delete" hx-delete="/enterprise/{{$e.IdEnterprise}}/delete" hx-headers='{"mode":"table"}' hx-confirm="¿Estás seguro que deseas eliminar el afiliado?" hx-target="#tableDiv">
+                        <i class="bi bi-x-square"></i>
+                    </button>
+                </td>
+            {{end}}
+        </tr>
         {{end}}
-     </tr>
     {{end}}
 
 </table>

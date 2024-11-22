@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"fmt"
 	"log"
+	"time"
 
 	"github.com/LucasBastino/app-sindicato/src/database"
 	"github.com/gofiber/fiber/v2"
@@ -27,6 +28,8 @@ type Member struct {
 	IdEnterprise  int
 	Category      string
 	EntryDate     string
+	CreatedAt     time.Time
+	UpdatedAt     time.Time
 }
 
 func (m Member) Imprimir() {
@@ -102,7 +105,7 @@ func (member Member) DeleteModel() {
 
 }
 
-func (member Member) EditModel() {
+func (member Member) UpdateModel() {
 	// formateo la fecha nac para que empiece con el año
 	member.Birthday = FormatToYYYYMMDD(member.Birthday)
 	member.EntryDate = FormatToYYYYMMDD(member.EntryDate)
@@ -120,7 +123,7 @@ func (member Member) EditModel() {
 		Address = '%s',
 		PostalCode = '%s',
 		District = '%s',
-		MemberNumber = '%s',
+		MemberNumber = %s,
 		CUIL = '%s',
 		IdEnterprise = '%d',
 		Category = '%s',
@@ -163,7 +166,9 @@ func (member Member) GetIdModel(c *fiber.Ctx) int {
 func (member Member) SearchOneModelById(c *fiber.Ctx) Member {
 	IdMember := member.GetIdModel(c)
 	result, err := database.DB.Query(fmt.Sprintf(`
-		SELECT * FROM MemberTable 
+		SELECT 
+		*
+		FROM MemberTable 
 		WHERE IdMember = '%d'`,
 		IdMember))
 	if err != nil {
@@ -176,16 +181,10 @@ func (member Member) SearchOneModelById(c *fiber.Ctx) Member {
 
 func (member Member) SearchModels(c *fiber.Ctx, offset int) ([]Member, string) {
 	searchKey := c.FormValue("search-key")
-	// no se puede hacer asi porque los members con id enterprise null no aparecen
-	// result, err := database.DB.Query(fmt.Sprintf(`
-	// 	SELECT M.* FROM MemberTable M INNER JOIN EnterpriseTable E ON M.IdEnterprise = E.IdEnterprise 
-	// 	WHERE 
-	// 	M.Name LIKE '%%%s%%' OR M.LastName LIKE '%%%s%%' OR M.DNI LIKE '%%%s%%' 
-	// 	OR E.Name LIKE '%%%s%%' OR E.EnterpriseNumber LIKE '%%%s%%'
-	// 	ORDER BY M.LastName ASC LIMIT 10 OFFSET %d`,
-	// 	searchKey, searchKey, searchKey, searchKey, searchKey, offset))
 	result, err := database.DB.Query(fmt.Sprintf(`
-		SELECT * FROM MemberTable WHERE 
+		SELECT 
+		*
+		FROM MemberTable WHERE 
 		Name LIKE '%%%s%%' OR LastName LIKE '%%%s%%' OR DNI LIKE '%%%s%%' 
 		ORDER BY LastName ASC LIMIT 10 OFFSET %d`,
 		searchKey, searchKey, searchKey, offset))
@@ -193,11 +192,11 @@ func (member Member) SearchModels(c *fiber.Ctx, offset int) ([]Member, string) {
 		fmt.Println("error searching member in DB")
 		panic(err)
 	}
-	_, members := member.ScanResult(result, false)
-	return members, searchKey
+	_, mm := member.ScanResult(result, false)
+	return mm, searchKey
 }
 
-func (m Member) ValidateFields(c *fiber.Ctx) map[string]string {
+func (member Member) ValidateFields(c *fiber.Ctx) map[string]string {
 	errorMap := map[string]string{}
 	var valid bool
 	var err string
@@ -259,9 +258,9 @@ func (member Member) GetTotalRows(c *fiber.Ctx) int {
 	searchKey := c.FormValue("search-key")
 	// no puedo hacer asi porque sino los afiliados con id enterprise null no aparecen
 	// row := database.DB.QueryRow(fmt.Sprintf(`
-	// 	SELECT COUNT(*) FROM MemberTable M INNER JOIN EnterpriseTable E ON M.IdEnterprise = E.IdEnterprise 
-	// 	WHERE 
-	// 	M.Name LIKE '%%%s%%' OR M.LastName LIKE '%%%s%%' OR M.DNI LIKE '%%%s%%' 
+	// 	SELECT COUNT(*) FROM MemberTable M INNER JOIN EnterpriseTable E ON M.IdEnterprise = E.IdEnterprise
+	// 	WHERE
+	// 	M.Name LIKE '%%%s%%' OR M.LastName LIKE '%%%s%%' OR M.DNI LIKE '%%%s%%'
 	// 	OR E.Name LIKE '%%%s%%' OR E.EnterpriseNumber LIKE '%%%s%%'`,
 	// 	searchKey, searchKey, searchKey, searchKey, searchKey))
 	// row.Scan copia el numero de fila en la variable count
@@ -309,22 +308,22 @@ func (member Member) GetAllModels() []Member {
 		fmt.Println("error searching member in DB")
 		panic(err)
 	}
-	_, members := member.ScanResult(result, false)
-	return members
+	_, mm := member.ScanResult(result, false)
+	return mm
 }
 
-func CheckIdEnterprise(tempIdEnterprise sql.NullInt16) int {
-	if tempIdEnterprise.Valid {
-		return int(tempIdEnterprise.Int16)
-	} else {
-		return 0
-	}
-}
+// func CheckIdEnterprise(tempIdEnterprise sql.NullInt16) int {
+// 	if tempIdEnterprise.Valid {
+// 		return int(tempIdEnterprise.Int16)
+// 	} else {
+// 		return 0
+// 	}
+// }
 
 func (member Member) ScanResult(result *sql.Rows, onlyOne bool) (Member, []Member) {
 	var m Member
-	var members []Member
-	var tempIdEnterprise sql.NullInt16
+	var mm []Member
+	// var tempIdEnterprise sql.NullInt16
 	for result.Next() {
 		err := result.Scan(
 			&m.IdMember,
@@ -341,9 +340,12 @@ func (member Member) ScanResult(result *sql.Rows, onlyOne bool) (Member, []Membe
 			&m.District,
 			&m.MemberNumber,
 			&m.CUIL,
-			&tempIdEnterprise,
+			// &tempIdEnterprise,
+			&m.IdEnterprise,
 			&m.Category,
 			&m.EntryDate,
+			&m.CreatedAt,
+			&m.UpdatedAt,
 		)
 		// formateo las fechas en formato argentino
 		m.Birthday = FormatToDDMMYYYY(m.Birthday)
@@ -352,13 +354,13 @@ func (member Member) ScanResult(result *sql.Rows, onlyOne bool) (Member, []Membe
 			fmt.Println("error scanning member")
 			panic(err)
 		}
-		m.IdEnterprise = CheckIdEnterprise(tempIdEnterprise)
+		// m.IdEnterprise = CheckIdEnterprise(tempIdEnterprise)
 		if !onlyOne {
-			members = append(members, m)
+			mm = append(mm, m)
 		}
 	}
 	result.Close()
-	return m, members
+	return m, mm
 }
 
 func (member Member) CheckDeleted(idMember int) bool {

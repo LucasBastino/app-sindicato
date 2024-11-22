@@ -2,26 +2,26 @@
 <html lang="en">
 {{template "Head"}}
 <body>
-<div id="target-div">
-    <div class="container" id="main-container">
+<div id="targetDiv">
+    <div class="container" id="member-container">
         <header>
             <div class="nav-container">
                 <nav class="navbar navbar-expand navbar-light bg-light">
                     <a class="navbar-brand" href="/">Sindicato</a>
                     {{if eq .mode "edit"}}
                         {{if eq .role "admin"}}
-                        <a class="nav-item nav-link active py-0" href="/form/createMember" id="add-member-btn"><button class="btn-add">Agregar un afiliado</button></a>
+                        <a class="nav-item nav-link active py-0" href="/member/addForm" id="add-member-btn"><button class="btn-add">Agregar un afiliado</button></a>
                         {{end}}
                     {{end}}
                 </nav>
             </div> 
         </header>
-        {{if eq .mode "create" }}
-            <form hx-post="/member/create" hx-target="#target-div">
+        {{if eq .mode "add" }}
+            <form hx-post="/member/add" hx-target="#targetDiv">
                 <div class="form__section" id="form-section">
                     <div class="page-title">Agregar nuevo afiliado</div>
         {{else if eq .mode "edit"}}
-            <form hx-put="/member/{{$.member.IdMember}}/edit" hx-target="#target-div">
+            <form hx-put="/member/{{$.member.IdMember}}/edit" hx-target="#targetDiv">
                 <div class="form__section">
                     <div class="page-title">{{$.member.LastName}}, {{$.member.Name}}</div>
         {{end}}
@@ -29,230 +29,223 @@
                         
                         <div class="input-container field-12">
                             <div class="field-tag field-2">Nombres</div>
-                            <input class="form-input field-100" type="text" name="name" value="{{$.member.Name}}" placeholder="Nombres" disabled>
+                            <input class="form-input field-100" type="text" name="name" value="{{$.member.Name}}" disabled>
+                        </div>
                             {{with .errorMap.name}}
                                 <div class="error-div field-100">{{.}}</div>
                             {{end}}
-                        </div>
 
                         <div class="input-container field-12">
                             <div class="field-tag field-2">Apellidos</div>
-                        <input class="form-input field-100" type="text" name="last-name" value="{{$.member.LastName}}" placeholder="Apellidos" disabled>
+                        <input class="form-input field-100" type="text" name="last-name" value="{{$.member.LastName}}" disabled>
+                        </div>
                         {{with .errorMap.lastName}}
                             <div class="error-div field-100">{{.}}</div>
                         {{end}}
-                        </div>
 
                         <div class="input-container field-12">
                             <div class="field-tag field-2">DNI</div>
-                        <input class="form-input field-100" type="text" name="dni" value="{{$.member.DNI}}" placeholder="DNI" disabled>
+                            <input class="form-input field-100" type="text" name="dni" value="{{$.member.DNI}}" disabled>
+                        </div>
                         {{with .errorMap.dni}}
                             <p class="error-div field-100">{{.}}</p>
                         {{end}}
-                        </div>
 
                         <div class="input-container field-12">
                             <div class="field-tag field-2">Fecha de nacimiento</div>
-                        <input class="form-input field-100" type="text" name="birthday" value="{{$.member.Birthday}}" placeholder="Fecha de Nacimiento (DD/MM/AAAA)" disabled>
+                            <input class="form-input field-100" type="text" name="birthday" value="{{$.member.Birthday}}" placeholder="DD/MM/AAAA" disabled>
+                        </div>
                         {{with .errorMap.birthday}}
                             <div class="error-div field-100">{{.}}</div>
                         {{end}}
-                        </div>
 
                         <div class="input-container field-12">
                             <div class="field-tag field-2">Género</div>
-                        <select class="form-input field-100" name="gender" id="gender" onchange="cambiarColorPorDefecto(value, id);" disabled>
-                            {{if eq $.member.Gender ""}}
-                            <option value="">--Elegir un género--</option>
-                            {{else}}
-                            <option value="{{$.member.Gender}}">{{$.member.Gender}}</option>
-                            {{end}}
-                            <option value="Masculino">Masculino</option>
-                            <option value="Femenino">Femenino</option>
-                            <option value="Otro">Otro</option>
-                        </select>
+                            <select class="form-input field-100" name="gender" id="gender" disabled>
+                                {{if eq $.member.Gender ""}}
+                                <option value="">--Elegir una opción--</option>
+                                {{else}}
+                                <option value="{{$.member.Gender}}">{{$.member.Gender}}</option>
+                                {{end}}
+                                <option value="Masculino">Masculino</option>
+                                <option value="Femenino">Femenino</option>
+                                <option value="Otro">Otro</option>
+                            </select>
+                        </div>
                         {{with .errorMap.gender}}
                             <div class="error-div field-100">{{.}}</div>
                         {{end}}
-                        </div>
 
                         <div class="input-container field-12">
                             <div class="field-tag field-2">Estado Civil</div>
-                        <select class="form-input field-100" id="marital-status" name="marital-status" onchange="cambiarColorPorDefecto(value, id);" disabled>
-                            {{if eq $.member.MaritalStatus ""}}
-                            <option value="">--Elegir un estado civil--</option>
-                            {{else}}
-                            <option value="{{$.member.MaritalStatus}}">{{$.member.MaritalStatus}}</option>
-                            {{end}}
-                            <option value="Soltero">Soltero</option>
-                            <option value="Casado">Casado</option>
-                            <option value="Viudo">Viudo</option>
-                            <option value="Separado">Separado</option>
-                            <option value="Divorciado">Divorciado</option>
-                        </select>
+                            <select class="form-input field-100" id="marital-status" name="marital-status" disabled>
+                                {{if eq $.member.MaritalStatus ""}}
+                                <option value="">--Elegir una opción--</option>
+                                {{else}}
+                                <option value="{{$.member.MaritalStatus}}">{{$.member.MaritalStatus}}</option>
+                                {{end}}
+                                <option value="Soltero">Soltero</option>
+                                <option value="Casado">Casado</option>
+                                <option value="Viudo">Viudo</option>
+                                <option value="Separado">Separado</option>
+                                <option value="Divorciado">Divorciado</option>
+                            </select>
+                        </div>
                         {{with .errorMap.maritalStatus}}
                             <div class="error-div field-100">{{.}}</div>
                         {{end}}
-                        </div>
 
                         <div class="input-container field-12">
                             <div class="field-tag field-2">Teléfono</div>
-                        <input class="form-input field-100" name="phone" type="text" value="{{$.member.Phone}}" placeholder="Teléfono" disabled></input>
+                            <input class="form-input field-100" name="phone" type="text" value="{{$.member.Phone}}" disabled></input>
+                        </div>
                         {{with .errorMap.phone}}
                             <div class="error-div field-100">{{.}}</div>
                         {{end}}
-                        </div>
 
                         <div class="input-container field-12">
                             <div class="field-tag field-2">Email</div>
-                        <input class="form-input field-100" name="email" type="text" value="{{$.member.Email}}" placeholder="Email" disabled></input>
+                            <input class="form-input field-100" name="email" type="text" value="{{$.member.Email}}" disabled></input>
+                        </div>
                         {{with .errorMap.email}}
                             <div class="error-div field-100">{{.}}</div>
                         {{end}}
-                        </div>
 
                         
                         <div class="title-div field-12">Domicilio</div>
 
                         <div class="input-container field-12">
                             <div class="field-tag field-2">Dirección</div>
-                        <input class="form-input field-100" type="text" name="address" value="{{$.member.Address}}" placeholder="Dirección" disabled>
+                            <input class="form-input field-100" type="text" name="address" value="{{$.member.Address}}" disabled>
+                        </div>
                         {{with .errorMap.address}}
                         <div class="error-div field-100">{{.}}</div>
                         {{end}}
-                        </div>
 
                         <div class="input-container field-12">
                             <div class="field-tag field-2">Codigo Postal</div>
-                        <input class="form-input field-100" type="text" name="postal-code" value="{{$.member.PostalCode}}" placeholder="Codigo Postal" disabled>
+                            <input class="form-input field-100" type="text" name="postal-code" value="{{$.member.PostalCode}}" disabled>
+                        </div>
                         {{with .errorMap.postalCode}}
                         <div class="error-div field-100">{{.}}</div>
                         {{end}}
-                        </div>
 
                         <div class="input-container field-12">
                             <div class="field-tag field-2">Localidad</div>
-                        <input class="form-input field-100" type="text" name="district" value="{{$.member.District}}" placeholder="Localidad" disabled>
+                            <input class="form-input field-100" type="text" name="district" value="{{$.member.District}}" disabled>
+                        </div>
                         {{with .errorMap.district}}
                         <div class="error-div field-100">{{.}}</div>
                         {{end}}
-                        </div>
 
                         
                         <div class="title-div field-12">Datos de la Obra Social</div>
 
                         <div class="input-container field-12">
                             <div class="field-tag field-2">Nº Afiliado</div>
-                        <input class="form-input field-100" type="text" name="member-number" value="{{$.member.MemberNumber}}" placeholder="Número de Afiliado" disabled>
+                            <input class="form-input field-100" type="text" name="member-number" value="{{$.member.MemberNumber}}" disabled>
+                        </div>
                         {{with .errorMap.memberNumber}}
                         <div class="error-div field-100">{{.}}</div>
                         {{end}}
-                        </div>
 
                         <div class="input-container field-12">
                             <div class="field-tag field-2">CUIL</div>
-                        <input class="form-input field-100" type="text" name="cuil" value="{{$.member.CUIL}}" placeholder="CUIL" disabled>
+                            <input class="form-input field-100" type="text" name="cuil" value="{{$.member.CUIL}}" disabled>
+                        </div>
                         {{with .errorMap.cuil}}
                         <div class="error-div field-100">{{.}}</div>
                         {{end}}
-                        </div>
 
                         <div class="input-container field-12">
                             <div class="field-tag field-2">Empresa</div>
-                        {{if eq .mode "edit" }}
-                            {{if eq $.member.IdEnterprise 0}}
-                             <div id="enterprise-button" class="field-100"><div class="enterprise-btn">SIN EMPRESA</div></div>       
-                            {{else}}
+                        {{if eq .mode "edit" }}                           
                                 {{range $_, $e := .enterprises}}
                                     {{if eq $e.IdEnterprise $.member.IdEnterprise}}
                                     <div id="enterprise-button" class="field-100"><a href="/enterprise/{{$e.IdEnterprise}}/file"><div class="enterprise-btn">{{$e.Name}}</div></a></div>
                                     {{end}}
-                                {{end}}
-                            {{end}}
+                                {{end}}                   
                         {{end}}
                         
                         {{if eq .mode "edit"}}
                             <select class="hide form-input field-100 " name="id-enterprise" id="enterprise-select" disabled>
-                        {{else if eq .mode "create"}}
+                        {{else if eq .mode "add"}}
                             <select class="form-input field-100" name="id-enterprise" id="enterprise-select" disabled>
                         {{end}}
 
-                            <!-- fijarse que pasa cuando la empresa es borrada y queda NULL -->
-                            {{if eq $.member.IdEnterprise 0}}
-                                {{if eq .mode "create" }}
+                            <!-- un member en go por defecto tiene identerprise 0, porque es el valor por defecto de un int -->
+                                {{if eq .mode "add" }}
                                     <option value="">--Elegir una empresa--</option>
-                                {{else if eq .mode "edit" }}
-                                    <option value="0">SIN EMPRESA</option>
                                 {{end}}
-                            {{else}}
                                 {{range $_, $e := .enterprises}}
                                     {{if eq $e.IdEnterprise $.member.IdEnterprise}}
                                         <option class="current-enterprise" value="{{$e.IdEnterprise}}">{{$e.Name}}</option>
                                     {{end}}
                                 {{end}}
-                            {{end}}
                             {{range $_, $e := .enterprises}}
                                 <option value="{{$e.IdEnterprise}}">{{$e.Name}}</option>
                             {{end}}
-                        </select>
+                            </select>
+                        </div>
                         {{with .errorMap.idEnterprise}}
                         <div class="error-div field-100">{{.}}</div>
                         {{end}}
-                        </div>
 
                         <div class="input-container field-12">
                             <div class="field-tag field-2">Categoría</div>
-                        <select class="form-input field-100" name="category" id="category" onchange="cambiarColorPorDefecto(value, id);"  disabled>
-                            {{if eq $.member.Category ""}}
-                                <option value="">--Elegir una categoría--</option>
-                            {{else}}
-                                <option value="{{$.member.Category}}">{{$.member.Category}}</option>
-                            {{end}}
-                            <option value="Nivel 1: Oficial Múltiple">Nivel 1: Oficial Múltiple</option>
-                            <option value="Nivel 2: Oficial Especializado">Nivel 2: Oficial Especializado</option>
-                            <option value="Nivel 3: Oficial General">Nivel 3: Oficial General</option>
-                            <option value="Nivel 4: Medio Oficial">Nivel 4: Medio Oficial</option>
-                            <option value="Nivel 5: Ayudante">Nivel 5: Ayudante</option>
-                            <option value="Nivel 6: Operario Act. Industrial">Nivel 6: Operario Act. Industrial</option>
-                        </select>
+                            <select class="form-input field-100" name="category" id="category" disabled>
+                                {{if eq $.member.Category ""}}
+                                    <option value="">--Elegir una opción--</option>
+                                {{else}}
+                                    <option value="{{$.member.Category}}">{{$.member.Category}}</option>
+                                {{end}}
+                                <option value="Nivel 1: Oficial Múltiple">Nivel 1: Oficial Múltiple</option>
+                                <option value="Nivel 2: Oficial Especializado">Nivel 2: Oficial Especializado</option>
+                                <option value="Nivel 3: Oficial General">Nivel 3: Oficial General</option>
+                                <option value="Nivel 4: Medio Oficial">Nivel 4: Medio Oficial</option>
+                                <option value="Nivel 5: Ayudante">Nivel 5: Ayudante</option>
+                                <option value="Nivel 6: Operario Act. Industrial">Nivel 6: Operario Act. Industrial</option>
+                            </select>
+                        </div>
                         {{with .errorMap.category}}
                         <div class="error-div field-100">{{.}}</div>
                         {{end}}
-                        </div>
 
                         <div class="input-container field-12">
                             <div class="field-tag field-2">Fecha de ingreso</div>
-                        <input class="form-input field-100" type="text" name="entry-date" id="entry-date" value="{{$.member.EntryDate}}" placeholder="Fecha de ingreso (DD/MM/AAAA)" disabled>
+                            <input class="form-input field-100" type="text" name="entry-date" id="entry-date" value="{{$.member.EntryDate}}" placeholder="DD/MM/AAAA" disabled>
+                        </div>
                         {{with .errorMap.entryDate}}
                         <div class="error-div field-100">{{.}}</div>
                         {{end}}
-                        </div>
                         
-                    {{if eq .mode "create"}}
+                    {{if eq .mode "add"}}
                         <button type="submit" class="item-btn btn-submit">Enviar</button>
                     {{else if eq .mode "edit"}}
                         <button type="submit" class="item-btn hide btn-submit" onclick="hideEnterpriseSelect(); showEnterpriseButton();">Confirmar</button>
                     {{end}}
                 </div>
+                {{if eq .mode "edit"}}
+                <p>Creado: {{$.member.CreatedAt}}</p>
+                <p>Actualizado: {{$.member.UpdatedAt}}</p>
+                {{end}}
             </form>            
 
     {{template "Scripts"}}
 
     {{if eq .mode "edit"}}
         <div class="btn-container">
-            <button class="item-btn" type="submit" hx-get="/member/{{$.member.IdMember}}/parentTable" hx-trigger="click" hx-target="#parentTableDiv" onclick="showAddParentButton();">Familiares</button>
+            <button class="item-btn" type="submit" hx-get="/member/{{$.member.IdMember}}/parentTable" hx-trigger="click" hx-target="#tableDiv" onclick="showAddParentButton();">Familiares</button>
             {{if eq .role "admin"}}
             <button class="item-btn" onclick="enableInputs(); showConfirmButton(); enableSelects(); hideEnterpriseButton(); showEnterpriseSelect();">Editar</button>
-            <button class="btn-danger item-btn" hx-delete="/member/{{$.member.IdMember}}/delete" hx-headers='{"mode": "edit"}' hx-confirm="¿Estás seguro que deseas eliminar el afiliado?" hx-target="#target-div">Eliminar afiliado</button>
+            <button class="btn-danger item-btn" hx-delete="/member/{{$.member.IdMember}}/delete" hx-headers='{"mode": "edit"}' hx-confirm="¿Estás seguro que deseas eliminar el afiliado?" hx-target="#targetDiv">Eliminar afiliado</button>
             {{end}}
         </div>
     {{end}}
-        <div id="parentTableDiv"></div>
+        <div id="tableDiv"></div>
     </div>
 </div>
-<h2>{{.role}} </h2>
-<h2>{{.mode}} </h2>
-{{if eq .mode "create"}}
+{{if eq .mode "add"}}
     <script type="text/javascript">
         enableInputs();
         enableSelects();

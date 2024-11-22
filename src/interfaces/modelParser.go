@@ -14,24 +14,24 @@ type ModelParser[M models.TypeModel] interface {
 
 type MemberParser struct{}
 
-func (m MemberParser) ParseModel(c *fiber.Ctx) models.Member {
-	member := models.Member{}
-	member.Name = c.FormValue("name")
-	member.LastName = c.FormValue("last-name")
-	member.DNI = c.FormValue("dni")
-	member.Birthday = c.FormValue("birthday")
-	member.Gender = c.FormValue("gender")
-	member.MaritalStatus = c.FormValue("marital-status")
-	member.Phone = c.FormValue("phone")
-	member.Email = c.FormValue("email")
-	member.Address = c.FormValue("address")
-	member.PostalCode = c.FormValue("postal-code")
-	member.District = c.FormValue("district")
-	member.MemberNumber = c.FormValue("member-number")
-	member.CUIL = c.FormValue("cuil")
+func (parser MemberParser) ParseModel(c *fiber.Ctx) models.Member {
+	m := models.Member{}
+	m.Name = c.FormValue("name")
+	m.LastName = c.FormValue("last-name")
+	m.DNI = c.FormValue("dni")
+	m.Birthday = c.FormValue("birthday")
+	m.Gender = c.FormValue("gender")
+	m.MaritalStatus = c.FormValue("marital-status")
+	m.Phone = c.FormValue("phone")
+	m.Email = c.FormValue("email")
+	m.Address = c.FormValue("address")
+	m.PostalCode = c.FormValue("postal-code")
+	m.District = c.FormValue("district")
+	m.MemberNumber = c.FormValue("member-number")
+	m.CUIL = c.FormValue("cuil")
 	IdEnterpriseStr := c.FormValue("id-enterprise")
 	if IdEnterpriseStr == "" {
-		member.IdEnterprise = 0
+		m.IdEnterprise = 0
 		// este valor igualmente no se usa
 		// es solamente para que no aparezca un error
 	} else {
@@ -39,44 +39,71 @@ func (m MemberParser) ParseModel(c *fiber.Ctx) models.Member {
 		if err != nil {
 			fmt.Println(err)
 		}
-		member.IdEnterprise = IdEnterprise
+		m.IdEnterprise = IdEnterprise
 	}
-	member.Category = c.FormValue("category")
-	member.EntryDate = c.FormValue("entry-date")
-	return member
+	m.Category = c.FormValue("category")
+	m.EntryDate = c.FormValue("entry-date")
+	return m
 }
 
 type ParentParser struct{}
 
-func (p ParentParser) ParseModel(c *fiber.Ctx) models.Parent {
-	parent := models.Parent{}
-	parent.Name = c.FormValue("name")
-	parent.LastName = c.FormValue("last-name")
-	parent.Rel = c.FormValue("rel")
-	parent.Gender = c.FormValue("gender")
-	parent.Birthday = c.FormValue("birthday")
-	parent.CUIL = c.FormValue("cuil")
+func (parser ParentParser) ParseModel(c *fiber.Ctx) models.Parent {
+	p := models.Parent{}
+	p.Name = c.FormValue("name")
+	p.LastName = c.FormValue("last-name")
+	p.Rel = c.FormValue("rel")
+	p.Gender = c.FormValue("gender")
+	p.Birthday = c.FormValue("birthday")
+	p.CUIL = c.FormValue("cuil")
 	IdMemberStr := c.FormValue("id-member")
 	IdMember, err := strconv.Atoi(IdMemberStr)
 	if err != nil {
 		fmt.Println("error converting IdMemberStr to int")
 		panic(err)
 	}
-	parent.IdMember = IdMember
+	p.IdMember = IdMember
 
-	return parent
+	return p
 }
 
 type EnterpriseParser struct{}
 
-func (p EnterpriseParser) ParseModel(c *fiber.Ctx) models.Enterprise {
-	enterprise := models.Enterprise{}
-	enterprise.Name = c.FormValue("name")
-	enterprise.EnterpriseNumber = c.FormValue("enterprise-number")
-	enterprise.Address = c.FormValue("address")
-	enterprise.CUIT = c.FormValue("cuit")
-	enterprise.District = c.FormValue("district")
-	enterprise.PostalCode = c.FormValue("postal-code")
-	enterprise.Phone = c.FormValue("phone")
-	return enterprise
+func (parser EnterpriseParser) ParseModel(c *fiber.Ctx) models.Enterprise {
+	e := models.Enterprise{}
+	e.Name = c.FormValue("name")
+	e.EnterpriseNumber = c.FormValue("enterprise-number")
+	e.Address = c.FormValue("address")
+	e.CUIT = c.FormValue("cuit")
+	e.District = c.FormValue("district")
+	e.PostalCode = c.FormValue("postal-code")
+	e.Phone = c.FormValue("phone")
+	return e
+}
+
+type PaymentParser struct{}
+
+func (parser PaymentParser) ParseModel(c *fiber.Ctx) models.Payment {
+	p := models.Payment{}
+	p.Month = c.FormValue("month")
+	p.Year = c.FormValue("year")
+	p.Status = c.FormValue("status")
+	AmountStr := c.FormValue("amount")
+	Amount, err := strconv.Atoi(AmountStr)
+	if err!=nil{
+		fmt.Println("error converting AmountStr to int")
+		panic(err)
+	}
+	p.Amount = Amount
+	p.PaymentDate = c.FormValue("payment-date")
+	p.Commentary = c.FormValue("commentary")
+	IdEnterpriseStr := c.FormValue("id-enterprise")
+	IdEnterprise, err := strconv.Atoi(IdEnterpriseStr)
+	if err != nil {
+		fmt.Println("error converting IdEnterpriseStr to int")
+		panic(err)
+	}
+	p.IdEnterprise = IdEnterprise
+
+	return p
 }

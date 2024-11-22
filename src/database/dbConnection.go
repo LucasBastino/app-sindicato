@@ -22,7 +22,7 @@ func CreateConnection() {
 	port := "3307"
 	dbName := "sindicatoDB_settingcry"
 
-	connString := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s", user, password, host, port, dbName)
+	connString := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?parseTime=true", user, password, host, port, dbName)
 	db, err := sql.Open("mysql", connString)
 	if err != nil {
 		fmt.Println("error trying to connect with database:", dbName)

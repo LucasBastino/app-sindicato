@@ -1,0 +1,60 @@
+{{$role := .role}}
+{{$idEnterprise := .idEnterprise}}
+
+<div class="nav-container">
+    <nav class="navbar navbar-file navbar-expand navbar-light bg-light">
+        {{if eq .role "admin"}}
+        <div class="navbar-nav">
+            {{if eq .mode "edit"}}
+            <div class="dropdown">
+                    <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
+                        {{.year}}
+                    </button>
+                    <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
+                        {{range $_, $y := .years}}
+                        <li><button class="dropdown-item" type="button" hx-get="/enterprise/{{$idEnterprise}}/paymentTable/{{$y}}" hx-target="#tableDiv" hx-trigger="click">{{$y}}</button></li>
+                        {{end}}
+                    </ul>
+                  </div>
+            <button class="btn-add" hx-get="/payment/{{.idEnterprise}}/addForm" hx-trigger="click" hx-target="#tableDiv">Agregar otro pago</button></a>
+            {{end}}
+        </div>
+        {{end}}
+    </nav>
+</div>
+
+<table class="table table-striped w-90">
+    <tr>
+        <th>Mes</th>
+        <th>Año</th>
+        <th>Pagó?</th>
+        <th>Monto</th>
+        <th>Fecha de pago</th>
+        <th></th>
+        <th></th>
+    </tr>
+    {{ range $_, $p := .payments}}
+    <tr>
+        <td>{{$p.Month}}</td>
+        <td>{{$p.Year}}</td>
+        <td>{{$p.Status}}</td>
+        <td>{{$p.Amount}}</td>
+        <td>{{$p.PaymentDate}}</td>
+        <td>
+
+            
+                <button class="btn-file" hx-get="/payment/{{$p.IdEnterprise}}/{{$p.IdPayment}}/file" hx-trigger="click" hx-target="#tableDiv">
+                    <i class="bi bi-file-earmark-text"></i>
+                </button>
+            
+        </td>
+        {{if eq $role "admin"}}
+        <td>
+            <button class="btn-delete" hx-delete="/payment/{{$p.IdEnterprise}}/{{$p.IdPayment}}/delete" hx-confirm="¿Estás seguro que deseas eliminar el pago?" hx-target="#tableDiv">
+                <i class="bi bi-x-square"></i>
+            </button>
+        </td>  
+        {{end}}
+    </tr>
+    {{end}}
+</table> 

@@ -1,5 +1,5 @@
 package models
 
 type TypeModel interface {
-	Member | Parent | Enterprise
+	Member | Parent | Enterprise | Payment
 }

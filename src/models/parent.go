@@ -4,20 +4,23 @@ import (
 	"database/sql"
 	"fmt"
 	"log"
+	"time"
 
 	"github.com/LucasBastino/app-sindicato/src/database"
 	"github.com/gofiber/fiber/v2"
 )
 
 type Parent struct {
-	IdParent int
-	Name     string
-	LastName string
-	Rel      string
-	Birthday string
-	Gender   string
-	CUIL     string
-	IdMember int
+	IdParent  int
+	Name      string
+	LastName  string
+	Rel       string
+	Birthday  string
+	Gender    string
+	CUIL      string
+	IdMember  int
+	CreatedAt time.Time
+	UpdatedAt time.Time
 }
 
 func (parent Parent) InsertModel() Parent {
@@ -69,7 +72,7 @@ func (parent Parent) DeleteModel() {
 
 }
 
-func (parent Parent) EditModel() {
+func (parent Parent) UpdateModel() {
 	parent.Birthday = FormatToYYYYMMDD(parent.Birthday)
 	update, err := database.DB.Query(fmt.Sprintf(`
 		UPDATE ParentTable 
@@ -109,14 +112,7 @@ func (parent Parent) SearchOneModelById(c *fiber.Ctx) Parent {
 	IdParent := parent.GetIdModel(c)
 	result, err := database.DB.Query(fmt.Sprintf(`
 		SELECT
-		IdParent,
-		Name,
-		LastName,
-		Rel,
-		Birthday,
-		Gender,
-		CUIL,
-		IdMember
+		*
 		FROM ParentTable
 		WHERE IdParent = '%d'`, IdParent))
 	if err != nil {
@@ -128,27 +124,18 @@ func (parent Parent) SearchOneModelById(c *fiber.Ctx) Parent {
 }
 
 func (parent Parent) SearchModels(c *fiber.Ctx, offset int) ([]Parent, string) {
-	params := struct {
-		IdMember int `params:"IdMember"`
-	}{}
-	c.ParamsParser(&params)
+	idMember := Member{}.GetIdModel(c)
 	result, err := database.DB.Query(fmt.Sprintf(`
-		SELECT IdParent,
-		Name,
-		LastName,
-		Rel,
-		Birthday,
-		Gender,
-		CUIL,
-		IdMember
+		SELECT
+		*
 		FROM ParentTable 
-		WHERE IdMember = %d`, params.IdMember))
+		WHERE IdMember = %d`, idMember))
 	if err != nil {
 		fmt.Println("error searching member parents in DB")
 		panic(err)
 	}
-	_, parents := parent.ScanResult(result, false)
-	return parents, ""
+	_, pp := parent.ScanResult(result, false)
+	return pp, ""
 }
 
 func (parent Parent) ValidateFields(c *fiber.Ctx) map[string]string {
@@ -180,13 +167,10 @@ func (parent Parent) ValidateFields(c *fiber.Ctx) map[string]string {
 
 func (parent Parent) GetTotalRows(c *fiber.Ctx) int {
 	var totalRows int
-	params := struct {
-		IdMember int `params:"IdMember"`
-	}{}
-	c.ParamsParser(&params)
+	idMember := Member{}.GetIdModel(c)
 	row := database.DB.QueryRow(fmt.Sprintf(`
-		SELECT COUNT(*) FROM ParentTable  
-		WHERE IdMember = %d`, params.IdMember))
+		SELECT COUNT(*) FROM ParentTable 
+		WHERE IdMember = '%d'`, idMember))
 	// row.Scan copia el numero de fila en la variable count
 	err := row.Scan(&totalRows)
 	if err != nil {
@@ -196,30 +180,7 @@ func (parent Parent) GetTotalRows(c *fiber.Ctx) int {
 }
 
 func (parent Parent) GetFiberMap(parents []Parent, searchKey string, currentPage, someBefore, someAfter, totalPages int, totalPagesArray []int) fiber.Map {
-	return fiber.Map{
-		"model":           "parent",
-		"parents":         parents,
-		"searchKey":       searchKey,
-		"currentPage":     currentPage,
-		"firstPage":       1,
-		"previousPage":    currentPage - 1,
-		"someBefore":      currentPage - someBefore,
-		"sixBefore":       currentPage - 6,
-		"fiveBefore":      currentPage - 5,
-		"fourBefore":      currentPage - 4,
-		"threeBefore":     currentPage - 3,
-		"twoBefore":       currentPage - 2,
-		"twoAfter":        currentPage + 2,
-		"threeAfter":      currentPage + 3,
-		"fourAfter":       currentPage + 4,
-		"fiveAfter":       currentPage + 5,
-		"sixAfter":        currentPage + 6,
-		"someAfter":       currentPage + someAfter,
-		"nextPage":        currentPage + 1,
-		"lastPage":        totalPages,
-		"totalPages":      totalPages,
-		"totalPagesArray": totalPagesArray,
-	}
+	return nil
 }
 
 func (parent Parent) GetAllModels() []Parent {
@@ -228,7 +189,7 @@ func (parent Parent) GetAllModels() []Parent {
 
 func (parent Parent) ScanResult(result *sql.Rows, onlyOne bool) (Parent, []Parent) {
 	var p Parent
-	var parents []Parent
+	var pp []Parent
 	for result.Next() {
 		err := result.Scan(
 			&p.IdParent,
@@ -239,6 +200,8 @@ func (parent Parent) ScanResult(result *sql.Rows, onlyOne bool) (Parent, []Paren
 			&p.Gender,
 			&p.CUIL,
 			&p.IdMember,
+			&p.CreatedAt,
+			&p.UpdatedAt,
 		)
 		// formateo las fechas en formato argentino
 		p.Birthday = FormatToDDMMYYYY(p.Birthday)
@@ -247,11 +210,11 @@ func (parent Parent) ScanResult(result *sql.Rows, onlyOne bool) (Parent, []Paren
 			panic(err)
 		}
 		if !onlyOne {
-			parents = append(parents, p)
+			pp = append(pp, p)
 		}
 	}
 	result.Close()
-	return p, parents
+	return p, pp
 }
 
 func (parent Parent) CheckDeleted(idParent int) bool {

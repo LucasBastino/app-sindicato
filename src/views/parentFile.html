@@ -2,67 +2,99 @@
 <html lang="en">
 {{template "Head"}}
 <body>
-    <div id="target-div">
-        <div class="container" id="main-container">
-            <header>
-                <div class="nav-container">
-                    <nav class="navbar navbar-expand navbar-light bg-light">
-                        <a class="navbar-brand" href="/">Sindicato</a>
-                    </nav>
-                </div> 
-            </header>
-            {{if eq .mode "create" }}
-            <form hx-post="/parent/{{$.parent.IdMember}}/create" hx-target="#target-div">
+    <div class="nav-container">
+        <nav class="navbar navbar-file navbar-expand navbar-light bg-light">
+            {{if eq .role "admin"}}
+            <div class="navbar-nav">
+                {{if eq .mode "edit"}}
+                <button hx-get="/parent/{{$.parent.IdMember}}/addForm" hx-trigger="click" hx-target="#tableDiv">Agregar otro familiar</button></a>
+                {{end}}
+            </div>
+            {{end}}
+        </nav>
+    </div>
+        <div class="container" id="parent-container">
+            {{if eq .mode "add" }}
+            <form hx-post="/parent/{{$.parent.IdMember}}/add" hx-target="#tableDiv">
                 <div class="form__section" id="form-section">
                     {{if eq .role "admin"}}
                     <div class="page-title">Agregar nuevo familiar</div>
                     {{end}}
             {{else if eq .mode "edit"}}
-            <form hx-put="/parent/{{$.parent.IdMember}}/{{$.parent.IdParent}}/edit" hx-target="#target-div">
+            <form hx-put="/parent/{{$.parent.IdMember}}/{{$.parent.IdParent}}/edit" hx-target="#tableDiv">
                 <div class="form__section">
                     <div class="page-title">{{$.parent.LastName}}, {{$.parent.Name}}</div>
             {{end}}
-            <input class="form-input field-12" type="text" name="name" value="{{$.parent.Name}}" placeholder="Nombres" disabled>
+
+            <div class="input-container field-12">
+                <div class="field-tag field-2">Nombres</div>
+                <input class="form-input field-100" type="text" name="name" value="{{$.parent.Name}}" disabled>
+            </div>
             {{with .errorMap.name}}
             <div class="error-div field-12">{{.}}</div>
             {{end}}
-            <input class="form-input field-12" type="text" name="last-name" value="{{$.parent.LastName}}" placeholder="Apellidos" disabled>
+
+            <div class="input-container field-12">
+                <div class="field-tag field-2">Apellidos</div>
+                <input class="form-input field-100" type="text" name="last-name" value="{{$.parent.LastName}}" disabled>
+            </div>
             {{with .errorMap.lastName}}
             <div class="error-div field-12">{{.}}</div>
             {{end}}
-            <input class="form-input field-12" type="text" name="rel" value="{{$.parent.Rel}}" placeholder="Parentesco" disabled>
+
+            <div class="input-container field-12">
+                <div class="field-tag field-2">Parentesco</div>
+                <input class="form-input field-100" type="text" name="rel" value="{{$.parent.Rel}}" disabled>
+            </div>
             {{with .errorMap.rel}}
             <div class="error-div field-12">{{.}}</div>
             {{end}}
-            <input class="form-input field-12" type="text" name="birthday" value="{{$.parent.Birthday}}" placeholder="Fecha de Nacimiento" disabled>
+
+            <div class="input-container field-12">
+                <div class="field-tag field-2">Fecha de nacimiento</div>
+                <input class="form-input field-100" type="text" name="birthday" value="{{$.parent.Birthday}}" placeholder="DD/MM/AAAA" disabled>
+            </div>
             {{with .errorMap.birthday}}
             <div class="error-div field-12">{{.}}</div>
             {{end}}
-            <select class="form-input field-12" name="gender" id="gender" onchange="cambiarColorPorDefecto(value, id);" disabled>
-            {{if eq $.parent.Gender ""}}
-                <option value="">--Elegir un género--</option>
-            {{else}}
-                <option value="{{$.parent.Gender}}">{{$.parent.Gender}}</option>
-            {{end}}               
-                <option value="Masculino">Masculino</option>
-                <option value="Femenino">Femenino</option>
-                <option value="Otro">Otro</option>
-            </select>
+
+            <div class="input-container field-12">
+                <div class="field-tag field-2">Género</div>
+                <select class="form-input field-100" name="gender" id="gender" disabled>
+                {{if eq $.parent.Gender ""}}
+                    <option value="">--Elegir una opción--</option>
+                {{else}}
+                    <option value="{{$.parent.Gender}}">{{$.parent.Gender}}</option>
+                {{end}}               
+                    <option value="Masculino">Masculino</option>
+                    <option value="Femenino">Femenino</option>
+                    <option value="Otro">Otro</option>
+                </select>
+            </div>
             {{with .errorMap.gender}}
             <div class="error-div field-12">{{.}}</div>
             {{end}}
-            <input class="form-input field-12" type="text" name="cuil" value="{{$.parent.CUIL}}" placeholder="CUIL" disabled>
+
+            <div class="input-container field-12">
+                <div class="field-tag field-2">CUIL</div>
+                <input class="form-input field-100" type="text" name="cuil" value="{{$.parent.CUIL}}" disabled>
+            </div>
             {{with .errorMap.cuil}}
             <div class="error-div field-12">{{.}}</div>
             {{end}}
+
             <input class="hide" type="number" name="id-member" value="{{$.parent.IdMember}}">
 
-            {{if eq .mode "create"}}
+            {{if eq .mode "add"}}
             <button type="submit" class="item-btn btn-submit">Enviar</button>
             {{else if eq .mode "edit"}}
             <button type="submit" class="item-btn hide btn-submit">Confirmar</button>
             {{end}}
         </div>
+        {{if eq .mode "edit"}}
+        <p>Creado: {{$.parent.CreatedAt}}</p>
+        <p>Actualizado: {{$.parent.UpdatedAt}}</p>
+        {{end}}
     </form>
     
     {{template "Scripts"}}
@@ -71,18 +103,16 @@
     <div class="btn-container">
         {{if eq .role "admin"}}
         <button class="item-btn" onclick="enableInputs(); enableSelects(); showConfirmButton();">Editar</button>
-        <!-- falta BOTON ELIMINAR -->
+        <button class="btn-danger item-btn" hx-delete="/parent/{{$.parent.IdMember}}/{{$.parent.IdParent}}/delete" hx-confirm="¿Estás seguro que deseas eliminar el familiar?" hx-target="#tableDiv">Eliminar</button>
          {{end}}
-        <a href="/member/{{$.parent.IdMember}}/file"><button class="item-btn">Volver al afiliado</button></a>
     </div>
-    {{else if eq .mode "create"}}
+    {{else if eq .mode "add"}}
     <script type="text/javascript">
         enableInputs();
         enableSelects();
     </script>
     {{end}}
     </div>
-</div>
 
 </body>
 </html>

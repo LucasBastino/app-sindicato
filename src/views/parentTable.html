@@ -1,0 +1,40 @@
+{{$role := .role}}
+<div class="nav-container">
+    <nav class="navbar navbar-file navbar-expand navbar-light bg-light">
+        {{if eq $role "admin"}}
+        <div class="navbar-nav">
+            <button hx-get="/parent/{{.idMember}}/addForm" hx-trigger="click" hx-target="#tableDiv">Agregar familiar</button></a>
+        </div>
+        {{end}}
+    </nav>
+</div>
+<table class="table table-striped w-90 sub-table">
+        <tr>
+            <th>Nombre</th>
+            <th>Parentesco</th>
+            <th> </th>
+            {{if eq $role "admin"}}
+            <th> </th>
+            {{end}}
+        </tr>
+
+        {{range $_, $p := .parents}}
+        <tr>
+            <td>{{$p.Name}} </td>
+            <td>{{$p.Rel}} </td>
+            <td>
+                <button class="btn-file" hx-get="/parent/{{$p.IdMember}}/{{$p.IdParent}}/file" hx-trigger="click" hx-target="#tableDiv">
+                <i class="bi bi-file-earmark-text"></i>
+                </button>
+                </a>
+            </td>
+            {{if eq $role "admin"}}
+            <td>
+                <button class="btn-delete" hx-delete="/parent/{{$p.IdMember}}/{{$p.IdParent}}/delete" hx-confirm="¿Estás seguro que deseas eliminar el familiar?" hx-target="#tableDiv">
+                    <i class="bi bi-x-square"></i>
+                </button>
+            </td>  
+            {{end}}
+        </tr>
+        {{end}}
+    </table>    

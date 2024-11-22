@@ -4,7 +4,11 @@
         {{template "Head"}}
         <div class="container" id="main-container">
             {{template "Header" .}}
+            {{if .withEnterpriseTable}}
+            <div id="tableDiv" hx-get="/enterprise/renderTable" hx-trigger="load"></div>
+            {{else}}
             <div id="tableDiv" hx-get="/member/renderTable" hx-trigger="load"></div>
+            {{end}}
         </div>
         {{template "Scripts"}}
     </body>

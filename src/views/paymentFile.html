@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+    {{template "Head"}}
+    {{$idEnterprise := .idEnterprise}}
+<body>
+    <div class="nav-container">
+        <nav class="navbar navbar-file navbar-expand navbar-light bg-light">
+            {{if eq .role "admin"}}
+            <div class="navbar-nav">
+                {{if eq .mode "edit"}}
+                <div class="dropdown">
+                    <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
+                        {{$.payment.Year}}
+                    </button>
+                    <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
+                        {{range $_, $y := .years}}
+                        <li><button class="dropdown-item" type="button" hx-get="/enterprise/{{$idEnterprise}}/paymentTable/{{$y}}" hx-target="#tableDiv" hx-trigger="click">{{$y}}</button></li>
+                        {{end}}
+                    </ul>
+                  </div>
+                <button class="btn-add" hx-get="/payment/{{$.payment.IdEnterprise}}/addForm" hx-trigger="click" hx-target="#tableDiv">Agregar otro pago</button></a>
+                {{end}}
+            </div>
+            {{end}}
+        </nav>
+    </div>
+    <div id="targetDiv">
+        <div class="container" id="payment-container">
+        {{if eq .mode "add"}}
+            <form hx-post="/payment/{{$.payment.IdEnterprise}}/add" hx-target="#tableDiv">
+                <div class="form__section">
+                    <div class="page-title">Agregar nuevo pago</div>             
+        {{else if eq .mode "edit"}}
+            <form hx-put="/payment/{{$.payment.IdEnterprise}}/{{$.payment.IdPayment}}/edit" hx-target="#tableDiv">
+                <div class="form__section">
+                    <div class="page-title">Pago</div>
+        {{end}}
+               
+                    <div class="input-container field-12">
+                        <div class="field-tag field-2">Mes</div>
+                        <input class="form-input field-12" type="text" name="month" value="{{$.payment.Month}}" disabled>
+                        {{with .errorMap.month}}
+                            <div class="error-div field-12">{{.}}</div>
+                        {{end}}
+                    </div>
+
+                    <div class="input-container field-12">
+                        <div class="field-tag field-2">Año</div>
+                        <input class="form-input field-12" type="text" name="year" value="{{$.payment.Year}}" disabled>
+                    </div>
+                    {{with .errorMap.year}}
+                        <div class="error-div field-12">{{.}}</div>
+                    {{end}}
+
+                    <div class="input-container field-12">
+                        <div class="field-tag field-2">Estado</div>
+                        <select class="form-input field-12" name="status" id="status" disabled>
+                            {{if eq $.payment.Status ""}}
+                            <option value="PAGO">PAGO</option>
+                            <option value="IMPAGO">IMPAGO</option>
+                            {{else if eq $.payment.Status "PAGO"}}
+                            <option value="{{$.payment.Status}}">{{$.payment.Status}}</option>
+                            <option value="impago">IMPAGO</option>
+                            {{else if eq $.payment.Status "IMPAGO"}}
+                            <option value="{{$.payment.Status}}">{{$.payment.Status}}</option>
+                            <option value="pago">PAGO</option>
+                            {{end}}
+                        </select>
+                    </div>
+                    {{with .errorMap.status}}
+                        <div class="error-div field-12">{{.}}</div>
+                    {{end}}
+
+                    <div class="input-container field-12">
+                        <div class="field-tag field-2">Monto</div>
+                        <input class="form-input field-12" type="text" name="amount" value="{{$.payment.Amount}}" disabled>
+                    </div>
+                        {{with .errorMap.amount}}
+                            <div class="error-div field-12">{{.}}</div>
+                        {{end}}
+                    <div class="input-container field-12">
+                        <div class="field-tag field-2">Fecha de pago</div>
+                        <input class="form-input field-12" type="text" name="payment-date" id="payment-date" value="{{$.payment.PaymentDate}}" placeholder="(DD/MM/AAAA)" disabled>
+                    </div>
+                        {{with .errorMap.paymentDate}}
+                        <div class="error-div field-12">{{.}}</div>
+                        {{end}}
+
+                    <div class="input-container field-12">
+                        <div class="field-tag field-2">Comentarios</div>
+                        <input class="form-input field-12" type="text" name="commentary" value="{{$.payment.Commentary}}" disabled>
+                    </div>
+                        {{with .errorMap.commentary}}
+                            <div class="error-div field-12">{{.}}</div>
+                        {{end}}
+                    
+                    <input class="hide" type="text" name="id-enterprise" value="{{$.payment.IdEnterprise}}">
+
+                    {{if eq .mode "add"}}
+                    <button type="submit" class="item-btn btn-submit">Enviar</button>
+                    {{else if eq .mode "edit"}}
+                    <button type="submit" class="item-btn hide btn-submit">Confirmar</button>
+                    {{end}}
+                </div>
+                {{if eq .mode "edit"}}
+                <p>Creado: {{$.payment.CreatedAt}}</p>
+                <p>Actualizado: {{$.payment.UpdatedAt}}</p>
+                {{end}}
+            </form>
+            {{if eq .mode "edit"}}
+            <div class="btn-container">
+                {{if eq .role "admin"}}
+                <button class="item-btn" onclick="enableInputs(); enableSelects(); showConfirmButton();">Editar</button>
+                <button class="item-btn btn-danger btn" hx-delete="/payment/{{$.payment.IdEnterprise}}/{{$.payment.IdPayment}}/delete" hx-trigger="click" hx-confirm="¿Estás seguro que deseas eliminar el pago?" hx-target="#tableDiv">Eliminar pago</button>
+                {{end}}
+            </div>
+            {{end}}
+        </div>
+    </div>
+    {{template "Scripts"}}
+    {{if eq .mode "add"}}
+        <script type="text/javascript">
+            enableInputs();
+            enableSelects();
+            hideAddPaymentBtn();
+        </script>
+    {{else if eq .mode "edit"}}
+        <script type="text/javascript">
+            showAddPaymentBtn();
+        </script>
+    {{end}}
+</body>
+
+    
+</html>
