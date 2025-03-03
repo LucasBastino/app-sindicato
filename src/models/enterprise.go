@@ -76,7 +76,7 @@ func (enterprise Enterprise) DeleteModel() {
 
 }
 
-func (enterprise Enterprise) UpdateModel() {
+func (enterprise Enterprise) UpdateModel() Enterprise {
 	update, err := database.DB.Query(fmt.Sprintf(`
 		UPDATE EnterpriseTable 
 		SET 
@@ -101,7 +101,17 @@ func (enterprise Enterprise) UpdateModel() {
 		fmt.Println("error updating Enterprise")
 		panic(err)
 	}
-	defer update.Close()
+	update.Close()
+	result, err := database.DB.Query(`
+		SELECT
+		*
+		FROM EnterpriseTable
+		WHERE IdEnterprise = (SELECT LAST_INSERT_ID())`)
+	if err != nil {
+		fmt.Print(err)
+	}
+	e, _ := enterprise.ScanResult(result, true)
+	return e
 }
 
 func (enterprise Enterprise) GetIdModel(c *fiber.Ctx) int {
@@ -140,7 +150,7 @@ func (enterprise Enterprise) SearchModels(c *fiber.Ctx, offset int) ([]Enterpris
 		WHERE 
 		Name LIKE '%%%s%%' OR Address LIKE '%%%s%%' 
 		ORDER BY Name ASC
-		LIMIT 10 OFFSET %d`,
+		LIMIT 15 OFFSET %d`,
 		searchKey, searchKey, offset))
 	if err != nil {
 		fmt.Println("error searching Enterprise in DB")

@@ -27,11 +27,11 @@
     <div id="targetDiv">
         <div class="container" id="payment-container">
         {{if eq .mode "add"}}
-            <form hx-post="/payment/{{$.payment.IdEnterprise}}/add" hx-target="#tableDiv">
+            <form hx-post="/payment/{{$.payment.IdEnterprise}}/add" hx-target="#tableDiv" id="paymentForm">
                 <div class="form__section">
                     <div class="page-title">Agregar nuevo pago</div>             
         {{else if eq .mode "edit"}}
-            <form hx-put="/payment/{{$.payment.IdEnterprise}}/{{$.payment.IdPayment}}/edit" hx-target="#tableDiv">
+            <form hx-put="/payment/{{$.payment.IdEnterprise}}/{{$.payment.IdPayment}}/edit" hx-target="#tableDiv" id="paymentForm">
                 <div class="form__section">
                     <div class="page-title">Pago</div>
         {{end}}
@@ -39,18 +39,14 @@
                     <div class="input-container field-12">
                         <div class="field-tag field-2">Mes</div>
                         <input class="form-input field-12" type="text" name="month" value="{{$.payment.Month}}" disabled>
-                        {{with .errorMap.month}}
-                            <div class="error-div field-12">{{.}}</div>
-                        {{end}}
                     </div>
+                    <div class="hide error-div field-12" id="month-error"></div>
 
                     <div class="input-container field-12">
                         <div class="field-tag field-2">Año</div>
                         <input class="form-input field-12" type="text" name="year" value="{{$.payment.Year}}" disabled>
                     </div>
-                    {{with .errorMap.year}}
-                        <div class="error-div field-12">{{.}}</div>
-                    {{end}}
+                    <div class="hide error-div field-12" id="year-error"></div>
 
                     <div class="input-container field-12">
                         <div class="field-tag field-2">Estado</div>
@@ -67,56 +63,60 @@
                             {{end}}
                         </select>
                     </div>
-                    {{with .errorMap.status}}
-                        <div class="error-div field-12">{{.}}</div>
-                    {{end}}
+                    <div class="hide error-div field-12" id="status-error"></div>
 
                     <div class="input-container field-12">
                         <div class="field-tag field-2">Monto</div>
-                        <input class="form-input field-12" type="text" name="amount" value="{{$.payment.Amount}}" disabled>
-                    </div>
-                        {{with .errorMap.amount}}
-                            <div class="error-div field-12">{{.}}</div>
+                        {{if eq .mode "add"}}
+                        <!-- ver esto, ya no se usa mas mepa -->
+                            {{if not .withError}}
+                                <input class="form-input field-12" type="number" name="amount" value="" disabled>
+                            {{end}}
+                        {{else}}
+                        <input class="form-input field-12" type="number" name="amount" value="{{$.payment.Amount}}" disabled>
                         {{end}}
+                    </div>
+                    <div class="hide error-div field-12" id="amount-error"></div>
                     <div class="input-container field-12">
                         <div class="field-tag field-2">Fecha de pago</div>
                         <input class="form-input field-12" type="text" name="payment-date" id="payment-date" value="{{$.payment.PaymentDate}}" placeholder="(DD/MM/AAAA)" disabled>
                     </div>
-                        {{with .errorMap.paymentDate}}
-                        <div class="error-div field-12">{{.}}</div>
-                        {{end}}
+                    <div class="hide error-div field-12" id="payment-date-error"></div>
 
                     <div class="input-container field-12">
                         <div class="field-tag field-2">Comentarios</div>
                         <input class="form-input field-12" type="text" name="commentary" value="{{$.payment.Commentary}}" disabled>
                     </div>
-                        {{with .errorMap.commentary}}
-                            <div class="error-div field-12">{{.}}</div>
-                        {{end}}
+                    <div class="hide error-div field-12" id="commentary-error"></div>
                     
                     <input class="hide" type="text" name="id-enterprise" value="{{$.payment.IdEnterprise}}">
 
                     {{if eq .mode "add"}}
-                    <button type="submit" class="item-btn btn-submit">Enviar</button>
+                    <div class="item-btn btn-submit" onclick="validateForm('payment', 'create');">Enviar</div>
+                    <button type="submit" class="hide" id="submit-create-payment-btn">Enviar form (escondido)</button>
                     {{else if eq .mode "edit"}}
-                    <button type="submit" class="item-btn hide btn-submit">Confirmar</button>
+                    <div class="item-btn hide btn-submit" onclick="validateForm('payment', 'edit')" id="btn-payment-confirm" onclick="validateForm();">Confirmar</div>
+                    <button type="submit" class="hide" id="submit-edit-payment-btn">Confirmar form (escondido)</button>
                     {{end}}
                 </div>
                 {{if eq .mode "edit"}}
-                <p>Creado: {{$.payment.CreatedAt}}</p>
-                <p>Actualizado: {{$.payment.UpdatedAt}}</p>
+                <div class="timestamps">Creado: {{.createdAt}}</div>
+                <div class="timestamps">Actualizado: {{.updatedAt}}</div>
                 {{end}}
             </form>
             {{if eq .mode "edit"}}
             <div class="btn-container">
                 {{if eq .role "admin"}}
-                <button class="item-btn" onclick="enableInputs(); enableSelects(); showConfirmButton();">Editar</button>
-                <button class="item-btn btn-danger btn" hx-delete="/payment/{{$.payment.IdEnterprise}}/{{$.payment.IdPayment}}/delete" hx-trigger="click" hx-confirm="¿Estás seguro que deseas eliminar el pago?" hx-target="#tableDiv">Eliminar pago</button>
+                <div class="item-btn" onclick="enableInputs(); enableSelects(); showConfirmButton('payment');">Editar</div>
+                <button class="item-btn btn-delete-file" hx-delete="/payment/{{$.payment.IdEnterprise}}/{{$.payment.IdPayment}}/delete" hx-trigger="click" hx-confirm="¿Estás seguro que deseas eliminar el pago?" hx-target="#tableDiv">Eliminar pago</button>
                 {{end}}
             </div>
             {{end}}
         </div>
     </div>
+    <script src="/static/scripts/formValidation/formValidation.js"></script>
+    <script src="/static/scripts/formValidation/paymentFunctions.js"></script>
+    <script src="/static/scripts/formValidation/commonFunctions.js"></script>
     {{template "Scripts"}}
     {{if eq .mode "add"}}
         <script type="text/javascript">

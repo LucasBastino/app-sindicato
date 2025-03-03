@@ -36,7 +36,7 @@ func EditParent(c *fiber.Ctx) error {
 		data := fiber.Map{"parent": p, "mode": "edit", "role": role, "errorMap": errorMap}
 		return c.Render("parentFile", data)
 	} else {
-		updateModelCaller(p)
+		p = updateModelCaller(p)
 		data := fiber.Map{"parent": p, "mode": "edit", "role": role}
 		return c.Render("parentFile", data)
 	}

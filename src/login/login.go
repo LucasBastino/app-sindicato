@@ -19,7 +19,7 @@ func LoginUser(c *fiber.Ctx) error {
 		return c.Render("login", fiber.Map{"user": user, "password": password, "passwordError": "Contraseña incorrecta"})
 	}
 
-	claims := createJwtMapClaims(user, 5)
+	claims := createJwtMapClaims(user, 90)
 	token := createToken(claims)
 	signedToken := signToken(token)
 	cookie := createCookie(signedToken)

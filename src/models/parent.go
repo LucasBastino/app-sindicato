@@ -72,7 +72,7 @@ func (parent Parent) DeleteModel() {
 
 }
 
-func (parent Parent) UpdateModel() {
+func (parent Parent) UpdateModel() Parent {
 	parent.Birthday = FormatToYYYYMMDD(parent.Birthday)
 	update, err := database.DB.Query(fmt.Sprintf(`
 		UPDATE ParentTable 
@@ -97,7 +97,15 @@ func (parent Parent) UpdateModel() {
 		fmt.Println("error updating parent")
 		panic(err)
 	}
-	defer update.Close()
+	update.Close()
+	result, err := database.DB.Query(`
+		SELECT * FROM ParentTable 
+		WHERE IdParent = (SELECT LAST_INSERT_ID())`)
+	if err != nil {
+		fmt.Print(err)
+	}
+	p, _ := parent.ScanResult(result, true)
+	return p
 }
 
 func (parent Parent) GetIdModel(c *fiber.Ctx) int {

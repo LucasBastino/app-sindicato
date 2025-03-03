@@ -25,3 +25,110 @@
 // fmt.Println(string(body))
 // update.Close()
 // }
+
+
+HTML enterprise
+
+
+                        <div class="input-container field-12">
+                            <div class="field-tag field-2">Empresa</div>
+                        {{if eq .mode "edit" }}                           
+                                {{range $_, $e := .enterprises}}
+                                    {{if eq $e.IdEnterprise $.member.IdEnterprise}}
+                                    <div id="enterprise-button" class="field-100"><a href="/enterprise/{{$e.IdEnterprise}}/file"><div class="enterprise-btn">{{$e.Name}}</div></a></div>
+                                    {{end}}
+                                {{end}}                   
+                        {{end}}
+                                                
+                        {{if eq .mode "edit"}}
+                            <select class="hide form-input field-100 " name="id-enterprise" id="enterprise-select" disabled>
+                        {{else if eq .mode "add"}}
+                            <select class="form-input field-100" name="id-enterprise" id="enterprise-select" disabled>
+                        {{end}}
+
+                                <!-- un member en go por defecto tiene identerprise 0, porque es el valor por defecto de un int -->
+                            {{if eq .mode "add" }}
+                                <option value="">--Elegir una empresa--</option>
+                            {{end}}
+                            {{range $_, $e := .enterprises}}
+                                {{if eq $e.IdEnterprise $.member.IdEnterprise}}
+                                    <option class="current-enterprise" value="{{$e.IdEnterprise}}">{{$e.Name}}</option>
+                                {{end}}
+                            {{end}}
+                            {{range $_, $e := .enterprises}}
+                                <option value="{{$e.IdEnterprise}}">{{$e.Name}}</option>
+                            {{end}}
+                            </select>
+                        </div>
+                        {{with .errorMap.idEnterprise}}
+                        <div class="error-div field-100">{{.}}</div>
+                        {{end}}
+
+
+
+
+
+
+
+ultimo
+
+
+
+                         <div class="input-container field-12">
+                            <div class="field-tag field-2">Empresa</div>
+
+                            <!-- si estoy en modo edit mostrar el nombre de la empresa -->
+                            {{if eq .mode "edit"}}
+                                {{range $_, $e := .enterprises}}
+                                    {{if eq $e.IdEnterprise $.member.IdEnterprise}}
+                                    <input class="form-input field-100" value="{{$e.Name}}" id="name-enterprise-input" disabled></input>
+                                    <div id="enterprise-file" onclick="searchEnterpriseAgain();"><i class="bi bi-x-file file-icon"></i></div>
+                                    {{end}}
+                                {{end}}
+                            <!-- si estoy en modo add mostrar el search box -->
+                            {{else if eq .mode "add"}}
+                                {{if eq $.member.IdEnterprise 0}}
+                                <div class="hide" id="x-enterprise" onclick="searchEnterpriseAgain();"><i class="bi bi-x-square x-icon"></i></div>
+                                <div class="enterprise-select-container" id="enterprise-search-box">
+                                <div class="inner-addon right-addon" id="member-search-input">
+                                    <i class="bi bi-search input-icon"></i>
+                                    <input class="form-control static-input search-input" placeholder="Buscar empresa" name="search-key" type="search" aria-label="Search" 
+                                    hx-get="/enterprise/renderTableSelect" hx-trigger="keyup" hx-target="#optionsTable">
+                                </div>
+                                <!-- lista de empresas -->
+                                <div class="options" id="optionsTable"></div>
+                            </div>
+                                {{else}}
+                                    {{range $_, $e := .enterprises}}
+                                        {{if eq $e.IdEnterprise $.member.IdEnterprise}}
+                                            <input class="form-input field-100" value="{{$e.Name}}" id="name-enterprise-input" disabled></input>
+                                        {{end}}
+                                    {{end}}
+
+                                {{end}}
+                            <input class="hide form-input field-100" id="name-enterprise-input" disabled></input>
+                            
+                            {{end}}
+                        </div>
+
+                        
+                        <div class="input-container field-12">
+                            {{if eq .mode "edit"}}
+                            <input class="nohide" id="id-enterprise-input" type="text" value="{{$.member.IdEnterprise}}" name="id-enterprise" disabled>
+                            {{else if eq .mode "add"}}
+                            <input class="nohide" id="id-enterprise-input" type="text" value="{{$.member.IdEnterprise}}" name="id-enterprise">
+                            {{end}}
+
+
+                            <div class="hide enterprise-select-container">
+                                <div class="enterprise-select-container">
+                                    <div class="inner-addon right-addon" id="member-search-input">
+                                        <i class="bi bi-search input-icon"></i>
+                                        <input class="form-control static-input search-input" name="search-key" type="search" aria-label="Search" 
+                                        hx-get="/enterprise/renderTableSelect" hx-trigger="keyup" hx-target="#optionsTable">
+                                    </div>
+        
+                                    <div class="options" id="optionsTable"></div>
+                                </div>
+                            </div>
+                        </div>

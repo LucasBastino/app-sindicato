@@ -157,39 +157,54 @@
                         <div class="error-div field-100">{{.}}</div>
                         {{end}}
 
+
                         <div class="input-container field-12">
                             <div class="field-tag field-2">Empresa</div>
-                        {{if eq .mode "edit" }}                           
-                                {{range $_, $e := .enterprises}}
-                                    {{if eq $e.IdEnterprise $.member.IdEnterprise}}
-                                    <div id="enterprise-button" class="field-100"><a href="/enterprise/{{$e.IdEnterprise}}/file"><div class="enterprise-btn">{{$e.Name}}</div></a></div>
-                                    {{end}}
-                                {{end}}                   
-                        {{end}}
-                        
-                        {{if eq .mode "edit"}}
-                            <select class="hide form-input field-100 " name="id-enterprise" id="enterprise-select" disabled>
-                        {{else if eq .mode "add"}}
-                            <select class="form-input field-100" name="id-enterprise" id="enterprise-select" disabled>
-                        {{end}}
+                            
+                                {{if eq $.member.IdEnterprise 0}}
+                                <!-- si estoy en modo add desde cero que aparezca el search box -->
 
-                            <!-- un member en go por defecto tiene identerprise 0, porque es el valor por defecto de un int -->
-                                {{if eq .mode "add" }}
-                                    <option value="">--Elegir una empresa--</option>
+                                <!-- el input de nombre empresa escondido -->
+                                <input class="hide form-input field-100 no-transform" type="text" id="name-enterprise-input" value="{{$.enterpriseName}}" disabled>
+                                <!-- icono X escondido -->
+                                <div class="hide" id="x-enterprise" onclick="searchEnterpriseAgain();"><i class="bi bi-x-square x-icon"></i></div> 
+
+                                <!-- search box -->
+                                <div class="enterprise-select-container" id="enterprise-search-box">
+                                    <div class="inner-addon right-addon" id="member-search-input">
+                                        <i class="bi bi-search input-icon"></i>
+                                        <input class="form-control static-input search-input" placeholder="Buscar empresa" name="search-key" type="search" aria-label="Search" 
+                                        hx-get="/enterprise/renderTableSelect" hx-trigger="keyup" hx-target="#optionsTable">
+                                    </div>
+                                </div>
+
+                                {{else}}
+                                <!-- si tiene una empresa mostrarla en el input -->
+                                <input class="form-input field-100 no-transform" type="text" id="name-enterprise-input" value="{{$.enterpriseName}}" disabled>
+                                <!-- icono X escondido hasta que se aprete el boton Editar -->
+                                <div class="hide" id="x-enterprise" onclick="searchEnterpriseAgain();"><i class="bi bi-x-square x-icon"></i></div> 
+
+                                <!-- search box escondido -->
+                                <div class="hide enterprise-select-container" id="enterprise-search-box">
+                                    <div class="inner-addon right-addon" id="member-search-input">
+                                        <i class="bi bi-search input-icon"></i>
+                                        <input class="form-control static-input search-input" placeholder="Buscar empresa" name="search-key" type="search" aria-label="Search" 
+                                        hx-get="/enterprise/renderTableSelect" hx-trigger="keyup" hx-target="#optionsTable">
+                                    </div>
+                                </div>
+
                                 {{end}}
-                                {{range $_, $e := .enterprises}}
-                                    {{if eq $e.IdEnterprise $.member.IdEnterprise}}
-                                        <option class="current-enterprise" value="{{$e.IdEnterprise}}">{{$e.Name}}</option>
-                                    {{end}}
-                                {{end}}
-                            {{range $_, $e := .enterprises}}
-                                <option value="{{$e.IdEnterprise}}">{{$e.Name}}</option>
-                            {{end}}
-                            </select>
+                        
+
+                            <!-- input id-enterprise escondido -->
+                            <input class="hide" id="id-enterprise-input" type="text" value="{{$.member.IdEnterprise}}" name="id-enterprise">
+                            <!-- lista de empresas -->
+                            <div class="options" id="optionsTable"></div>
                         </div>
                         {{with .errorMap.idEnterprise}}
                         <div class="error-div field-100">{{.}}</div>
                         {{end}}
+                        
 
                         <div class="input-container field-12">
                             <div class="field-tag field-2">Categoría</div>
@@ -222,12 +237,12 @@
                     {{if eq .mode "add"}}
                         <button type="submit" class="item-btn btn-submit">Enviar</button>
                     {{else if eq .mode "edit"}}
-                        <button type="submit" class="item-btn hide btn-submit" onclick="hideEnterpriseSelect(); showEnterpriseButton();">Confirmar</button>
+                        <button type="submit" class="item-btn hide {{if .withError}}d-inline{{end}} btn-submit" id="btn-member-confirm" >Confirmar</button>
                     {{end}}
                 </div>
                 {{if eq .mode "edit"}}
-                <p>Creado: {{$.member.CreatedAt}}</p>
-                <p>Actualizado: {{$.member.UpdatedAt}}</p>
+                <div class="timestamps">Creado: {{.createdAt}}</div>
+                <div class="timestamps">Actualizado: {{.updatedAt}}</div>
                 {{end}}
             </form>            
 
@@ -237,8 +252,8 @@
         <div class="btn-container">
             <button class="item-btn" type="submit" hx-get="/member/{{$.member.IdMember}}/parentTable" hx-trigger="click" hx-target="#tableDiv" onclick="showAddParentButton();">Familiares</button>
             {{if eq .role "admin"}}
-            <button class="item-btn" onclick="enableInputs(); showConfirmButton(); enableSelects(); hideEnterpriseButton(); showEnterpriseSelect();">Editar</button>
-            <button class="btn-danger item-btn" hx-delete="/member/{{$.member.IdMember}}/delete" hx-headers='{"mode": "edit"}' hx-confirm="¿Estás seguro que deseas eliminar el afiliado?" hx-target="#targetDiv">Eliminar afiliado</button>
+            <button class="item-btn" onclick="enableInputs(); showConfirmButton('member'); enableSelects(); showXEnterprise();">Editar datos</button>
+            <button class="btn-delete-file item-btn" hx-delete="/member/{{$.member.IdMember}}/delete" hx-headers='{"mode": "edit"}' hx-confirm="¿Estás seguro que deseas eliminar el afiliado?" hx-target="#targetDiv">Eliminar afiliado</button>
             {{end}}
         </div>
     {{end}}
@@ -254,6 +269,13 @@
 {{else if eq .mode "edit"}}
     <script>
         showAddMemberBtn();
+    </script>
+{{end}}
+{{if .withError}}
+    <script>
+        showXEnterprise();
+        enableInputs();
+        enableSelects();
     </script>
 {{end}}
 </body>

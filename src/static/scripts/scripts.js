@@ -1,3 +1,10 @@
+document.onkeydown = function(e){
+    if (e.key === 'Enter' ){
+        console.log("se apreto enter")
+        e.preventDefault()
+    }
+}
+
 function enableInputs(){
     inputs = Array.from(document.getElementsByTagName("input"))
     inputs.forEach(input => {
@@ -13,12 +20,8 @@ function enableSelects(){
 }
 
 
-function showConfirmButton(){
-    buttons = Array.from(document.querySelectorAll(".btn-submit"))
-    console.log(buttons)
-    // agarro el ultimo de los botones
-    button = buttons.pop()
-    button.style.display = 'inline'
+function showConfirmButton(model){
+    document.getElementById(`btn-${model}-confirm`).style.display = 'inline'
 }
 
 
@@ -75,13 +78,6 @@ function hideAddParentButton(){
     document.getElementById('add-parent-button').style.display = 'none'
 }
 
-function showEnterpriseSelect(){
-    document.getElementById('enterprise-select').style.display = 'inline'
-}
-
-function hideEnterpriseSelect(){
-    document.getElementById('enterprise-select').style.display = 'none'
-}
 
 function showEnterpriseButton(){
     document.getElementById('enterprise-button').style.display = 'inline'
@@ -98,3 +94,39 @@ function hideAddPaymentButton(){
 function showAddPaymentBtn(){
     document.getElementById('add-payment-btn').style.display = 'inline'
 }
+
+function showXEnterprise(){
+    document.getElementById('x-enterprise').style.display = 'inline'
+}
+
+
+function searchEnterpriseAgain(){
+    document.getElementById('x-enterprise').style.display = 'none'
+    document.getElementById('name-enterprise-input').style.display = 'none'
+    document.getElementById('enterprise-search-box').style.display = 'inline'
+}
+
+function selectEnterprise(IdEnterprise, EnterpriseName){
+    document.getElementById("id-enterprise-input").value = IdEnterprise
+    document.getElementById("name-enterprise-input").value = EnterpriseName
+    document.getElementById('enterprise-search-box').style.display = 'none'
+    document.getElementById('optionsTable').innerHTML = ''
+    document.getElementById('name-enterprise-input').style.display = 'inline'
+    document.getElementById('x-enterprise').style.display = 'inline'
+}
+
+
+// function makeBackup(){
+//     console.log("asdadss")
+// 	spawn('cmd.exe', ['/c',`mysqldump -h ndk.h.filess.io -P 3307 --no-tablespaces -u sindicatoDB_settingcry -pdatabasefilessio sindicatoDB_settingcry > C:\Users\cuent\desktop\mydb.sql`]);
+//   }
+
+
+// import { spawn } from 'child_process';
+// function makeBackup(){
+//     execSync = require('child_process').execSync
+//     // console.log("asddas")
+//     // spawn('cmd.exe', ['/c',`mysqldump -h ndk.h.filess.io -P 3307 --no-tablespaces -u sindicatoDB_settingcry -pdatabasefilessio sindicatoDB_settingcry > C:\Users\cuent\desktop\mydb.sql`]);
+//     const output = execSync('ls', { encoding: 'utf-8' });  // the default is 'buffer'
+// console.log('Output was:\n', output);
+// }

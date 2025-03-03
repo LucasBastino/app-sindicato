@@ -34,7 +34,7 @@ func DeleteEnterprise(c *fiber.Ctx) error {
 		e := models.Enterprise{IdEnterprise: IdEnterprise}
 		members := getAllEnterpriseMembers(IdEnterprise)
 		deleteModelCaller(e)
-		setIdEnterprise1(members)
+		setIdEnterpriseToOne(members)
 		switch c.Get("mode") {
 		case "table":
 			return RenderEnterpriseTable(c)
@@ -65,10 +65,10 @@ func EditEnterprise(c *fiber.Ctx) error {
 	}
 	role := c.Locals("claims").(jwt.MapClaims)["role"]
 	if len(errorMap) > 0 {
-		data := fiber.Map{"enterprise": e, "mode": "edit", "role": role, "errorMap": errorMap, "years": years}
+		data := fiber.Map{"enterprise": e, "mode": "edit", "withError": true, "role": role, "errorMap": errorMap, "years": years}
 		return c.Render("enterpriseFile", data)
 	} else {
-		updateModelCaller(e)
+		e = updateModelCaller(e)
 		numberOfMembers := getNumberOfMembers(e.IdEnterprise, "")
 		data := fiber.Map{"enterprise": e, "numberOfMembers": numberOfMembers, "role": role, "mode": "edit", "years": years}
 		return c.Render("enterpriseFile", data)
@@ -106,26 +106,10 @@ func RenderEnterpriseTable(c *fiber.Ctx) error {
 
 func RenderEnterpriseFile(c *fiber.Ctx) error {
 	e := searchOneModelByIdCaller(models.Enterprise{}, c)
+	createdAt, updatedAt := formatTimeStamps(e.CreatedAt, e.UpdatedAt)
 	numberOfMembers := getNumberOfMembers(e.IdEnterprise, "")
-	result, err := database.DB.Query(fmt.Sprintf("SELECT Year FROM PaymentTable WHERE IdEnterprise = '%d' GROUP BY Year ORDER BY YEAR DESC", e.IdEnterprise))
-	if err != nil {
-		fmt.Println("error searching different Years in PaymentTable")
-		panic(err)
-	}
-
-	var years []string
-	var year string
-	for result.Next() {
-		result.Scan(&year)
-		years = append(years, year)
-	}
 	role := c.Locals("claims").(jwt.MapClaims)["role"]
-	if c.Get("with") == "paymentTable" {
-		year := c.Get("year")
-		data := fiber.Map{"enterprise": e, "role": role, "numberOfMembers": numberOfMembers, "mode": "edit", "years": years, "withPaymentTable": true, "year": year}
-		return c.Render("enterpriseFile", data)
-	}
-	data := fiber.Map{"enterprise": e, "role": role, "numberOfMembers": numberOfMembers, "mode": "edit", "years": years}
+	data := fiber.Map{"enterprise": e, "role": role, "numberOfMembers": numberOfMembers, "mode": "edit", "withPaymentTable": false, "createdAt": createdAt, "updatedAt": updatedAt}
 	return c.Render("enterpriseFile", data)
 }
 
@@ -157,6 +141,7 @@ func RenderEnterpriseMembers(c *fiber.Ctx) error {
 
 	searchKey := c.FormValue("search-key")
 	IdEnterprise := func() int {
+		// c.Get devuelve un valor del header
 		if c.Get("mode") == "edit" {
 			return getIdModelCaller(models.Enterprise{}, c)
 		} else if c.Get("mode") == "enterpriseMemberTable" {
@@ -226,7 +211,7 @@ func getAllEnterpriseMembers(IdEnterprise int) []models.Member {
 	return members
 }
 
-func setIdEnterprise1(members []models.Member) {
+func setIdEnterpriseToOne(members []models.Member) {
 	// query, err := database.DB.Query("SET GLOBAL FOREIGN_KEY_CHECKS = 0")
 	// if err!=nil{
 	// 	fmt.Println("error setting foreing keys to 1")
@@ -283,5 +268,36 @@ func RenderEnterprisePaymentsTable(c *fiber.Ctx) error {
 		payments, _ := searchModelsCaller(models.Payment{}, c, params.Year)
 		data := fiber.Map{"payments": payments, "idEnterprise": IdEnterprise, "role": role, "mode": "edit", "years": years, "year": yearInt}
 		return c.Render("paymentTable", data)
+	}
+}
+
+func RenderEnterpriseTableSelect(c *fiber.Ctx) error {
+	// calculo la cantidad de resultados
+	totalRows := getTotalRowsCaller(models.Enterprise{}, c)
+	if totalRows == 0 {
+		// si no hay resultados renderizar esto
+		return c.SendString(`<div class="no-result">No se encontraron empresas</div>`)
+	} else {
+		// si hay resultados...
+
+		searchKey := c.FormValue("search-key")
+		result, err := database.DB.Query(fmt.Sprintf(`
+		SELECT
+		*
+		FROM EnterpriseTable 
+		WHERE 
+		Name LIKE '%%%s%%' 
+		ORDER BY Name ASC`,
+			searchKey))
+		if err != nil {
+			fmt.Println("error searching Enterprise in DB")
+			panic(err)
+		}
+		_, enterprises := models.Enterprise{}.ScanResult(result, false)
+
+		// creo un map con todas las variables
+		role := c.Locals("claims").(jwt.MapClaims)["role"]
+		// renderizo la tabla y le envio el map con las variables
+		return c.Render("enterpriseTableSelect", fiber.Map{"enterprises": enterprises, "role": role})
 	}
 }

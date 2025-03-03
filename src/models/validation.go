@@ -1,6 +1,8 @@
 package models
 
 import (
+	"fmt"
+	"slices"
 	"strconv"
 	"strings"
 	"time"
@@ -167,7 +169,7 @@ func ValidateCUIT(c *fiber.Ctx) (bool, string) {
 
 func ValidateIdEnterprise(c *fiber.Ctx) (bool, string) {
 	idEnterprise := strings.TrimSpace(c.FormValue("id-enterprise"))
-	if idEnterprise == "" {
+	if idEnterprise == "0" {
 		return false, "Elegir una empresa"
 	}
 	return true, ""
@@ -240,12 +242,37 @@ func validateDateValue(date string) (bool, string) {
 	return true, ""
 }
 
+func validateMonth(month string) bool {
+	months := []string{"01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12"}
+	if !slices.Contains(months, month) {
+		return false
+	}
+	return true
+}
+
+func validateYear(year string) bool {
+	yearInt, err := strconv.Atoi(year)
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	if yearInt < 1990 || yearInt > time.Now().Year() {
+		return false
+	}
+	return true
+}
+
 func validatePayment(c *fiber.Ctx) (bool, string) {
-	// month := c.FormValue("month")
-	// year := c.FormValue("year")
-	// payment := fmt.Sprintf("01/%s/%s", month, year)
-	// return validateDateValue(payment)
-	return true, ""
+	month := c.FormValue("month")
+	year := c.FormValue("year")
+	if !validateMonth(month) {
+		return false, "El mes no es correcto"
+	}
+	if !validateYear(year) {
+		return false, "El año no es correcto"
+	}
+	payment := fmt.Sprintf("01/%s/%s", month, year)
+	return validateDateValue(payment)
 }
 
 func validateStatus(c *fiber.Ctx) (bool, string) {
@@ -257,8 +284,11 @@ func validateStatus(c *fiber.Ctx) (bool, string) {
 }
 
 func validatePaymentAmount(c *fiber.Ctx) (bool, string) {
-	// me parece que lo de la coma es al re pedoooooo, sin coma y listo
-	return true, ""
+	amount := c.FormValue("amount")
+	if amount == "" {
+		return false, "El campo Monto no puede estar vacío"
+	}
+	return isNumber(amount, "")
 }
 
 func validatePaymentDate(c *fiber.Ctx) (bool, string) {
@@ -266,7 +296,7 @@ func validatePaymentDate(c *fiber.Ctx) (bool, string) {
 	// esto se puede escalar, esta repetido con las otras fechas
 	paymentDate := strings.TrimSpace(c.FormValue("payment-date"))
 	if paymentDate == "" {
-		return false, "El campo Fecha de nacimiento no puede estar vacío"
+		return false, "El campo Fecha de pago no puede estar vacío"
 	}
 
 	var valid bool
@@ -311,10 +341,10 @@ func isNumber(value, allowed string) (bool, string) {
 	return true, ""
 }
 
-func isAlphanumeric(value, allowed string) (bool, string) {
+func isAlphanumeric(value, allowedCharacter string) (bool, string) {
 	// se incluye Ã por la codificacion
 	characters := " abcdefghijklmnñopqrstuvwxyzáéíóúüÃ0123456789"
-	characters += allowed
+	characters += allowedCharacter
 	value = strings.ToLower(value)
 	for i := range value {
 		if !strings.Contains(characters, string(value[i])) {

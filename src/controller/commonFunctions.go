@@ -2,6 +2,7 @@ package controller
 
 import (
 	"fmt"
+	"time"
 
 	"github.com/LucasBastino/app-sindicato/src/database"
 	"github.com/LucasBastino/app-sindicato/src/models"
@@ -39,18 +40,18 @@ func GetPaginationData(currentPage, totalRows int) (int, int, int, int) {
 	if totalRows == 0 {
 		totalPages = 1
 		// si la cantidad de filas es un multiplo de 10 entran justo y no sobran
-	} else if totalRows%10 == 0 {
-		totalPages = totalRows / 10
+	} else if totalRows%15 == 0 {
+		totalPages = totalRows / 15
 		// sino no entran justo y se agrega una pagina mas
 	} else {
-		totalPages = (totalRows / 10) + 1
+		totalPages = (totalRows / 15) + 1
 	}
 
 	// setting currentPage and offset
 	var offset int
 
 	// PODES HACER UNA FUNCION DE ESTO O METER UN SWITCH
-	//  si currentPage es menor a 1, currentPage ahora es 1 y muestra los primeros 10
+	//  si currentPage es menor a 1, currentPage ahora es 1 y muestra los primeros 20
 	if currentPage <= 1 {
 		offset = 0
 	}
@@ -59,12 +60,12 @@ func GetPaginationData(currentPage, totalRows int) (int, int, int, int) {
 	// y muestra los ultimos members
 	if currentPage > totalPages {
 		currentPage = totalPages
-		offset = (currentPage - 1) * 10
+		offset = (currentPage - 1) * 15
 	}
 
-	// si currentPage es mayor a 1, muestra los miembros calculando el offset * 10
+	// si currentPage es mayor a 1, muestra los miembros calculando el offset * 15
 	if currentPage > 1 {
-		offset = (currentPage - 1) * 10
+		offset = (currentPage - 1) * 15
 	}
 
 	// setting aproximador
@@ -89,6 +90,21 @@ func GetTotalPagesArray(totalPages int) []int {
 		}
 	}
 	return totalPagesArray
+}
+
+func getEnterpriseName(idEnterprise int) string {
+	enterpriseName := ""
+	result, err := database.DB.Query(fmt.Sprintf("SELECT Name FROM EnterpriseTable WHERE IdEnterprise = '%d'", idEnterprise))
+	if err != nil {
+		fmt.Println("error searching for enterprise name")
+	}
+	for result.Next() {
+		err = result.Scan(&enterpriseName)
+		if err != nil {
+			fmt.Println("error scanning enterprise name")
+		}
+	}
+	return enterpriseName
 }
 
 func RenderElectoralMemberList(c *fiber.Ctx) error {
@@ -129,3 +145,21 @@ func RenderPruebaEmpresas(c *fiber.Ctx) error {
 func RenderLogin(ctx *fiber.Ctx) error {
 	return ctx.Render("login", fiber.Map{})
 }
+
+func formatTimeStamps(cA, uA time.Time) (string, string) {
+	loc, err := time.LoadLocation("America/Argentina/Buenos_Aires")
+	if err != nil {
+		panic(err)
+	}
+
+	return cA.In(loc).Format("02-01-2006 15:04:05"), uA.In(loc).Format("02-01-2006 15:04:05")
+}
+
+// Creado: 2024-11-18 19:12:38 +0000 UTC
+
+// func formatTimeStamps(m *models.Member) {
+// 	fmt.Println(m)
+// 	fmt.Println(&m)
+// 	fmt.Println(*m)
+// 	m.Name = "Lukitas"
+// }

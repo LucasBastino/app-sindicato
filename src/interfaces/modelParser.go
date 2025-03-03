@@ -89,12 +89,14 @@ func (parser PaymentParser) ParseModel(c *fiber.Ctx) models.Payment {
 	p.Year = c.FormValue("year")
 	p.Status = c.FormValue("status")
 	AmountStr := c.FormValue("amount")
-	Amount, err := strconv.Atoi(AmountStr)
-	if err!=nil{
-		fmt.Println("error converting AmountStr to int")
-		panic(err)
+	if AmountStr != "" {
+		Amount, err := strconv.Atoi(AmountStr)
+		if err != nil {
+			fmt.Println("error converting AmountStr to int")
+			panic(err)
+		}
+		p.Amount = Amount
 	}
-	p.Amount = Amount
 	p.PaymentDate = c.FormValue("payment-date")
 	p.Commentary = c.FormValue("commentary")
 	IdEnterpriseStr := c.FormValue("id-enterprise")

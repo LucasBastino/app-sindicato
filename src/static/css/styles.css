@@ -182,12 +182,22 @@ select:disabled {
 
 .btn-delete {
   border-radius: 5px;
-  background-color: #ff8888;
+  background-color: #FF6666;
 }
 
 .btn-add {
   border-radius: 5px;
-  background-color: #eeeeee;
+  background-color: #555555;
+  padding: 0.3em;
+  color: white;
+  border: none;
+}
+
+.btn-other{
+  background-color: #555555;
+  padding: 0.3em;
+  color:white;
+  border: none
 }
 
 form {
@@ -247,9 +257,17 @@ form {
 }
 
 .item-btn {
-  margin: 2em;
+  margin: 2em 0 2em 0;
+  padding: 0.5em;
   align-self: center;
-  border-radius: 10px;
+  background-color: #555555;
+  color: white;
+  border: 1px solid white;
+  cursor: pointer;
+}
+
+.btn-delete-file{
+  background-color: #BB3333;
 }
 
 .enterprise-btn {
@@ -263,6 +281,8 @@ form {
 
 .btn-submit {
   width: 40%;
+  text-align: center;
+  cursor: pointer;
 }
 
 .center-btn {
@@ -397,4 +417,64 @@ div.no-result{
 .check-icon{
   font-size: 10em;
   color: #999;
+}
+
+.enterprise-option{
+  cursor: pointer;
+}
+
+.enterprise-select-table{
+  text-align: start;  
+}
+
+
+.options{
+  max-height: 250px;
+  overflow-y: auto;
+}
+
+.options td{
+  cursor: pointer;
+}
+
+
+.x-icon{
+  line-height: 2em;
+  margin-top: 5em;
+  cursor: pointer;
+}
+
+.no-transform:focus {
+  transform: scale(1);
+}
+
+.timestamps{
+  font-size: 0.8em;
+  margin-left: 2em;
+  display: block;
+}
+
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+input[type=number] {
+  -moz-appearance: textfield;
+}
+
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+textarea:-webkit-autofill,
+textarea:-webkit-autofill:hover,
+textarea:-webkit-autofill:focus,
+select:-webkit-autofill,
+select:-webkit-autofill:hover,
+select:-webkit-autofill:focus {
+  /* -webkit-box-shadow: 0 0 0px 1000px #ffffff inset !important; */
+  -webkit-background-clip: text;
+  /* This is a bonus from here: https://github.com/nextui-org/nextui/issues/1346#issuecomment-1855635162*/
+  transition: background-color 5000s ease-in-out 0s;
 }

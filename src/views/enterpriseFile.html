@@ -84,14 +84,16 @@
                     {{end}}
                 
                 {{if eq .mode "add"}}
-                <button type="submit" class="item-btn btn-submit">Enviar</button>
+                <div class="item-btn btn-submit" onclick="validateForm('enterprise', 'create');">Enviar</div>
+                <button type="submit" class="hide" id="submit-create-enterprise-btn">Enviar form (escondido)</button>
                 {{else if eq .mode "edit"}}
-                <button type="submit" class="item-btn btn-submit hide">Confirmar</button>
+                <div class="item-btn hide btn-submit hide {{if .withError}}d-inline{{end}}" id="btn-enterprise-confirm" onclick="validateForm('enterprise', 'edit')" onclick="validateForm();">Confirmar</div>
+                <button type="submit" class="hide" id="submit-edit-enterprise-btn">Confirmar form (escondido)</button>
                 {{end}}
             </div>
             {{if eq .mode "edit"}}
-            <p>Creado: {{$.enterprise.CreatedAt}}</p>
-            <p>Actualizado: {{$.enterprise.UpdatedAt}}</p>
+            <div class="timestamps">Creado: {{.createdAt}}</div>
+            <div class="timestamps">Actualizado: {{.updatedAt}}</div>
             {{end}}
         </form>
         {{if eq .mode "edit"}}
@@ -99,11 +101,11 @@
                 <button class="item-btn" hx-get="/payment/{{$.enterprise.IdEnterprise}}/paymentTable" hx-trigger="click" hx-target="#tableDiv">Pagos</button>
                 <button class="item-btn" hx-get="/enterprise/{{$.enterprise.IdEnterprise}}/memberTable" hx-trigger="click" hx-target="#tableDiv" onclick="showEnterpriseMemberSearchNav();">Mostrar afiliados ({{.numberOfMembers}})</button>
                 {{if eq .role "admin"}}
-                <button class="item-btn" onclick="enableInputs(); showConfirmButton();">Editar</button>
+                <button class="item-btn" onclick="enableInputs(); showConfirmButton('enterprise');">Editar datos</button>
                     {{if eq $.enterprise.IdEnterprise 1}}
                     <!-- si es la empresa 1, es decir SIN EMPRESA, que no aparezca el boton ELIMINAR EMPRESA -->
                     {{else}}
-                    <button class="item-btn btn-danger" hx-delete="/enterprise/{{$.enterprise.IdEnterprise}}/delete" hx-headers='{"mode": "edit"}' hx-trigger="click" hx-confirm="¿Estás seguro que deseas eliminar la empresa?" hx-target="#targetDiv" class="btn btn-danger">Eliminar empresa</button>
+                    <button class="item-btn btn-delete-file" hx-delete="/enterprise/{{$.enterprise.IdEnterprise}}/delete" hx-headers='{"mode": "edit"}' hx-trigger="click" hx-confirm="¿Estás seguro que deseas eliminar la empresa?" hx-target="#targetDiv" class="btn btn-danger">Eliminar empresa</button>
                     {{end}}
                 {{end}}
             </div>
@@ -142,6 +144,12 @@
         hideEnterpriseSearchInput();
         showAddEnterpriseBtn(); 
         hideAddMemberBtn();
+    </script>
+{{end}}
+{{if .withError}}
+    <script>
+        enableInputs();
+        enableSelects();
     </script>
 {{end}}
 

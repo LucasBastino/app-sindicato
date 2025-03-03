@@ -38,6 +38,7 @@ func RegisterRoutes(app *fiber.App) {
 
 	e.Get("/renderTable", l.VerifyToken, l.VerifyAdminOrGuest, c.RenderEnterpriseTable)
 	e.Get("/renderTable/:Page", l.VerifyToken, l.VerifyAdminOrGuest, c.RenderEnterpriseTable)
+	e.Get("/renderTableSelect", l.VerifyToken, l.VerifyAdminOrGuest, c.RenderEnterpriseTableSelect)
 	e.Get("/addForm", l.VerifyToken, l.VerifyAdmin, c.RenderAddEnterpriseForm)
 	e.Post("/add", l.VerifyToken, l.VerifyAdmin, c.AddEnterprise)
 	e.Get("/:IdEnterprise/file", l.VerifyToken, l.VerifyAdminOrGuest, c.RenderEnterpriseFile)
@@ -60,4 +61,5 @@ func RegisterRoutes(app *fiber.App) {
 	app.Get("/createPayments", creators.CreatePayments)
 	app.Get("/renderElectoralMemberList", l.VerifyToken, c.RenderElectoralMemberList)
 	app.Get("/pruebaEmpresas", c.RenderPruebaEmpresas)
+	app.Get("/backupDB", l.VerifyToken, l.VerifyAdmin, c.BackupDB)
 }

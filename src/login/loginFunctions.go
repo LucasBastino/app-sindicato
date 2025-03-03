@@ -24,7 +24,7 @@ func checkPassword(password string) bool {
 func createJwtMapClaims(user string, minutes int) jwt.MapClaims {
 	return jwt.MapClaims{
 		"role": user,
-		"exp":  time.Now().Add(time.Second * time.Duration(minutes)).Unix(),
+		"exp":  time.Now().Add(time.Minute * time.Duration(minutes)).Unix(),
 	}
 }
 

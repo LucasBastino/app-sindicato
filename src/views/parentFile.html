@@ -88,12 +88,12 @@
             {{if eq .mode "add"}}
             <button type="submit" class="item-btn btn-submit">Enviar</button>
             {{else if eq .mode "edit"}}
-            <button type="submit" class="item-btn hide btn-submit">Confirmar</button>
+            <button type="submit" class="item-btn hide btn-submit" id="btn-parent-confirm">Confirmar</button>
             {{end}}
         </div>
         {{if eq .mode "edit"}}
-        <p>Creado: {{$.parent.CreatedAt}}</p>
-        <p>Actualizado: {{$.parent.UpdatedAt}}</p>
+        <div class="timestamps">Creado: {{.createdAt}}</div>
+        <div class="timestamps">Actualizado: {{.updatedAt}}</div>
         {{end}}
     </form>
     
@@ -102,8 +102,8 @@
     {{if eq .mode "edit"}}
     <div class="btn-container">
         {{if eq .role "admin"}}
-        <button class="item-btn" onclick="enableInputs(); enableSelects(); showConfirmButton();">Editar</button>
-        <button class="btn-danger item-btn" hx-delete="/parent/{{$.parent.IdMember}}/{{$.parent.IdParent}}/delete" hx-confirm="¿Estás seguro que deseas eliminar el familiar?" hx-target="#tableDiv">Eliminar</button>
+        <button class="item-btn" onclick="enableInputs(); enableSelects(); showConfirmButton('parent');">Editar datos</button>
+        <button class="btn-delete-file item-btn" hx-delete="/parent/{{$.parent.IdMember}}/{{$.parent.IdParent}}/delete" hx-confirm="¿Estás seguro que deseas eliminar el familiar?" hx-target="#tableDiv">Eliminar</button>
          {{end}}
     </div>
     {{else if eq .mode "add"}}

@@ -105,7 +105,7 @@ func (member Member) DeleteModel() {
 
 }
 
-func (member Member) UpdateModel() {
+func (member Member) UpdateModel() Member {
 	// formateo la fecha nac para que empiece con el año
 	member.Birthday = FormatToYYYYMMDD(member.Birthday)
 	member.EntryDate = FormatToYYYYMMDD(member.EntryDate)
@@ -151,16 +151,33 @@ func (member Member) UpdateModel() {
 		fmt.Println("error updating member")
 		panic(err)
 	}
-	defer update.Close()
+	update.Close()
+	result, err := database.DB.Query(fmt.Sprintf(`
+		SELECT * FROM MemberTable 
+		WHERE IdMember = %d`, member.IdMember))
+
+	if err != nil {
+		fmt.Print(err)
+	}
+	m, _ := member.ScanResult(result, true)
+	return m
 }
 
 func (member Member) GetIdModel(c *fiber.Ctx) int {
-	params := struct {
-		IdMember int `params:"IdMember"`
-	}{}
+	// params := struct {
+	// 	IdMember int `params:"IdMember"`
+	// }{}
 
-	c.ParamsParser(&params)
-	return params.IdMember
+	// c.ParamsParser(&params)
+	// return params.IdMember
+
+	// hacerlos asi a partir de ahora
+	idMember, err := c.ParamsInt("IdMember")
+	if err != nil {
+		fmt.Println("error obtaining paramsint")
+		panic(err)
+	}
+	return idMember
 }
 
 func (member Member) SearchOneModelById(c *fiber.Ctx) Member {
@@ -186,7 +203,7 @@ func (member Member) SearchModels(c *fiber.Ctx, offset int) ([]Member, string) {
 		*
 		FROM MemberTable WHERE 
 		Name LIKE '%%%s%%' OR LastName LIKE '%%%s%%' OR DNI LIKE '%%%s%%' 
-		ORDER BY LastName ASC LIMIT 10 OFFSET %d`,
+		ORDER BY LastName ASC LIMIT 15 OFFSET %d`,
 		searchKey, searchKey, searchKey, offset))
 	if err != nil {
 		fmt.Println("error searching member in DB")

@@ -1,0 +1,12 @@
+<table class="table table-striped enterprise-select-table">
+    <tr>
+        <th>Nombre</th>
+    </tr>
+    {{range $_, $e := .enterprises}}
+    <tr>
+        <td onclick="selectEnterprise('{{$e.IdEnterprise}}','{{$e.Name}}');">{{$e.Name}}</td>
+    </tr>
+    {{end}}
+</table>
+
+{{template "Scripts"}}

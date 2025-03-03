@@ -70,7 +70,7 @@ func (payment Payment) DeleteModel() {
 
 }
 
-func (payment Payment) UpdateModel() {
+func (payment Payment) UpdateModel() Payment {
 	update, err := database.DB.Query(fmt.Sprintf(`
 		UPDATE PaymentTable 
 		SET 
@@ -92,7 +92,13 @@ func (payment Payment) UpdateModel() {
 		fmt.Println("error updating Payment")
 		panic(err)
 	}
-	defer update.Close()
+	update.Close()
+	result, err := database.DB.Query(fmt.Sprintf("SELECT * FROM PaymentTable WHERE IdPayment = %d", payment.IdPayment))
+	if err != nil {
+		fmt.Print(err)
+	}
+	p, _ := payment.ScanResult(result, true)
+	return p
 }
 
 func (payment Payment) GetIdModel(c *fiber.Ctx) int {
@@ -144,11 +150,9 @@ func (payment Payment) ValidateFields(c *fiber.Ctx) map[string]string {
 	errorMap := map[string]string{}
 	var valid bool
 	var err string
+
 	if valid, err = validatePayment(c); !valid {
-		errorMap["month"] = err
-	}
-	if valid, err = validatePayment(c); !valid {
-		errorMap["year"] = err
+		errorMap["payment"] = err
 	}
 	if valid, err = validateStatus(c); !valid {
 		errorMap["status"] = err
@@ -157,7 +161,7 @@ func (payment Payment) ValidateFields(c *fiber.Ctx) map[string]string {
 		errorMap["amount"] = err
 	}
 	if valid, err = validatePaymentDate(c); !valid {
-		errorMap["payment-date"] = err
+		errorMap["paymentDate"] = err
 	}
 	if valid, err = validateCommentary(c); !valid {
 		errorMap["commentary"] = err

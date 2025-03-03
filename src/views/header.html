@@ -26,9 +26,11 @@
                 <a class="nav-item nav-link active py-0" href="/member/addForm" id="add-member-btn"><button class="btn-add">Agregar un afiliado</button> 
                 <a class="nav-item nav-link active py-0 hide" href="/enterprise/addForm" id="add-enterprise-btn"><button class="btn-add">Agregar una empresa</button> 
                 {{end}}
-                <a href="/renderElectoralMemberList"><div class="nav-item-right">Padrón</div></a>
+                <a href="/renderElectoralMemberList"><div class="nav-item-right"><div class="btn-other">Padrón</div></div></a>
+                <a href="/backup"><div class="nav-item-right"><div class="btn-other">Backup</div></div></a>
+                <!-- <button class="nav-item-right" onclick="makeBackup();">Backup</button> -->
                 <a class="nav-item-right" href="/logout">Salir</a>
             </nav>
         </div>
-    </header>
+    </header>    
 {{end}}

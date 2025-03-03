@@ -1,6 +1,8 @@
 package controller
 
 import (
+	"fmt"
+
 	i "github.com/LucasBastino/app-sindicato/src/interfaces"
 	"github.com/LucasBastino/app-sindicato/src/models"
 	"github.com/gofiber/fiber/v2"
@@ -12,16 +14,19 @@ func AddMember(c *fiber.Ctx) error {
 	enterprises := getAllModelsCaller(models.Enterprise{})
 	errorMap := validateFieldsCaller(models.Member{}, c)
 	m := parserCaller(i.MemberParser{}, c)
+	enterpriseName := getEnterpriseName(m.IdEnterprise)
 	// Verifico si el mapa tiene errores
 	if len(errorMap) > 0 {
-		data := fiber.Map{"member": m, "mode": "add", "errorMap": errorMap, "enterprises": enterprises}
-		return c.Render("memberFile", data)
+		data := fiber.Map{"member": m, "mode": "add", "errorMap": errorMap, "enterprises": enterprises, "enterpriseName": enterpriseName}
+		return c.Render("noResultsParents", data)
 
 	} else {
 		// Si no tiene errores inserto el member en la DB y renderizo el su archivo
 		m = insertModelCaller(m)
-		data := fiber.Map{"member": m, "mode": "edit", "enterprises": enterprises}
-		return c.Render("memberFile", data)
+		// data := fiber.Map{"member": m, "mode": "edit", "enterprises": enterprises, "enterpriseName": enterpriseName}
+		// return c.Render("memberFile", data)
+		path := fmt.Sprintf("/member/%d/file", m.IdMember)
+		return c.Render("redirect", fiber.Map{"path": path})
 	}
 }
 
@@ -57,17 +62,21 @@ func EditMember(c *fiber.Ctx) error {
 	errorMap := validateFieldsCaller(models.Member{}, c)
 	// Parseo los datos obtenidos del form
 	m := parserCaller(i.MemberParser{}, c)
+	enterpriseName := getEnterpriseName(m.IdEnterprise)
 	IdMember := getIdModelCaller(m, c)
 	m.IdMember = IdMember
 	// necesito poner esta linea ↑ para que se pueda editar 2 veces seguidas
 	role := c.Locals("claims").(jwt.MapClaims)["role"]
 	if len(errorMap) > 0 {
-		data := fiber.Map{"member": m, "mode": "edit", "role": role, "enterprises": enterprises, "errorMap": errorMap}
+		data := fiber.Map{"member": m, "mode": "edit", "withError": true, "role": role, "enterprises": enterprises, "errorMap": errorMap, "enterpriseName": enterpriseName}
 		return c.Render("memberFile", data)
 	} else {
-		updateModelCaller(m)
+
+		// agregarle que retorne m con los nuevos timestamps
+		m = updateModelCaller(m)
+		createdAt, updatedAt := formatTimeStamps(m.CreatedAt, m.UpdatedAt)
 		// hacer esto esta bien? estoy mostrando datos del nuevo member, no estan sacados de la database.DB
-		data := fiber.Map{"member": m, "mode": "edit", "role": role, "enterprises": enterprises}
+		data := fiber.Map{"member": m, "mode": "edit", "role": role, "enterprises": enterprises, "enterpriseName": enterpriseName, "createdAt": createdAt, "updatedAt": updatedAt}
 		return c.Render("memberFile", data)
 
 	}
@@ -115,8 +124,10 @@ func RenderMemberFile(c *fiber.Ctx) error {
 	// Busco el miembro por ID y renderizo su archivo
 	enterprises := getAllModelsCaller(models.Enterprise{})
 	m := searchOneModelByIdCaller(models.Member{}, c)
+	enterpriseName := getEnterpriseName(m.IdEnterprise)
+	createdAt, updatedAt := formatTimeStamps(m.CreatedAt, m.UpdatedAt)
 	role := c.Locals("claims").(jwt.MapClaims)["role"]
-	data := fiber.Map{"member": m, "mode": "edit", "role": role, "enterprises": enterprises}
+	data := fiber.Map{"member": m, "mode": "edit", "role": role, "enterprises": enterprises, "enterpriseName": enterpriseName, "createdAt": createdAt, "updatedAt": updatedAt}
 	return c.Render("memberFile", data)
 }
 
