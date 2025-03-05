@@ -3,14 +3,7 @@ function validateEnterpriseName(value){
     if (!isNotEmpty(errorDiv, value)){
         return false
     }
-    if (value.length > 150){
-        errorDiv.style.display = 'inline'
-        errorDiv.innerHTML = "El nombre tiene mas de 150 caracteres."
-        return false
-    } else {
-        errorDiv.style.display = 'none'
-        return true
-    }
+    return isNotLongerThan(errorDiv, 150, value)
 }
 
 function validateEnterpriseNumber(value){
@@ -19,19 +12,22 @@ function validateEnterpriseNumber(value){
         return false
     }
     
-    if (!isNumber(value)){
-        errorDiv.style.display = 'inline'
-        errorDiv.innerHTML = "El nombre posee algún caracter invalido."
+    if (!isNumber(errorDiv, value)){
         return false
     }
-    if (value.length > 150){
-        errorDiv.style.display = 'inline'
-        errorDiv.innerHTML = "El numero tiene mas de 10 caracteres."
-        return false
-    } else {
-        errorDiv.style.display = 'none'
-        return true
-    }
+    
+    return isNotLongerThan(errorDiv, 10, value)
 
 }
 
+function validateEnterpriseAddress(value){
+    errorDiv = document.getElementById("address-error")
+    if (!isNotEmpty(errorDiv, value)){
+        return false
+    }
+
+    if (!isAlphanumeric(errorDiv, ",.", value)){
+        return false
+    }
+    return isNotLongerThan(errorDiv, 100, value)
+}

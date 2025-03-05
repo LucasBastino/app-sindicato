@@ -3,8 +3,14 @@ function getInputValue(name){
 }
 
 
-function isNumber(value){
-    return parseInt(value)
+function isNumber(errorDiv, value){
+    if (!parseInt(value)){
+        errorDiv.style.display = 'inline'
+        errorDiv.innerHTML = `El campo contiene un caracter erróneo.`
+    } else{
+        return true
+    } 
+        
     // parseInt si se puede parsear devuelve el valor pero truthy y si no se puede devuelve undefined pero falsy
     // por lo que puedo usarlo como un valor booleano tambien
 }
@@ -37,8 +43,20 @@ function isValidCharacter(errorDiv, validCharacters, value){
 function isAlphanumeric(errorDiv, allowedCharacter, value){
     characters = " abcdefghijklmnñopqrstuvwxyzáéíóúüÃ0123456789"
 	characters += allowedCharacter
-	value = value.toLowerCase()
+    console.log(characters)
+    	value = value.toLowerCase()
     // terminar esto
+}
+
+function isNotLongerThan(errorDiv, limit, value){
+    if (value.length>limit){
+        errorDiv.style.display = 'inline'
+        errorDiv.innerHTML = `El campo contiene más de ${limit} caracteres.`
+        return false
+    } else {
+        errorDiv.style.display = 'none'
+        return true
+    }
 }
 
 function isValidDate(errorDiv, paymentDate, maxYear){

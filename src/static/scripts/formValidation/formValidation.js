@@ -43,7 +43,9 @@ function validatePayment(action){
 function validateEnterprise(action){
     
     var validationFields = {
-        name: validateName(getInputValue('name')),
+        name: validateEnterpriseName(getInputValue('name')),
+        number: validateEnterpriseNumber(getInputValue('enterprise-number')),
+        address: validateEnterpriseAddress(getInputValue('address'))
         /* year: validateYear(getInputValue('year')),
         status: validateStatus(getInputValue('status')),
         amount: validateAmount(getInputValue('amount')),

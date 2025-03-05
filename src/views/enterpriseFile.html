@@ -31,63 +31,49 @@
                     <div class="field-tag field-2">Nombre</div>
                     <input class="form-input field-12" type="text" name="name" value="{{$.enterprise.Name}}" disabled>
                 </div>
-                    {{with .errorMap.enterpriseName}}
-                        <div class="error-div field-12">{{.}}</div>
-                    {{end}}
+                <div class="hide error-div field-12" id="name-error"></div>
 
                 <div class="input-container field-12">
                     <div class="field-tag field-2">Nº de empresa</div>
                     <input class="form-input field-12" type="text" name="enterprise-number" value="{{$.enterprise.EnterpriseNumber}}" disabled>
                 </div>
-                    {{with .errorMap.enterpriseNumber}}
-                    <div class="error-div field-12">{{.}}</div>
-                    {{end}}
+                <div class="hide error-div field-12" id="enterprise-number-error"></div>
 
                 <div class="input-container field-12">
                     <div class="field-tag field-2">Dirección</div>
                     <input class="form-input field-12" type="text" name="address" value="{{$.enterprise.Address}}" disabled>
                 </div>
-                    {{with .errorMap.address}}
-                    <div class="error-div field-12">{{.}}</div>
-                    {{end}}
+                <div class="hide error-div field-12" id="address-error"></div>
 
                 <div class="input-container field-12">
                     <div class="field-tag field-2">CUIT</div>
                     <input class="form-input field-12" type="text" name="cuit" value="{{$.enterprise.CUIT}}" disabled>
                 </div>
-                    {{with .errorMap.cuit}}
-                    <div class="error-div field-12">{{.}}</div>
-                    {{end}}
+                <div class="hide error-div field-12" id="cuit-error"></div>
 
                 <div class="input-container field-12">
                     <div class="field-tag field-2">Localidad</div>
                     <input class="form-input field-12" type="text" name="district" value="{{$.enterprise.District}}" disabled>
                 </div>
-                    {{with .errorMap.district}}
-                    <div class="error-div field-12">{{.}}</div>
-                    {{end}}
+                <div class="hide error-div field-12" id="district-error"></div>
 
                 <div class="input-container field-12">
                     <div class="field-tag field-2">Código postal</div>
                     <input class="form-input field-12" type="text" name="postal-code" value="{{$.enterprise.PostalCode}}" disabled>
                 </div>
-                    {{with .errorMap.postalCode}}
-                    <div class="error-div field-12">{{.}}</div>
-                    {{end}}
+                <div class="hide error-div field-12" id="postal-code-error"></div>
 
                 <div class="input-container field-12">
                     <div class="field-tag field-2">Teléfono</div>
                     <input class="form-input field-12" type="text" name="phone" value="{{$.enterprise.Phone}}" disabled>
                 </div>
-                    {{with .errorMap.phone}}
-                    <div class="error-div field-12">{{.}}</div>
-                    {{end}}
+                <div class="hide error-div field-12" id="phone-error"></div>
                 
                 {{if eq .mode "add"}}
                 <div class="item-btn btn-submit" onclick="validateForm('enterprise', 'create');">Enviar</div>
                 <button type="submit" class="hide" id="submit-create-enterprise-btn">Enviar form (escondido)</button>
                 {{else if eq .mode "edit"}}
-                <div class="item-btn hide btn-submit hide {{if .withError}}d-inline{{end}}" id="btn-enterprise-confirm" onclick="validateForm('enterprise', 'edit')" onclick="validateForm();">Confirmar</div>
+                <div class="item-btn hide btn-submit hide {{if .withError}}d-inline{{end}}" id="btn-enterprise-confirm" onclick="validateForm('enterprise', 'edit')">Confirmar</div>
                 <button type="submit" class="hide" id="submit-edit-enterprise-btn">Confirmar form (escondido)</button>
                 {{end}}
             </div>
@@ -130,7 +116,9 @@
 {{template "Scripts"}}
 
 
-
+<script src="/static/scripts/formValidation/formValidation.js"></script>
+    <script src="/static/scripts/formValidation/enterpriseFunctions.js"></script>
+    <script src="/static/scripts/formValidation/commonFunctions.js"></script>
 {{if eq .mode "add"}}
     <script type="text/javascript">
         enableInputs();

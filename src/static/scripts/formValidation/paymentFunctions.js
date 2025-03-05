@@ -67,14 +67,10 @@ function validateAmount(value){
         return false
     }
 
-    if (!isNumber(value)){
-        errorDiv.style.display = 'inline'
-        errorDiv.innerHTML = "Caracter erroneo."
+    if (!isNumber(errorDiv, value)){
         return false
-    } else{
-        errorDiv.style.display = 'none'
-        return true
     }
+    return isNotLongerThan(errorDiv, 20, value)
 }
 
 
@@ -93,14 +89,7 @@ function validatePaymentDate(value){
 function validateCommentary(value){
     var errorDiv = document.getElementById('commentary-error')
 
-    if (value.length > 400){
-        errorDiv.style.display = 'inline'
-        errorDiv.innerHTML = "El comentario tiene mas de 400 caracteres."
-        return false
-    } else {
-        errorDiv.style.display = 'none'
-        return true
-    }
+    return isNotLongerThan(errorDiv, value, 400)
 }
 
 
