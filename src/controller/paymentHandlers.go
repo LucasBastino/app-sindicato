@@ -20,7 +20,6 @@ func RenderAddPaymentForm(c *fiber.Ctx) error {
 }
 
 func RenderPaymentFile(c *fiber.Ctx) error {
-	// IdPayment := getIdModelCaller(models.Payment{},c)
 	p := searchOneModelByIdCaller(models.Payment{}, c)
 	role := c.Locals("claims").(jwt.MapClaims)["role"]
 	IdEnterprise := getIdModelCaller(models.Enterprise{}, c)
@@ -48,9 +47,7 @@ func AddPayment(c *fiber.Ctx) error {
 	p := parserCaller(i.PaymentParser{}, c)
 
 	if len(errorMap) > 0 {
-		fmt.Println(errorMap)
-		data := fiber.Map{"payment": p, "errorMap": errorMap, "mode": "add"}
-		return c.Render("paymentFile", data)
+		return c.Status(fiber.StatusBadRequest).JSON(errorMap)
 	}
 
 	IdEnterprise := getIdModelCaller(models.Enterprise{}, c)
@@ -71,16 +68,17 @@ func EditPayment(c *fiber.Ctx) error {
 	role := c.Locals("claims").(jwt.MapClaims)["role"]
 	IdPayment := getIdModelCaller(models.Payment{}, c)
 	p.IdPayment = IdPayment
-	if len(errorMap) > 0 {
-		data := fiber.Map{"payment": p, "mode": "edit", "role": role, "errorMap": errorMap}
-		c.Render("paymentFile", data)
-	}
-	p = updateModelCaller(p)
-	years := getPaymentYearsFromDB(IdEnterprise)
-	createdAt, updatedAt := getPaymentTimestampsFromDB(p.IdPayment)
 
-	data := fiber.Map{"payment": p, "mode": "edit", "idEnterprise": IdEnterprise, "role": role, "years": years, "year": p.Year, "createdAt": createdAt, "updatedAt": updatedAt}
-	return c.Render("paymentFile", data)
+	if len(errorMap) > 0 {
+		return c.Status(fiber.StatusBadRequest).JSON(errorMap)
+	} else {
+		p = updateModelCaller(p)
+		years := getPaymentYearsFromDB(IdEnterprise)
+		createdAt, updatedAt := getPaymentTimestampsFromDB(p.IdPayment)
+
+		data := fiber.Map{"payment": p, "mode": "edit", "idEnterprise": IdEnterprise, "role": role, "years": years, "year": p.Year, "createdAt": createdAt, "updatedAt": updatedAt}
+		return c.Render("paymentFile", data)
+	}
 
 }
 

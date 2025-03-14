@@ -1,4 +1,5 @@
 {{$enterprises := .enterprises}}
+{{$searchKey := .searchKey}}
 {{$mode := .mode}}
 {{$role := .role}}
 
@@ -38,12 +39,12 @@
             </a>
         </td>
         {{if eq $role "admin"}}
-        <td><button class="btn-delete" hx-delete="/member/{{$m.IdMember}}/delete" hx-headers='{"mode": "{{$.mode}}", "idEnterprise": "{{$m.IdEnterprise}}"}' hx-confirm="¿Estás seguro que deseas eliminar el afiliado?" hx-target="#tableDiv"><i class="bi bi-x-square"></i></button></td>  
+        <td><button class="btn-delete" hx-delete="/member/{{$m.IdMember}}/delete" hx-headers='{"mode": "{{$mode}}", "searchKey": "{{$searchKey}}", "deleteMode": "true", "idEnterprise": "{{$m.IdEnterprise}}"}' hx-confirm="¿Estás seguro que deseas eliminar el afiliado?" hx-target="#tableDiv"><i class="bi bi-x-square"></i></button></td>  
         {{end}}
     </tr>
     {{end}}
  </table>
-
+{{template "Scripts"}}
  <script>
     hideEnterpriseSearchInput();
     showMemberSearchInput();

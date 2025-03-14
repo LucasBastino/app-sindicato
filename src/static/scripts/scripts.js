@@ -19,6 +19,10 @@ function enableSelects(){
     }); 
 }
 
+function blankSearchInput(){
+    console.log("blankl ")
+    document.getElementById("search-input").value = ""
+}
 
 function showConfirmButton(model){
     document.getElementById(`btn-${model}-confirm`).style.display = 'inline'

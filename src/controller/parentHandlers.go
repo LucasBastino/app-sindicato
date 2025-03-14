@@ -11,8 +11,7 @@ func AddParent(c *fiber.Ctx) error {
 	errorMap := validateFieldsCaller(models.Parent{}, c)
 	p := parserCaller(i.ParentParser{}, c)
 	if len(errorMap) > 0 {
-		data := fiber.Map{"parent": p, "mode": "add", "errorMap": errorMap}
-		return c.Render("parentFile", data)
+		return c.Status(fiber.StatusBadRequest).JSON(errorMap)
 	} else {
 		p = insertModelCaller(p)
 		data := fiber.Map{"parent": p, "mode": "edit"}
@@ -33,8 +32,7 @@ func EditParent(c *fiber.Ctx) error {
 	p.IdParent = IdParent
 	role := c.Locals("claims").(jwt.MapClaims)["role"]
 	if len(errorMap) > 0 {
-		data := fiber.Map{"parent": p, "mode": "edit", "role": role, "errorMap": errorMap}
-		return c.Render("parentFile", data)
+		return c.Status(fiber.StatusBadRequest).JSON(errorMap)
 	} else {
 		p = updateModelCaller(p)
 		data := fiber.Map{"parent": p, "mode": "edit", "role": role}

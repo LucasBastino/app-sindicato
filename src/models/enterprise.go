@@ -102,11 +102,11 @@ func (enterprise Enterprise) UpdateModel() Enterprise {
 		panic(err)
 	}
 	update.Close()
-	result, err := database.DB.Query(`
+	result, err := database.DB.Query(fmt.Sprintf(`
 		SELECT
 		*
 		FROM EnterpriseTable
-		WHERE IdEnterprise = (SELECT LAST_INSERT_ID())`)
+		WHERE IdEnterprise = %v`, enterprise.IdEnterprise))
 	if err != nil {
 		fmt.Print(err)
 	}

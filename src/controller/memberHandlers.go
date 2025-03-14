@@ -11,20 +11,14 @@ import (
 
 func AddMember(c *fiber.Ctx) error {
 	// Creo un mapa con los errores de validacion
-	enterprises := getAllModelsCaller(models.Enterprise{})
 	errorMap := validateFieldsCaller(models.Member{}, c)
 	m := parserCaller(i.MemberParser{}, c)
-	enterpriseName := getEnterpriseName(m.IdEnterprise)
 	// Verifico si el mapa tiene errores
 	if len(errorMap) > 0 {
-		data := fiber.Map{"member": m, "mode": "add", "errorMap": errorMap, "enterprises": enterprises, "enterpriseName": enterpriseName}
-		return c.Render("noResultsParents", data)
-
+		return c.Status(fiber.StatusBadRequest).JSON(errorMap)
 	} else {
 		// Si no tiene errores inserto el member en la DB y renderizo el su archivo
 		m = insertModelCaller(m)
-		// data := fiber.Map{"member": m, "mode": "edit", "enterprises": enterprises, "enterpriseName": enterpriseName}
-		// return c.Render("memberFile", data)
 		path := fmt.Sprintf("/member/%d/file", m.IdMember)
 		return c.Render("redirect", fiber.Map{"path": path})
 	}
@@ -68,11 +62,8 @@ func EditMember(c *fiber.Ctx) error {
 	// necesito poner esta linea ↑ para que se pueda editar 2 veces seguidas
 	role := c.Locals("claims").(jwt.MapClaims)["role"]
 	if len(errorMap) > 0 {
-		data := fiber.Map{"member": m, "mode": "edit", "withError": true, "role": role, "enterprises": enterprises, "errorMap": errorMap, "enterpriseName": enterpriseName}
-		return c.Render("memberFile", data)
+		return c.Status(fiber.StatusBadRequest).JSON(errorMap)
 	} else {
-
-		// agregarle que retorne m con los nuevos timestamps
 		m = updateModelCaller(m)
 		createdAt, updatedAt := formatTimeStamps(m.CreatedAt, m.UpdatedAt)
 		// hacer esto esta bien? estoy mostrando datos del nuevo member, no estan sacados de la database.DB

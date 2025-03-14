@@ -197,7 +197,15 @@ func (member Member) SearchOneModelById(c *fiber.Ctx) Member {
 }
 
 func (member Member) SearchModels(c *fiber.Ctx, offset int) ([]Member, string) {
-	searchKey := c.FormValue("search-key")
+	var searchKey string
+	// si estamos en deleteMode que el searchKey lo saque del header, ya que no se lo voy a mandar por el form
+	// asi cuando elimino un miembro se quedan los miembros que busque antes menos el que elimine
+	if c.Get("deleteMode") == "true" {
+		searchKey = c.Get("searchKey")
+	} else {
+		// sino se lo mando por el form normalmente
+		searchKey = c.FormValue("search-key")
+	}
 	result, err := database.DB.Query(fmt.Sprintf(`
 		SELECT 
 		*
@@ -272,7 +280,15 @@ func (member Member) ValidateFields(c *fiber.Ctx) map[string]string {
 
 func (member Member) GetTotalRows(c *fiber.Ctx) int {
 	var totalRows int
-	searchKey := c.FormValue("search-key")
+	var searchKey string
+	// si estamos en deleteMode que el searchKey lo saque del header, ya que no se lo voy a mandar por el form
+	// asi cuando elimino un miembro se quedan los miembros que busque antes menos el que elimine
+	if c.Get("deleteMode") == "true" {
+		searchKey = c.Get("searchKey")
+	} else {
+		// sino se lo mando por el form normalmente
+		searchKey = c.FormValue("search-key")
+	}
 	// no puedo hacer asi porque sino los afiliados con id enterprise null no aparecen
 	// row := database.DB.QueryRow(fmt.Sprintf(`
 	// 	SELECT COUNT(*) FROM MemberTable M INNER JOIN EnterpriseTable E ON M.IdEnterprise = E.IdEnterprise

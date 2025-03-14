@@ -8,6 +8,7 @@ import (
 	"time"
 	"unicode/utf8"
 
+	"github.com/LucasBastino/app-sindicato/src/database"
 	"github.com/gofiber/fiber/v2"
 )
 
@@ -168,17 +169,44 @@ func ValidateCUIT(c *fiber.Ctx) (bool, string) {
 }
 
 func ValidateIdEnterprise(c *fiber.Ctx) (bool, string) {
-	idEnterprise := strings.TrimSpace(c.FormValue("id-enterprise"))
-	if idEnterprise == "0" {
-		return false, "Elegir una empresa"
+	idEnterpriseStr := c.FormValue("id-enterprise")
+	idEnterprise, err := strconv.Atoi(idEnterpriseStr)
+	if err != nil {
+		fmt.Println(err)
 	}
-	return true, ""
+	enterprisesId := GetAllEnterprisesIdFromDB()
+	for _, id := range enterprisesId {
+		if id == idEnterprise {
+			return true, ""
+		}
+	}
+	return false, "El id de la empresa no es valido"
+}
+
+func GetAllEnterprisesIdFromDB() []int {
+	var enterprisesId []int
+	var idEnterprise int
+	result, err := database.DB.Query("SELECT IdEnterprise FROM EnterpriseTable")
+	if err != nil {
+		fmt.Println("error searching all IdsEnterprise in DB")
+		panic(err)
+	}
+	for result.Next() {
+		err = result.Scan(&idEnterprise)
+		if err != nil {
+			fmt.Println("error scanning idEnterprise")
+			panic(err)
+		}
+		enterprisesId = append(enterprisesId, idEnterprise)
+	}
+	return enterprisesId
 }
 
 func ValidateCategory(c *fiber.Ctx) (bool, string) {
-	category := strings.TrimSpace(c.FormValue("category"))
-	if category == "" {
-		return false, "Elegir una categoría"
+	category := c.FormValue("category")
+	categories := []string{"Nivel 1: Oficial Múltiple", "Nivel 2: Oficial Especializado", "Nivel 3: Oficial General", "Nivel 4: Medio Oficial", "Nivel 5: Ayudante", "Nivel 6: Operario Act. Industrial"}
+	if !slices.Contains(categories, category) {
+		return false, "Categoria errónea"
 	}
 	return true, ""
 }

@@ -92,10 +92,10 @@
                     <input class="hide" type="text" name="id-enterprise" value="{{$.payment.IdEnterprise}}">
 
                     {{if eq .mode "add"}}
-                    <div class="item-btn btn-submit" onclick="validateForm('payment', 'create');">Enviar</div>
+                    <div class="item-btn btn-submit" onclick="validatePayment('create');">Enviar</div>
                     <button type="submit" class="hide" id="submit-create-payment-btn">Enviar form (escondido)</button>
                     {{else if eq .mode "edit"}}
-                    <div class="item-btn hide btn-submit" onclick="validateForm('payment', 'edit')" id="btn-payment-confirm" onclick="validateForm();">Confirmar</div>
+                    <div class="item-btn hide btn-submit" onclick="validatePayment('edit')" id="btn-payment-confirm" onclick="validateForm();">Confirmar</div>
                     <button type="submit" class="hide" id="submit-edit-payment-btn">Confirmar form (escondido)</button>
                     {{end}}
                 </div>
@@ -114,10 +114,8 @@
             {{end}}
         </div>
     </div>
-    <script src="/static/scripts/formValidation/formValidation.js"></script>
-    <script src="/static/scripts/formValidation/paymentFunctions.js"></script>
-    <script src="/static/scripts/formValidation/commonFunctions.js"></script>
     {{template "Scripts"}}
+    {{template "ValidationScripts"}}
     {{if eq .mode "add"}}
         <script type="text/javascript">
             enableInputs();

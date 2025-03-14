@@ -46,6 +46,7 @@ func RegisterRoutes(app *fiber.App) {
 	e.Delete("/:IdEnterprise/delete", l.VerifyToken, l.VerifyAdmin, c.DeleteEnterprise)
 	e.Put("/:IdEnterprise/edit", l.VerifyToken, l.VerifyAdmin, c.EditEnterprise)
 	e.Get("/:IdEnterprise/paymentTable/:Year", l.VerifyToken, l.VerifyAdminOrGuest, c.RenderEnterprisePaymentsTable)
+	e.Get("/getAllEnterprisesId", l.VerifyToken, l.VerifyAdminOrGuest, c.GetAllEnterprisesId)
 
 	py.Get("/:IdEnterprise/addForm", l.VerifyToken, l.VerifyAdmin, c.RenderAddPaymentForm)
 	py.Post("/:IdEnterprise/add", l.VerifyToken, l.VerifyAdmin, c.AddPayment)

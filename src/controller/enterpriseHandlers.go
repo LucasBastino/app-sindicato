@@ -16,9 +16,7 @@ func AddEnterprise(c *fiber.Ctx) error {
 	errorMap := validateFieldsCaller(models.Enterprise{}, c)
 	e := parserCaller(i.EnterpriseParser{}, c)
 	if len(errorMap) > 0 {
-		// Si tiene errores renderizo nuevamente el form
-		data := fiber.Map{"enterprise": e, "mode": "add", "errorMap": errorMap}
-		return c.Render("enterpriseFile", data)
+		return c.Status(fiber.StatusBadRequest).JSON(errorMap)
 	} else {
 		e = insertModelCaller(e)
 		data := fiber.Map{"enterprise": e, "mode": "edit"}
@@ -64,13 +62,15 @@ func EditEnterprise(c *fiber.Ctx) error {
 		years = append(years, year)
 	}
 	role := c.Locals("claims").(jwt.MapClaims)["role"]
+
 	if len(errorMap) > 0 {
-		data := fiber.Map{"enterprise": e, "mode": "edit", "withError": true, "role": role, "errorMap": errorMap, "years": years}
-		return c.Render("enterpriseFile", data)
+		return c.Status(fiber.StatusBadRequest).JSON(errorMap)
 	} else {
 		e = updateModelCaller(e)
+		fmt.Printf("%+v", e)
 		numberOfMembers := getNumberOfMembers(e.IdEnterprise, "")
-		data := fiber.Map{"enterprise": e, "numberOfMembers": numberOfMembers, "role": role, "mode": "edit", "years": years}
+		createdAt, updatedAt := formatTimeStamps(e.CreatedAt, e.UpdatedAt)
+		data := fiber.Map{"enterprise": e, "numberOfMembers": numberOfMembers, "role": role, "mode": "edit", "years": years, "createdAt": createdAt, "updatedAt": updatedAt}
 		return c.Render("enterpriseFile", data)
 	}
 }
@@ -139,7 +139,6 @@ func RenderEnterpriseMembers(c *fiber.Ctx) error {
 	// obtengo la currentPage del path
 	currentPage := GetPageFromPath(c)
 
-	searchKey := c.FormValue("search-key")
 	IdEnterprise := func() int {
 		// c.Get devuelve un valor del header
 		if c.Get("mode") == "edit" {
@@ -157,6 +156,17 @@ func RenderEnterpriseMembers(c *fiber.Ctx) error {
 		}
 	}()
 
+	var searchKey string
+
+	if c.Get("deleteMode") == "true" {
+		// si estamos en deleteMode que el searchKey lo saque del header, ya que no se lo voy a mandar por el form
+		// asi cuando elimino un miembro se quedan los miembros que busque antes menos el que elimine
+		searchKey = c.Get("searchKey")
+	} else {
+		// sino se lo mando por el form normalmente
+		searchKey = c.FormValue("search-key")
+	}
+
 	// calculo la cantidad de resultados
 	totalRows := getNumberOfMembers(IdEnterprise, searchKey)
 
@@ -170,7 +180,6 @@ func RenderEnterpriseMembers(c *fiber.Ctx) error {
 		totalPages, offset, someBefore, someAfter := GetPaginationData(currentPage, totalRows)
 
 		// busco los miembros y devuelvo el searchKey para usarlo nuevamente en la paginacion
-		searchKey := c.FormValue("search-key")
 		members := getEnterpriseMembers(IdEnterprise, searchKey, offset)
 
 		// hago un array para poder recorrerlo y crear botones cuando hay menos de 10 paginas en el template
@@ -300,4 +309,9 @@ func RenderEnterpriseTableSelect(c *fiber.Ctx) error {
 		// renderizo la tabla y le envio el map con las variables
 		return c.Render("enterpriseTableSelect", fiber.Map{"enterprises": enterprises, "role": role})
 	}
+}
+
+func GetAllEnterprisesId(c *fiber.Ctx) error {
+	enterprisesId := models.GetAllEnterprisesIdFromDB()
+	return c.JSON(enterprisesId)
 }

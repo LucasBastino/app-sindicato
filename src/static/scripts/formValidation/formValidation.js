@@ -1,26 +1,32 @@
-
-
-function validateForm(model, action){
-    switch (model){
-        case 'member': validateMember(action)
-        case 'enterprise': validateEnterprise(action)
-        case 'parent': validateParent(action)
-        case 'payment': validatePayment(action)
+function validateMember(action){
+    
+    var validationFields = {
+        name: validateName(getInputValue('name')),
+        lastName: validateLastName(getInputValue('last-name')),
+        dni: validateDNI(getInputValue('dni')),
+        birthday: validateBirthday(getInputValue('birthday')),
+        gender: validateGender(getInputValue('gender')),
+        maritalStatus: validateMaritalStatus(getInputValue('marital-status')),
+        phone: validatePhone(getInputValue('phone')),
+        email: validateEmail(getInputValue('email')),
+        address: validateAddress(getInputValue('address')),
+        postalCode: validatePostalCode(getInputValue('postal-code')),
+        district: validateDistrict(getInputValue('district')),
+        memberNumber: validateMemberNumber(getInputValue('member-number')),
+        cuil: validateCUIL(getInputValue('cuil')),
+        idEnterprise: validateIdEnterprise(getInputValue('id-enterprise')),
+        category: validateCategory(getInputValue('category')),
+        entryDate: validateEntryDate(getInputValue('entry-date')),
+    }
+    
+    if (checkValidationFields(validationFields)){
+        // postForm("member", action)
+        console.log("todos verdaderos")
+    } else {
+        console.log("hay uno falso")
     }
 }
 
-function checkValidationFields(validation){
-    for (let field in validation){
-        if (!validation[field]) {
-            return false
-        }
-    }
-    return true
-}
-
-function postForm(model, action){
-    document.getElementById(`submit-${action}-${model}-btn`).click()
-}
 
 
 function validatePayment(action){
@@ -45,18 +51,32 @@ function validateEnterprise(action){
     var validationFields = {
         name: validateEnterpriseName(getInputValue('name')),
         number: validateEnterpriseNumber(getInputValue('enterprise-number')),
-        address: validateEnterpriseAddress(getInputValue('address'))
-        /* year: validateYear(getInputValue('year')),
-        status: validateStatus(getInputValue('status')),
-        amount: validateAmount(getInputValue('amount')),
-        paymentDate: validatePaymentDate(getInputValue('payment-date')),
-        commentary: validateCommentary(getInputValue('commentary')), */
+        address: validateAddress(getInputValue('address')),
+        cuit: validateCUIT(getInputValue('cuit')),
+        district: validateDistrict(getInputValue('district')),
+        postalCode: validatePostalCode(getInputValue('postal-code')),
+        phone: validatePhone(getInputValue('phone')),
     }
     
     if (checkValidationFields(validationFields)){
-        // postForm("enterprise", action)
-        console.log("todos verdaderos")
-    } else{
-         console.log("hay alguno falso")
+        postForm("enterprise", action)
+    //     console.log("son todos veraderos")
+    // } else{
+    //     console.log("hay alguno falso")
     }
+}
+
+
+
+function checkValidationFields(validation){
+    for (let field in validation){
+        if (!validation[field]) {
+            return false
+        }
+    }
+    return true
+}
+
+function postForm(model, action){
+    document.getElementById(`submit-${action}-${model}-btn`).click()
 }

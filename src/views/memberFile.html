@@ -31,33 +31,25 @@
                             <div class="field-tag field-2">Nombres</div>
                             <input class="form-input field-100" type="text" name="name" value="{{$.member.Name}}" disabled>
                         </div>
-                            {{with .errorMap.name}}
-                                <div class="error-div field-100">{{.}}</div>
-                            {{end}}
+                        <div class="hide error-div field-12" id="name-error"></div>
 
                         <div class="input-container field-12">
                             <div class="field-tag field-2">Apellidos</div>
                         <input class="form-input field-100" type="text" name="last-name" value="{{$.member.LastName}}" disabled>
                         </div>
-                        {{with .errorMap.lastName}}
-                            <div class="error-div field-100">{{.}}</div>
-                        {{end}}
+                        <div class="hide error-div field-12" id="last-name-error"></div>
 
                         <div class="input-container field-12">
                             <div class="field-tag field-2">DNI</div>
                             <input class="form-input field-100" type="text" name="dni" value="{{$.member.DNI}}" disabled>
                         </div>
-                        {{with .errorMap.dni}}
-                            <p class="error-div field-100">{{.}}</p>
-                        {{end}}
+                        <div class="hide error-div field-12" id="dni-error"></div>
 
                         <div class="input-container field-12">
                             <div class="field-tag field-2">Fecha de nacimiento</div>
                             <input class="form-input field-100" type="text" name="birthday" value="{{$.member.Birthday}}" placeholder="DD/MM/AAAA" disabled>
                         </div>
-                        {{with .errorMap.birthday}}
-                            <div class="error-div field-100">{{.}}</div>
-                        {{end}}
+                        <div class="hide error-div field-12" id="birthday-error"></div>
 
                         <div class="input-container field-12">
                             <div class="field-tag field-2">Género</div>
@@ -72,9 +64,7 @@
                                 <option value="Otro">Otro</option>
                             </select>
                         </div>
-                        {{with .errorMap.gender}}
-                            <div class="error-div field-100">{{.}}</div>
-                        {{end}}
+                        <div class="hide error-div field-12" id="gender-error"></div>
 
                         <div class="input-container field-12">
                             <div class="field-tag field-2">Estado Civil</div>
@@ -91,25 +81,19 @@
                                 <option value="Divorciado">Divorciado</option>
                             </select>
                         </div>
-                        {{with .errorMap.maritalStatus}}
-                            <div class="error-div field-100">{{.}}</div>
-                        {{end}}
+                        <div class="hide error-div field-12" id="marital-status-error"></div>
 
                         <div class="input-container field-12">
                             <div class="field-tag field-2">Teléfono</div>
                             <input class="form-input field-100" name="phone" type="text" value="{{$.member.Phone}}" disabled></input>
                         </div>
-                        {{with .errorMap.phone}}
-                            <div class="error-div field-100">{{.}}</div>
-                        {{end}}
+                        <div class="hide error-div field-12" id="phone-error"></div>
 
                         <div class="input-container field-12">
                             <div class="field-tag field-2">Email</div>
                             <input class="form-input field-100" name="email" type="text" value="{{$.member.Email}}" disabled></input>
                         </div>
-                        {{with .errorMap.email}}
-                            <div class="error-div field-100">{{.}}</div>
-                        {{end}}
+                        <div class="hide error-div field-12" id="email-error"></div>
 
                         
                         <div class="title-div field-12">Domicilio</div>
@@ -118,25 +102,19 @@
                             <div class="field-tag field-2">Dirección</div>
                             <input class="form-input field-100" type="text" name="address" value="{{$.member.Address}}" disabled>
                         </div>
-                        {{with .errorMap.address}}
-                        <div class="error-div field-100">{{.}}</div>
-                        {{end}}
+                        <div class="hide error-div field-12" id="address-error"></div>
 
                         <div class="input-container field-12">
                             <div class="field-tag field-2">Codigo Postal</div>
                             <input class="form-input field-100" type="text" name="postal-code" value="{{$.member.PostalCode}}" disabled>
                         </div>
-                        {{with .errorMap.postalCode}}
-                        <div class="error-div field-100">{{.}}</div>
-                        {{end}}
+                        <div class="hide error-div field-12" id="postal-code-error"></div>
 
                         <div class="input-container field-12">
                             <div class="field-tag field-2">Localidad</div>
                             <input class="form-input field-100" type="text" name="district" value="{{$.member.District}}" disabled>
                         </div>
-                        {{with .errorMap.district}}
-                        <div class="error-div field-100">{{.}}</div>
-                        {{end}}
+                        <div class="hide error-div field-12" id="district-error"></div>
 
                         
                         <div class="title-div field-12">Datos de la Obra Social</div>
@@ -145,17 +123,13 @@
                             <div class="field-tag field-2">Nº Afiliado</div>
                             <input class="form-input field-100" type="text" name="member-number" value="{{$.member.MemberNumber}}" disabled>
                         </div>
-                        {{with .errorMap.memberNumber}}
-                        <div class="error-div field-100">{{.}}</div>
-                        {{end}}
+                        <div class="hide error-div field-12" id="member-number-error"></div>
 
                         <div class="input-container field-12">
                             <div class="field-tag field-2">CUIL</div>
                             <input class="form-input field-100" type="text" name="cuil" value="{{$.member.CUIL}}" disabled>
                         </div>
-                        {{with .errorMap.cuil}}
-                        <div class="error-div field-100">{{.}}</div>
-                        {{end}}
+                        <div class="hide error-div field-12" id="cuil-error"></div>
 
 
                         <div class="input-container field-12">
@@ -201,9 +175,7 @@
                             <!-- lista de empresas -->
                             <div class="options" id="optionsTable"></div>
                         </div>
-                        {{with .errorMap.idEnterprise}}
-                        <div class="error-div field-100">{{.}}</div>
-                        {{end}}
+                        <div class="hide error-div field-12" id="enterprise-error"></div>
                         
 
                         <div class="input-container field-12">
@@ -222,22 +194,20 @@
                                 <option value="Nivel 6: Operario Act. Industrial">Nivel 6: Operario Act. Industrial</option>
                             </select>
                         </div>
-                        {{with .errorMap.category}}
-                        <div class="error-div field-100">{{.}}</div>
-                        {{end}}
+                        <div class="hide error-div field-12" id="category"></div>
 
                         <div class="input-container field-12">
                             <div class="field-tag field-2">Fecha de ingreso</div>
                             <input class="form-input field-100" type="text" name="entry-date" id="entry-date" value="{{$.member.EntryDate}}" placeholder="DD/MM/AAAA" disabled>
                         </div>
-                        {{with .errorMap.entryDate}}
-                        <div class="error-div field-100">{{.}}</div>
-                        {{end}}
+                        <div class="hide error-div field-12" id="entry-date-error"></div>
                         
                     {{if eq .mode "add"}}
-                        <button type="submit" class="item-btn btn-submit">Enviar</button>
+                    <div class="item-btn btn-submit" onclick="validateMember('create')">Enviar</div>
+                        <button type="submit" class="hide" id="submit-create-member-btn">Enviar form (escondido)</button>
                     {{else if eq .mode "edit"}}
-                        <button type="submit" class="item-btn hide {{if .withError}}d-inline{{end}} btn-submit" id="btn-member-confirm" >Confirmar</button>
+                    <div class="item-btn hide btn-submit hide {{if .withError}}d-inline{{end}}" id="btn-member-confirm" onclick="validateMember('edit')">Confirmar</div>
+                        <button type="submit" class="hide" id="submit-edit-member-btn">Confirmar form (escondido)</button>
                     {{end}}
                 </div>
                 {{if eq .mode "edit"}}
@@ -247,7 +217,7 @@
             </form>            
 
     {{template "Scripts"}}
-
+    {{template "ValidationScripts"}}
     {{if eq .mode "edit"}}
         <div class="btn-container">
             <button class="item-btn" type="submit" hx-get="/member/{{$.member.IdMember}}/parentTable" hx-trigger="click" hx-target="#tableDiv" onclick="showAddParentButton();">Familiares</button>

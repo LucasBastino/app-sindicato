@@ -3,18 +3,6 @@ function getInputValue(name){
 }
 
 
-function isNumber(errorDiv, value){
-    if (!parseInt(value)){
-        errorDiv.style.display = 'inline'
-        errorDiv.innerHTML = `El campo contiene un caracter erróneo.`
-    } else{
-        return true
-    } 
-        
-    // parseInt si se puede parsear devuelve el valor pero truthy y si no se puede devuelve undefined pero falsy
-    // por lo que puedo usarlo como un valor booleano tambien
-}
-
 function isNotEmpty(errorDiv, string){
     if (string == ""){
         errorDiv.style.display = 'inline'
@@ -26,7 +14,11 @@ function isNotEmpty(errorDiv, string){
     }
 }
 
-function isValidCharacter(errorDiv, validCharacters, value){
+
+function isAlphanumeric(errorDiv, allowedCharacter, value){
+    validCharacters = " abcdefghijklmnñopqrstuvwxyzáéíóúüÃ0123456789"
+	validCharacters += allowedCharacter
+    value = value.toLowerCase()
     for (let i=0; i<value.length; i++){
         if (validCharacters.includes(value[i])){
             continue
@@ -37,15 +29,22 @@ function isValidCharacter(errorDiv, validCharacters, value){
         }
     }
     return true
-    // borrar esto
 }
 
-function isAlphanumeric(errorDiv, allowedCharacter, value){
-    characters = " abcdefghijklmnñopqrstuvwxyzáéíóúüÃ0123456789"
-	characters += allowedCharacter
-    console.log(characters)
-    	value = value.toLowerCase()
-    // terminar esto
+function isNumeric(errorDiv, allowedCharacter, value){
+    validCharacters = " 0123456789"
+	validCharacters += allowedCharacter
+    value = value.toLowerCase()
+    for (let i=0; i<value.length; i++){
+        if (validCharacters.includes(value[i])){
+            continue
+        } else {
+            errorDiv.style.display = 'inline'
+            errorDiv.innerHTML = "Caracter inválido."
+            return false
+        }
+    }
+    return true
 }
 
 function isNotLongerThan(errorDiv, limit, value){
@@ -59,6 +58,16 @@ function isNotLongerThan(errorDiv, limit, value){
     }
 }
 
+function isAValidOption(errorDiv, options, value){
+    if (options.includes(value)){
+        errorDiv.style.display = 'none'
+        return true
+    } else {
+        errorDiv.style.display = 'inline'
+        return false
+    }
+}
+
 function isValidDate(errorDiv, paymentDate, maxYear){
     // verifico que la longitud sea igual a 10
     if (paymentDate.length != 10){
@@ -68,8 +77,7 @@ function isValidDate(errorDiv, paymentDate, maxYear){
     }
     
     // verifico que solo contenga numeros o "/"
-    validCharacters = ["0","1","2","3","4","5","6","7","8","9","/"]
-    if (!isValidCharacter(errorDiv, validCharacters, paymentDate)){
+    if (!isNumeric(errorDiv, "/", paymentDate)){
         return false
     }
     // cambiarlo por is alphanumeric

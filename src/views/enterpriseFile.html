@@ -38,6 +38,12 @@
                     <input class="form-input field-12" type="text" name="enterprise-number" value="{{$.enterprise.EnterpriseNumber}}" disabled>
                 </div>
                 <div class="hide error-div field-12" id="enterprise-number-error"></div>
+                
+                <div class="input-container field-12">
+                    <div class="field-tag field-2">CUIT</div>
+                    <input class="form-input field-12" type="text" name="cuit" value="{{$.enterprise.CUIT}}" disabled>
+                </div>
+                <div class="hide error-div field-12" id="cuit-error"></div>
 
                 <div class="input-container field-12">
                     <div class="field-tag field-2">Dirección</div>
@@ -45,11 +51,6 @@
                 </div>
                 <div class="hide error-div field-12" id="address-error"></div>
 
-                <div class="input-container field-12">
-                    <div class="field-tag field-2">CUIT</div>
-                    <input class="form-input field-12" type="text" name="cuit" value="{{$.enterprise.CUIT}}" disabled>
-                </div>
-                <div class="hide error-div field-12" id="cuit-error"></div>
 
                 <div class="input-container field-12">
                     <div class="field-tag field-2">Localidad</div>
@@ -70,10 +71,10 @@
                 <div class="hide error-div field-12" id="phone-error"></div>
                 
                 {{if eq .mode "add"}}
-                <div class="item-btn btn-submit" onclick="validateForm('enterprise', 'create');">Enviar</div>
+                <div class="item-btn btn-submit" onclick="validateEnterprise('create');">Enviar</div>
                 <button type="submit" class="hide" id="submit-create-enterprise-btn">Enviar form (escondido)</button>
                 {{else if eq .mode "edit"}}
-                <div class="item-btn hide btn-submit hide {{if .withError}}d-inline{{end}}" id="btn-enterprise-confirm" onclick="validateForm('enterprise', 'edit')">Confirmar</div>
+                <div class="item-btn hide btn-submit hide {{if .withError}}d-inline{{end}}" id="btn-enterprise-confirm" onclick="validateEnterprise('edit')">Confirmar</div>
                 <button type="submit" class="hide" id="submit-edit-enterprise-btn">Confirmar form (escondido)</button>
                 {{end}}
             </div>
@@ -85,7 +86,7 @@
         {{if eq .mode "edit"}}
             <div class="btn-container">
                 <button class="item-btn" hx-get="/payment/{{$.enterprise.IdEnterprise}}/paymentTable" hx-trigger="click" hx-target="#tableDiv">Pagos</button>
-                <button class="item-btn" hx-get="/enterprise/{{$.enterprise.IdEnterprise}}/memberTable" hx-trigger="click" hx-target="#tableDiv" onclick="showEnterpriseMemberSearchNav();">Mostrar afiliados ({{.numberOfMembers}})</button>
+                <button class="item-btn" hx-get="/enterprise/{{$.enterprise.IdEnterprise}}/memberTable" hx-trigger="click" hx-target="#tableDiv" onclick="showEnterpriseMemberSearchNav();" hx-headers='{"mode": "edit"}'>Mostrar afiliados ({{.numberOfMembers}})</button>
                 {{if eq .role "admin"}}
                 <button class="item-btn" onclick="enableInputs(); showConfirmButton('enterprise');">Editar datos</button>
                     {{if eq $.enterprise.IdEnterprise 1}}
@@ -113,12 +114,9 @@
 {{if .withPaymentTable}}
 <div hx-get="/enterprise/{{$IdEnterprise}}/paymentTable/{{.year}}" hx-trigger="load" hx-target="#tableDiv"></div>
 {{end}}
+
 {{template "Scripts"}}
-
-
-<script src="/static/scripts/formValidation/formValidation.js"></script>
-    <script src="/static/scripts/formValidation/enterpriseFunctions.js"></script>
-    <script src="/static/scripts/formValidation/commonFunctions.js"></script>
+{{template "ValidationScripts"}}
 {{if eq .mode "add"}}
     <script type="text/javascript">
         enableInputs();
