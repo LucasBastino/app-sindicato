@@ -19,7 +19,10 @@ func AddEnterprise(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusBadRequest).JSON(errorMap)
 	} else {
 		e = insertModelCaller(e)
-		data := fiber.Map{"enterprise": e, "mode": "edit"}
+		role := c.Locals("claims").(jwt.MapClaims)["role"]
+		createdAt, updatedAt := formatTimeStamps(e.CreatedAt, e.UpdatedAt)
+		years := getPaymentYears(e.IdEnterprise)
+		data := fiber.Map{"enterprise": e, "numberOfMembers": 0, "role": role, "mode": "edit", "years": years, "createdAt": createdAt, "updatedAt": updatedAt}
 		return c.Render("enterpriseFile", data)
 	}
 }
@@ -49,7 +52,22 @@ func EditEnterprise(c *fiber.Ctx) error {
 	e := parserCaller(i.EnterpriseParser{}, c)
 	IdEnterprise := getIdModelCaller(e, c)
 	e.IdEnterprise = IdEnterprise
-	result, err := database.DB.Query(fmt.Sprintf("SELECT Year FROM PaymentTable WHERE IdEnterprise = '%d' GROUP BY Year ORDER BY YEAR DESC", e.IdEnterprise))
+	years := getPaymentYears(e.IdEnterprise)
+	role := c.Locals("claims").(jwt.MapClaims)["role"]
+
+	if len(errorMap) > 0 {
+		return c.Status(fiber.StatusBadRequest).JSON(errorMap)
+	} else {
+		e = updateModelCaller(e)
+		numberOfMembers := getNumberOfMembers(e.IdEnterprise, "")
+		createdAt, updatedAt := formatTimeStamps(e.CreatedAt, e.UpdatedAt)
+		data := fiber.Map{"enterprise": e, "numberOfMembers": numberOfMembers, "role": role, "mode": "edit", "years": years, "createdAt": createdAt, "updatedAt": updatedAt}
+		return c.Render("enterpriseFile", data)
+	}
+}
+
+func getPaymentYears(idEnterprise int) []string {
+	result, err := database.DB.Query(fmt.Sprintf("SELECT Year FROM PaymentTable WHERE IdEnterprise = '%d' GROUP BY Year ORDER BY YEAR DESC", idEnterprise))
 	if err != nil {
 		fmt.Println("error searching different Years in PaymentTable")
 		panic(err)
@@ -61,18 +79,7 @@ func EditEnterprise(c *fiber.Ctx) error {
 		result.Scan(&year)
 		years = append(years, year)
 	}
-	role := c.Locals("claims").(jwt.MapClaims)["role"]
-
-	if len(errorMap) > 0 {
-		return c.Status(fiber.StatusBadRequest).JSON(errorMap)
-	} else {
-		e = updateModelCaller(e)
-		fmt.Printf("%+v", e)
-		numberOfMembers := getNumberOfMembers(e.IdEnterprise, "")
-		createdAt, updatedAt := formatTimeStamps(e.CreatedAt, e.UpdatedAt)
-		data := fiber.Map{"enterprise": e, "numberOfMembers": numberOfMembers, "role": role, "mode": "edit", "years": years, "createdAt": createdAt, "updatedAt": updatedAt}
-		return c.Render("enterpriseFile", data)
-	}
+	return years
 }
 
 func RenderEnterpriseTable(c *fiber.Ctx) error {

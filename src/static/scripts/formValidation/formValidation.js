@@ -22,6 +22,7 @@ function validateMember(action){
     if (checkValidationFields(validationFields)){
         // postForm("member", action)
         console.log("todos verdaderos")
+       
     } else {
         console.log("hay uno falso")
     }

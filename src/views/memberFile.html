@@ -194,7 +194,7 @@
                                 <option value="Nivel 6: Operario Act. Industrial">Nivel 6: Operario Act. Industrial</option>
                             </select>
                         </div>
-                        <div class="hide error-div field-12" id="category"></div>
+                        <div class="hide error-div field-12" id="category-error"></div>
 
                         <div class="input-container field-12">
                             <div class="field-tag field-2">Fecha de ingreso</div>
@@ -206,7 +206,7 @@
                     <div class="item-btn btn-submit" onclick="validateMember('create')">Enviar</div>
                         <button type="submit" class="hide" id="submit-create-member-btn">Enviar form (escondido)</button>
                     {{else if eq .mode "edit"}}
-                    <div class="item-btn hide btn-submit hide {{if .withError}}d-inline{{end}}" id="btn-member-confirm" onclick="validateMember('edit')">Confirmar</div>
+                    <div class="item-btn hide btn-submit" id="btn-member-confirm" onclick="validateMember('edit')">Confirmar</div>
                         <button type="submit" class="hide" id="submit-edit-member-btn">Confirmar form (escondido)</button>
                     {{end}}
                 </div>

@@ -5,7 +5,7 @@ function validateName(value){
         return false
     }
 
-    if (!isAlphanumeric(errorDiv, "", value)){
+    if (!isAlphabetic(errorDiv, "", value)){
         return false
     }
 
@@ -18,7 +18,7 @@ function validateLastName(value){
         return false
     }
 
-    if (!isAlphanumeric(errorDiv, "", value)){
+    if (!isAlphabetic(errorDiv, "", value)){
         return false
     }
 
@@ -160,18 +160,21 @@ function validateCUIL(value){
 }
 
 function validateIdEnterprise(value){
-    fetch('http://localhost:8085/enterprise/getAllEnterprisesId', {
-        method: 'GET',
-        headers: {
-          Accept: 'application/json',
-          'Content-Type': 'application/json'
-        }})
-      .then(res => res.json())
-      .then(res => checkIdEnterprise(res, value))
+    // esto no devuelve true o false, devuelve una promesa que devuelve true o false
+        return fetch('http://localhost:8085/enterprise/getAllEnterprisesId', {
+            method: 'GET',
+            headers: {
+              Accept: 'application/json',
+              'Content-Type': 'application/json'
+            }})
+          .then(res => res.json())
+          .then(res => {return checkIdEnterprise(res, value)})
+      
 }
 
 function checkIdEnterprise(res, value){
-    errorDiv = document.getElementById('enterprise-error')
+    value = parseInt(value)
+    errorDiv = document.getElementById('enterprise-error')  
     if (res.includes(value)){
         errorDiv.style.display = 'none'
         return true

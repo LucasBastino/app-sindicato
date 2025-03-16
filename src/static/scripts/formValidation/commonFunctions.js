@@ -18,22 +18,22 @@ function isNotEmpty(errorDiv, string){
 function isAlphanumeric(errorDiv, allowedCharacter, value){
     validCharacters = " abcdefghijklmnñopqrstuvwxyzáéíóúüÃ0123456789"
 	validCharacters += allowedCharacter
-    value = value.toLowerCase()
-    for (let i=0; i<value.length; i++){
-        if (validCharacters.includes(value[i])){
-            continue
-        } else {
-            errorDiv.style.display = 'inline'
-            errorDiv.innerHTML = "Caracter inválido."
-            return false
-        }
-    }
-    return true
+    return isValidCharacter(errorDiv, validCharacters, value)
+}
+
+function isAlphabetic(errorDiv, allowedCharacter, value){
+    validCharacters = " abcdefghijklmnñopqrstuvwxyzáéíóúüÃ"
+	validCharacters += allowedCharacter
+    return isValidCharacter(errorDiv, validCharacters, value)
 }
 
 function isNumeric(errorDiv, allowedCharacter, value){
     validCharacters = " 0123456789"
 	validCharacters += allowedCharacter
+    return isValidCharacter(errorDiv, validCharacters, value)
+}
+
+function isValidCharacter(errorDiv, validCharacters, value){
     value = value.toLowerCase()
     for (let i=0; i<value.length; i++){
         if (validCharacters.includes(value[i])){
