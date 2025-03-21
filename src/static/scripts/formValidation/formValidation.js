@@ -20,15 +20,10 @@ function validateMember(action){
     }
     
     if (checkValidationFields(validationFields)){
-        // postForm("member", action)
-        console.log("todos verdaderos")
-       
-    } else {
-        console.log("hay uno falso")
+        postForm("member", action) 
     }
+
 }
-
-
 
 function validatePayment(action){
     
@@ -61,9 +56,26 @@ function validateEnterprise(action){
     
     if (checkValidationFields(validationFields)){
         postForm("enterprise", action)
-    //     console.log("son todos veraderos")
-    // } else{
-    //     console.log("hay alguno falso")
+    }
+}
+
+
+function validateParent(action){
+    
+    var validationFields = {
+        name: validateName(getInputValue('name')),
+        lastName: validateLastName(getInputValue('last-name')),
+        relationship: validateRelationship(getInputValue('rel')),
+        birthday: validateBirthday(getInputValue('birthday')),
+        gender: validateGender(getInputValue('gender')),
+        cuil: validateCUIL(getInputValue('cuil')),
+    }
+    
+    if (checkValidationFields(validationFields)){
+        // postForm("parent", action)
+        console.log("son todos veraderos")
+    } else{
+        console.log("hay alguno falso")
     }
 }
 

@@ -31,44 +31,44 @@
                     <div class="field-tag field-2">Nombre</div>
                     <input class="form-input field-12" type="text" name="name" value="{{$.enterprise.Name}}" disabled>
                 </div>
-                <div class="hide error-div field-12" id="name-error"></div>
+                <div class="hide error-div field-12 name-error"></div>
 
                 <div class="input-container field-12">
                     <div class="field-tag field-2">Nº de empresa</div>
                     <input class="form-input field-12" type="text" name="enterprise-number" value="{{$.enterprise.EnterpriseNumber}}" disabled>
                 </div>
-                <div class="hide error-div field-12" id="enterprise-number-error"></div>
+                <div class="hide error-div field-12 enterprise-number-error"></div>
                 
                 <div class="input-container field-12">
                     <div class="field-tag field-2">CUIT</div>
                     <input class="form-input field-12" type="text" name="cuit" value="{{$.enterprise.CUIT}}" disabled>
                 </div>
-                <div class="hide error-div field-12" id="cuit-error"></div>
+                <div class="hide error-div field-12 cuit-error"></div>
 
                 <div class="input-container field-12">
                     <div class="field-tag field-2">Dirección</div>
                     <input class="form-input field-12" type="text" name="address" value="{{$.enterprise.Address}}" disabled>
                 </div>
-                <div class="hide error-div field-12" id="address-error"></div>
+                <div class="hide error-div field-12 address-error"></div>
 
 
                 <div class="input-container field-12">
                     <div class="field-tag field-2">Localidad</div>
                     <input class="form-input field-12" type="text" name="district" value="{{$.enterprise.District}}" disabled>
                 </div>
-                <div class="hide error-div field-12" id="district-error"></div>
+                <div class="hide error-div field-12 district-error"></div>
 
                 <div class="input-container field-12">
                     <div class="field-tag field-2">Código postal</div>
                     <input class="form-input field-12" type="text" name="postal-code" value="{{$.enterprise.PostalCode}}" disabled>
                 </div>
-                <div class="hide error-div field-12" id="postal-code-error"></div>
+                <div class="hide error-div field-12 postal-code-error"></div>
 
                 <div class="input-container field-12">
                     <div class="field-tag field-2">Teléfono</div>
                     <input class="form-input field-12" type="text" name="phone" value="{{$.enterprise.Phone}}" disabled>
                 </div>
-                <div class="hide error-div field-12" id="phone-error"></div>
+                <div class="hide error-div field-12 phone-error"></div>
                 
                 {{if eq .mode "add"}}
                 <div class="item-btn btn-submit" onclick="validateEnterprise('create');">Enviar</div>

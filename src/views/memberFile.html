@@ -31,25 +31,25 @@
                             <div class="field-tag field-2">Nombres</div>
                             <input class="form-input field-100" type="text" name="name" value="{{$.member.Name}}" disabled>
                         </div>
-                        <div class="hide error-div field-12" id="name-error"></div>
+                        <div class="hide error-div field-12 name-error"></div>
 
                         <div class="input-container field-12">
                             <div class="field-tag field-2">Apellidos</div>
                         <input class="form-input field-100" type="text" name="last-name" value="{{$.member.LastName}}" disabled>
                         </div>
-                        <div class="hide error-div field-12" id="last-name-error"></div>
+                        <div class="hide error-div field-12 last-name-error"></div>
 
                         <div class="input-container field-12">
                             <div class="field-tag field-2">DNI</div>
                             <input class="form-input field-100" type="text" name="dni" value="{{$.member.DNI}}" disabled>
                         </div>
-                        <div class="hide error-div field-12" id="dni-error"></div>
+                        <div class="hide error-div field-12 dni-error"></div>
 
                         <div class="input-container field-12">
                             <div class="field-tag field-2">Fecha de nacimiento</div>
                             <input class="form-input field-100" type="text" name="birthday" value="{{$.member.Birthday}}" placeholder="DD/MM/AAAA" disabled>
                         </div>
-                        <div class="hide error-div field-12" id="birthday-error"></div>
+                        <div class="hide error-div field-12 birthday-error"></div>
 
                         <div class="input-container field-12">
                             <div class="field-tag field-2">Género</div>
@@ -64,7 +64,7 @@
                                 <option value="Otro">Otro</option>
                             </select>
                         </div>
-                        <div class="hide error-div field-12" id="gender-error"></div>
+                        <div class="hide error-div field-12 gender-error"></div>
 
                         <div class="input-container field-12">
                             <div class="field-tag field-2">Estado Civil</div>
@@ -81,19 +81,19 @@
                                 <option value="Divorciado">Divorciado</option>
                             </select>
                         </div>
-                        <div class="hide error-div field-12" id="marital-status-error"></div>
+                        <div class="hide error-div field-12 marital-status-error"></div>
 
                         <div class="input-container field-12">
                             <div class="field-tag field-2">Teléfono</div>
                             <input class="form-input field-100" name="phone" type="text" value="{{$.member.Phone}}" disabled></input>
                         </div>
-                        <div class="hide error-div field-12" id="phone-error"></div>
+                        <div class="hide error-div field-12 phone-error"></div>
 
                         <div class="input-container field-12">
                             <div class="field-tag field-2">Email</div>
                             <input class="form-input field-100" name="email" type="text" value="{{$.member.Email}}" disabled></input>
                         </div>
-                        <div class="hide error-div field-12" id="email-error"></div>
+                        <div class="hide error-div field-12 email-error"></div>
 
                         
                         <div class="title-div field-12">Domicilio</div>
@@ -102,19 +102,19 @@
                             <div class="field-tag field-2">Dirección</div>
                             <input class="form-input field-100" type="text" name="address" value="{{$.member.Address}}" disabled>
                         </div>
-                        <div class="hide error-div field-12" id="address-error"></div>
+                        <div class="hide error-div field-12 address-error"></div>
 
                         <div class="input-container field-12">
                             <div class="field-tag field-2">Codigo Postal</div>
                             <input class="form-input field-100" type="text" name="postal-code" value="{{$.member.PostalCode}}" disabled>
                         </div>
-                        <div class="hide error-div field-12" id="postal-code-error"></div>
+                        <div class="hide error-div field-12 postal-code-error"></div>
 
                         <div class="input-container field-12">
                             <div class="field-tag field-2">Localidad</div>
                             <input class="form-input field-100" type="text" name="district" value="{{$.member.District}}" disabled>
                         </div>
-                        <div class="hide error-div field-12" id="district-error"></div>
+                        <div class="hide error-div field-12 district-error"></div>
 
                         
                         <div class="title-div field-12">Datos de la Obra Social</div>
@@ -123,13 +123,13 @@
                             <div class="field-tag field-2">Nº Afiliado</div>
                             <input class="form-input field-100" type="text" name="member-number" value="{{$.member.MemberNumber}}" disabled>
                         </div>
-                        <div class="hide error-div field-12" id="member-number-error"></div>
+                        <div class="hide error-div field-12 member-number-error"></div>
 
                         <div class="input-container field-12">
                             <div class="field-tag field-2">CUIL</div>
                             <input class="form-input field-100" type="text" name="cuil" value="{{$.member.CUIL}}" disabled>
                         </div>
-                        <div class="hide error-div field-12" id="cuil-error"></div>
+                        <div class="hide error-div field-12 cuil-error"></div>
 
 
                         <div class="input-container field-12">
@@ -175,7 +175,7 @@
                             <!-- lista de empresas -->
                             <div class="options" id="optionsTable"></div>
                         </div>
-                        <div class="hide error-div field-12" id="enterprise-error"></div>
+                        <div class="hide error-div field-12 enterprise-error"></div>
                         
 
                         <div class="input-container field-12">
@@ -194,13 +194,13 @@
                                 <option value="Nivel 6: Operario Act. Industrial">Nivel 6: Operario Act. Industrial</option>
                             </select>
                         </div>
-                        <div class="hide error-div field-12" id="category-error"></div>
+                        <div class="hide error-div field-12 category-error"></div>
 
                         <div class="input-container field-12">
                             <div class="field-tag field-2">Fecha de ingreso</div>
                             <input class="form-input field-100" type="text" name="entry-date" id="entry-date" value="{{$.member.EntryDate}}" placeholder="DD/MM/AAAA" disabled>
                         </div>
-                        <div class="hide error-div field-12" id="entry-date-error"></div>
+                        <div class="hide error-div field-12 entry-date-error"></div>
                         
                     {{if eq .mode "add"}}
                     <div class="item-btn btn-submit" onclick="validateMember('create')">Enviar</div>

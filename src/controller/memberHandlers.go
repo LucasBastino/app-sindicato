@@ -15,6 +15,7 @@ func AddMember(c *fiber.Ctx) error {
 	m := parserCaller(i.MemberParser{}, c)
 	// Verifico si el mapa tiene errores
 	if len(errorMap) > 0 {
+		fmt.Println(errorMap)
 		return c.Status(fiber.StatusBadRequest).JSON(errorMap)
 	} else {
 		// Si no tiene errores inserto el member en la DB y renderizo el su archivo

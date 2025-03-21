@@ -40,13 +40,13 @@
                         <div class="field-tag field-2">Mes</div>
                         <input class="form-input field-12" type="text" name="month" value="{{$.payment.Month}}" disabled>
                     </div>
-                    <div class="hide error-div field-12" id="month-error"></div>
+                    <div class="hide error-div field-12 month-error"></div>
 
                     <div class="input-container field-12">
                         <div class="field-tag field-2">Año</div>
                         <input class="form-input field-12" type="text" name="year" value="{{$.payment.Year}}" disabled>
                     </div>
-                    <div class="hide error-div field-12" id="year-error"></div>
+                    <div class="hide error-div field-12 year-error"></div>
 
                     <div class="input-container field-12">
                         <div class="field-tag field-2">Estado</div>
@@ -63,7 +63,7 @@
                             {{end}}
                         </select>
                     </div>
-                    <div class="hide error-div field-12" id="status-error"></div>
+                    <div class="hide error-div field-12 status-error"></div>
 
                     <div class="input-container field-12">
                         <div class="field-tag field-2">Monto</div>
@@ -76,18 +76,18 @@
                         <input class="form-input field-12" type="number" name="amount" value="{{$.payment.Amount}}" disabled>
                         {{end}}
                     </div>
-                    <div class="hide error-div field-12" id="amount-error"></div>
+                    <div class="hide error-div field-12 amount-error"></div>
                     <div class="input-container field-12">
                         <div class="field-tag field-2">Fecha de pago</div>
                         <input class="form-input field-12" type="text" name="payment-date" id="payment-date" value="{{$.payment.PaymentDate}}" placeholder="(DD/MM/AAAA)" disabled>
                     </div>
-                    <div class="hide error-div field-12" id="payment-date-error"></div>
+                    <div class="hide error-div field-12 payment-date-error"></div>
 
                     <div class="input-container field-12">
                         <div class="field-tag field-2">Comentarios</div>
                         <input class="form-input field-12" type="text" name="commentary" value="{{$.payment.Commentary}}" disabled>
                     </div>
-                    <div class="hide error-div field-12" id="commentary-error"></div>
+                    <div class="hide error-div field-12 commentary-error"></div>
                     
                     <input class="hide" type="text" name="id-enterprise" value="{{$.payment.IdEnterprise}}">
 

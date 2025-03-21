@@ -30,33 +30,25 @@
                 <div class="field-tag field-2">Nombres</div>
                 <input class="form-input field-100" type="text" name="name" value="{{$.parent.Name}}" disabled>
             </div>
-            {{with .errorMap.name}}
-            <div class="error-div field-12">{{.}}</div>
-            {{end}}
+            <div class="hide error-div field-12 name-error"></div>
 
             <div class="input-container field-12">
                 <div class="field-tag field-2">Apellidos</div>
                 <input class="form-input field-100" type="text" name="last-name" value="{{$.parent.LastName}}" disabled>
             </div>
-            {{with .errorMap.lastName}}
-            <div class="error-div field-12">{{.}}</div>
-            {{end}}
+            <div class="hide error-div field-12 last-name-error"></div>
 
             <div class="input-container field-12">
                 <div class="field-tag field-2">Parentesco</div>
                 <input class="form-input field-100" type="text" name="rel" value="{{$.parent.Rel}}" disabled>
             </div>
-            {{with .errorMap.rel}}
-            <div class="error-div field-12">{{.}}</div>
-            {{end}}
+            <div class="hide error-div field-12 relationship-error"></div>
 
             <div class="input-container field-12">
                 <div class="field-tag field-2">Fecha de nacimiento</div>
                 <input class="form-input field-100" type="text" name="birthday" value="{{$.parent.Birthday}}" placeholder="DD/MM/AAAA" disabled>
             </div>
-            {{with .errorMap.birthday}}
-            <div class="error-div field-12">{{.}}</div>
-            {{end}}
+            <div class="hide error-div field-12 birthday-error"></div>
 
             <div class="input-container field-12">
                 <div class="field-tag field-2">Género</div>
@@ -71,24 +63,22 @@
                     <option value="Otro">Otro</option>
                 </select>
             </div>
-            {{with .errorMap.gender}}
-            <div class="error-div field-12">{{.}}</div>
-            {{end}}
+            <div class="hide error-div field-12 gender-error"></div>
 
             <div class="input-container field-12">
                 <div class="field-tag field-2">CUIL</div>
                 <input class="form-input field-100" type="text" name="cuil" value="{{$.parent.CUIL}}" disabled>
             </div>
-            {{with .errorMap.cuil}}
-            <div class="error-div field-12">{{.}}</div>
-            {{end}}
+            <div class="hide error-div field-12 cuil-error"></div>
 
             <input class="hide" type="number" name="id-member" value="{{$.parent.IdMember}}">
 
             {{if eq .mode "add"}}
-            <button type="submit" class="item-btn btn-submit">Enviar</button>
+            <div class="item-btn btn-submit" onclick="validateParent('create');">Enviar</div>
+            <button type="submit" class="hide" id="submit-create-parent-btn">Enviar form (escondido)</button>
             {{else if eq .mode "edit"}}
-            <button type="submit" class="item-btn hide btn-submit" id="btn-parent-confirm">Confirmar</button>
+                <div class="item-btn hide btn-submit" onclick="validateParent('edit')" id="btn-parent-confirm" onclick="validateForm();">Confirmar</div>
+                <button type="submit" class="hide" id="submit-edit-payment-btn">Confirmar form (escondido)</button>
             {{end}}
         </div>
         {{if eq .mode "edit"}}

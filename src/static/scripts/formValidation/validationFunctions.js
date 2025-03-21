@@ -1,6 +1,6 @@
 // PERSONAL INFO
 function validateName(value){
-    errorDiv = document.getElementById("name-error")
+    errorDiv = Array.from(document.getElementsByClassName("name-error")).pop()
     if (!isNotEmpty(errorDiv, value)){
         return false
     }
@@ -13,7 +13,7 @@ function validateName(value){
 }
 
 function validateLastName(value){
-    errorDiv = document.getElementById("last-name-error")
+    errorDiv = Array.from(document.getElementsByClassName("last-name-error")).pop()
     if (!isNotEmpty(errorDiv, value)){
         return false
     }
@@ -26,7 +26,7 @@ function validateLastName(value){
 }
 
 function validateDNI(value){
-    errorDiv = document.getElementById("dni-error")
+    errorDiv = Array.from(document.getElementsByClassName("dni-error")).pop()
     if (!isNotEmpty(errorDiv, value)){
         return false
     }
@@ -38,7 +38,8 @@ function validateDNI(value){
 }
 
 function validateBirthday(value){
-    errorDiv = document.getElementById("birthday-error")
+    errorDiv = Array.from(document.getElementsByClassName("birthday-error")).pop()
+    console.log(errorDiv)
     if (!isNotEmpty(errorDiv, value)){
         return false
     }
@@ -47,7 +48,7 @@ function validateBirthday(value){
 }
 
 function validateGender(value){
-    errorDiv = document.getElementById("gender-error")
+    errorDiv = Array.from(document.getElementsByClassName("gender-error")).pop()
     if (!isNotEmpty(errorDiv, value)){
         return false
     }
@@ -56,7 +57,7 @@ function validateGender(value){
 }
 
 function validateMaritalStatus(value){
-    errorDiv = document.getElementById("marital-status-error")
+    errorDiv = Array.from(document.getElementsByClassName("marital-status-error")).pop()
     maritalStatus = ["Soltero", "Casado", "Separado", "Viudo", "Separado", "Divorciado"]
     if (!isNotEmpty(errorDiv, value)){
         return false
@@ -68,7 +69,7 @@ function validateMaritalStatus(value){
 
 // ADDRESS INFO
 function validateAddress(value){
-    errorDiv = document.getElementById("address-error")
+    errorDiv = Array.from(document.getElementsByClassName("address-error")).pop()
     if (!isNotEmpty(errorDiv, value)){
         return false
     }
@@ -81,7 +82,7 @@ function validateAddress(value){
 }
 
 function validateDistrict(value){
-    errorDiv = document.getElementById("district-error")
+    errorDiv = Array.from(document.getElementsByClassName("district-error")).pop()
     if (!isNotEmpty(errorDiv, value)){
         return false
     }
@@ -93,7 +94,7 @@ function validateDistrict(value){
 
 
 function validatePostalCode(value){
-    errorDiv = document.getElementById("postal-code-error")
+    errorDiv = Array.from(document.getElementsByClassName("postal-code-error")).pop()
     if (!isNotEmpty(errorDiv, value)){
         return false
     }
@@ -109,7 +110,7 @@ function validatePostalCode(value){
 
 // CONTACT INFO
 function validatePhone(value){
-    errorDiv = document.getElementById("phone-error")
+    errorDiv = Array.from(document.getElementsByClassName("phone-error")).pop()
     if (!isNotEmpty(errorDiv, value)){
         return false
     }
@@ -118,25 +119,27 @@ function validatePhone(value){
         return false
     }
 
-    return isNotLongerThan(errorDiv, 30, value)
+    return isNotLongerThan(errorDiv, 20, value)
 }
 
 function validateEmail(value){
-    errorDiv = document.getElementById("email-error")
-    if (!isNotEmpty(errorDiv, value)){
-        return false
+    errorDiv = Array.from(document.getElementsByClassName("email-error")).pop()
+    if (isNotEmpty(errorDiv, value)){
+        if (!isAlphanumeric(errorDiv, "-@._", value)){
+          
+            return false
+        } else if(!value.includes("@")){
+            errorDiv.style.display = 'inline'
+            errorDiv.innerHTML = "No contiene '@'"
+            return false
+        }
     }
-
-    if (!isAlphanumeric(errorDiv, "-@._", value)){
-        return false
-    }
-
     return isNotLongerThan(errorDiv, 50, value)
 }
 
 // SOCIAL SECURITY INFO
 function validateMemberNumber(value){
-    errorDiv = document.getElementById("member-number-error")
+    errorDiv = Array.from(document.getElementsByClassName("member-number-error")).pop()
     if (!isNotEmpty(errorDiv, value)){
         return false
     }
@@ -149,7 +152,7 @@ function validateMemberNumber(value){
 }
 
 function validateCUIL(value){
-    errorDiv = document.getElementById("cuil-error")
+    errorDiv = Array.from(document.getElementsByClassName("cuil-error")).pop()
     if (!isNotEmpty(errorDiv, value)){
         return false
     }
@@ -174,18 +177,19 @@ function validateIdEnterprise(value){
 
 function checkIdEnterprise(res, value){
     value = parseInt(value)
-    errorDiv = document.getElementById('enterprise-error')  
+    errorDiv = Array.from(document.getElementsByClassName("enterprise-error")).pop()
     if (res.includes(value)){
         errorDiv.style.display = 'none'
         return true
   } else{
         errorDiv.style.display = 'inline'
+        errorDiv.innerHTML = 'Empresa no válida'
         return false
   }
 }
 
 function validateCategory(value){
-    errorDiv = document.getElementById('category-error')
+    errorDiv = Array.from(document.getElementsByClassName("category-error")).pop()
     categories = ["Nivel 1: Oficial Múltiple", "Nivel 2: Oficial Especializado", "Nivel 3: Oficial General", "Nivel 4: Medio Oficial", "Nivel 5: Ayudante", "Nivel 6: Operario Act. Industrial"]
     if (!isNotEmpty(errorDiv, value)){
         return false
@@ -194,7 +198,7 @@ function validateCategory(value){
 }
 
 function validateEntryDate(value){
-    errorDiv = document.getElementById("entry-date-error")
+    errorDiv = Array.from(document.getElementsByClassName("entry-date-error")).pop()
     if (!isNotEmpty(errorDiv, value)){
         return false
     }
@@ -204,7 +208,7 @@ function validateEntryDate(value){
 
 // ENTERPRISE INFO
 function validateEnterpriseName(value){
-    errorDiv = document.getElementById("name-error")
+    errorDiv = Array.from(document.getElementsByClassName("name-error")).pop()
     if (!isNotEmpty(errorDiv, value)){
         return false
     }
@@ -216,7 +220,7 @@ function validateEnterpriseName(value){
 }
 
 function validateEnterpriseNumber(value){
-    errorDiv = document.getElementById("enterprise-number-error")
+    errorDiv = Array.from(document.getElementsByClassName("enterprise-number-error")).pop()
     if (!isNotEmpty(errorDiv, value)){
         return false
     }
@@ -231,7 +235,7 @@ function validateEnterpriseNumber(value){
 
 
 function validateCUIT(value){
-    errorDiv = document.getElementById("cuit-error")
+    errorDiv = Array.from(document.getElementsByClassName("cuit-error")).pop()
     if (!isNotEmpty(errorDiv, value)){
         return false
     }
@@ -243,7 +247,7 @@ function validateCUIT(value){
 
 // PAYMENT INFO
 function validateMonth(value){
-    var errorDiv = document.getElementById('month-error')
+    errorDiv = Array.from(document.getElementsByClassName("month-error")).pop()
     if (!isNotEmpty(errorDiv, value)){
         return false
     }
@@ -259,9 +263,8 @@ function validateMonth(value){
 }
 
 
-
 function validateYear(value){
-    errorDiv = document.getElementById('year-error')
+    errorDiv = Array.from(document.getElementsByClassName("year-error")).pop()
     // verifico que no este vacio
     if (!isNotEmpty(errorDiv, value)){
         return false
@@ -287,9 +290,8 @@ function validateYear(value){
 
 }
 
-
 function validateStatus(value){
-    var errorDiv = document.getElementById('status-error')
+    errorDiv = Array.from(document.getElementsByClassName("status-error")).pop()
     if (!isNotEmpty(errorDiv, value)){
         return false
     }
@@ -305,7 +307,7 @@ function validateStatus(value){
 }
 
 function validateAmount(value){
-    var errorDiv = document.getElementById('amount-error')
+    errorDiv = Array.from(document.getElementsByClassName("amount-error")).pop()
     if (!isNotEmpty(errorDiv, value)){
         return false
     }
@@ -319,7 +321,7 @@ function validateAmount(value){
 
 
 function validatePaymentDate(value){
-    var errorDiv = document.getElementById('payment-date-error')
+    errorDiv = Array.from(document.getElementsByClassName("payment-date-error")).pop()
     if (!isNotEmpty(errorDiv, value)){
         return false
     }
@@ -330,7 +332,18 @@ function validatePaymentDate(value){
 }
 
 function validateCommentary(value){
-    var errorDiv = document.getElementById('commentary-error')
+    errorDiv = Array.from(document.getElementsByClassName("commentary-error")).pop()
+    return isNotLongerThan(errorDiv, 400, value)
+}
 
-    return isNotLongerThan(errorDiv, value, 400)
+function validateRelationship(value){
+    errorDiv = Array.from(document.getElementsByClassName("relationship-error")).pop()
+    if (!isNotEmpty(errorDiv, value)){
+        return false
+    }
+
+    if (!isAlphabetic(errorDiv, "", value)){
+        return false
+    }
+    return isNotLongerThan(errorDiv, 20, value)
 }
