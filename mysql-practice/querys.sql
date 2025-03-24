@@ -6,6 +6,16 @@ DROP TABLE ParentTable
 
 DROP TABLE PaymentTable
 
+DROP TABLE Users
+
+SELECT * FROM UserTable
+
+CREATE TABLE UserTable(
+    IdUser INT PRIMARY KEY AUTO_INCREMENT NOT NULL,
+    Username VARCHAR(20),
+    Hash VARCHAR(100),
+    Role VARCHAR(20)
+)
 
 CREATE TABLE EnterpriseTable(
     IdEnterprise INT PRIMARY KEY AUTO_INCREMENT NOT NULL,

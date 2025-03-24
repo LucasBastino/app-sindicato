@@ -155,6 +155,8 @@
                                 {{else}}
                                 <!-- si tiene una empresa mostrarla en el input -->
                                 <input class="form-input field-100 no-transform" type="text" id="name-enterprise-input" value="{{$.enterpriseName}}" disabled>
+                                <!-- file icon -->
+                                <a href="/enterprise/{{$.member.IdEnterprise}}/file"><div id="enterprise-btn-file"><i class="bi bi-file-earmark-text"></i></div></a>
                                 <!-- icono X escondido hasta que se aprete el boton Editar -->
                                 <div class="hide" id="x-enterprise" onclick="searchEnterpriseAgain();"><i class="bi bi-x-square x-icon"></i></div> 
 
@@ -222,7 +224,7 @@
         <div class="btn-container">
             <button class="item-btn" type="submit" hx-get="/member/{{$.member.IdMember}}/parentTable" hx-trigger="click" hx-target="#tableDiv" onclick="showAddParentButton();">Familiares</button>
             {{if eq .role "admin"}}
-            <button class="item-btn" onclick="enableInputs(); showConfirmButton('member'); enableSelects(); showXEnterprise();">Editar datos</button>
+            <button class="item-btn" onclick="enableInputs(); showConfirmButton('member'); enableSelects(); showXEnterprise(); hideEnterpriseFile();">Editar datos</button>
             <button class="btn-delete-file item-btn" hx-delete="/member/{{$.member.IdMember}}/delete" hx-headers='{"mode": "edit"}' hx-confirm="¿Estás seguro que deseas eliminar el afiliado?" hx-target="#targetDiv">Eliminar afiliado</button>
             {{end}}
         </div>

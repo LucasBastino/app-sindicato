@@ -1,0 +1,27 @@
+{{template "Head"}}
+<body>
+    <div class="form-container">
+        <form class="login-form" hx-post="/register" hx-target="body">
+            <div class="page-title form-title">Registrar usuario</div>
+            <div class="form-body">
+                <input class="form-input login-form-input" type="text" name="user" placeholder="Usuario"></input>
+                <br>
+               
+                {{with .userError}}
+                <div class="error-div field-12">{{.}}</div>
+                {{end}}
+                
+                <input class="form-input login-form-input" type="password" name="password" placeholder="Contraseña"></input>
+                <br>
+                
+                <select name="role" id="">
+                    <option value="admin">Admin</option>
+                    <option value="user">User</option>
+                </select>
+
+                <button class="login-submit" type="submit">REGISTRAR</button>
+            </div>
+            </form>
+        </div>
+    <script src="https://unpkg.com/htmx.org@1.9.12" integrity="sha384-ujb1lZYygJmzgSwoxRggbCHcjc0rB2XoQrxeTUQyRjrOnlCoYta87iKBWq3EsdM2" crossorigin="anonymous"></script>
+</body>

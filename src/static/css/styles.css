@@ -279,6 +279,16 @@ form {
   padding: 5px 10px;
 }
 
+#enterprise-btn-file{
+  width: 30px;
+  height: 30px;
+  margin-top: 5px;
+  background-color: #eeeeee;
+  border: 2px solid black;
+  border-radius: 5px;
+  text-align: center;
+}
+
 .btn-submit {
   width: 40%;
   text-align: center;

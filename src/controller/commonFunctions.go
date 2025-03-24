@@ -163,3 +163,7 @@ func formatTimeStamps(cA, uA time.Time) (string, string) {
 // 	fmt.Println(*m)
 // 	m.Name = "Lukitas"
 // }
+
+func RenderRegisterUserForm(c *fiber.Ctx) error {
+	return c.Render("register", fiber.Map{})
+}

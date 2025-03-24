@@ -77,8 +77,8 @@
             <div class="item-btn btn-submit" onclick="validateParent('create');">Enviar</div>
             <button type="submit" class="hide" id="submit-create-parent-btn">Enviar form (escondido)</button>
             {{else if eq .mode "edit"}}
-                <div class="item-btn hide btn-submit" onclick="validateParent('edit')" id="btn-parent-confirm" onclick="validateForm();">Confirmar</div>
-                <button type="submit" class="hide" id="submit-edit-payment-btn">Confirmar form (escondido)</button>
+                <div class="item-btn hide btn-submit" onclick="validateParent('edit')" id="btn-parent-confirm">Confirmar</div>
+                <button type="submit" class="hide" id="submit-edit-parent-btn">Confirmar form (escondido)</button>
             {{end}}
         </div>
         {{if eq .mode "edit"}}

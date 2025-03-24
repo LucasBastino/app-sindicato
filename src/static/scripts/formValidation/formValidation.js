@@ -72,13 +72,9 @@ function validateParent(action){
     }
     
     if (checkValidationFields(validationFields)){
-        // postForm("parent", action)
-        console.log("son todos veraderos")
-    } else{
-        console.log("hay alguno falso")
+        postForm("parent", action)
     }
 }
-
 
 
 function checkValidationFields(validation){

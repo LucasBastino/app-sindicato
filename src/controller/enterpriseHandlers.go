@@ -113,11 +113,16 @@ func RenderEnterpriseTable(c *fiber.Ctx) error {
 
 func RenderEnterpriseFile(c *fiber.Ctx) error {
 	e := searchOneModelByIdCaller(models.Enterprise{}, c)
-	createdAt, updatedAt := formatTimeStamps(e.CreatedAt, e.UpdatedAt)
 	numberOfMembers := getNumberOfMembers(e.IdEnterprise, "")
 	role := c.Locals("claims").(jwt.MapClaims)["role"]
-	data := fiber.Map{"enterprise": e, "role": role, "numberOfMembers": numberOfMembers, "mode": "edit", "withPaymentTable": false, "createdAt": createdAt, "updatedAt": updatedAt}
-	return c.Render("enterpriseFile", data)
+	if e.IdEnterprise == 1 {
+		data := fiber.Map{"enterprise": e, "role": role, "numberOfMembers": numberOfMembers, "mode": "edit"}
+		return c.Render("withoutEnterprise", data)
+	} else {
+		createdAt, updatedAt := formatTimeStamps(e.CreatedAt, e.UpdatedAt)
+		data := fiber.Map{"enterprise": e, "role": role, "numberOfMembers": numberOfMembers, "mode": "edit", "withPaymentTable": false, "createdAt": createdAt, "updatedAt": updatedAt}
+		return c.Render("enterpriseFile", data)
+	}
 }
 
 func getNumberOfMembers(IdEnterprise int, searchKey string) int {

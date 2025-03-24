@@ -12,14 +12,18 @@ func LoginUser(c *fiber.Ctx) error {
 
 	user, password := getUserAndPassword(c)
 
-	if !checkUser(user) {
-		return c.Render("login", fiber.Map{"user": user, "password": password, "userError": "Usuario incorrecto"})
+	hash, role, checkedUser := checkUser(user)
+
+	if !checkedUser {
+		return c.Render("login", fiber.Map{"user": user, "password": password, "userError": "Usuario no existente"})
 	}
-	if !checkPassword(password) {
+
+	err := checkHashAndPassword([]byte(hash), []byte(password))
+	if err != nil {
 		return c.Render("login", fiber.Map{"user": user, "password": password, "passwordError": "Contraseña incorrecta"})
 	}
 
-	claims := createJwtMapClaims(user, 90)
+	claims := createJwtMapClaims(user, role, 90)
 	token := createToken(claims)
 	signedToken := signToken(token)
 	cookie := createCookie(signedToken)
@@ -58,9 +62,9 @@ func VerifyAdmin(c *fiber.Ctx) error {
 	}
 }
 
-func VerifyAdminOrGuest(c *fiber.Ctx) error {
+func VerifyAdminOrUser(c *fiber.Ctx) error {
 	role := c.Locals("claims").(jwt.MapClaims)["role"]
-	if role == "admin" || role == "guest" {
+	if role == "admin" || role == "user" {
 		return c.Next()
 	}
 	return c.Redirect("/insufficientPermissions")

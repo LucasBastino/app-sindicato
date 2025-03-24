@@ -39,7 +39,6 @@ function validateDNI(value){
 
 function validateBirthday(value){
     errorDiv = Array.from(document.getElementsByClassName("birthday-error")).pop()
-    console.log(errorDiv)
     if (!isNotEmpty(errorDiv, value)){
         return false
     }

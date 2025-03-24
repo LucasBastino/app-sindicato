@@ -106,7 +106,7 @@ func (enterprise Enterprise) UpdateModel() Enterprise {
 		SELECT
 		*
 		FROM EnterpriseTable
-		WHERE IdEnterprise = %v`, enterprise.IdEnterprise))
+		WHERE IdEnterprise = %d`, enterprise.IdEnterprise))
 	if err != nil {
 		fmt.Print(err)
 	}

@@ -85,7 +85,7 @@
         </form>
         {{if eq .mode "edit"}}
             <div class="btn-container">
-                <button class="item-btn" hx-get="/payment/{{$.enterprise.IdEnterprise}}/paymentTable" hx-trigger="click" hx-target="#tableDiv">Pagos</button>
+                <button class="item-btn" hx-get="/payment/{{$.enterprise.IdEnterprise}}/paymentTable" hx-trigger="click" hx-target="#tableDiv" onclick="hideEnterpriseMemberSearchNav()">Pagos</button>
                 <button class="item-btn" hx-get="/enterprise/{{$.enterprise.IdEnterprise}}/memberTable" hx-trigger="click" hx-target="#tableDiv" onclick="showEnterpriseMemberSearchNav();" hx-headers='{"mode": "edit"}'>Mostrar afiliados ({{.numberOfMembers}})</button>
                 {{if eq .role "admin"}}
                 <button class="item-btn" onclick="enableInputs(); showConfirmButton('enterprise');">Editar datos</button>

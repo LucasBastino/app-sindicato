@@ -65,6 +65,14 @@ function showEnterpriseMemberSearchNav(){
     document.getElementById('nav-enterprise-member-search').style.display = 'inline'
 }
 
+function hideEnterpriseMemberSearchNav(){
+    document.getElementById('nav-enterprise-member-search').style.display = 'none'
+}
+
+function hideEnterpriseFile(){
+    document.getElementById('enterprise-btn-file').style.display = 'none'
+}
+
 
 function showParentSearchInput(){
     document.getElementById('parent-search-input').style.display = 'inline'

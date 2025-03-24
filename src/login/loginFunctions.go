@@ -1,29 +1,45 @@
 package login
 
 import (
+	"database/sql"
 	"fmt"
 	"os"
 	"time"
 
+	"github.com/LucasBastino/app-sindicato/src/database"
 	"github.com/gofiber/fiber/v2"
 	"github.com/golang-jwt/jwt/v5"
+	"golang.org/x/crypto/bcrypt"
 )
 
 func getUserAndPassword(c *fiber.Ctx) (string, string) {
 	return c.FormValue("user"), c.FormValue("password")
 }
 
-func checkUser(user string) bool {
-	return !(user != "admin" && user != "guest")
+func checkUser(user string) (string, string, bool) {
+	row := database.DB.QueryRow("SELECT Hash, Role FROM UserTable WHERE Username = ?", user)
+	var hash string
+	var role string
+	err := row.Scan(&hash, &role)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			fmt.Println("username doesn't exist, error:", err)
+		} else {
+			fmt.Println("error scanning user, error:", err)
+		}
+		return "", "", false
+	}
+	return hash, role, true
 }
 
-func checkPassword(password string) bool {
-	return password == "123"
+func checkHashAndPassword(hash, password []byte) error {
+	return bcrypt.CompareHashAndPassword(hash, password)
 }
 
-func createJwtMapClaims(user string, minutes int) jwt.MapClaims {
+func createJwtMapClaims(user, role string, minutes int) jwt.MapClaims {
 	return jwt.MapClaims{
-		"role": user,
+		"user": user,
+		"role": role,
 		"exp":  time.Now().Add(time.Minute * time.Duration(minutes)).Unix(),
 	}
 }

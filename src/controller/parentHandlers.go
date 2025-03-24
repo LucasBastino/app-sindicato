@@ -10,11 +10,13 @@ import (
 func AddParent(c *fiber.Ctx) error {
 	errorMap := validateFieldsCaller(models.Parent{}, c)
 	p := parserCaller(i.ParentParser{}, c)
+	role := c.Locals("claims").(jwt.MapClaims)["role"]
 	if len(errorMap) > 0 {
 		return c.Status(fiber.StatusBadRequest).JSON(errorMap)
 	} else {
 		p = insertModelCaller(p)
-		data := fiber.Map{"parent": p, "mode": "edit"}
+		createdAt, updatedAt := formatTimeStamps(p.CreatedAt, p.UpdatedAt)
+		data := fiber.Map{"parent": p, "mode": "edit", "role": role, "createdAt": createdAt, "updatedAt": updatedAt}
 		return c.Render("parentFile", data)
 	}
 }
@@ -35,7 +37,8 @@ func EditParent(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusBadRequest).JSON(errorMap)
 	} else {
 		p = updateModelCaller(p)
-		data := fiber.Map{"parent": p, "mode": "edit", "role": role}
+		createdAt, updatedAt := formatTimeStamps(p.CreatedAt, p.UpdatedAt)
+		data := fiber.Map{"parent": p, "mode": "edit", "role": role, "createdAt": createdAt, "updatedAt": updatedAt}
 		return c.Render("parentFile", data)
 	}
 }
@@ -43,7 +46,8 @@ func EditParent(c *fiber.Ctx) error {
 func RenderParentFile(c *fiber.Ctx) error {
 	p := searchOneModelByIdCaller(models.Parent{}, c)
 	role := c.Locals("claims").(jwt.MapClaims)["role"]
-	data := fiber.Map{"parent": p, "role": role, "mode": "edit"}
+	createdAt, updatedAt := formatTimeStamps(p.CreatedAt, p.UpdatedAt)
+	data := fiber.Map{"parent": p, "mode": "edit", "role": role, "createdAt": createdAt, "updatedAt": updatedAt}
 	return c.Render("parentFile", data)
 }
 

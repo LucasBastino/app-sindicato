@@ -1,0 +1,39 @@
+{{$IdEnterprise := $.enterprise.IdEnterprise}}
+<!DOCTYPE html>
+<html lang="en">
+    {{template "Head"}}
+<body>
+<div id="targetDiv">
+    <div class="container" id="main-container">
+        <header>
+            <div class="nav-container">
+                <nav class="navbar navbar-expand navbar-light bg-light">
+                    <a class="navbar-brand" href="/">Sindicato</a>              
+                </nav>
+            </div>
+        </header>
+            <div class="form__section">
+                <div class="page-title">Afiliados sin empresa: {{.numberOfMembers}}</div>
+    
+        </div>
+        
+       
+        <div class="nav-container ">
+            <nav class="navbar navbar-file navbar-expand navbar-light bg-light " id="nav-enterprise-member-search">
+                <div class="navbar-nav">
+                    <div class="inner-addon right-addon" id="enterprise-member-search-input">
+                    <i class="bi bi-search input-icon"></i>
+                    <input class="form-control static-input input-field search-input" name="search-key" type="search" aria-label="Search" 
+                    hx-get="/enterprise/{{$.enterprise.IdEnterprise}}/memberTable" hx-trigger="keyup" hx-headers='{"mode": "edit"}' hx-target="#tableDiv"></input>
+                    </div> 
+                </div>    
+            </nav>
+        </div>
+        <div id="tableDiv" hx-get="/enterprise/{{$.enterprise.IdEnterprise}}/memberTable" hx-trigger="load" hx-headers='{"mode": "edit"}'></div>    
+    </div>
+</div>
+
+
+{{template "Scripts"}}
+</body>
+</html>

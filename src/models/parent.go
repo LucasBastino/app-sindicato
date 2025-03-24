@@ -98,9 +98,8 @@ func (parent Parent) UpdateModel() Parent {
 		panic(err)
 	}
 	update.Close()
-	result, err := database.DB.Query(`
-		SELECT * FROM ParentTable 
-		WHERE IdParent = (SELECT LAST_INSERT_ID())`)
+	result, err := database.DB.Query(fmt.Sprintf(`
+	SELECT * FROM ParentTable WHERE IdParent = '%d'`, parent.IdParent))
 	if err != nil {
 		fmt.Print(err)
 	}
