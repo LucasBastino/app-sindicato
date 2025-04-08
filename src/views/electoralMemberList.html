@@ -8,22 +8,25 @@
     <link rel="stylesheet" href="/static/css/styles.css">
     <title>Padron electoral</title>
 </head>
-<body>
     <main>
-        <div id="tabla-padron">
-        <table class="table text-center">
+        <div id="electoral-member-list-table">
+        <table class="table text-left">
             <thead>
                 <tr>
-                    <th>Nombre</th>
+                    <th>Nº Afiliado</th>
+                    <th>Apellido y nombre</th>
                     <th>DNI</th>
+                    <th>Empresa</th>
                     <th>Votó</th>
                 </tr>
             </thead>
             <tbody>
             {{range $_, $m := .members}}
                 <tr>
-                    <td>{{$m.Name}}</td>
+                    <td>{{$m.MemberNumber}}</td>
+                    <td>{{$m.LastName}}, {{$m.Name}}</td>
                     <td>{{$m.DNI}}</td>
+                    <td>{{$m.EnterpriseName}}</td>
                     <td></td>
                 </tr>
             {{end}}
@@ -32,5 +35,4 @@
     </div>
     </main>
     
-</body>
 </html>

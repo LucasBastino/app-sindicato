@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/LucasBastino/app-sindicato/src/database"
+	er "github.com/LucasBastino/app-sindicato/src/errors"
 	"github.com/gofiber/fiber/v2"
 )
 
@@ -160,7 +161,7 @@ func (enterprise Enterprise) SearchModels(c *fiber.Ctx, offset int) ([]Enterpris
 	return ee, searchKey
 }
 
-func (enterprise Enterprise) ValidateFields(c *fiber.Ctx) map[string]string {
+func (enterprise Enterprise) ValidateFields(c *fiber.Ctx) (map[string]string, error) {
 	errorMap := map[string]string{}
 	var valid bool
 	var err string
@@ -185,7 +186,11 @@ func (enterprise Enterprise) ValidateFields(c *fiber.Ctx) map[string]string {
 	if valid, err = ValidatePhone(c); !valid {
 		errorMap["phone"] = err
 	}
-	return errorMap
+	if len(errorMap) > 1 {
+
+		return errorMap, er.ValidationError
+	}
+	return errorMap, nil
 }
 
 func (enterprise Enterprise) GetTotalRows(c *fiber.Ctx) int {

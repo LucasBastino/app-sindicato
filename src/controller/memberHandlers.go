@@ -21,7 +21,7 @@ func AddMember(c *fiber.Ctx) error {
 		// Si no tiene errores inserto el member en la DB y renderizo el su archivo
 		m = insertModelCaller(m)
 		path := fmt.Sprintf("/member/%d/file", m.IdMember)
-		return c.Render("redirect", fiber.Map{"path": path})
+		return c.Status(fiber.StatusCreated).Render("redirect", fiber.Map{"path": path})
 	}
 }
 
@@ -57,7 +57,11 @@ func EditMember(c *fiber.Ctx) error {
 	errorMap := validateFieldsCaller(models.Member{}, c)
 	// Parseo los datos obtenidos del form
 	m := parserCaller(i.MemberParser{}, c)
-	enterpriseName := getEnterpriseName(m.IdEnterprise)
+	enterpriseName, err := getEnterpriseName(m.IdEnterprise)
+	if err != nil {
+		// ver esto
+		c.Status(fiber.StatusNoContent).JSON(fiber.Map{"error": err})
+	}
 	IdMember := getIdModelCaller(m, c)
 	m.IdMember = IdMember
 	// necesito poner esta linea ↑ para que se pueda editar 2 veces seguidas
@@ -116,7 +120,11 @@ func RenderMemberFile(c *fiber.Ctx) error {
 	// Busco el miembro por ID y renderizo su archivo
 	enterprises := getAllModelsCaller(models.Enterprise{})
 	m := searchOneModelByIdCaller(models.Member{}, c)
-	enterpriseName := getEnterpriseName(m.IdEnterprise)
+	enterpriseName, err := getEnterpriseName(m.IdEnterprise)
+	if err != nil {
+		// ver esto
+		c.Status(fiber.StatusNoContent).JSON(fiber.Map{"error": err})
+	}
 	createdAt, updatedAt := formatTimeStamps(m.CreatedAt, m.UpdatedAt)
 	role := c.Locals("claims").(jwt.MapClaims)["role"]
 	data := fiber.Map{"member": m, "mode": "edit", "role": role, "enterprises": enterprises, "enterpriseName": enterpriseName, "createdAt": createdAt, "updatedAt": updatedAt}

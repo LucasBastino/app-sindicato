@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/LucasBastino/app-sindicato/src/database"
+	er "github.com/LucasBastino/app-sindicato/src/errors"
 	"github.com/LucasBastino/app-sindicato/src/models"
 	"github.com/gofiber/fiber/v2"
 	"github.com/golang-jwt/jwt/v5"
@@ -92,37 +93,41 @@ func GetTotalPagesArray(totalPages int) []int {
 	return totalPagesArray
 }
 
-func getEnterpriseName(idEnterprise int) string {
+func getEnterpriseName(idEnterprise int) (string, error) {
 	enterpriseName := ""
 	result, err := database.DB.Query(fmt.Sprintf("SELECT Name FROM EnterpriseTable WHERE IdEnterprise = '%d'", idEnterprise))
 	if err != nil {
-		fmt.Println("error searching for enterprise name")
+		er.QueryError.Msg = err.Error()
+		return "", er.QueryError
 	}
 	for result.Next() {
 		err = result.Scan(&enterpriseName)
 		if err != nil {
-			fmt.Println("error scanning enterprise name")
+			er.ScanError.Msg = err.Error()
+			return "", er.ScanError
 		}
 	}
-	return enterpriseName
+	return enterpriseName, nil
 }
 
 func RenderElectoralMemberList(c *fiber.Ctx) error {
-	var member models.Member
-	var members []models.Member
-	result, err := database.DB.Query("SELECT Name, DNI from MemberTable")
+	var m models.MemberWithEnterpriseName
+	var mm []models.MemberWithEnterpriseName
+	result, err := database.DB.Query("SELECT M.MemberNumber, M.LastName, M.Name, M.DNI, E.Name from MemberTable M INNER JOIN EnterpriseTable E ON M.IdEnterprise = E.IdEnterprise WHERE M.IdEnterprise != '1' ORDER BY LastName ASC")
 	if err != nil {
-		fmt.Println(err)
+		// guardar el err en algun lado
+		return er.CheckError(c, er.QueryError)
 	}
 	for result.Next() {
-		err = result.Scan(&member.Name, &member.DNI)
+		err = result.Scan(&m.MemberNumber, &m.LastName, &m.Name, &m.DNI, &m.EnterpriseName)
 		if err != nil {
-			fmt.Println(err)
+			// guardar el err en algun lado
+			return er.CheckError(c, er.ScanError)
 		}
-		members = append(members, member)
+		mm = append(mm, m)
 	}
-	defer result.Close()
-	return c.Render("electoralMemberList", fiber.Map{"members": members})
+	result.Close()
+	return c.Render("electoralMemberList", fiber.Map{"members": mm})
 }
 
 func RenderPruebaEmpresas(c *fiber.Ctx) error {
@@ -130,12 +135,14 @@ func RenderPruebaEmpresas(c *fiber.Ctx) error {
 	var enterprises []models.Enterprise
 	result, err := database.DB.Query("SELECT IdEnterprise, Name FROM EnterpriseTable ORDER BY Name")
 	if err != nil {
-		fmt.Println(err)
+		// guardar el err en algun lado
+		return er.CheckError(c, er.QueryError)
 	}
 	for result.Next() {
 		err = result.Scan(&enterprise.IdEnterprise, &enterprise.Name)
 		if err != nil {
-			fmt.Println(err)
+			// guardar el err en algun lado
+			return er.CheckError(c, er.ScanError)
 		}
 		enterprises = append(enterprises, enterprise)
 	}
@@ -146,23 +153,15 @@ func RenderLogin(ctx *fiber.Ctx) error {
 	return ctx.Render("login", fiber.Map{})
 }
 
-func formatTimeStamps(cA, uA time.Time) (string, string) {
+func formatTimeStamps(cA, uA time.Time) (string, string, error) {
 	loc, err := time.LoadLocation("America/Argentina/Buenos_Aires")
 	if err != nil {
-		panic(err)
+		er.FormatError.Msg = err.Error()
+		return "", "", er.FormatError
 	}
 
-	return cA.In(loc).Format("02-01-2006 15:04:05"), uA.In(loc).Format("02-01-2006 15:04:05")
+	return cA.In(loc).Format("02-01-2006 15:04:05"), uA.In(loc).Format("02-01-2006 15:04:05"), nil
 }
-
-// Creado: 2024-11-18 19:12:38 +0000 UTC
-
-// func formatTimeStamps(m *models.Member) {
-// 	fmt.Println(m)
-// 	fmt.Println(&m)
-// 	fmt.Println(*m)
-// 	m.Name = "Lukitas"
-// }
 
 func RenderRegisterUserForm(c *fiber.Ctx) error {
 	return c.Render("register", fiber.Map{})

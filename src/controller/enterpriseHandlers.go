@@ -2,10 +2,10 @@ package controller
 
 import (
 	"fmt"
-	"log"
 	"strconv"
 
 	"github.com/LucasBastino/app-sindicato/src/database"
+	er "github.com/LucasBastino/app-sindicato/src/errors"
 	i "github.com/LucasBastino/app-sindicato/src/interfaces"
 	"github.com/LucasBastino/app-sindicato/src/models"
 	"github.com/gofiber/fiber/v2"
@@ -13,73 +13,93 @@ import (
 )
 
 func AddEnterprise(c *fiber.Ctx) error {
-	errorMap := validateFieldsCaller(models.Enterprise{}, c)
-	e := parserCaller(i.EnterpriseParser{}, c)
-	if len(errorMap) > 0 {
-		return c.Status(fiber.StatusBadRequest).JSON(errorMap)
-	} else {
-		e = insertModelCaller(e)
-		role := c.Locals("claims").(jwt.MapClaims)["role"]
-		createdAt, updatedAt := formatTimeStamps(e.CreatedAt, e.UpdatedAt)
-		years := getPaymentYears(e.IdEnterprise)
-		data := fiber.Map{"enterprise": e, "numberOfMembers": 0, "role": role, "mode": "edit", "years": years, "createdAt": createdAt, "updatedAt": updatedAt}
-		return c.Render("enterpriseFile", data)
+	errorMap, err := validateFieldsCaller(models.Enterprise{}, c)
+	if err != nil {
+		fmt.Println(errorMap)
+		// borrar esto ↑ y logear en algun lado el error de validacion con el errorMap
+		return er.CheckError(c, er.ValidationError)
 	}
+	e := parserCaller(i.EnterpriseParser{}, c)
+	e = insertModelCaller(e)
+	role := c.Locals("claims").(jwt.MapClaims)["role"]
+	createdAt, updatedAt, err := formatTimeStamps(e.CreatedAt, e.UpdatedAt)
+	if err != nil {
+		// guardar el err o aca o alla
+		return er.CheckError(c, er.FormatError)
+	}
+	years := getPaymentYears(e.IdEnterprise)
+	data := fiber.Map{"enterprise": e, "numberOfMembers": 0, "role": role, "mode": "edit", "years": years, "createdAt": createdAt, "updatedAt": updatedAt}
+	return c.Render("enterpriseFile", data)
+
 }
 
 func DeleteEnterprise(c *fiber.Ctx) error {
 	IdEnterprise := getIdModelCaller(models.Enterprise{}, c)
 	if IdEnterprise == 1 {
-		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "cannot delete enterprise 1"})
-	} else {
-		e := models.Enterprise{IdEnterprise: IdEnterprise}
-		members := getAllEnterpriseMembers(IdEnterprise)
-		deleteModelCaller(e)
-		setIdEnterpriseToOne(members)
-		switch c.Get("mode") {
-		case "table":
-			return RenderEnterpriseTable(c)
-		case "edit":
-			return c.Render("index", fiber.Map{"withEnterpriseTable": true})
-		default:
-			return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "error with deleting mode"})
-		}
+		// logear "error": "cannot delete enterprise 1"
+		return er.CheckError(c, er.InsufficientPermisionsError)
 	}
+	e := models.Enterprise{IdEnterprise: IdEnterprise}
+	members := getAllEnterpriseMembers(IdEnterprise)
+	deleteModelCaller(e)
+	setIdEnterpriseToOne(members)
+	switch c.Get("mode") {
+	case "table":
+		return RenderEnterpriseTable(c)
+	case "edit":
+		return c.Render("index", fiber.Map{"withEnterpriseTable": true})
+	default:
+		// log error with deleting mode
+		return er.CheckError(c, er.InternalServerError)
+	}
+
 }
 
 func EditEnterprise(c *fiber.Ctx) error {
-	errorMap := validateFieldsCaller(models.Enterprise{}, c)
+	errorMap, err := validateFieldsCaller(models.Enterprise{}, c)
+	if err != nil {
+		fmt.Println(errorMap)
+		// borrar esto ↑ y logear en algun lado el error de validacion con el errorMap
+		return er.CheckError(c, er.ValidationError)
+	}
 	e := parserCaller(i.EnterpriseParser{}, c)
 	IdEnterprise := getIdModelCaller(e, c)
 	e.IdEnterprise = IdEnterprise
-	years := getPaymentYears(e.IdEnterprise)
-	role := c.Locals("claims").(jwt.MapClaims)["role"]
-
-	if len(errorMap) > 0 {
-		return c.Status(fiber.StatusBadRequest).JSON(errorMap)
-	} else {
-		e = updateModelCaller(e)
-		numberOfMembers := getNumberOfMembers(e.IdEnterprise, "")
-		createdAt, updatedAt := formatTimeStamps(e.CreatedAt, e.UpdatedAt)
-		data := fiber.Map{"enterprise": e, "numberOfMembers": numberOfMembers, "role": role, "mode": "edit", "years": years, "createdAt": createdAt, "updatedAt": updatedAt}
-		return c.Render("enterpriseFile", data)
+	years, err := getPaymentYears(e.IdEnterprise)
+	if err != nil {
+		// logearlo
+		return er.CheckError(c, er.QueryError)
 	}
+	role := c.Locals("claims").(jwt.MapClaims)["role"]
+	e = updateModelCaller(e)
+	numberOfMembers := getNumberOfMembers(e.IdEnterprise, "")
+	createdAt, updatedAt, err := formatTimeStamps(e.CreatedAt, e.UpdatedAt)
+	if err != nil {
+		// logearlo en algun lado
+		return er.CheckError(c, er.FormatError)
+	}
+	data := fiber.Map{"enterprise": e, "numberOfMembers": numberOfMembers, "role": role, "mode": "edit", "years": years, "createdAt": createdAt, "updatedAt": updatedAt}
+	return c.Render("enterpriseFile", data)
 }
 
-func getPaymentYears(idEnterprise int) []string {
+func getPaymentYears(idEnterprise int) ([]string, error) {
 	result, err := database.DB.Query(fmt.Sprintf("SELECT Year FROM PaymentTable WHERE IdEnterprise = '%d' GROUP BY Year ORDER BY YEAR DESC", idEnterprise))
 	if err != nil {
-		fmt.Println("error searching different Years in PaymentTable")
-		panic(err)
+		er.QueryError.Msg = err.Error()
+		return nil, er.QueryError
 	}
 
 	var years []string
 	var year string
 	for result.Next() {
-		result.Scan(&year)
+		err = result.Scan(&year)
+		if err != nil {
+			er.ScanError.Msg = err.Error()
+			return nil, er.ScanError
+		}
 		years = append(years, year)
 	}
-	return years
+	return years, nil
 }
 
 func RenderEnterpriseTable(c *fiber.Ctx) error {
@@ -113,19 +133,27 @@ func RenderEnterpriseTable(c *fiber.Ctx) error {
 
 func RenderEnterpriseFile(c *fiber.Ctx) error {
 	e := searchOneModelByIdCaller(models.Enterprise{}, c)
-	numberOfMembers := getNumberOfMembers(e.IdEnterprise, "")
+	numberOfMembers, err := getNumberOfMembers(e.IdEnterprise, "")
+	if err != nil {
+		// logear el err
+		return er.CheckError(c, er.ScanError)
+	}
 	role := c.Locals("claims").(jwt.MapClaims)["role"]
 	if e.IdEnterprise == 1 {
 		data := fiber.Map{"enterprise": e, "role": role, "numberOfMembers": numberOfMembers, "mode": "edit"}
 		return c.Render("withoutEnterprise", data)
 	} else {
-		createdAt, updatedAt := formatTimeStamps(e.CreatedAt, e.UpdatedAt)
+		createdAt, updatedAt, err := formatTimeStamps(e.CreatedAt, e.UpdatedAt)
+		if err != nil {
+			// logear el err
+			return er.CheckError(c, er.FormatError)
+		}
 		data := fiber.Map{"enterprise": e, "role": role, "numberOfMembers": numberOfMembers, "mode": "edit", "withPaymentTable": false, "createdAt": createdAt, "updatedAt": updatedAt}
 		return c.Render("enterpriseFile", data)
 	}
 }
 
-func getNumberOfMembers(IdEnterprise int, searchKey string) int {
+func getNumberOfMembers(IdEnterprise int, searchKey string) (int, error) {
 	var totalRows int
 	row := database.DB.QueryRow(fmt.Sprintf(`
 		SELECT COUNT(*) FROM MemberTable 
@@ -134,9 +162,10 @@ func getNumberOfMembers(IdEnterprise int, searchKey string) int {
 	// row.Scan copia el numero de fila en la variable count
 	err := row.Scan(&totalRows)
 	if err != nil {
-		log.Fatal(err)
+		er.ScanError.Msg = err.Error()
+		return 0, er.ScanError
 	}
-	return totalRows
+	return totalRows, nil
 }
 
 func RenderAddEnterpriseForm(c *fiber.Ctx) error {
@@ -151,22 +180,26 @@ func RenderEnterpriseMembers(c *fiber.Ctx) error {
 	// obtengo la currentPage del path
 	currentPage := GetPageFromPath(c)
 
-	IdEnterprise := func() int {
+	IdEnterprise, err := func() (int, error) {
 		// c.Get devuelve un valor del header
 		if c.Get("mode") == "edit" {
-			return getIdModelCaller(models.Enterprise{}, c)
+			return getIdModelCaller(models.Enterprise{}, c), nil
 		} else if c.Get("mode") == "enterpriseMemberTable" {
 			IdEnterpriseStr := c.Get("idEnterprise")
 			IdEnterprise, err := strconv.Atoi(IdEnterpriseStr)
 			if err != nil {
-				fmt.Println("error converting IdEnterpriseStr to INT")
-				panic(err)
+				er.StrConvError.Msg = err.Error()
+				return 0, er.StrConvError
 			}
-			return IdEnterprise
+			return IdEnterprise, nil
 		} else {
-			return 0
+			return 0, nil
 		}
 	}()
+	if err != nil {
+		// logear el error
+		return er.CheckError(c, er.StrConvError)
+	}
 
 	var searchKey string
 
@@ -180,7 +213,11 @@ func RenderEnterpriseMembers(c *fiber.Ctx) error {
 	}
 
 	// calculo la cantidad de resultados
-	totalRows := getNumberOfMembers(IdEnterprise, searchKey)
+	totalRows, err := getNumberOfMembers(IdEnterprise, searchKey)
+	if err != nil {
+		// logear el err
+		return er.CheckError(c, er.ScanError)
+	}
 
 	if totalRows == 0 {
 		// si no hay resultados renderizar esto
@@ -192,7 +229,11 @@ func RenderEnterpriseMembers(c *fiber.Ctx) error {
 		totalPages, offset, someBefore, someAfter := GetPaginationData(currentPage, totalRows)
 
 		// busco los miembros y devuelvo el searchKey para usarlo nuevamente en la paginacion
-		members := getEnterpriseMembers(IdEnterprise, searchKey, offset)
+		members, err := getEnterpriseMembers(IdEnterprise, searchKey, offset)
+		if err != nil {
+			// logear el err
+			return er.CheckError(c, er.QueryError)
+		}
 
 		// hago un array para poder recorrerlo y crear botones cuando hay menos de 10 paginas en el template
 		totalPagesArray := GetTotalPagesArray(totalPages)
@@ -208,31 +249,31 @@ func RenderEnterpriseMembers(c *fiber.Ctx) error {
 	}
 }
 
-func getEnterpriseMembers(IdEnterprise int, searchKey string, offset int) []models.Member {
+func getEnterpriseMembers(IdEnterprise int, searchKey string, offset int) ([]models.Member, error) {
 	result, err := database.DB.Query(fmt.Sprintf(`
 			SELECT * FROM MemberTable 
 			WHERE IdEnterprise = %d
 			AND (Name LIKE '%%%s%%' OR LastName LIKE '%%%s%%') LIMIT 10 OFFSET %d`, IdEnterprise, searchKey, searchKey, offset))
 	if err != nil {
-		fmt.Println("error searching member in DB")
-		panic(err)
+		er.QueryError.Msg = err.Error()
+		return nil, er.QueryError
 	}
 	_, members := models.Member{}.ScanResult(result, false)
-	return members
+	return members, nil
 }
 
-func getAllEnterpriseMembers(IdEnterprise int) []models.Member {
+func getAllEnterpriseMembers(IdEnterprise int) ([]models.Member, error) {
 	result, err := database.DB.Query(fmt.Sprintf(`
 			SELECT * FROM MemberTable WHERE IdEnterprise = %d`, IdEnterprise))
 	if err != nil {
-		fmt.Println("error searching member in DB")
-		panic(err)
+		er.QueryError.Msg = err.Error()
+		return nil, er.QueryError
 	}
 	_, members := models.Member{}.ScanResult(result, false)
-	return members
+	return members, nil
 }
 
-func setIdEnterpriseToOne(members []models.Member) {
+func setIdEnterpriseToOne(members []models.Member) error {
 	// query, err := database.DB.Query("SET GLOBAL FOREIGN_KEY_CHECKS = 0")
 	// if err!=nil{
 	// 	fmt.Println("error setting foreing keys to 1")
@@ -242,12 +283,13 @@ func setIdEnterpriseToOne(members []models.Member) {
 		update, err := database.DB.Query(fmt.Sprintf(`
 		UPDATE MemberTable SET IdEnterprise = '1' WHERE IdMember = %d`, m.IdMember))
 		if err != nil {
-			fmt.Println("error setting IdEnterprise to '1'")
-			panic(err)
+			er.QueryError.Msg = err.Error()
+			return er.QueryError
 		}
 		update.Close()
 		// query.Close()
 	}
+	return nil
 }
 
 func RenderEnterprisePaymentsTable(c *fiber.Ctx) error {
@@ -260,24 +302,30 @@ func RenderEnterprisePaymentsTable(c *fiber.Ctx) error {
 	var lastYear int
 	result, err := database.DB.Query(fmt.Sprintf("SELECT MAX(Year) FROM PaymentTable WHERE IdEnterprise = '%d'", IdEnterprise))
 	if err != nil {
-		fmt.Println("error selecting last year")
+		// logear el err
+		return er.CheckError(c, er.QueryError)
 	}
 	for result.Next() {
 		err = result.Scan(&lastYear)
 	}
 	if err != nil {
-		fmt.Println("error scaning lastyear")
+		// logear el err
+		return er.CheckError(c, er.ScanError)
 	}
 	result2, err := database.DB.Query(fmt.Sprintf("SELECT Year FROM PaymentTable WHERE IdEnterprise = '%d' GROUP BY Year ORDER BY YEAR DESC", IdEnterprise))
 	if err != nil {
-		fmt.Println("error searching different Years in PaymentTable")
-		panic(err)
+		// logear el err
+		return er.CheckError(c, er.QueryError)
 	}
 
 	var years []string
 	var year string
 	for result2.Next() {
-		result2.Scan(&year)
+		err = result2.Scan(&year)
+		if err != nil {
+			// logear el err
+			return er.CheckError(c, er.ScanError)
+		}
 		years = append(years, year)
 	}
 	yearInt := params.Year
@@ -311,8 +359,8 @@ func RenderEnterpriseTableSelect(c *fiber.Ctx) error {
 		ORDER BY Name ASC`,
 			searchKey))
 		if err != nil {
-			fmt.Println("error searching Enterprise in DB")
-			panic(err)
+			// logear el err
+			return er.CheckError(c, er.QueryError)
 		}
 		_, enterprises := models.Enterprise{}.ScanResult(result, false)
 

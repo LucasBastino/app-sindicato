@@ -34,7 +34,7 @@ func searchModelsCaller[M models.TypeModel](m i.IModel[M], c *fiber.Ctx, offset 
 	return m.SearchModels(c, offset)
 }
 
-func validateFieldsCaller[M models.TypeModel](m i.IModel[M], c *fiber.Ctx) map[string]string {
+func validateFieldsCaller[M models.TypeModel](m i.IModel[M], c *fiber.Ctx) (map[string]string, error) {
 	return m.ValidateFields(c)
 }
 

@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/LucasBastino/app-sindicato/src/database"
+	er "github.com/LucasBastino/app-sindicato/src/errors"
 	"github.com/gofiber/fiber/v2"
 )
 
@@ -145,7 +146,7 @@ func (parent Parent) SearchModels(c *fiber.Ctx, offset int) ([]Parent, string) {
 	return pp, ""
 }
 
-func (parent Parent) ValidateFields(c *fiber.Ctx) map[string]string {
+func (parent Parent) ValidateFields(c *fiber.Ctx) (map[string]string, error) {
 	errorMap := map[string]string{}
 
 	var valid bool
@@ -169,7 +170,11 @@ func (parent Parent) ValidateFields(c *fiber.Ctx) map[string]string {
 	if valid, err = ValidateCUIL(c); !valid {
 		errorMap["cuil"] = err
 	}
-	return errorMap
+	if len(errorMap) > 1 {
+
+		return errorMap, er.ValidationError
+	}
+	return errorMap, nil
 }
 
 func (parent Parent) GetTotalRows(c *fiber.Ctx) int {

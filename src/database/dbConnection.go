@@ -27,10 +27,17 @@ var InfoDB = DBInfo{
 }
 
 func CreateConnection() {
+	// Host:     os.Getenv("HOST"),
+	// User:     os.Getenv("USER"),
+	// Password: os.Getenv("PASSWORD"),
+	// Port:     os.Getenv("PORT"),
+	// DBName:   os.Getenv("DB_NAME"),
+
+	// alguien tiene acceso a esto? preguntar
 	connString := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?parseTime=true", InfoDB.User, InfoDB.Password, InfoDB.Host, InfoDB.Port, InfoDB.DBName)
 	db, err := sql.Open("mysql", connString)
 	if err != nil {
-		fmt.Println("error trying to connect with database:", InfoDB.DBName)
+		fmt.Println("error trying to connect with database")
 		log.Fatal(err.Error())
 	}
 
@@ -40,7 +47,7 @@ func CreateConnection() {
 		log.Fatal(err.Error())
 	}
 
-	fmt.Println("Succesfully connected to database:", InfoDB.DBName)
+	fmt.Println("Succesfully connected to database")
 	DB = db
 
 }
