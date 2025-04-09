@@ -3,7 +3,8 @@ package database
 import (
 	"database/sql"
 	"fmt"
-	"log"
+
+	er "github.com/LucasBastino/app-sindicato/src/errors"
 
 	_ "github.com/go-sql-driver/mysql"
 )
@@ -37,14 +38,16 @@ func CreateConnection() {
 	connString := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?parseTime=true", InfoDB.User, InfoDB.Password, InfoDB.Host, InfoDB.Port, InfoDB.DBName)
 	db, err := sql.Open("mysql", connString)
 	if err != nil {
-		fmt.Println("error trying to connect with database")
-		log.Fatal(err.Error())
+		er.DatabaseConnectionError.Msg = err.Error()
+		// logearlo
+		panic(err)
 	}
 
 	err = db.Ping()
 	if err != nil {
-		fmt.Println("error verifying connection pinging")
-		log.Fatal(err.Error())
+		er.DatabaseConnectionError.Msg = err.Error()
+		// logearlo
+		panic(err)
 	}
 
 	fmt.Println("Succesfully connected to database")

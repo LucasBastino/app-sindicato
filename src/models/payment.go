@@ -3,7 +3,6 @@ package models
 import (
 	"database/sql"
 	"fmt"
-	"log"
 	"strconv"
 	"time"
 
@@ -25,7 +24,7 @@ type Payment struct {
 	UpdatedAt    time.Time
 }
 
-func (payment Payment) InsertModel() Payment {
+func (payment Payment) InsertModel() (Payment, error) {
 	insert, err := database.DB.Query(fmt.Sprintf(`
 		INSERT INTO PaymentTable 
 		(Month,
@@ -44,8 +43,8 @@ func (payment Payment) InsertModel() Payment {
 		payment.Commentary,
 		payment.IdEnterprise))
 	if err != nil {
-		fmt.Println("error insertando Payment en la DB")
-		panic(err)
+		er.QueryError.Msg = err.Error()
+		return Payment{}, er.QueryError
 	}
 	insert.Close()
 	result, err := database.DB.Query(`
@@ -53,25 +52,29 @@ func (payment Payment) InsertModel() Payment {
 		FROM PaymentTable
 		WHERE IdPayment = (SELECT LAST_INSERT_ID())`)
 	if err != nil {
-		fmt.Print(err)
+		er.QueryError.Msg = err.Error()
+		return Payment{}, er.QueryError
 	}
-	p, _ := payment.ScanResult(result, true)
-	return p
+	p, _, err := payment.ScanResult(result, true)
+	if err != nil {
+		return Payment{}, err
+	}
+	return p, nil
 }
 
-func (payment Payment) DeleteModel() {
+func (payment Payment) DeleteModel() error {
 	delete, err := database.DB.Query(fmt.Sprintf(`
 		DELETE FROM PaymentTable
 		WHERE IdPayment = '%d'`, payment.IdPayment))
 	if err != nil {
-		fmt.Println("error deleting Payment")
-		panic(err)
+		er.QueryError.Msg = err.Error()
+		return er.QueryError
 	}
 	defer delete.Close()
-
+	return nil
 }
 
-func (payment Payment) UpdateModel() Payment {
+func (payment Payment) UpdateModel() (Payment, error) {
 	update, err := database.DB.Query(fmt.Sprintf(`
 		UPDATE PaymentTable 
 		SET 
@@ -90,47 +93,64 @@ func (payment Payment) UpdateModel() Payment {
 		payment.Commentary,
 		payment.IdPayment))
 	if err != nil {
-		fmt.Println("error updating Payment")
-		panic(err)
+		er.QueryError.Msg = err.Error()
+		return Payment{}, er.QueryError
 	}
 	update.Close()
 	result, err := database.DB.Query(fmt.Sprintf("SELECT * FROM PaymentTable WHERE IdPayment = %d", payment.IdPayment))
 	if err != nil {
-		fmt.Print(err)
+		er.QueryError.Msg = err.Error()
+		return Payment{}, er.QueryError
 	}
-	p, _ := payment.ScanResult(result, true)
-	return p
+	p, _, err := payment.ScanResult(result, true)
+	if err != nil {
+		return Payment{}, err
+	}
+	return p, nil
 }
 
-func (payment Payment) GetIdModel(c *fiber.Ctx) int {
+func (payment Payment) GetIdModel(c *fiber.Ctx) (int, error) {
 	params := struct {
 		IdPayment int `params:"IdPayment"`
 	}{}
 
-	c.ParamsParser(&params)
+	err := c.ParamsParser(&params)
+	if err != nil {
+		er.ParamsError.Msg = err.Error()
+		return 0, er.ParamsError
+	}
 
-	return params.IdPayment
+	return params.IdPayment, nil
 }
 
-func (payment Payment) SearchOneModelById(c *fiber.Ctx) Payment {
-	IdPayment := payment.GetIdModel(c)
+func (payment Payment) SearchOneModelById(c *fiber.Ctx) (Payment, error) {
+	IdPayment, err := payment.GetIdModel(c)
+	if err != nil {
+		return Payment{}, err
+	}
 	result, err := database.DB.Query(fmt.Sprintf(`
 		SELECT
 		*
 		FROM PaymentTable
 		WHERE IdPayment = '%d'`, IdPayment))
 	if err != nil {
-		fmt.Println("error searching Payment by id")
-		panic(err)
+		er.QueryError.Msg = err.Error()
+		return Payment{}, er.QueryError
 	}
 
-	p, _ := payment.ScanResult(result, true)
-	return p
+	p, _, err := payment.ScanResult(result, true)
+	if err != nil {
+		return Payment{}, err
+	}
+	return p, nil
 
 }
 
-func (payment Payment) SearchModels(c *fiber.Ctx, year int) ([]Payment, string) {
-	IdEnterprise := Enterprise{}.GetIdModel(c)
+func (payment Payment) SearchModels(c *fiber.Ctx, year int) ([]Payment, string, error) {
+	IdEnterprise, err := Enterprise{}.GetIdModel(c)
+	if err != nil {
+		return nil, "", err
+	}
 	yearStr := strconv.Itoa(year)
 	result, err := database.DB.Query(fmt.Sprintf(`
 	SELECT
@@ -140,11 +160,14 @@ func (payment Payment) SearchModels(c *fiber.Ctx, year int) ([]Payment, string) 
 	ORDER BY Month ASC
 	`, yearStr, IdEnterprise))
 	if err != nil {
-		fmt.Println("error searching payments per year")
-		panic(err)
+		er.QueryError.Msg = err.Error()
+		return nil, "", er.QueryError
 	}
-	_, pp := payment.ScanResult(result, false)
-	return pp, ""
+	_, pp, err := payment.ScanResult(result, false)
+	if err != nil {
+		return nil, "", err
+	}
+	return pp, "", nil
 }
 
 func (payment Payment) ValidateFields(c *fiber.Ctx) (map[string]string, error) {
@@ -186,7 +209,7 @@ func (payment Payment) GetAllModels() []Payment {
 	return nil
 }
 
-func (payment Payment) ScanResult(result *sql.Rows, onlyOne bool) (Payment, []Payment) {
+func (payment Payment) ScanResult(result *sql.Rows, onlyOne bool) (Payment, []Payment, error) {
 	var p Payment
 	var pp []Payment
 	for result.Next() {
@@ -203,18 +226,18 @@ func (payment Payment) ScanResult(result *sql.Rows, onlyOne bool) (Payment, []Pa
 			&p.UpdatedAt,
 		)
 		if err != nil {
-			fmt.Println("error scanning Payment")
-			panic(err)
+			er.ScanError.Msg = err.Error()
+			return Payment{}, nil, er.ScanError
 		}
 		if !onlyOne {
 			pp = append(pp, p)
 		}
 	}
 	result.Close()
-	return p, pp
+	return p, pp, nil
 }
 
-func (payment Payment) CheckDeleted(idPayment int) bool {
+func (payment Payment) CheckDeleted(idPayment int) (bool, error) {
 	var totalRows int
 	// row := database.DB.QueryRow(fmt.Sprintf(`
 	// 	SELECT COUNT(*) FROM PaymentTable
@@ -225,11 +248,12 @@ func (payment Payment) CheckDeleted(idPayment int) bool {
 	// row.Scan copia el numero de fila en la variable count
 	err := row.Scan(&totalRows)
 	if err != nil {
-		log.Fatal(err)
+		er.ScanError.Msg = err.Error()
+		return false, er.ScanError
 	}
 	if totalRows == 0 {
-		return true
+		return true, nil
 	} else {
-		return false
+		return false, nil
 	}
 }

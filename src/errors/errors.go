@@ -22,6 +22,8 @@ var UnauthorizedError = &CustomError{}
 var InsufficientPermisionsError = &CustomError{}
 var InternalServerError = &CustomError{}
 var StrConvError = &CustomError{}
+var DatabaseConnectionError = &CustomError{}
+var ParamsError = &CustomError{}
 
 func CheckError(c *fiber.Ctx, err error) error {
 	if errors.Is(err, QueryError) {

@@ -17,7 +17,7 @@ func AddEnterprise(c *fiber.Ctx) error {
 	if err != nil {
 		fmt.Println(errorMap)
 		// borrar esto ↑ y logear en algun lado el error de validacion con el errorMap
-		return er.CheckError(c, er.ValidationError)
+		return er.CheckError(c, err)
 	}
 	e := parserCaller(i.EnterpriseParser{}, c)
 	e = insertModelCaller(e)
@@ -25,9 +25,13 @@ func AddEnterprise(c *fiber.Ctx) error {
 	createdAt, updatedAt, err := formatTimeStamps(e.CreatedAt, e.UpdatedAt)
 	if err != nil {
 		// guardar el err o aca o alla
-		return er.CheckError(c, er.FormatError)
+		return er.CheckError(c, err)
 	}
-	years := getPaymentYears(e.IdEnterprise)
+	years, err := getPaymentYears(e.IdEnterprise)
+	if err != nil {
+		// guardar el err
+		return er.CheckError(c, err)
+	}
 	data := fiber.Map{"enterprise": e, "numberOfMembers": 0, "role": role, "mode": "edit", "years": years, "createdAt": createdAt, "updatedAt": updatedAt}
 	return c.Render("enterpriseFile", data)
 
@@ -40,9 +44,17 @@ func DeleteEnterprise(c *fiber.Ctx) error {
 		return er.CheckError(c, er.InsufficientPermisionsError)
 	}
 	e := models.Enterprise{IdEnterprise: IdEnterprise}
-	members := getAllEnterpriseMembers(IdEnterprise)
+	members, err := getAllEnterpriseMembers(IdEnterprise)
+	if err != nil {
+		// logear el error
+		return er.CheckError(c, err)
+	}
 	deleteModelCaller(e)
-	setIdEnterpriseToOne(members)
+	err = setIdEnterpriseToOne(members)
+	if err != nil {
+		// logear el error
+		return er.CheckError(c, err)
+	}
 	switch c.Get("mode") {
 	case "table":
 		return RenderEnterpriseTable(c)
@@ -60,7 +72,7 @@ func EditEnterprise(c *fiber.Ctx) error {
 	if err != nil {
 		fmt.Println(errorMap)
 		// borrar esto ↑ y logear en algun lado el error de validacion con el errorMap
-		return er.CheckError(c, er.ValidationError)
+		return er.CheckError(c, err)
 	}
 	e := parserCaller(i.EnterpriseParser{}, c)
 	IdEnterprise := getIdModelCaller(e, c)
@@ -68,15 +80,19 @@ func EditEnterprise(c *fiber.Ctx) error {
 	years, err := getPaymentYears(e.IdEnterprise)
 	if err != nil {
 		// logearlo
-		return er.CheckError(c, er.QueryError)
+		return er.CheckError(c, err)
 	}
 	role := c.Locals("claims").(jwt.MapClaims)["role"]
 	e = updateModelCaller(e)
-	numberOfMembers := getNumberOfMembers(e.IdEnterprise, "")
+	numberOfMembers, err := getNumberOfMembers(e.IdEnterprise, "")
+	if err != nil {
+		// logearlo
+		return er.CheckError(c, err)
+	}
 	createdAt, updatedAt, err := formatTimeStamps(e.CreatedAt, e.UpdatedAt)
 	if err != nil {
 		// logearlo en algun lado
-		return er.CheckError(c, er.FormatError)
+		return er.CheckError(c, err)
 	}
 	data := fiber.Map{"enterprise": e, "numberOfMembers": numberOfMembers, "role": role, "mode": "edit", "years": years, "createdAt": createdAt, "updatedAt": updatedAt}
 	return c.Render("enterpriseFile", data)
@@ -136,7 +152,7 @@ func RenderEnterpriseFile(c *fiber.Ctx) error {
 	numberOfMembers, err := getNumberOfMembers(e.IdEnterprise, "")
 	if err != nil {
 		// logear el err
-		return er.CheckError(c, er.ScanError)
+		return er.CheckError(c, err)
 	}
 	role := c.Locals("claims").(jwt.MapClaims)["role"]
 	if e.IdEnterprise == 1 {
@@ -146,7 +162,7 @@ func RenderEnterpriseFile(c *fiber.Ctx) error {
 		createdAt, updatedAt, err := formatTimeStamps(e.CreatedAt, e.UpdatedAt)
 		if err != nil {
 			// logear el err
-			return er.CheckError(c, er.FormatError)
+			return er.CheckError(c, err)
 		}
 		data := fiber.Map{"enterprise": e, "role": role, "numberOfMembers": numberOfMembers, "mode": "edit", "withPaymentTable": false, "createdAt": createdAt, "updatedAt": updatedAt}
 		return c.Render("enterpriseFile", data)

@@ -1,8 +1,9 @@
 package interfaces
 
 import (
-	"fmt"
 	"strconv"
+
+	er "github.com/LucasBastino/app-sindicato/src/errors"
 
 	"github.com/LucasBastino/app-sindicato/src/models"
 	"github.com/gofiber/fiber/v2"
@@ -14,7 +15,7 @@ type ModelParser[M models.TypeModel] interface {
 
 type MemberParser struct{}
 
-func (parser MemberParser) ParseModel(c *fiber.Ctx) models.Member {
+func (parser MemberParser) ParseModel(c *fiber.Ctx) (models.Member, error) {
 	m := models.Member{}
 	m.Name = c.FormValue("name")
 	m.LastName = c.FormValue("last-name")
@@ -37,18 +38,19 @@ func (parser MemberParser) ParseModel(c *fiber.Ctx) models.Member {
 	} else {
 		IdEnterprise, err := strconv.Atoi(IdEnterpriseStr)
 		if err != nil {
-			fmt.Println(err)
+			er.StrConvError.Msg = err.Error()
+			return models.Member{}, err
 		}
 		m.IdEnterprise = IdEnterprise
 	}
 	m.Category = c.FormValue("category")
 	m.EntryDate = c.FormValue("entry-date")
-	return m
+	return m, nil
 }
 
 type ParentParser struct{}
 
-func (parser ParentParser) ParseModel(c *fiber.Ctx) models.Parent {
+func (parser ParentParser) ParseModel(c *fiber.Ctx) (models.Parent, error) {
 	p := models.Parent{}
 	p.Name = c.FormValue("name")
 	p.LastName = c.FormValue("last-name")
@@ -59,12 +61,12 @@ func (parser ParentParser) ParseModel(c *fiber.Ctx) models.Parent {
 	IdMemberStr := c.FormValue("id-member")
 	IdMember, err := strconv.Atoi(IdMemberStr)
 	if err != nil {
-		fmt.Println("error converting IdMemberStr to int")
-		panic(err)
+		er.StrConvError.Msg = err.Error()
+		return models.Parent{}, err
 	}
 	p.IdMember = IdMember
 
-	return p
+	return p, nil
 }
 
 type EnterpriseParser struct{}
@@ -83,7 +85,7 @@ func (parser EnterpriseParser) ParseModel(c *fiber.Ctx) models.Enterprise {
 
 type PaymentParser struct{}
 
-func (parser PaymentParser) ParseModel(c *fiber.Ctx) models.Payment {
+func (parser PaymentParser) ParseModel(c *fiber.Ctx) (models.Payment, error) {
 	p := models.Payment{}
 	p.Month = c.FormValue("month")
 	p.Year = c.FormValue("year")
@@ -92,8 +94,8 @@ func (parser PaymentParser) ParseModel(c *fiber.Ctx) models.Payment {
 	if AmountStr != "" {
 		Amount, err := strconv.Atoi(AmountStr)
 		if err != nil {
-			fmt.Println("error converting AmountStr to int")
-			panic(err)
+			er.StrConvError.Msg = err.Error()
+			return models.Payment{}, err
 		}
 		p.Amount = Amount
 	}
@@ -102,10 +104,10 @@ func (parser PaymentParser) ParseModel(c *fiber.Ctx) models.Payment {
 	IdEnterpriseStr := c.FormValue("id-enterprise")
 	IdEnterprise, err := strconv.Atoi(IdEnterpriseStr)
 	if err != nil {
-		fmt.Println("error converting IdEnterpriseStr to int")
-		panic(err)
+		er.StrConvError.Msg = err.Error()
+		return models.Payment{}, err
 	}
 	p.IdEnterprise = IdEnterprise
 
-	return p
+	return p, nil
 }

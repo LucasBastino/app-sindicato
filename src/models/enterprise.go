@@ -3,7 +3,6 @@ package models
 import (
 	"database/sql"
 	"fmt"
-	"log"
 	"time"
 
 	"github.com/LucasBastino/app-sindicato/src/database"
@@ -24,7 +23,7 @@ type Enterprise struct {
 	UpdatedAt        time.Time
 }
 
-func (enterprise Enterprise) InsertModel() Enterprise {
+func (enterprise Enterprise) InsertModel() (Enterprise, error) {
 	insert, err := database.DB.Query(fmt.Sprintf(`
 		INSERT INTO EnterpriseTable 
 		(Name,
@@ -43,9 +42,8 @@ func (enterprise Enterprise) InsertModel() Enterprise {
 		enterprise.PostalCode,
 		enterprise.Phone))
 	if err != nil {
-		// DBError{"INSERT Enterprise"}.Error(err)
-		fmt.Println("error insertando en la DB")
-		panic(err)
+		er.QueryError.Msg = err.Error()
+		return Enterprise{}, er.QueryError
 	}
 	insert.Close()
 	result, err := database.DB.Query(`
@@ -54,30 +52,34 @@ func (enterprise Enterprise) InsertModel() Enterprise {
 		FROM EnterpriseTable
 		WHERE IdEnterprise = (SELECT LAST_INSERT_ID())`)
 	if err != nil {
-		fmt.Print(err)
+		er.QueryError.Msg = err.Error()
+		return Enterprise{}, er.QueryError
 	}
-	e, _ := enterprise.ScanResult(result, true)
-	return e
+	e, _, err := enterprise.ScanResult(result, true)
+	if err != nil {
+		return Enterprise{}, err
+	}
+	return e, nil
 }
 
-func (enterprise Enterprise) DeleteModel() {
+func (enterprise Enterprise) DeleteModel() error {
 	if enterprise.IdEnterprise == 1 {
-		fmt.Println("internal error: cannot delete enterprise 1")
-		return
+		// cambiar este log
+		er.InsufficientPermisionsError.Msg = "permisos insuficientes"
+		return er.InsufficientPermisionsError
 	}
 	delete, err := database.DB.Query(fmt.Sprintf(`
 		DELETE FROM EnterpriseTable
 		WHERE IdEnterprise = '%d'`, enterprise.IdEnterprise))
 	if err != nil {
-		// DBError{"DELETE Enterprise"}.Error(err)
-		fmt.Println("error deleting Enterprise")
-		panic(err)
+		er.QueryError.Msg = err.Error()
+		return er.QueryError
 	}
 	defer delete.Close()
-
+	return nil
 }
 
-func (enterprise Enterprise) UpdateModel() Enterprise {
+func (enterprise Enterprise) UpdateModel() (Enterprise, error) {
 	update, err := database.DB.Query(fmt.Sprintf(`
 		UPDATE EnterpriseTable 
 		SET 
@@ -98,9 +100,8 @@ func (enterprise Enterprise) UpdateModel() Enterprise {
 		enterprise.Phone,
 		enterprise.IdEnterprise))
 	if err != nil {
-		// DBError{"UPDATE Enterprise"}.Error(err)
-		fmt.Println("error updating Enterprise")
-		panic(err)
+		er.QueryError.Msg = err.Error()
+		return Enterprise{}, er.QueryError
 	}
 	update.Close()
 	result, err := database.DB.Query(fmt.Sprintf(`
@@ -109,40 +110,54 @@ func (enterprise Enterprise) UpdateModel() Enterprise {
 		FROM EnterpriseTable
 		WHERE IdEnterprise = %d`, enterprise.IdEnterprise))
 	if err != nil {
-		fmt.Print(err)
+		er.QueryError.Msg = err.Error()
+		return Enterprise{}, er.QueryError
 	}
-	e, _ := enterprise.ScanResult(result, true)
-	return e
+	e, _, err := enterprise.ScanResult(result, true)
+	if err != nil {
+		return Enterprise{}, err
+	}
+	return e, nil
 }
 
-func (enterprise Enterprise) GetIdModel(c *fiber.Ctx) int {
+func (enterprise Enterprise) GetIdModel(c *fiber.Ctx) (int, error) {
 	params := struct {
 		IdEnterprise int `params:"IdEnterprise"`
 	}{}
 
-	c.ParamsParser(&params)
+	err := c.ParamsParser(&params)
+	if err != nil {
+		er.ParamsError.Msg = err.Error()
+		return 0, er.ParamsError
+	}
 
-	return params.IdEnterprise
+	return params.IdEnterprise, nil
 }
 
-func (enterprise Enterprise) SearchOneModelById(c *fiber.Ctx) Enterprise {
-	IdEnterprise := enterprise.GetIdModel(c)
+func (enterprise Enterprise) SearchOneModelById(c *fiber.Ctx) (Enterprise, error) {
+	IdEnterprise, err := enterprise.GetIdModel(c)
+	if err != nil {
+		return Enterprise{}, err
+	}
 	result, err := database.DB.Query(fmt.Sprintf(`
 		SELECT
 		*
 		FROM EnterpriseTable 
 		WHERE IdEnterprise = '%d'`, IdEnterprise))
 	if err != nil {
-		fmt.Println("error searching enterprise by id")
-		panic(err)
+		er.QueryError.Msg = err.Error()
+		return Enterprise{}, er.QueryError
 	}
 
-	e, _ := enterprise.ScanResult(result, true)
-	return e
+	e, _, err := enterprise.ScanResult(result, true)
+	if err != nil {
+		return Enterprise{}, err
+	}
+	return e, nil
 
 }
 
-func (enterprise Enterprise) SearchModels(c *fiber.Ctx, offset int) ([]Enterprise, string) {
+func (enterprise Enterprise) SearchModels(c *fiber.Ctx, offset int) ([]Enterprise, string, error) {
 	searchKey := c.FormValue("search-key")
 	result, err := database.DB.Query(fmt.Sprintf(`
 		SELECT
@@ -154,11 +169,14 @@ func (enterprise Enterprise) SearchModels(c *fiber.Ctx, offset int) ([]Enterpris
 		LIMIT 15 OFFSET %d`,
 		searchKey, searchKey, offset))
 	if err != nil {
-		fmt.Println("error searching Enterprise in DB")
-		panic(err)
+		er.QueryError.Msg = err.Error()
+		return nil, "", er.QueryError
 	}
-	_, ee := enterprise.ScanResult(result, false)
-	return ee, searchKey
+	_, ee, err := enterprise.ScanResult(result, false)
+	if err != nil {
+		return nil, "", err
+	}
+	return ee, searchKey, nil
 }
 
 func (enterprise Enterprise) ValidateFields(c *fiber.Ctx) (map[string]string, error) {
@@ -193,7 +211,7 @@ func (enterprise Enterprise) ValidateFields(c *fiber.Ctx) (map[string]string, er
 	return errorMap, nil
 }
 
-func (enterprise Enterprise) GetTotalRows(c *fiber.Ctx) int {
+func (enterprise Enterprise) GetTotalRows(c *fiber.Ctx) (int, error) {
 	var totalRows int
 	searchKey := c.FormValue("search-key")
 	row := database.DB.QueryRow(fmt.Sprintf(`
@@ -202,9 +220,10 @@ func (enterprise Enterprise) GetTotalRows(c *fiber.Ctx) int {
 	// row.Scan copia el numero de fila en la variable count
 	err := row.Scan(&totalRows)
 	if err != nil {
-		log.Fatal(err)
+		er.ScanError.Msg = err.Error()
+		return 0, er.ScanError
 	}
-	return totalRows
+	return totalRows, nil
 }
 
 func (enterprise Enterprise) GetFiberMap(enterprises []Enterprise, searchKey string, currentPage, someBefore, someAfter, totalPages int, totalPagesArray []int) fiber.Map {
@@ -234,20 +253,23 @@ func (enterprise Enterprise) GetFiberMap(enterprises []Enterprise, searchKey str
 	}
 }
 
-func (enterprise Enterprise) GetAllModels() []Enterprise {
+func (enterprise Enterprise) GetAllModels() ([]Enterprise, error) {
 	result, err := database.DB.Query(`
 		SELECT 
 		*
 		FROM EnterpriseTable`)
 	if err != nil {
-		fmt.Println("error searching enterprise in DB")
-		panic(err)
+		er.QueryError.Msg = err.Error()
+		return nil, er.QueryError
 	}
-	_, ee := enterprise.ScanResult(result, false)
-	return ee
+	_, ee, err := enterprise.ScanResult(result, false)
+	if err != nil {
+		return nil, err
+	}
+	return ee, nil
 }
 
-func (enterprise Enterprise) ScanResult(result *sql.Rows, onlyOne bool) (Enterprise, []Enterprise) {
+func (enterprise Enterprise) ScanResult(result *sql.Rows, onlyOne bool) (Enterprise, []Enterprise, error) {
 	var e Enterprise
 	var ee []Enterprise
 	for result.Next() {
@@ -264,18 +286,18 @@ func (enterprise Enterprise) ScanResult(result *sql.Rows, onlyOne bool) (Enterpr
 			&e.UpdatedAt,
 		)
 		if err != nil {
-			fmt.Println("error scanning enterprise")
-			panic(err)
+			er.ScanError.Msg = err.Error()
+			return Enterprise{}, nil, er.ScanError
 		}
 		if !onlyOne {
 			ee = append(ee, e)
 		}
 	}
 	result.Close()
-	return e, ee
+	return e, ee, nil
 }
 
-func (enterprise Enterprise) CheckDeleted(idEnterprise int) bool {
+func (enterprise Enterprise) CheckDeleted(idEnterprise int) (bool, error) {
 	var totalRows int
 	// row := database.DB.QueryRow(fmt.Sprintf(`
 	// 	SELECT COUNT(*) FROM EnterpriseTable
@@ -286,11 +308,12 @@ func (enterprise Enterprise) CheckDeleted(idEnterprise int) bool {
 	// row.Scan copia el numero de fila en la variable count
 	err := row.Scan(&totalRows)
 	if err != nil {
-		log.Fatal(err)
+		er.ScanError.Msg = err.Error()
+		return false, er.ScanError
 	}
 	if totalRows == 0 {
-		return true
+		return true, nil
 	} else {
-		return false
+		return false, nil
 	}
 }

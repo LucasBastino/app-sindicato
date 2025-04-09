@@ -9,6 +9,7 @@ import (
 	"unicode/utf8"
 
 	"github.com/LucasBastino/app-sindicato/src/database"
+	er "github.com/LucasBastino/app-sindicato/src/errors"
 	"github.com/gofiber/fiber/v2"
 )
 
@@ -168,38 +169,42 @@ func ValidateCUIT(c *fiber.Ctx) (bool, string) {
 	return isNumber(cuit, "-")
 }
 
-func ValidateIdEnterprise(c *fiber.Ctx) (bool, string) {
+func ValidateIdEnterprise(c *fiber.Ctx) (bool, string, error) {
 	idEnterpriseStr := c.FormValue("id-enterprise")
 	idEnterprise, err := strconv.Atoi(idEnterpriseStr)
 	if err != nil {
-		fmt.Println(err)
+		er.StrConvError.Msg = err.Error()
+		return false, "", er.StrConvError
 	}
-	enterprisesId := GetAllEnterprisesIdFromDB()
+	enterprisesId, err := GetAllEnterprisesIdFromDB()
+	if err != nil {
+		return false, "", err
+	}
 	for _, id := range enterprisesId {
 		if id == idEnterprise {
-			return true, ""
+			return true, "", nil
 		}
 	}
-	return false, "El id de la empresa no es valido"
+	return false, "El id de la empresa no es valido", nil
 }
 
-func GetAllEnterprisesIdFromDB() []int {
+func GetAllEnterprisesIdFromDB() ([]int, error) {
 	var enterprisesId []int
 	var idEnterprise int
 	result, err := database.DB.Query("SELECT IdEnterprise FROM EnterpriseTable")
 	if err != nil {
-		fmt.Println("error searching all IdsEnterprise in DB")
-		panic(err)
+		er.QueryError.Msg = err.Error()
+		return nil, er.QueryError
 	}
 	for result.Next() {
 		err = result.Scan(&idEnterprise)
 		if err != nil {
-			fmt.Println("error scanning idEnterprise")
-			panic(err)
+			er.ScanError.Msg = err.Error()
+			return nil, er.ScanError
 		}
 		enterprisesId = append(enterprisesId, idEnterprise)
 	}
-	return enterprisesId
+	return enterprisesId, nil
 }
 
 func ValidateCategory(c *fiber.Ctx) (bool, string) {
@@ -272,22 +277,23 @@ func validateDateValue(date string) (bool, string) {
 
 func validateMonth(month string) bool {
 	months := []string{"01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12"}
-	if !slices.Contains(months, month) {
-		return false
-	}
-	return true
+	return !slices.Contains(months, month)
 }
 
-func validateYear(year string) bool {
+func validateYear(year string) (bool, error) {
+
+	// fijarse si se puede pasar el year directamente como int asi te ahorras todos los err en esta instancia
+	// de ultima te los comes en el validatePayment() que es mas tranqui
 	yearInt, err := strconv.Atoi(year)
 	if err != nil {
-		fmt.Println(err)
+		er.StrConvError.Msg = err.Error()
+		return false, er.StrConvError
 	}
 
 	if yearInt < 1990 || yearInt > time.Now().Year() {
-		return false
+		return false, nil
 	}
-	return true
+	return true, nil
 }
 
 func validatePayment(c *fiber.Ctx) (bool, string) {
@@ -300,6 +306,7 @@ func validatePayment(c *fiber.Ctx) (bool, string) {
 		return false, "El año no es correcto"
 	}
 	payment := fmt.Sprintf("01/%s/%s", month, year)
+	// if validateDAte value true devolver tal, sino devolver tal otro
 	return validateDateValue(payment)
 }
 
