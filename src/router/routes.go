@@ -59,6 +59,8 @@ func RegisterRoutes(app *fiber.App) {
 	py.Delete("/:IdEnterprise/:IdPayment/delete", l.VerifyToken, l.VerifyAdmin, c.DeletePayment)
 	py.Get("/:IdEnterprise/paymentTable", l.VerifyToken, l.VerifyAdminOrUser, c.RenderEnterprisePaymentsTable)
 
+	// app.Get("/error", er.CheckError)
+
 	app.Get("/test", c.TestNull)
 	app.Get("/createMembers", creators.CreateMembers)
 	app.Get("/createParents", creators.CreateParents)

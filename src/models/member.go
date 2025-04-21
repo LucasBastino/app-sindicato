@@ -36,7 +36,7 @@ func (member Member) InsertModel() (Member, error) {
 	// formateo la fecha nac para que empiece con el año
 	member.Birthday = FormatToYYYYMMDD(member.Birthday)
 	member.EntryDate = FormatToYYYYMMDD(member.EntryDate)
-	insert, err := database.DB.Query(fmt.Sprintf(`
+	insert, err := database.DB.Query(`
 		INSERT INTO MemberTable
 		(Name,
 		LastName,
@@ -54,7 +54,7 @@ func (member Member) InsertModel() (Member, error) {
 		IdEnterprise,
 		Category,
 		EntryDate) 
-		VALUES ('%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%d','%s','%s')`,
+		VALUES ('?','?','?','?','?','?','?','?','?','?','?','?','?','?','?','?')`,
 		member.Name,
 		member.LastName,
 		member.DNI,
@@ -70,7 +70,7 @@ func (member Member) InsertModel() (Member, error) {
 		member.CUIL,
 		member.IdEnterprise,
 		member.Category,
-		member.EntryDate))
+		member.EntryDate)
 	if err != nil {
 		er.QueryError.Msg = err.Error()
 		return Member{}, er.QueryError
@@ -91,10 +91,10 @@ func (member Member) InsertModel() (Member, error) {
 }
 
 func (member Member) DeleteModel() error {
-	delete, err := database.DB.Query(fmt.Sprintf(`
+	delete, err := database.DB.Query(`
 		DELETE FROM MemberTable 
-		WHERE IdMember = '%d'`,
-		member.IdMember))
+		WHERE IdMember = '?'`,
+		member.IdMember)
 	if err != nil {
 		er.QueryError.Msg = err.Error()
 		return er.QueryError
@@ -107,26 +107,26 @@ func (member Member) UpdateModel() (Member, error) {
 	// formateo la fecha nac para que empiece con el año
 	member.Birthday = FormatToYYYYMMDD(member.Birthday)
 	member.EntryDate = FormatToYYYYMMDD(member.EntryDate)
-	update, err := database.DB.Query(fmt.Sprintf(`
+	update, err := database.DB.Query(`
 		UPDATE MemberTable
 		SET
-		Name = '%s',
-		LastName = '%s',
-		DNI = '%s',
-		Birthday = '%s',
-		Gender = '%s',
-		MaritalStatus = '%s',
-		Phone = '%s',
-		Email = '%s',
-		Address = '%s',
-		PostalCode = '%s',
-		District = '%s',
-		MemberNumber = %s,
-		CUIL = '%s',
-		IdEnterprise = '%d',
-		Category = '%s',
-		EntryDate = '%s'
-		WHERE IdMember = '%d'`,
+		Name = '?',
+		LastName = '?',
+		DNI = '?',
+		Birthday = '?',
+		Gender = '?',
+		MaritalStatus = '?',
+		Phone = '?',
+		Email = '?',
+		Address = '?',
+		PostalCode = '?',
+		District = '?',
+		MemberNumber = ?,
+		CUIL = '?',
+		IdEnterprise = '?',
+		Category = '?',
+		EntryDate = '?'
+		WHERE IdMember = '?'`,
 		member.Name,
 		member.LastName,
 		member.DNI,
@@ -143,15 +143,15 @@ func (member Member) UpdateModel() (Member, error) {
 		member.IdEnterprise,
 		member.Category,
 		member.EntryDate,
-		member.IdMember))
+		member.IdMember)
 	if err != nil {
 		er.QueryError.Msg = err.Error()
 		return Member{}, er.QueryError
 	}
 	update.Close()
-	result, err := database.DB.Query(fmt.Sprintf(`
+	result, err := database.DB.Query(`
 		SELECT * FROM MemberTable 
-		WHERE IdMember = %d`, member.IdMember))
+		WHERE IdMember = ?`, member.IdMember)
 
 	if err != nil {
 		er.QueryError.Msg = err.Error()
@@ -186,12 +186,12 @@ func (member Member) SearchOneModelById(c *fiber.Ctx) (Member, error) {
 	if err != nil {
 		return Member{}, err
 	}
-	result, err := database.DB.Query(fmt.Sprintf(`
+	result, err := database.DB.Query(`
 		SELECT 
 		*
 		FROM MemberTable 
-		WHERE IdMember = '%d'`,
-		IdMember))
+		WHERE IdMember = '?'`,
+		IdMember)
 	if err != nil {
 		er.QueryError.Msg = err.Error()
 		return Member{}, er.QueryError
@@ -213,13 +213,13 @@ func (member Member) SearchModels(c *fiber.Ctx, offset int) ([]Member, string, e
 		// sino se lo mando por el form normalmente
 		searchKey = c.FormValue("search-key")
 	}
-	result, err := database.DB.Query(fmt.Sprintf(`
+	result, err := database.DB.Query(`
 		SELECT 
 		*
 		FROM MemberTable WHERE 
-		Name LIKE '%%%s%%' OR LastName LIKE '%%%s%%' OR DNI LIKE '%%%s%%' 
-		ORDER BY LastName ASC LIMIT 15 OFFSET %d`,
-		searchKey, searchKey, searchKey, offset))
+		Name LIKE '%?%' OR LastName LIKE '%?%' OR DNI LIKE '%?%' 
+		ORDER BY LastName ASC LIMIT 15 OFFSET ?`,
+		searchKey, searchKey, searchKey, offset)
 	if err != nil {
 		er.QueryError.Msg = err.Error()
 		return nil, "", er.QueryError
@@ -228,72 +228,38 @@ func (member Member) SearchModels(c *fiber.Ctx, offset int) ([]Member, string, e
 	if err != nil {
 		return nil, "", err
 	}
+	fmt.Println(mm)
 	return mm, searchKey, nil
 }
 
-func (member Member) ValidateFields(c *fiber.Ctx) (map[string]string, error) {
-	errorMap := map[string]string{}
-	var valid bool
-	var err string
-
-	if valid, err = ValidateName(c); !valid {
-		errorMap["name"] = err
-	}
-	if valid, err = ValidateLastName(c); !valid {
-		errorMap["lastName"] = err
-	}
-	if valid, err = ValidateDNI(c); !valid {
-		errorMap["dni"] = err
-	}
-	if valid, err = ValidateBirthday(c); !valid {
-		errorMap["birthday"] = err
-	}
-	if valid, err = ValidateGender(c); !valid {
-		errorMap["gender"] = err
-	}
-	if valid, err = ValidateMaritalStatus(c); !valid {
-		errorMap["maritalStatus"] = err
-	}
-	if valid, err = ValidatePhone(c); !valid {
-		errorMap["phone"] = err
-	}
-	if valid, err = ValidateEmail(c); !valid {
-		errorMap["email"] = err
-	}
-	if valid, err = ValidateAddress(c); !valid {
-		errorMap["address"] = err
-	}
-	if valid, err = ValidatePostalCode(c); !valid {
-		errorMap["postalCode"] = err
-	}
-	if valid, err = ValidateDistrict(c); !valid {
-		errorMap["district"] = err
-	}
-	if valid, err = ValidateMemberNumber(c); !valid {
-		errorMap["memberNumber"] = err
-	}
-	if valid, err = ValidateCUIL(c); !valid {
-		errorMap["cuil"] = err
-	}
-	valid, err, err2 := ValidateIdEnterprise(c)
-	if err2 != nil {
-		return nil, err2
-	}
-	if !valid {
-		errorMap["idEnterprise"] = err
-	}
-	if valid, err = ValidateCategory(c); !valid {
-		errorMap["category"] = err
-	}
-	if valid, err = ValidateEntryDate(c); !valid {
-		errorMap["entryDate"] = err
+func (member Member) ValidateFields(c *fiber.Ctx) error {
+	validateFunctions := []func(*fiber.Ctx) error{
+		ValidateName,
+		ValidateLastName,
+		ValidateDNI,
+		ValidateBirthday,
+		ValidateGender,
+		ValidateMaritalStatus,
+		ValidatePhone,
+		ValidateEmail,
+		ValidateAddress,
+		ValidatePostalCode,
+		ValidateDistrict,
+		ValidateMemberNumber,
+		ValidateCUIL,
+		ValidateIdEnterprise,
+		ValidateCategory,
+		ValidateEntryDate,
 	}
 
-	if len(errorMap) > 1 {
-
-		return errorMap, er.ValidationError
+	for _, vF := range validateFunctions {
+		if err := vF(c); err != nil {
+			return err
+		} else {
+			continue
+		}
 	}
-	return errorMap, nil
+	return nil
 }
 
 func (member Member) GetTotalRows(c *fiber.Ctx) (int, error) {
@@ -315,10 +281,7 @@ func (member Member) GetTotalRows(c *fiber.Ctx) (int, error) {
 	// 	OR E.Name LIKE '%%%s%%' OR E.EnterpriseNumber LIKE '%%%s%%'`,
 	// 	searchKey, searchKey, searchKey, searchKey, searchKey))
 	// row.Scan copia el numero de fila en la variable count
-	row := database.DB.QueryRow(fmt.Sprintf(`
-		SELECT COUNT(*) FROM MemberTable WHERE
-		Name LIKE '%%%s%%' OR LastName LIKE '%%%s%%' OR DNI LIKE '%%%s%%'`,
-		searchKey, searchKey, searchKey))
+	row := database.DB.QueryRow("SELECT COUNT(*) FROM MemberTable WHERE Name LIKE %?% OR LastName LIKE concat('%', ?, '%') OR DNI LIKE concat('%', ?, '%')", searchKey, searchKey, searchKey)
 	err := row.Scan(&totalRows)
 	if err != nil {
 		er.ScanError.Msg = err.Error()
@@ -420,9 +383,9 @@ func (member Member) ScanResult(result *sql.Rows, onlyOne bool) (Member, []Membe
 
 func (member Member) CheckDeleted(idMember int) (bool, error) {
 	var totalRows int
-	row := database.DB.QueryRow(fmt.Sprintf(`
+	row := database.DB.QueryRow(`
 		SELECT COUNT(*) FROM MemberTable 
-		WHERE IdMember = '%d'`, idMember))
+		WHERE IdMember = '?'`, idMember)
 	// row.Scan copia el numero de fila en la variable count
 	err := row.Scan(&totalRows)
 	if err != nil {

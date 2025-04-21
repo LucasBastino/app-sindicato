@@ -49,7 +49,6 @@ func createToken(claims jwt.MapClaims) *jwt.Token {
 }
 
 func signToken(token *jwt.Token) string {
-	fmt.Println(os.Getenv("JWT_SECRET"))
 	signedToken, err := token.SignedString([]byte(os.Getenv("JWT_SECRET")))
 	if err != nil {
 		fmt.Println("error signing token")

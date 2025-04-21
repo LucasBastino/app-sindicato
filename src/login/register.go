@@ -35,7 +35,7 @@ func RegisterUser(c *fiber.Ctx) error {
 	strHash := string(byteHash)
 	fmt.Println(strHash)
 
-	insert, err := database.DB.Query(fmt.Sprintf("INSERT INTO UserTable (Username, Hash, Role) VALUES ('%s', '%s', '%s')", user, strHash, role))
+	insert, err := database.DB.Query("INSERT INTO UserTable (Username, Hash, Role) VALUES ('?', '?', '?')", user, strHash, role)
 	if err != nil {
 		fmt.Println("error inserting user in DB")
 		panic(err)

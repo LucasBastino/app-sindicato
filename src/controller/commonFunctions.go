@@ -133,15 +133,17 @@ func RenderElectoralMemberList(c *fiber.Ctx) error {
 func RenderPruebaEmpresas(c *fiber.Ctx) error {
 	var enterprise models.Enterprise
 	var enterprises []models.Enterprise
-	result, err := database.DB.Query("SELECT IdEnterprise, Name FROM EnterpriseTable ORDER BY Name")
+	result, err := database.DB.Query("SELECT IdEntesrprise, Name FROM EnterpriseTable ORDER BY Name")
 	if err != nil {
 		// guardar el err en algun lado
+		er.QueryError.Msg = err.Error()
 		return er.CheckError(c, er.QueryError)
 	}
 	for result.Next() {
 		err = result.Scan(&enterprise.IdEnterprise, &enterprise.Name)
 		if err != nil {
 			// guardar el err en algun lado
+			er.ScanError.Msg = err.Error()
 			return er.CheckError(c, er.ScanError)
 		}
 		enterprises = append(enterprises, enterprise)

@@ -13,179 +13,194 @@ import (
 	"github.com/gofiber/fiber/v2"
 )
 
-func ValidateName(c *fiber.Ctx) (bool, string) {
+func ValidateName(c *fiber.Ctx) error {
 	name := strings.TrimSpace(c.FormValue("name"))
 	if name == "" {
-		return false, "El campo Nombre no puede estar vacío"
+		er.ValidationError.Msg = "field 'name' can't be empty"
+		return er.ValidationError
 	}
-	return isLetter(name, "")
+	return isLetter(name, "name", "")
 }
 
-func ValidateLastName(c *fiber.Ctx) (bool, string) {
+func ValidateLastName(c *fiber.Ctx) error {
 	lastName := strings.TrimSpace(c.FormValue("last-name"))
 	if lastName == "" {
-		return false, "El campo Apellido no puede estar vacío"
+		er.ValidationError.Msg = "field 'last-name' can't be empty"
+		return er.ValidationError
 	}
-	return isLetter(lastName, "")
+	return isLetter(lastName, "last-name", "")
 }
 
-func ValidateEnterpriseName(c *fiber.Ctx) (bool, string) {
+func ValidateEnterpriseName(c *fiber.Ctx) error {
 	name := strings.TrimSpace(c.FormValue("name"))
 	if name == "" {
-		return false, "El campo Nombre no puede estar vacío"
+		er.ValidationError.Msg = "field 'name' can't be empty"
+		return er.ValidationError
 	}
-	return isAlphanumeric(name, ".")
+	return isAlphanumeric(name, "name", ".")
 }
 
-func ValidateDNI(c *fiber.Ctx) (bool, string) {
+func ValidateDNI(c *fiber.Ctx) error {
 	dni := strings.TrimSpace(c.FormValue("dni"))
 	if dni == "" {
-		return false, "El campo DNI no puede estar vacío"
+		er.ValidationError.Msg = "the field 'DNI' has a invalid character"
+		return er.ValidationError
 	}
 	if utf8.RuneCountInString(dni) > 8 {
-		return false, "El DNI no puede tener mas de 8 caracteres"
+		er.ValidationError.Msg = "field 'DNI' can't have more than 8 characters"
+		return er.ValidationError
 	}
-	return isNumber(dni, "")
+	return isNumber(dni, "DNI", "")
 }
 
-func ValidateBirthday(c *fiber.Ctx) (bool, string) {
+func ValidateBirthday(c *fiber.Ctx) error {
 	birthday := strings.TrimSpace(c.FormValue("birthday"))
 	if birthday == "" {
-		return false, "El campo Fecha de nacimiento no puede estar vacío"
+		er.ValidationError.Msg = "field 'birthday' can't be empty"
+		return er.ValidationError
 	}
 
-	var valid bool
-	var err string
-	if valid, err = validateDateFormat(birthday); !valid {
-		return false, err
-	}
-	if valid, err = validateDateValue(birthday); !valid {
-		return false, err
-	}
-	return true, ""
+	return validateDate(birthday, "birthday")
 }
 
-func ValidateGender(c *fiber.Ctx) (bool, string) {
+func ValidateGender(c *fiber.Ctx) error {
 	gender := strings.TrimSpace(c.FormValue("gender"))
-	if gender == "" {
-		return false, "Elegir un género"
+	genders := []string{"Masculino", "Femenino", "Otro"}
+	if !slices.Contains(genders, gender) {
+		er.ValidationError.Msg = "field 'gender' is invalid"
+		return er.ValidationError
 	}
-	return true, ""
+	return nil
 }
 
-func ValidateRel(c *fiber.Ctx) (bool, string) {
+func ValidateRel(c *fiber.Ctx) error {
 	rel := strings.TrimSpace(c.FormValue("rel"))
 	if rel == "" {
-		return false, "El campo Parentesco no puede estar vacío"
+		er.ValidationError.Msg = "field 'rel' can't be empty"
+		return er.ValidationError
 	}
-	return isLetter(rel, "")
+	return isLetter(rel, "rel", "")
 }
 
-func ValidateMaritalStatus(c *fiber.Ctx) (bool, string) {
+func ValidateMaritalStatus(c *fiber.Ctx) error {
 	maritalStatus := strings.TrimSpace(c.FormValue("marital-status"))
-	if maritalStatus == "" {
-		return false, "Elegir un estado civil"
+	mmSS := []string{"Soltero", "Casado", "Separado", "Divorciado", "Viudo"}
+	if !slices.Contains(mmSS, maritalStatus) {
+		er.ValidationError.Msg = "field 'marital-status' is invalid"
+		return er.ValidationError
 	}
-	return true, ""
+	return nil
 }
 
-func ValidatePhone(c *fiber.Ctx) (bool, string) {
+func ValidatePhone(c *fiber.Ctx) error {
 	phone := strings.TrimSpace(c.FormValue("phone"))
 	if phone == "" {
-		return false, "El campo Teléfono no puede estar vacío"
+		er.ValidationError.Msg = "field 'phone' can't be empty"
+		return er.ValidationError
 	}
-	return isNumber(phone, "+")
+	return isNumber(phone, "phone", "+")
 }
 
-func ValidateEmail(c *fiber.Ctx) (bool, string) {
+func ValidateEmail(c *fiber.Ctx) error {
 	// email puede estar vacio
 	email := strings.TrimSpace(c.FormValue("email"))
 	if email == "" {
-		return true, ""
+		return nil
 	} else if !strings.Contains(email, "@") {
-		return false, "No es un email valido"
+		er.ValidationError.Msg = "the field 'email' is invalid"
+		return er.ValidationError
 	}
-	return true, ""
+	return nil
 }
 
-func ValidateAddress(c *fiber.Ctx) (bool, string) {
+func ValidateAddress(c *fiber.Ctx) error {
 	address := strings.TrimSpace(c.FormValue("address"))
 	if address == "" {
-		return false, "El campo Dirección no puede estar vacío"
+		er.ValidationError.Msg = "field 'address' can't be empty"
+		return er.ValidationError
 	}
-	return isAlphanumeric(address, ".")
+	return isAlphanumeric(address, "address", ".")
 }
 
-func ValidatePostalCode(c *fiber.Ctx) (bool, string) {
+func ValidatePostalCode(c *fiber.Ctx) error {
 	postalCode := strings.TrimSpace(c.FormValue("postal-code"))
 	if postalCode == "" {
-		return false, "El campo Codigo postal no puede estar vacío"
+		er.ValidationError.Msg = "field 'postal-code' can't be empty"
+		return er.ValidationError
 	}
 	if utf8.RuneCountInString(postalCode) > 4 {
-		return false, "El Codigo postal no puede tener mas de 4 numeros"
+		er.ValidationError.Msg = "field 'postal-code' can't have more than 4 characters"
+		return er.ValidationError
 	}
-	return isNumber(postalCode, "")
+	return isNumber(postalCode, "postal-code", "")
 }
 
-func ValidateDistrict(c *fiber.Ctx) (bool, string) {
+func ValidateDistrict(c *fiber.Ctx) error {
 	district := strings.TrimSpace(c.FormValue("district"))
 	if district == "" {
-		return false, "El campo Localidad no puede estar vacío"
+		er.ValidationError.Msg = "field 'district' can't be empty"
+		return er.ValidationError
 	}
-	return isAlphanumeric(district, ".")
+	return isAlphanumeric(district, "district", ".")
 }
 
-func ValidateMemberNumber(c *fiber.Ctx) (bool, string) {
+func ValidateMemberNumber(c *fiber.Ctx) error {
 	memberNumber := strings.TrimSpace(c.FormValue("member-number"))
 	if memberNumber == "" {
-		return false, "El campo Numero de afiliado no puede estar vacío"
+		er.ValidationError.Msg = "field 'member-number' can't be empty"
+		return er.ValidationError
 	}
-	return isNumber(memberNumber, "")
+	return isNumber(memberNumber, "member-number", "")
 }
 
-func ValidateEnterpriseNumber(c *fiber.Ctx) (bool, string) {
+func ValidateEnterpriseNumber(c *fiber.Ctx) error {
 	enterpriseNumber := strings.TrimSpace(c.FormValue("enterprise-number"))
 	if enterpriseNumber == "" {
-		return false, "El campo Numero de empresa no puede estar vacío"
+		er.ValidationError.Msg = "field 'enterprise-number' can't be empty"
+		return er.ValidationError
 	}
-	return isNumber(enterpriseNumber, "")
+	return isNumber(enterpriseNumber, "enterprise-number", "")
 }
 
-func ValidateCUIL(c *fiber.Ctx) (bool, string) {
+func ValidateCUIL(c *fiber.Ctx) error {
 	cuil := strings.TrimSpace(c.FormValue("cuil"))
 	cuil = strings.Trim(cuil, "-")
 	if cuil == "" {
-		return false, "El campo CUIL no puede estar vacío"
+		er.ValidationError.Msg = "field 'CUIL' can't be empty"
+		return er.ValidationError
 	}
-	return isNumber(cuil, "-")
+	return isNumber(cuil, "cuil", "-")
 }
 
-func ValidateCUIT(c *fiber.Ctx) (bool, string) {
+func ValidateCUIT(c *fiber.Ctx) error {
 	cuit := strings.TrimSpace(c.FormValue("cuit"))
 	cuit = strings.Trim(cuit, "-")
 	if cuit == "" {
-		return false, "El campo CUIT no puede estar vacío"
+		er.ValidationError.Msg = "field 'cuit' can't be empty"
+		return er.ValidationError
 	}
-	return isNumber(cuit, "-")
+	return isNumber(cuit, "cuit", "-")
 }
 
-func ValidateIdEnterprise(c *fiber.Ctx) (bool, string, error) {
+func ValidateIdEnterprise(c *fiber.Ctx) error {
 	idEnterpriseStr := c.FormValue("id-enterprise")
 	idEnterprise, err := strconv.Atoi(idEnterpriseStr)
 	if err != nil {
-		er.StrConvError.Msg = err.Error()
-		return false, "", er.StrConvError
+		er.ValidationError.Msg = "enterprise's ID is not valid"
+		return er.ValidationError
 	}
 	enterprisesId, err := GetAllEnterprisesIdFromDB()
 	if err != nil {
-		return false, "", err
+		er.ValidationError.Msg = err.Error()
+		return er.ValidationError
 	}
 	for _, id := range enterprisesId {
 		if id == idEnterprise {
-			return true, "", nil
+			return nil
 		}
 	}
-	return false, "El id de la empresa no es valido", nil
+	er.ValidationError.Msg = "enterprise's ID is not valid"
+	return er.ValidationError
 }
 
 func GetAllEnterprisesIdFromDB() ([]int, error) {
@@ -193,200 +208,163 @@ func GetAllEnterprisesIdFromDB() ([]int, error) {
 	var idEnterprise int
 	result, err := database.DB.Query("SELECT IdEnterprise FROM EnterpriseTable")
 	if err != nil {
-		er.QueryError.Msg = err.Error()
-		return nil, er.QueryError
+		return nil, fmt.Errorf("internal error")
 	}
 	for result.Next() {
 		err = result.Scan(&idEnterprise)
 		if err != nil {
-			er.ScanError.Msg = err.Error()
-			return nil, er.ScanError
+			return nil, fmt.Errorf("internal error")
 		}
 		enterprisesId = append(enterprisesId, idEnterprise)
 	}
 	return enterprisesId, nil
 }
 
-func ValidateCategory(c *fiber.Ctx) (bool, string) {
+func ValidateCategory(c *fiber.Ctx) error {
 	category := c.FormValue("category")
 	categories := []string{"Nivel 1: Oficial Múltiple", "Nivel 2: Oficial Especializado", "Nivel 3: Oficial General", "Nivel 4: Medio Oficial", "Nivel 5: Ayudante", "Nivel 6: Operario Act. Industrial"}
 	if !slices.Contains(categories, category) {
-		return false, "Categoria errónea"
+		er.ValidationError.Msg = "field 'category' is invalid"
+		return er.ValidationError
 	}
-	return true, ""
+	return nil
 }
 
-func ValidateEntryDate(c *fiber.Ctx) (bool, string) {
+func ValidateEntryDate(c *fiber.Ctx) error {
 	entryDate := strings.TrimSpace(c.FormValue("entry-date"))
 	if strings.TrimSpace(entryDate) == "" {
-		return false, "El campo Fecha de ingreso no puede estar vacío"
+		er.ValidationError.Msg = "field 'entry-date' can't be empty"
+		return er.ValidationError
 	}
-	var valid bool
-	var err string
-	if valid, err = validateDateFormat(entryDate); !valid {
-		return false, err
-	}
-	if valid, err = validateDateValue(entryDate); !valid {
-		return false, err
-	}
-	return true, ""
+	return validateDate(entryDate, "entry-date")
 }
 
-func validateDateFormat(date string) (bool, string) {
+func validateDate(date, field string) error {
+	if date == "" {
+		er.ValidationError.Msg = fmt.Sprintf("field '%s' can't be empty", field)
+		return er.ValidationError
+	}
 	if len(date) != 10 {
-		return false, "Formato de fecha erróneo"
+		er.ValidationError.Msg = fmt.Sprintf("field '%s' has an invalid format date", field)
+		return er.ValidationError
 	}
 	// verifico que sean numeros
-	_, dayErr := strconv.Atoi(date[0:2])
-	_, monthErr := strconv.Atoi(date[3:5])
-	_, yearErr := strconv.Atoi(date[6:])
-	if dayErr != nil || monthErr != nil || yearErr != nil ||
-		string(date[2]) != "/" || string(date[5]) != "/" {
-		return false, "Formato de fecha erróneo"
+	day, dayErr := strconv.Atoi(date[0:2])
+	month, monthErr := strconv.Atoi(date[3:5])
+	year, yearErr := strconv.Atoi(date[6:])
+
+	// si alguno no es numero o si no estan bien colocadas las "/"
+	if dayErr != nil || monthErr != nil || yearErr != nil || string(date[2]) != "/" || string(date[5]) != "/" {
+		er.ValidationError.Msg = fmt.Sprintf("field '%s' has an invalid format date", field)
+		return er.ValidationError
 	}
-	return true, ""
-}
 
-func validateDateValue(date string) (bool, string) {
-	// verifico que sean fechas validas
-	day, _ := strconv.Atoi(date[0:2])
-	month, _ := strconv.Atoi(date[3:5])
-	year, _ := strconv.Atoi(date[6:])
-
+	// verifico que sea una fecha valida
 	if month < 1 || month > 12 {
-		return false, "Fecha errónea"
+		er.ValidationError.Msg = fmt.Sprintf("field '%s' has an invalid format date", field)
+		return er.ValidationError
 	}
 	if day < 1 || day > 31 {
-		return false, "Fecha errónea"
+		er.ValidationError.Msg = fmt.Sprintf("field '%s' has an invalid format date", field)
+		return er.ValidationError
 	}
 	switch month {
 	case 2:
 		if day > 29 {
-			return false, "Fecha errónea"
+			er.ValidationError.Msg = fmt.Sprintf("field '%s' has an invalid format date", field)
+			return er.ValidationError
 		}
 	case 4, 6, 9, 11:
 		if day > 30 {
-			return false, "Fecha errónea"
+			er.ValidationError.Msg = fmt.Sprintf("field '%s' has an invalid format date", field)
+			return er.ValidationError
 		}
 	}
 	if year < 1900 || year > int(time.Now().Year()) {
-		return false, "Fecha errónea"
+		er.ValidationError.Msg = fmt.Sprintf("field '%s' has an invalid format date", field)
+		return er.ValidationError
 	}
-	return true, ""
+	return nil
 }
 
-func validateMonth(month string) bool {
-	months := []string{"01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12"}
-	return !slices.Contains(months, month)
-}
-
-func validateYear(year string) (bool, error) {
-
-	// fijarse si se puede pasar el year directamente como int asi te ahorras todos los err en esta instancia
-	// de ultima te los comes en el validatePayment() que es mas tranqui
-	yearInt, err := strconv.Atoi(year)
-	if err != nil {
-		er.StrConvError.Msg = err.Error()
-		return false, er.StrConvError
-	}
-
-	if yearInt < 1990 || yearInt > time.Now().Year() {
-		return false, nil
-	}
-	return true, nil
-}
-
-func validatePayment(c *fiber.Ctx) (bool, string) {
+func validatePayment(c *fiber.Ctx) error {
 	month := c.FormValue("month")
 	year := c.FormValue("year")
-	if !validateMonth(month) {
-		return false, "El mes no es correcto"
-	}
-	if !validateYear(year) {
-		return false, "El año no es correcto"
-	}
+
 	payment := fmt.Sprintf("01/%s/%s", month, year)
-	// if validateDAte value true devolver tal, sino devolver tal otro
-	return validateDateValue(payment)
+	return validateDate(payment, "payment")
 }
 
-func validateStatus(c *fiber.Ctx) (bool, string) {
+func validateStatus(c *fiber.Ctx) error {
 	status := c.FormValue("status")
 	if status == "PAGO" || status == "IMPAGO" {
-		return true, ""
+		return nil
 	}
-	return false, "Elegir estado del pago"
+	er.ValidationError.Msg = "field 'status' is invalid"
+	return er.ValidationError
 }
 
-func validatePaymentAmount(c *fiber.Ctx) (bool, string) {
+func validatePaymentAmount(c *fiber.Ctx) error {
 	amount := c.FormValue("amount")
 	if amount == "" {
-		return false, "El campo Monto no puede estar vacío"
+		er.ValidationError.Msg = "field 'amount' can't be empty"
+		return er.ValidationError
 	}
-	return isNumber(amount, "")
+	return isNumber(amount, "amount", "")
 }
 
-func validatePaymentDate(c *fiber.Ctx) (bool, string) {
-
-	// esto se puede escalar, esta repetido con las otras fechas
+func validatePaymentDate(c *fiber.Ctx) error {
 	paymentDate := strings.TrimSpace(c.FormValue("payment-date"))
-	if paymentDate == "" {
-		return false, "El campo Fecha de pago no puede estar vacío"
-	}
+	return validateDate(paymentDate, "payment-date")
 
-	var valid bool
-	var err string
-	if valid, err = validateDateFormat(paymentDate); !valid {
-		return false, err
-	}
-	if valid, err = validateDateValue(paymentDate); !valid {
-		return false, err
-	}
-	return true, ""
 }
 
-func validateCommentary(c *fiber.Ctx) (bool, string) {
+func validateCommentary(c *fiber.Ctx) error {
 	if len(c.FormValue("commentary")) > 400 {
-		return false, "El máximo de caracteres es 400"
+		er.ValidationError.Msg = "field 'commentary' can't have more than 400 characters"
+		return er.ValidationError
 	}
-	return true, ""
+	return nil
 }
 
-func isLetter(value, allowed string) (bool, string) {
+func isLetter(value, field, allowed string) error {
 	// se incluye Ã por la codificacion
 	letters := " abcdefghijklmnñopqrstuvwxyzáéíóúüÃ"
 	letters += allowed
 	value = strings.ToLower(value)
 	for i := range value {
 		if !strings.Contains(letters, string(value[i])) {
-			return false, "El campo posee un caracter erróneo"
+			er.ValidationError.Msg = fmt.Sprintf("the field '%s' has a invalid character", field)
+			return er.ValidationError
 		}
 	}
-	return true, ""
+	return nil
 }
 
-func isNumber(value, allowed string) (bool, string) {
+func isNumber(value, field, allowed string) error {
 	numbers := " 0123456789"
 	numbers += allowed
 	for i := range value {
 		if !strings.Contains(numbers, string(value[i])) {
-			return false, "El campo posee un caracter erróneo"
+			er.ValidationError.Msg = fmt.Sprintf("the field '%s' has a invalid character", field)
+			return er.ValidationError
 		}
 	}
-	return true, ""
+	return nil
 }
 
-func isAlphanumeric(value, allowedCharacter string) (bool, string) {
+func isAlphanumeric(value, field, allowedCharacter string) error {
 	// se incluye Ã por la codificacion
 	characters := " abcdefghijklmnñopqrstuvwxyzáéíóúüÃ0123456789"
 	characters += allowedCharacter
 	value = strings.ToLower(value)
 	for i := range value {
 		if !strings.Contains(characters, string(value[i])) {
-			return false, "El campo posee un caracter erróneo"
+			er.ValidationError.Msg = fmt.Sprintf("the field '%s' has a invalid character", field)
+			return er.ValidationError
 		}
 	}
-	return true, ""
+	return nil
 }
 
 func FormatToYYYYMMDD(date string) string {

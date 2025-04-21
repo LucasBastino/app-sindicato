@@ -1,7 +1,6 @@
 package controller
 
 import (
-	"fmt"
 	"strconv"
 
 	"github.com/LucasBastino/app-sindicato/src/database"
@@ -13,18 +12,23 @@ import (
 )
 
 func AddEnterprise(c *fiber.Ctx) error {
-	errorMap, err := validateFieldsCaller(models.Enterprise{}, c)
-	if err != nil {
-		fmt.Println(errorMap)
-		// borrar esto ↑ y logear en algun lado el error de validacion con el errorMap
+	if err := validateFieldsCaller(models.Enterprise{}, c); err != nil {
 		return er.CheckError(c, err)
 	}
-	e := parserCaller(i.EnterpriseParser{}, c)
-	e = insertModelCaller(e)
+	e, err := parserCaller(i.EnterpriseParser{}, c)
+	if err != nil {
+		// guardar el error
+		return er.CheckError(c, err)
+	}
+	e, err = insertModelCaller(e)
+	if err != nil {
+		// guardar el err
+		return er.CheckError(c, err)
+	}
 	role := c.Locals("claims").(jwt.MapClaims)["role"]
 	createdAt, updatedAt, err := formatTimeStamps(e.CreatedAt, e.UpdatedAt)
 	if err != nil {
-		// guardar el err o aca o alla
+		// guardar el err
 		return er.CheckError(c, err)
 	}
 	years, err := getPaymentYears(e.IdEnterprise)
@@ -38,7 +42,11 @@ func AddEnterprise(c *fiber.Ctx) error {
 }
 
 func DeleteEnterprise(c *fiber.Ctx) error {
-	IdEnterprise := getIdModelCaller(models.Enterprise{}, c)
+	IdEnterprise, err := getIdModelCaller(models.Enterprise{}, c)
+	if err != nil {
+		// guardar el err
+		return er.CheckError(c, err)
+	}
 	if IdEnterprise == 1 {
 		// logear "error": "cannot delete enterprise 1"
 		return er.CheckError(c, er.InsufficientPermisionsError)
@@ -49,7 +57,11 @@ func DeleteEnterprise(c *fiber.Ctx) error {
 		// logear el error
 		return er.CheckError(c, err)
 	}
-	deleteModelCaller(e)
+	err = deleteModelCaller(e)
+	if err != nil {
+		// guardar el err
+		return er.CheckError(c, err)
+	}
 	err = setIdEnterpriseToOne(members)
 	if err != nil {
 		// logear el error
@@ -68,14 +80,19 @@ func DeleteEnterprise(c *fiber.Ctx) error {
 }
 
 func EditEnterprise(c *fiber.Ctx) error {
-	errorMap, err := validateFieldsCaller(models.Enterprise{}, c)
-	if err != nil {
-		fmt.Println(errorMap)
-		// borrar esto ↑ y logear en algun lado el error de validacion con el errorMap
+	if err := validateFieldsCaller(models.Enterprise{}, c); err != nil {
 		return er.CheckError(c, err)
 	}
-	e := parserCaller(i.EnterpriseParser{}, c)
-	IdEnterprise := getIdModelCaller(e, c)
+	e, err := parserCaller(i.EnterpriseParser{}, c)
+	if err != nil {
+		// guardar el error
+		return er.CheckError(c, err)
+	}
+	IdEnterprise, err := getIdModelCaller(e, c)
+	if err != nil {
+		// guardar el err
+		return er.CheckError(c, err)
+	}
 	e.IdEnterprise = IdEnterprise
 	years, err := getPaymentYears(e.IdEnterprise)
 	if err != nil {
@@ -83,7 +100,11 @@ func EditEnterprise(c *fiber.Ctx) error {
 		return er.CheckError(c, err)
 	}
 	role := c.Locals("claims").(jwt.MapClaims)["role"]
-	e = updateModelCaller(e)
+	e, err = updateModelCaller(e)
+	if err != nil {
+		// guardar el err
+		return er.CheckError(c, err)
+	}
 	numberOfMembers, err := getNumberOfMembers(e.IdEnterprise, "")
 	if err != nil {
 		// logearlo
@@ -99,7 +120,7 @@ func EditEnterprise(c *fiber.Ctx) error {
 }
 
 func getPaymentYears(idEnterprise int) ([]string, error) {
-	result, err := database.DB.Query(fmt.Sprintf("SELECT Year FROM PaymentTable WHERE IdEnterprise = '%d' GROUP BY Year ORDER BY YEAR DESC", idEnterprise))
+	result, err := database.DB.Query("SELECT Year FROM PaymentTable WHERE IdEnterprise = ? GROUP BY Year ORDER BY YEAR DESC", idEnterprise)
 	if err != nil {
 		er.QueryError.Msg = err.Error()
 		return nil, er.QueryError
@@ -122,7 +143,11 @@ func RenderEnterpriseTable(c *fiber.Ctx) error {
 	// obtengo la currentPage del path
 	currentPage := GetPageFromPath(c)
 	// calculo la cantidad de resultados
-	totalRows := getTotalRowsCaller(models.Enterprise{}, c)
+	totalRows, err := getTotalRowsCaller(models.Enterprise{}, c)
+	if err != nil {
+		// guardar el err
+		return er.CheckError(c, err)
+	}
 	if totalRows == 0 {
 		// si no hay resultados renderizar esto
 		return c.SendString(`<div class="no-result">No se encontraron empresas</div>`)
@@ -133,7 +158,11 @@ func RenderEnterpriseTable(c *fiber.Ctx) error {
 		totalPages, offset, someBefore, someAfter := GetPaginationData(currentPage, totalRows)
 
 		// busco los miembros y devuelvo el searchKey para usarlo nuevamente en la paginacion
-		enterprises, searchKey := searchModelsCaller(models.Enterprise{}, c, offset)
+		enterprises, searchKey, err := searchModelsCaller(models.Enterprise{}, c, offset)
+		if err != nil {
+			// guardar el err
+			return er.CheckError(c, err)
+		}
 
 		// hago un array para poder recorrerlo y crear botones cuando hay menos de 10 paginas en el template
 		totalPagesArray := GetTotalPagesArray(totalPages)
@@ -148,7 +177,11 @@ func RenderEnterpriseTable(c *fiber.Ctx) error {
 }
 
 func RenderEnterpriseFile(c *fiber.Ctx) error {
-	e := searchOneModelByIdCaller(models.Enterprise{}, c)
+	e, err := searchOneModelByIdCaller(models.Enterprise{}, c)
+	if err != nil {
+		// guardar el err
+		return er.CheckError(c, err)
+	}
 	numberOfMembers, err := getNumberOfMembers(e.IdEnterprise, "")
 	if err != nil {
 		// logear el err
@@ -171,10 +204,10 @@ func RenderEnterpriseFile(c *fiber.Ctx) error {
 
 func getNumberOfMembers(IdEnterprise int, searchKey string) (int, error) {
 	var totalRows int
-	row := database.DB.QueryRow(fmt.Sprintf(`
+	row := database.DB.QueryRow(`
 		SELECT COUNT(*) FROM MemberTable 
-		WHERE IdEnterprise = %d AND (Name LIKE '%%%s%%' OR LastName LIKE '%%%s%%')`,
-		IdEnterprise, searchKey, searchKey))
+		WHERE IdEnterprise = ? AND (Name LIKE '%?%' OR LastName LIKE '%?%')`,
+		IdEnterprise, searchKey, searchKey)
 	// row.Scan copia el numero de fila en la variable count
 	err := row.Scan(&totalRows)
 	if err != nil {
@@ -199,7 +232,12 @@ func RenderEnterpriseMembers(c *fiber.Ctx) error {
 	IdEnterprise, err := func() (int, error) {
 		// c.Get devuelve un valor del header
 		if c.Get("mode") == "edit" {
-			return getIdModelCaller(models.Enterprise{}, c), nil
+			if IdEnterprise, err := getIdModelCaller(models.Enterprise{}, c); err != nil {
+				// guardar el err
+				return 0, err
+			} else {
+				return IdEnterprise, nil
+			}
 		} else if c.Get("mode") == "enterpriseMemberTable" {
 			IdEnterpriseStr := c.Get("idEnterprise")
 			IdEnterprise, err := strconv.Atoi(IdEnterpriseStr)
@@ -214,7 +252,7 @@ func RenderEnterpriseMembers(c *fiber.Ctx) error {
 	}()
 	if err != nil {
 		// logear el error
-		return er.CheckError(c, er.StrConvError)
+		return er.CheckError(c, err)
 	}
 
 	var searchKey string
@@ -266,26 +304,33 @@ func RenderEnterpriseMembers(c *fiber.Ctx) error {
 }
 
 func getEnterpriseMembers(IdEnterprise int, searchKey string, offset int) ([]models.Member, error) {
-	result, err := database.DB.Query(fmt.Sprintf(`
+	result, err := database.DB.Query(`
 			SELECT * FROM MemberTable 
-			WHERE IdEnterprise = %d
-			AND (Name LIKE '%%%s%%' OR LastName LIKE '%%%s%%') LIMIT 10 OFFSET %d`, IdEnterprise, searchKey, searchKey, offset))
+			WHERE IdEnterprise = ?
+			AND (Name LIKE '%?%' OR LastName LIKE '%?%') LIMIT 10 OFFSET %d`, IdEnterprise, searchKey, searchKey, offset)
 	if err != nil {
 		er.QueryError.Msg = err.Error()
 		return nil, er.QueryError
 	}
-	_, members := models.Member{}.ScanResult(result, false)
+	_, members, err := models.Member{}.ScanResult(result, false)
+	if err != nil {
+		// guardar el err
+		return nil, err
+	}
 	return members, nil
 }
 
 func getAllEnterpriseMembers(IdEnterprise int) ([]models.Member, error) {
-	result, err := database.DB.Query(fmt.Sprintf(`
-			SELECT * FROM MemberTable WHERE IdEnterprise = %d`, IdEnterprise))
+	result, err := database.DB.Query(`
+			SELECT * FROM MemberTable WHERE IdEnterprise = ?`, IdEnterprise)
 	if err != nil {
 		er.QueryError.Msg = err.Error()
 		return nil, er.QueryError
 	}
-	_, members := models.Member{}.ScanResult(result, false)
+	_, members, err := models.Member{}.ScanResult(result, false)
+	if err != nil {
+		return nil, err
+	}
 	return members, nil
 }
 
@@ -296,8 +341,8 @@ func setIdEnterpriseToOne(members []models.Member) error {
 	// 	panic(err)
 	// }
 	for _, m := range members {
-		update, err := database.DB.Query(fmt.Sprintf(`
-		UPDATE MemberTable SET IdEnterprise = '1' WHERE IdMember = %d`, m.IdMember))
+		update, err := database.DB.Query(`
+		UPDATE MemberTable SET IdEnterprise = '1' WHERE IdMember = ?`, m.IdMember)
 		if err != nil {
 			er.QueryError.Msg = err.Error()
 			return er.QueryError
@@ -314,9 +359,13 @@ func RenderEnterprisePaymentsTable(c *fiber.Ctx) error {
 	}{}
 	c.ParamsParser(&params)
 	role := c.Locals("claims").(jwt.MapClaims)["role"]
-	IdEnterprise := getIdModelCaller(models.Enterprise{}, c)
+	IdEnterprise, err := getIdModelCaller(models.Enterprise{}, c)
+	if err != nil {
+		// guardar el err
+		return er.CheckError(c, err)
+	}
 	var lastYear int
-	result, err := database.DB.Query(fmt.Sprintf("SELECT MAX(Year) FROM PaymentTable WHERE IdEnterprise = '%d'", IdEnterprise))
+	result, err := database.DB.Query("SELECT MAX(Year) FROM PaymentTable WHERE IdEnterprise = ?", IdEnterprise)
 	if err != nil {
 		// logear el err
 		return er.CheckError(c, er.QueryError)
@@ -328,7 +377,7 @@ func RenderEnterprisePaymentsTable(c *fiber.Ctx) error {
 		// logear el err
 		return er.CheckError(c, er.ScanError)
 	}
-	result2, err := database.DB.Query(fmt.Sprintf("SELECT Year FROM PaymentTable WHERE IdEnterprise = '%d' GROUP BY Year ORDER BY YEAR DESC", IdEnterprise))
+	result2, err := database.DB.Query("SELECT Year FROM PaymentTable WHERE IdEnterprise = ? GROUP BY Year ORDER BY YEAR DESC", IdEnterprise)
 	if err != nil {
 		// logear el err
 		return er.CheckError(c, er.QueryError)
@@ -346,11 +395,19 @@ func RenderEnterprisePaymentsTable(c *fiber.Ctx) error {
 	}
 	yearInt := params.Year
 	if params.Year == 0 {
-		payments, _ := searchModelsCaller(models.Payment{}, c, lastYear)
+		payments, _, err := searchModelsCaller(models.Payment{}, c, lastYear)
+		if err != nil {
+			// guardar el err
+			return er.CheckError(c, err)
+		}
 		data := fiber.Map{"payments": payments, "idEnterprise": IdEnterprise, "role": role, "mode": "edit", "years": years, "year": lastYear}
 		return c.Render("paymentTable", data)
 	} else {
-		payments, _ := searchModelsCaller(models.Payment{}, c, params.Year)
+		payments, _, err := searchModelsCaller(models.Payment{}, c, params.Year)
+		if err != nil {
+			// guardar el err
+			return er.CheckError(c, err)
+		}
 		data := fiber.Map{"payments": payments, "idEnterprise": IdEnterprise, "role": role, "mode": "edit", "years": years, "year": yearInt}
 		return c.Render("paymentTable", data)
 	}
@@ -358,7 +415,11 @@ func RenderEnterprisePaymentsTable(c *fiber.Ctx) error {
 
 func RenderEnterpriseTableSelect(c *fiber.Ctx) error {
 	// calculo la cantidad de resultados
-	totalRows := getTotalRowsCaller(models.Enterprise{}, c)
+	totalRows, err := getTotalRowsCaller(models.Enterprise{}, c)
+	if err != nil {
+		// guardar el err
+		return er.CheckError(c, err)
+	}
 	if totalRows == 0 {
 		// si no hay resultados renderizar esto
 		return c.SendString(`<div class="no-result">No se encontraron empresas</div>`)
@@ -366,19 +427,23 @@ func RenderEnterpriseTableSelect(c *fiber.Ctx) error {
 		// si hay resultados...
 
 		searchKey := c.FormValue("search-key")
-		result, err := database.DB.Query(fmt.Sprintf(`
+		result, err := database.DB.Query(`
 		SELECT
 		*
 		FROM EnterpriseTable 
 		WHERE 
-		Name LIKE '%%%s%%' 
+		Name LIKE '%?%' 
 		ORDER BY Name ASC`,
-			searchKey))
+			searchKey)
 		if err != nil {
 			// logear el err
 			return er.CheckError(c, er.QueryError)
 		}
-		_, enterprises := models.Enterprise{}.ScanResult(result, false)
+		_, enterprises, err := models.Enterprise{}.ScanResult(result, false)
+		if err != nil {
+			// guardar el err
+			return er.CheckError(c, err)
+		}
 
 		// creo un map con todas las variables
 		role := c.Locals("claims").(jwt.MapClaims)["role"]
@@ -388,6 +453,10 @@ func RenderEnterpriseTableSelect(c *fiber.Ctx) error {
 }
 
 func GetAllEnterprisesId(c *fiber.Ctx) error {
-	enterprisesId := models.GetAllEnterprisesIdFromDB()
+	enterprisesId, err := models.GetAllEnterprisesIdFromDB()
+	if err != nil {
+		// guardar el err
+		return er.CheckError(c, err)
+	}
 	return c.JSON(enterprisesId)
 }

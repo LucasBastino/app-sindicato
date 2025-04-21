@@ -10,7 +10,7 @@ import (
 )
 
 type ModelParser[M models.TypeModel] interface {
-	ParseModel(*fiber.Ctx) M
+	ParseModel(*fiber.Ctx) (M, error)
 }
 
 type MemberParser struct{}
@@ -39,7 +39,7 @@ func (parser MemberParser) ParseModel(c *fiber.Ctx) (models.Member, error) {
 		IdEnterprise, err := strconv.Atoi(IdEnterpriseStr)
 		if err != nil {
 			er.StrConvError.Msg = err.Error()
-			return models.Member{}, err
+			return models.Member{}, er.StrConvError
 		}
 		m.IdEnterprise = IdEnterprise
 	}
@@ -62,7 +62,7 @@ func (parser ParentParser) ParseModel(c *fiber.Ctx) (models.Parent, error) {
 	IdMember, err := strconv.Atoi(IdMemberStr)
 	if err != nil {
 		er.StrConvError.Msg = err.Error()
-		return models.Parent{}, err
+		return models.Parent{}, er.StrConvError
 	}
 	p.IdMember = IdMember
 
@@ -71,7 +71,7 @@ func (parser ParentParser) ParseModel(c *fiber.Ctx) (models.Parent, error) {
 
 type EnterpriseParser struct{}
 
-func (parser EnterpriseParser) ParseModel(c *fiber.Ctx) models.Enterprise {
+func (parser EnterpriseParser) ParseModel(c *fiber.Ctx) (models.Enterprise, error) {
 	e := models.Enterprise{}
 	e.Name = c.FormValue("name")
 	e.EnterpriseNumber = c.FormValue("enterprise-number")
@@ -80,7 +80,7 @@ func (parser EnterpriseParser) ParseModel(c *fiber.Ctx) models.Enterprise {
 	e.District = c.FormValue("district")
 	e.PostalCode = c.FormValue("postal-code")
 	e.Phone = c.FormValue("phone")
-	return e
+	return e, nil
 }
 
 type PaymentParser struct{}
@@ -95,7 +95,7 @@ func (parser PaymentParser) ParseModel(c *fiber.Ctx) (models.Payment, error) {
 		Amount, err := strconv.Atoi(AmountStr)
 		if err != nil {
 			er.StrConvError.Msg = err.Error()
-			return models.Payment{}, err
+			return models.Payment{}, er.StrConvError
 		}
 		p.Amount = Amount
 	}

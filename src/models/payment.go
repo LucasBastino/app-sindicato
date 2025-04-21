@@ -2,7 +2,6 @@ package models
 
 import (
 	"database/sql"
-	"fmt"
 	"strconv"
 	"time"
 
@@ -25,7 +24,7 @@ type Payment struct {
 }
 
 func (payment Payment) InsertModel() (Payment, error) {
-	insert, err := database.DB.Query(fmt.Sprintf(`
+	insert, err := database.DB.Query(`
 		INSERT INTO PaymentTable 
 		(Month,
 		Year,
@@ -34,14 +33,14 @@ func (payment Payment) InsertModel() (Payment, error) {
 		PaymentDate, 
 		Commentary,
 		IdEnterprise)
-		VALUES ('%s','%s','%s','%d','%s', '%s', '%d')`,
+		VALUES ('?','?','?','?','?', '?', '?')`,
 		payment.Month,
 		payment.Year,
 		payment.Status,
 		payment.Amount,
 		payment.PaymentDate,
 		payment.Commentary,
-		payment.IdEnterprise))
+		payment.IdEnterprise)
 	if err != nil {
 		er.QueryError.Msg = err.Error()
 		return Payment{}, er.QueryError
@@ -63,9 +62,9 @@ func (payment Payment) InsertModel() (Payment, error) {
 }
 
 func (payment Payment) DeleteModel() error {
-	delete, err := database.DB.Query(fmt.Sprintf(`
+	delete, err := database.DB.Query(`
 		DELETE FROM PaymentTable
-		WHERE IdPayment = '%d'`, payment.IdPayment))
+		WHERE IdPayment = '?'`, payment.IdPayment)
 	if err != nil {
 		er.QueryError.Msg = err.Error()
 		return er.QueryError
@@ -75,29 +74,29 @@ func (payment Payment) DeleteModel() error {
 }
 
 func (payment Payment) UpdateModel() (Payment, error) {
-	update, err := database.DB.Query(fmt.Sprintf(`
+	update, err := database.DB.Query(`
 		UPDATE PaymentTable 
 		SET 
-		Month = '%s', 
-		Year = '%s',
-		Status = '%s', 
-		Amount = '%d', 
-		PaymentDate = '%s', 
-		Commentary = '%s' 
-		WHERE IdPayment = '%d'`,
+		Month = '?', 
+		Year = '?',
+		Status = '?', 
+		Amount = '?', 
+		PaymentDate = '?', 
+		Commentary = '?' 
+		WHERE IdPayment = '?'`,
 		payment.Month,
 		payment.Year,
 		payment.Status,
 		payment.Amount,
 		payment.PaymentDate,
 		payment.Commentary,
-		payment.IdPayment))
+		payment.IdPayment)
 	if err != nil {
 		er.QueryError.Msg = err.Error()
 		return Payment{}, er.QueryError
 	}
 	update.Close()
-	result, err := database.DB.Query(fmt.Sprintf("SELECT * FROM PaymentTable WHERE IdPayment = %d", payment.IdPayment))
+	result, err := database.DB.Query("SELECT * FROM PaymentTable WHERE IdPayment = ?", payment.IdPayment)
 	if err != nil {
 		er.QueryError.Msg = err.Error()
 		return Payment{}, er.QueryError
@@ -128,11 +127,11 @@ func (payment Payment) SearchOneModelById(c *fiber.Ctx) (Payment, error) {
 	if err != nil {
 		return Payment{}, err
 	}
-	result, err := database.DB.Query(fmt.Sprintf(`
+	result, err := database.DB.Query(`
 		SELECT
 		*
 		FROM PaymentTable
-		WHERE IdPayment = '%d'`, IdPayment))
+		WHERE IdPayment = '?'`, IdPayment)
 	if err != nil {
 		er.QueryError.Msg = err.Error()
 		return Payment{}, er.QueryError
@@ -152,13 +151,13 @@ func (payment Payment) SearchModels(c *fiber.Ctx, year int) ([]Payment, string, 
 		return nil, "", err
 	}
 	yearStr := strconv.Itoa(year)
-	result, err := database.DB.Query(fmt.Sprintf(`
+	result, err := database.DB.Query(`
 	SELECT
 	*
 	FROM PaymentTable 
-	WHERE Year = '%s' AND IdEnterprise = '%d'
+	WHERE Year = '?' AND IdEnterprise = '?'
 	ORDER BY Month ASC
-	`, yearStr, IdEnterprise))
+	`, yearStr, IdEnterprise)
 	if err != nil {
 		er.QueryError.Msg = err.Error()
 		return nil, "", er.QueryError
@@ -170,43 +169,34 @@ func (payment Payment) SearchModels(c *fiber.Ctx, year int) ([]Payment, string, 
 	return pp, "", nil
 }
 
-func (payment Payment) ValidateFields(c *fiber.Ctx) (map[string]string, error) {
-	errorMap := map[string]string{}
-	var valid bool
-	var err string
-
-	if valid, err = validatePayment(c); !valid {
-		errorMap["payment"] = err
+func (payment Payment) ValidateFields(c *fiber.Ctx) error {
+	validateFunctions := []func(*fiber.Ctx) error{
+		validatePayment,
+		validateStatus,
+		validatePaymentAmount,
+		validatePaymentDate,
+		validateCommentary,
 	}
-	if valid, err = validateStatus(c); !valid {
-		errorMap["status"] = err
+	for _, vF := range validateFunctions {
+		if err := vF(c); err != nil {
+			return err
+		} else {
+			continue
+		}
 	}
-	if valid, err = validatePaymentAmount(c); !valid {
-		errorMap["amount"] = err
-	}
-	if valid, err = validatePaymentDate(c); !valid {
-		errorMap["paymentDate"] = err
-	}
-	if valid, err = validateCommentary(c); !valid {
-		errorMap["commentary"] = err
-	}
-	if len(errorMap) > 1 {
-
-		return errorMap, er.ValidationError
-	}
-	return errorMap, nil
+	return nil
 }
 
-func (payment Payment) GetTotalRows(c *fiber.Ctx) int {
-	return 0
+func (payment Payment) GetTotalRows(c *fiber.Ctx) (int, error) {
+	return 0, nil
 }
 
 func (payment Payment) GetFiberMap(Payments []Payment, searchKey string, currentPage, someBefore, someAfter, totalPages int, totalPagesArray []int) fiber.Map {
 	return nil
 }
 
-func (payment Payment) GetAllModels() []Payment {
-	return nil
+func (payment Payment) GetAllModels() ([]Payment, error) {
+	return nil, nil
 }
 
 func (payment Payment) ScanResult(result *sql.Rows, onlyOne bool) (Payment, []Payment, error) {
@@ -242,9 +232,9 @@ func (payment Payment) CheckDeleted(idPayment int) (bool, error) {
 	// row := database.DB.QueryRow(fmt.Sprintf(`
 	// 	SELECT COUNT(*) FROM PaymentTable
 	// 	WHERE IdPayment = '%d'`, p.IdPayment))
-	row := database.DB.QueryRow(fmt.Sprintf(`
+	row := database.DB.QueryRow(`
 		SELECT COUNT(*) FROM PaymentTable 
-		WHERE IdPayment = '%d'`, idPayment))
+		WHERE IdPayment = '?'`, idPayment)
 	// row.Scan copia el numero de fila en la variable count
 	err := row.Scan(&totalRows)
 	if err != nil {

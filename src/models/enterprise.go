@@ -2,7 +2,6 @@ package models
 
 import (
 	"database/sql"
-	"fmt"
 	"time"
 
 	"github.com/LucasBastino/app-sindicato/src/database"
@@ -24,7 +23,7 @@ type Enterprise struct {
 }
 
 func (enterprise Enterprise) InsertModel() (Enterprise, error) {
-	insert, err := database.DB.Query(fmt.Sprintf(`
+	insert, err := database.DB.Query(`
 		INSERT INTO EnterpriseTable 
 		(Name,
 		EnterpriseNumber,
@@ -33,14 +32,14 @@ func (enterprise Enterprise) InsertModel() (Enterprise, error) {
 		District, 
 		PostalCode, 
 		Phone)
-		VALUES ('%s','%s','%s','%s','%s','%s', '%s')`,
+		VALUES ('?','?','?','?','?','?', '?')`,
 		enterprise.Name,
 		enterprise.EnterpriseNumber,
 		enterprise.Address,
 		enterprise.CUIT,
 		enterprise.District,
 		enterprise.PostalCode,
-		enterprise.Phone))
+		enterprise.Phone)
 	if err != nil {
 		er.QueryError.Msg = err.Error()
 		return Enterprise{}, er.QueryError
@@ -68,9 +67,9 @@ func (enterprise Enterprise) DeleteModel() error {
 		er.InsufficientPermisionsError.Msg = "permisos insuficientes"
 		return er.InsufficientPermisionsError
 	}
-	delete, err := database.DB.Query(fmt.Sprintf(`
+	delete, err := database.DB.Query(`
 		DELETE FROM EnterpriseTable
-		WHERE IdEnterprise = '%d'`, enterprise.IdEnterprise))
+		WHERE IdEnterprise = '?'`, enterprise.IdEnterprise)
 	if err != nil {
 		er.QueryError.Msg = err.Error()
 		return er.QueryError
@@ -80,17 +79,17 @@ func (enterprise Enterprise) DeleteModel() error {
 }
 
 func (enterprise Enterprise) UpdateModel() (Enterprise, error) {
-	update, err := database.DB.Query(fmt.Sprintf(`
+	update, err := database.DB.Query(`
 		UPDATE EnterpriseTable 
 		SET 
-		Name = '%s', 
-		EnterpriseNumber = '%s',
-		Address = '%s', 
-		CUIT = '%s', 
-		District = '%s', 
-		PostalCode = '%s', 
-		Phone = '%s' 
-		WHERE IdEnterprise = '%d'`,
+		Name = '?', 
+		EnterpriseNumber = '?',
+		Address = '?', 
+		CUIT = '?', 
+		District = '?', 
+		PostalCode = '?', 
+		Phone = '?' 
+		WHERE IdEnterprise = '?'`,
 		enterprise.Name,
 		enterprise.EnterpriseNumber,
 		enterprise.Address,
@@ -98,17 +97,17 @@ func (enterprise Enterprise) UpdateModel() (Enterprise, error) {
 		enterprise.District,
 		enterprise.PostalCode,
 		enterprise.Phone,
-		enterprise.IdEnterprise))
+		enterprise.IdEnterprise)
 	if err != nil {
 		er.QueryError.Msg = err.Error()
 		return Enterprise{}, er.QueryError
 	}
 	update.Close()
-	result, err := database.DB.Query(fmt.Sprintf(`
+	result, err := database.DB.Query(`
 		SELECT
 		*
 		FROM EnterpriseTable
-		WHERE IdEnterprise = %d`, enterprise.IdEnterprise))
+		WHERE IdEnterprise = ?`, enterprise.IdEnterprise)
 	if err != nil {
 		er.QueryError.Msg = err.Error()
 		return Enterprise{}, er.QueryError
@@ -139,11 +138,11 @@ func (enterprise Enterprise) SearchOneModelById(c *fiber.Ctx) (Enterprise, error
 	if err != nil {
 		return Enterprise{}, err
 	}
-	result, err := database.DB.Query(fmt.Sprintf(`
+	result, err := database.DB.Query(`
 		SELECT
 		*
 		FROM EnterpriseTable 
-		WHERE IdEnterprise = '%d'`, IdEnterprise))
+		WHERE IdEnterprise = '?'`, IdEnterprise)
 	if err != nil {
 		er.QueryError.Msg = err.Error()
 		return Enterprise{}, er.QueryError
@@ -159,15 +158,15 @@ func (enterprise Enterprise) SearchOneModelById(c *fiber.Ctx) (Enterprise, error
 
 func (enterprise Enterprise) SearchModels(c *fiber.Ctx, offset int) ([]Enterprise, string, error) {
 	searchKey := c.FormValue("search-key")
-	result, err := database.DB.Query(fmt.Sprintf(`
+	result, err := database.DB.Query(`
 		SELECT
 		*
 		FROM EnterpriseTable 
 		WHERE 
-		Name LIKE '%%%s%%' OR Address LIKE '%%%s%%' 
+		Name LIKE '%?%' OR Address LIKE '%?%' 
 		ORDER BY Name ASC
-		LIMIT 15 OFFSET %d`,
-		searchKey, searchKey, offset))
+		LIMIT 15 OFFSET ?`,
+		searchKey, searchKey, offset)
 	if err != nil {
 		er.QueryError.Msg = err.Error()
 		return nil, "", er.QueryError
@@ -179,7 +178,8 @@ func (enterprise Enterprise) SearchModels(c *fiber.Ctx, offset int) ([]Enterpris
 	return ee, searchKey, nil
 }
 
-func (enterprise Enterprise) ValidateFields(c *fiber.Ctx) (map[string]string, error) {
+// v1
+/* func (enterprise Enterprise) ValidateFields(c *fiber.Ctx) (map[string]string, error) {
 	errorMap := map[string]string{}
 	var valid bool
 	var err string
@@ -209,14 +209,36 @@ func (enterprise Enterprise) ValidateFields(c *fiber.Ctx) (map[string]string, er
 		return errorMap, er.ValidationError
 	}
 	return errorMap, nil
+} */
+
+// v2
+func (enterprise Enterprise) ValidateFields(c *fiber.Ctx) error {
+	validateFunctions := []func(*fiber.Ctx) error{
+		ValidateEnterpriseName,
+		ValidateEnterpriseNumber,
+		ValidateAddress,
+		ValidateCUIT,
+		ValidateDistrict,
+		ValidatePostalCode,
+		ValidatePhone,
+	}
+
+	for _, vF := range validateFunctions {
+		if err := vF(c); err != nil {
+			return err
+		} else {
+			continue
+		}
+	}
+	return nil
 }
 
 func (enterprise Enterprise) GetTotalRows(c *fiber.Ctx) (int, error) {
 	var totalRows int
 	searchKey := c.FormValue("search-key")
-	row := database.DB.QueryRow(fmt.Sprintf(`
+	row := database.DB.QueryRow(`
 		SELECT COUNT(*) FROM EnterpriseTable 
-		WHERE Name LIKE '%%%s%%'`, searchKey))
+		WHERE Name LIKE '%?%'`, searchKey)
 	// row.Scan copia el numero de fila en la variable count
 	err := row.Scan(&totalRows)
 	if err != nil {
@@ -302,9 +324,9 @@ func (enterprise Enterprise) CheckDeleted(idEnterprise int) (bool, error) {
 	// row := database.DB.QueryRow(fmt.Sprintf(`
 	// 	SELECT COUNT(*) FROM EnterpriseTable
 	// 	WHERE IdEnterprise = '%d'`, enterprise.IdEnterprise))
-	row := database.DB.QueryRow(fmt.Sprintf(`
+	row := database.DB.QueryRow(`
 		SELECT COUNT(*) FROM EnterpriseTable 
-		WHERE IdEnterprise = '%d'`, idEnterprise))
+		WHERE IdEnterprise = '?'`, idEnterprise)
 	// row.Scan copia el numero de fila en la variable count
 	err := row.Scan(&totalRows)
 	if err != nil {

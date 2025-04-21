@@ -1,10 +1,10 @@
 package controller
 
 import (
-	"fmt"
 	"time"
 
 	"github.com/LucasBastino/app-sindicato/src/database"
+	er "github.com/LucasBastino/app-sindicato/src/errors"
 	i "github.com/LucasBastino/app-sindicato/src/interfaces"
 	"github.com/LucasBastino/app-sindicato/src/models"
 	"github.com/gofiber/fiber/v2"
@@ -13,21 +13,34 @@ import (
 
 func RenderAddPaymentForm(c *fiber.Ctx) error {
 	// se manda un payment vacio para que esten todos los input en blanco
-	IdEnterprise := getIdModelCaller(models.Enterprise{}, c)
+	IdEnterprise, err := getIdModelCaller(models.Enterprise{}, c)
+	if err != nil {
+		// guardar el error
+		return er.CheckError(c, err)
+	}
 	p := models.Payment{IdEnterprise: IdEnterprise}
 	data := fiber.Map{"payment": p, "mode": "add"}
 	return c.Render("paymentFile", data)
 }
 
 func RenderPaymentFile(c *fiber.Ctx) error {
-	p := searchOneModelByIdCaller(models.Payment{}, c)
-	role := c.Locals("claims").(jwt.MapClaims)["role"]
-	IdEnterprise := getIdModelCaller(models.Enterprise{}, c)
-
-	result2, err := database.DB.Query(fmt.Sprintf("SELECT Year FROM PaymentTable WHERE IdEnterprise = '%d' GROUP BY Year ORDER BY YEAR DESC", IdEnterprise))
+	p, err := searchOneModelByIdCaller(models.Payment{}, c)
 	if err != nil {
-		fmt.Println("error searching different Years in PaymentTable")
-		panic(err)
+		// guardar el error
+		return er.CheckError(c, err)
+	}
+	role := c.Locals("claims").(jwt.MapClaims)["role"]
+	IdEnterprise, err := getIdModelCaller(models.Enterprise{}, c)
+	if err != nil {
+		// guardar el error
+		return er.CheckError(c, err)
+	}
+
+	result2, err := database.DB.Query("SELECT Year FROM PaymentTable WHERE IdEnterprise = ? GROUP BY Year ORDER BY YEAR DESC", IdEnterprise)
+	if err != nil {
+		// guardar el error
+		er.QueryError.Msg = err.Error()
+		return er.CheckError(c, er.QueryError)
 	}
 
 	var years []string
@@ -37,24 +50,46 @@ func RenderPaymentFile(c *fiber.Ctx) error {
 		years = append(years, year)
 	}
 
-	createdAt, updatedAt := formatTimeStamps(p.CreatedAt, p.UpdatedAt)
+	createdAt, updatedAt, err := formatTimeStamps(p.CreatedAt, p.UpdatedAt)
+	if err != nil {
+		// guardar el error
+		return er.CheckError(c, err)
+	}
 	data := fiber.Map{"payment": p, "role": role, "mode": "edit", "idEnterprise": IdEnterprise, "years": years, "year": p.Year, "createdAt": createdAt, "updatedAt": updatedAt}
 	return c.Render("paymentFile", data)
 }
 
 func AddPayment(c *fiber.Ctx) error {
-	errorMap := validateFieldsCaller(models.Payment{}, c)
-	p := parserCaller(i.PaymentParser{}, c)
-
-	if len(errorMap) > 0 {
-		return c.Status(fiber.StatusBadRequest).JSON(errorMap)
+	if err := validateFieldsCaller(models.Payment{}, c); err != nil {
+		return er.CheckError(c, err)
+	}
+	p, err := parserCaller(i.PaymentParser{}, c)
+	if err != nil {
+		// guardar el error
+		return er.CheckError(c, err)
 	}
 
-	IdEnterprise := getIdModelCaller(models.Enterprise{}, c)
+	IdEnterprise, err := getIdModelCaller(models.Enterprise{}, c)
+	if err != nil {
+		// guardar el error
+		return er.CheckError(c, err)
+	}
 
-	p = insertModelCaller(p)
-	years := getPaymentYearsFromDB(IdEnterprise)
-	createdAt, updatedAt := getPaymentTimestampsFromDB(p.IdPayment)
+	p, err = insertModelCaller(p)
+	if err != nil {
+		// guardar el error
+		return er.CheckError(c, err)
+	}
+	years, err := getPaymentYearsFromDB(IdEnterprise)
+	if err != nil {
+		// guardar el error
+		return er.CheckError(c, err)
+	}
+	createdAt, updatedAt, err := getPaymentTimestampsFromDB(p.IdPayment)
+	if err != nil {
+		// guardar el error
+		return er.CheckError(c, err)
+	}
 
 	role := c.Locals("claims").(jwt.MapClaims)["role"]
 	data := fiber.Map{"payment": p, "mode": "edit", "role": role, "idEnterprise": IdEnterprise, "years": years, "year": p.Year, "createdAt": createdAt, "updatedAt": updatedAt}
@@ -62,38 +97,64 @@ func AddPayment(c *fiber.Ctx) error {
 }
 
 func EditPayment(c *fiber.Ctx) error {
-	errorMap := validateFieldsCaller(models.Payment{}, c)
-	p := parserCaller(i.PaymentParser{}, c)
-	IdEnterprise := getIdModelCaller(models.Enterprise{}, c)
+	if err := validateFieldsCaller(models.Payment{}, c); err != nil {
+		return er.CheckError(c, err)
+	}
+	p, err := parserCaller(i.PaymentParser{}, c)
+	if err != nil {
+		// guardar el error
+		return er.CheckError(c, err)
+	}
+	IdEnterprise, err := getIdModelCaller(models.Enterprise{}, c)
+	if err != nil {
+		// guardar el error
+		return er.CheckError(c, err)
+	}
 	role := c.Locals("claims").(jwt.MapClaims)["role"]
-	IdPayment := getIdModelCaller(models.Payment{}, c)
+	IdPayment, err := getIdModelCaller(models.Payment{}, c)
+	if err != nil {
+		// guardar el error
+		return er.CheckError(c, err)
+	}
 	p.IdPayment = IdPayment
 
-	if len(errorMap) > 0 {
-		return c.Status(fiber.StatusBadRequest).JSON(errorMap)
-	} else {
-		p = updateModelCaller(p)
-		years := getPaymentYearsFromDB(IdEnterprise)
-		createdAt, updatedAt := getPaymentTimestampsFromDB(p.IdPayment)
-
-		data := fiber.Map{"payment": p, "mode": "edit", "idEnterprise": IdEnterprise, "role": role, "years": years, "year": p.Year, "createdAt": createdAt, "updatedAt": updatedAt}
-		return c.Render("paymentFile", data)
+	p, err = updateModelCaller(p)
+	if err != nil {
+		// guardar el error
+		return er.CheckError(c, err)
 	}
+	years, err := getPaymentYearsFromDB(IdEnterprise)
+	if err != nil {
+		// guardar el error
+		return er.CheckError(c, err)
+	}
+	createdAt, updatedAt, err := getPaymentTimestampsFromDB(p.IdPayment)
+	if err != nil {
+		// guardar el error
+		return er.CheckError(c, err)
+	}
+
+	data := fiber.Map{"payment": p, "mode": "edit", "idEnterprise": IdEnterprise, "role": role, "years": years, "year": p.Year, "createdAt": createdAt, "updatedAt": updatedAt}
+	return c.Render("paymentFile", data)
 
 }
 
 func DeletePayment(c *fiber.Ctx) error {
-	IdPayment := getIdModelCaller(models.Payment{}, c)
+	IdPayment, err := getIdModelCaller(models.Payment{}, c)
+	if err != nil {
+		// guardar el error
+		return er.CheckError(c, err)
+	}
 	p := models.Payment{IdPayment: IdPayment}
 	deleteModelCaller(p)
 	return RenderEnterprisePaymentsTable(c)
 }
 
-func getPaymentYearsFromDB(idEnterprise int) []string {
-	result, err := database.DB.Query(fmt.Sprintf("SELECT Year FROM PaymentTable WHERE IdEnterprise = '%d' GROUP BY Year ORDER BY YEAR DESC", idEnterprise))
+func getPaymentYearsFromDB(idEnterprise int) ([]string, error) {
+	result, err := database.DB.Query("SELECT Year FROM PaymentTable WHERE IdEnterprise = '?' GROUP BY Year ORDER BY YEAR DESC", idEnterprise)
 	if err != nil {
-		fmt.Println("error searching different Years in PaymentTable")
-		panic(err)
+		er.QueryError.Msg = err.Error()
+		return nil, er.QueryError
 	}
 
 	var years []string
@@ -101,26 +162,26 @@ func getPaymentYearsFromDB(idEnterprise int) []string {
 	for result.Next() {
 		err = result.Scan(&year)
 		if err != nil {
-			fmt.Println("error scanning year")
-			panic(err)
+			er.ScanError.Msg = err.Error()
+			return nil, er.ScanError
 		}
 		years = append(years, year)
 	}
-	return years
+	return years, nil
 }
 
-func getPaymentTimestampsFromDB(idPayment int) (string, string) {
-	result, err := database.DB.Query(fmt.Sprintf("SELECT CreatedAt, UpdatedAt FROM PaymentTable WHERE IdPayment = %d", idPayment))
+func getPaymentTimestampsFromDB(idPayment int) (string, string, error) {
+	result, err := database.DB.Query("SELECT CreatedAt, UpdatedAt FROM PaymentTable WHERE IdPayment = ?", idPayment)
 	if err != nil {
-		fmt.Println("error searching createdAt and updatedAt from DB")
-		panic(err)
+		er.QueryError.Msg = err.Error()
+		return "", "", er.QueryError
 	}
 	var createdAtUnformatted, updatedAtUnformatted time.Time
 	for result.Next() {
 		err = result.Scan(&createdAtUnformatted, &updatedAtUnformatted)
 		if err != nil {
-			fmt.Println("error scanning createdAt and updatedAt")
-			panic(err)
+			er.ScanError.Msg = err.Error()
+			return "", "", er.ScanError
 		}
 	}
 	return formatTimeStamps(createdAtUnformatted, updatedAtUnformatted)

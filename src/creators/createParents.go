@@ -140,7 +140,7 @@ func CreateParents(c *fiber.Ctx) error {
 		p.IdMember = randomMember.idMember
 
 		// inserto el familiar en la base de datos
-		insert, err := database.DB.Query(fmt.Sprintf("INSERT INTO ParentTable (Name, LastName, Rel, Birthday, Gender, CUIL, IdMember) VALUES ('%s','%s', '%s', '%s', '%s', '%s', '%d')", p.Name, p.LastName, p.Rel, p.Birthday, p.Gender, p.CUIL, p.IdMember))
+		insert, err := database.DB.Query("INSERT INTO ParentTable (Name, LastName, Rel, Birthday, Gender, CUIL, IdMember) VALUES ('?','?', '?', '?', '?', '?', '?')", p.Name, p.LastName, p.Rel, p.Birthday, p.Gender, p.CUIL, p.IdMember)
 		if err != nil {
 			fmt.Println("error inserting parent")
 			panic(err)

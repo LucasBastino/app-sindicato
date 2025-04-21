@@ -2,7 +2,6 @@ package models
 
 import (
 	"database/sql"
-	"fmt"
 	"time"
 
 	"github.com/LucasBastino/app-sindicato/src/database"
@@ -25,7 +24,7 @@ type Parent struct {
 
 func (parent Parent) InsertModel() (Parent, error) {
 	parent.Birthday = FormatToYYYYMMDD(parent.Birthday)
-	insert, err := database.DB.Query(fmt.Sprintf(`
+	insert, err := database.DB.Query(`
 		INSERT INTO ParentTable 
 		(Name,
 		LastName,
@@ -34,14 +33,14 @@ func (parent Parent) InsertModel() (Parent, error) {
 		Gender,
 		CUIL,
 		IdMember)
-		VALUES ('%s','%s','%s', '%s', '%s', '%s', '%d')`,
+		VALUES ('?','?','?', '?', '?', '?', '?')`,
 		parent.Name,
 		parent.LastName,
 		parent.Rel,
 		parent.Birthday,
 		parent.Gender,
 		parent.CUIL,
-		parent.IdMember))
+		parent.IdMember)
 	if err != nil {
 		er.QueryError.Msg = err.Error()
 		return Parent{}, er.QueryError
@@ -62,10 +61,10 @@ func (parent Parent) InsertModel() (Parent, error) {
 }
 
 func (parent Parent) DeleteModel() error {
-	delete, err := database.DB.Query(fmt.Sprintf(`
+	delete, err := database.DB.Query(`
 		DELETE FROM ParentTable 
-		WHERE IdParent = '%d'`,
-		parent.IdParent))
+		WHERE IdParent = '?'`,
+		parent.IdParent)
 	if err != nil {
 		er.QueryError.Msg = err.Error()
 		return er.QueryError
@@ -76,16 +75,16 @@ func (parent Parent) DeleteModel() error {
 
 func (parent Parent) UpdateModel() (Parent, error) {
 	parent.Birthday = FormatToYYYYMMDD(parent.Birthday)
-	update, err := database.DB.Query(fmt.Sprintf(`
+	update, err := database.DB.Query(`
 		UPDATE ParentTable 
-		SET Name = '%s',
-		LastName = '%s',
-		Rel = '%s',
-		Birthday = '%s',
-		Gender = '%s',
-		CUIL = '%s',
-		IdMember = '%d'
-		WHERE IdParent = '%d'`,
+		SET Name = '?',
+		LastName = '?',
+		Rel = '?',
+		Birthday = '?',
+		Gender = '?',
+		CUIL = '?',
+		IdMember = '?'
+		WHERE IdParent = '?'`,
 		parent.Name,
 		parent.LastName,
 		parent.Rel,
@@ -93,14 +92,14 @@ func (parent Parent) UpdateModel() (Parent, error) {
 		parent.Gender,
 		parent.CUIL,
 		parent.IdMember,
-		parent.IdParent))
+		parent.IdParent)
 	if err != nil {
 		er.QueryError.Msg = err.Error()
 		return Parent{}, er.QueryError
 	}
 	update.Close()
-	result, err := database.DB.Query(fmt.Sprintf(`
-	SELECT * FROM ParentTable WHERE IdParent = '%d'`, parent.IdParent))
+	result, err := database.DB.Query(`
+	SELECT * FROM ParentTable WHERE IdParent = '?'`, parent.IdParent)
 	if err != nil {
 		er.QueryError.Msg = err.Error()
 		return Parent{}, er.QueryError
@@ -129,11 +128,11 @@ func (parent Parent) SearchOneModelById(c *fiber.Ctx) (Parent, error) {
 	if err != nil {
 		return Parent{}, err
 	}
-	result, err := database.DB.Query(fmt.Sprintf(`
+	result, err := database.DB.Query(`
 		SELECT
 		*
 		FROM ParentTable
-		WHERE IdParent = '%d'`, IdParent))
+		WHERE IdParent = '?'`, IdParent)
 	if err != nil {
 		er.QueryError.Msg = err.Error()
 		return Parent{}, er.QueryError
@@ -150,11 +149,11 @@ func (parent Parent) SearchModels(c *fiber.Ctx, offset int) ([]Parent, string, e
 	if err != nil {
 		return nil, "", err
 	}
-	result, err := database.DB.Query(fmt.Sprintf(`
+	result, err := database.DB.Query(`
 		SELECT
 		*
 		FROM ParentTable 
-		WHERE IdMember = %d`, idMember))
+		WHERE IdMember = ?`, idMember)
 	if err != nil {
 		er.QueryError.Msg = err.Error()
 		return nil, "", er.QueryError
@@ -166,35 +165,23 @@ func (parent Parent) SearchModels(c *fiber.Ctx, offset int) ([]Parent, string, e
 	return pp, "", nil
 }
 
-func (parent Parent) ValidateFields(c *fiber.Ctx) (map[string]string, error) {
-	errorMap := map[string]string{}
-
-	var valid bool
-	var err string
-
-	if valid, err = ValidateName(c); !valid {
-		errorMap["name"] = err
+func (parent Parent) ValidateFields(c *fiber.Ctx) error {
+	validateFunctions := []func(*fiber.Ctx) error{
+		ValidateName,
+		ValidateLastName,
+		ValidateRel,
+		ValidateBirthday,
+		ValidateGender,
+		ValidateCUIL,
 	}
-	if valid, err = ValidateLastName(c); !valid {
-		errorMap["lastName"] = err
+	for _, vF := range validateFunctions {
+		if err := vF(c); err != nil {
+			return err
+		} else {
+			continue
+		}
 	}
-	if valid, err = ValidateRel(c); !valid {
-		errorMap["rel"] = err
-	}
-	if valid, err = ValidateBirthday(c); !valid {
-		errorMap["birthday"] = err
-	}
-	if valid, err = ValidateGender(c); !valid {
-		errorMap["gender"] = err
-	}
-	if valid, err = ValidateCUIL(c); !valid {
-		errorMap["cuil"] = err
-	}
-	if len(errorMap) > 1 {
-
-		return errorMap, er.ValidationError
-	}
-	return errorMap, nil
+	return nil
 }
 
 func (parent Parent) GetTotalRows(c *fiber.Ctx) (int, error) {
@@ -203,9 +190,9 @@ func (parent Parent) GetTotalRows(c *fiber.Ctx) (int, error) {
 	if err != nil {
 		return 0, err
 	}
-	row := database.DB.QueryRow(fmt.Sprintf(`
+	row := database.DB.QueryRow(`
 		SELECT COUNT(*) FROM ParentTable 
-		WHERE IdMember = '%d'`, idMember))
+		WHERE IdMember = '?'`, idMember)
 	// row.Scan copia el numero de fila en la variable count
 	err = row.Scan(&totalRows)
 	if err != nil {
@@ -219,8 +206,8 @@ func (parent Parent) GetFiberMap(parents []Parent, searchKey string, currentPage
 	return nil
 }
 
-func (parent Parent) GetAllModels() []Parent {
-	return nil
+func (parent Parent) GetAllModels() ([]Parent, error) {
+	return nil, nil
 }
 
 func (parent Parent) ScanResult(result *sql.Rows, onlyOne bool) (Parent, []Parent, error) {
@@ -258,9 +245,9 @@ func (parent Parent) CheckDeleted(idParent int) (bool, error) {
 	// row := database.DB.QueryRow(fmt.Sprintf(`
 	// 	SELECT COUNT(*) FROM ParentTable
 	// 	WHERE IdParent = '%d'`, parent.IdParent))
-	row := database.DB.QueryRow(fmt.Sprintf(`
+	row := database.DB.QueryRow(`
 		SELECT COUNT(*) FROM ParentTable 
-		WHERE IdParent = '%d'`, idParent))
+		WHERE IdParent = '?'`, idParent)
 	// row.Scan copia el numero de fila en la variable count
 	err := row.Scan(&totalRows)
 	if err != nil {

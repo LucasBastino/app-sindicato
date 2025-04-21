@@ -1,6 +1,6 @@
-<script>
+<!-- <script>
     window.location.href = "{{.path}}"
-</script>
+</script> -->
 
 <!-- cambiar por load -->
-<div hx-get={{.path}} hx-target="body" hx-trigger="click"></div>
+<div hx-get={{.path}} hx-headers='{"error": "{{.error}}"}' hx-target="body" hx-trigger="load"></div>
