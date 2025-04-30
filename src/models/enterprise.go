@@ -32,7 +32,7 @@ func (enterprise Enterprise) InsertModel() (Enterprise, error) {
 		District, 
 		PostalCode, 
 		Phone)
-		VALUES ('?','?','?','?','?','?', '?')`,
+		VALUES (?, ?, ?, ?, ?, ?, ?)`,
 		enterprise.Name,
 		enterprise.EnterpriseNumber,
 		enterprise.Address,
@@ -69,7 +69,7 @@ func (enterprise Enterprise) DeleteModel() error {
 	}
 	delete, err := database.DB.Query(`
 		DELETE FROM EnterpriseTable
-		WHERE IdEnterprise = '?'`, enterprise.IdEnterprise)
+		WHERE IdEnterprise = ?`, enterprise.IdEnterprise)
 	if err != nil {
 		er.QueryError.Msg = err.Error()
 		return er.QueryError
@@ -82,14 +82,14 @@ func (enterprise Enterprise) UpdateModel() (Enterprise, error) {
 	update, err := database.DB.Query(`
 		UPDATE EnterpriseTable 
 		SET 
-		Name = '?', 
-		EnterpriseNumber = '?',
-		Address = '?', 
-		CUIT = '?', 
-		District = '?', 
-		PostalCode = '?', 
-		Phone = '?' 
-		WHERE IdEnterprise = '?'`,
+		Name = ?, 
+		EnterpriseNumber = ?,
+		Address = ?, 
+		CUIT = ?, 
+		District = ?, 
+		PostalCode = ?, 
+		Phone = ? 
+		WHERE IdEnterprise = ?`,
 		enterprise.Name,
 		enterprise.EnterpriseNumber,
 		enterprise.Address,
@@ -142,7 +142,7 @@ func (enterprise Enterprise) SearchOneModelById(c *fiber.Ctx) (Enterprise, error
 		SELECT
 		*
 		FROM EnterpriseTable 
-		WHERE IdEnterprise = '?'`, IdEnterprise)
+		WHERE IdEnterprise = ?`, IdEnterprise)
 	if err != nil {
 		er.QueryError.Msg = err.Error()
 		return Enterprise{}, er.QueryError
@@ -163,7 +163,7 @@ func (enterprise Enterprise) SearchModels(c *fiber.Ctx, offset int) ([]Enterpris
 		*
 		FROM EnterpriseTable 
 		WHERE 
-		Name LIKE '%?%' OR Address LIKE '%?%' 
+		Name LIKE concat('%', ?, '%') OR Address LIKE concat('%', ?, '%') 
 		ORDER BY Name ASC
 		LIMIT 15 OFFSET ?`,
 		searchKey, searchKey, offset)
@@ -238,7 +238,7 @@ func (enterprise Enterprise) GetTotalRows(c *fiber.Ctx) (int, error) {
 	searchKey := c.FormValue("search-key")
 	row := database.DB.QueryRow(`
 		SELECT COUNT(*) FROM EnterpriseTable 
-		WHERE Name LIKE '%?%'`, searchKey)
+		WHERE Name LIKE concat('%', ?, '%')`, searchKey)
 	// row.Scan copia el numero de fila en la variable count
 	err := row.Scan(&totalRows)
 	if err != nil {
@@ -326,7 +326,7 @@ func (enterprise Enterprise) CheckDeleted(idEnterprise int) (bool, error) {
 	// 	WHERE IdEnterprise = '%d'`, enterprise.IdEnterprise))
 	row := database.DB.QueryRow(`
 		SELECT COUNT(*) FROM EnterpriseTable 
-		WHERE IdEnterprise = '?'`, idEnterprise)
+		WHERE IdEnterprise = ?`, idEnterprise)
 	// row.Scan copia el numero de fila en la variable count
 	err := row.Scan(&totalRows)
 	if err != nil {

@@ -25,6 +25,7 @@ func RenderAddPaymentForm(c *fiber.Ctx) error {
 
 func RenderPaymentFile(c *fiber.Ctx) error {
 	p, err := searchOneModelByIdCaller(models.Payment{}, c)
+
 	if err != nil {
 		// guardar el error
 		return er.CheckError(c, err)
@@ -151,7 +152,7 @@ func DeletePayment(c *fiber.Ctx) error {
 }
 
 func getPaymentYearsFromDB(idEnterprise int) ([]string, error) {
-	result, err := database.DB.Query("SELECT Year FROM PaymentTable WHERE IdEnterprise = '?' GROUP BY Year ORDER BY YEAR DESC", idEnterprise)
+	result, err := database.DB.Query("SELECT Year FROM PaymentTable WHERE IdEnterprise = ? GROUP BY Year ORDER BY YEAR DESC", idEnterprise)
 	if err != nil {
 		er.QueryError.Msg = err.Error()
 		return nil, er.QueryError

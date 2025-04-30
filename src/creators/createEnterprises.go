@@ -63,7 +63,7 @@ func CreateEnterprises(c *fiber.Ctx) error {
 		e.PostalCode = strconv.Itoa(rand.IntN(8000) + 1000)
 		e.Phone = fmt.Sprintf("156%d", rand.IntN(9999999))
 
-		insert, err := database.DB.Query("INSERT INTO EnterpriseTable (Name, EnterpriseNumber, Address, CUIT, District, PostalCode, Phone) VALUES ('?','?','?','?','?','?','?')", e.Name, e.EnterpriseNumber, e.Address, e.CUIT, e.District, e.PostalCode, e.Phone)
+		insert, err := database.DB.Query("INSERT INTO EnterpriseTable (Name, EnterpriseNumber, Address, CUIT, District, PostalCode, Phone) VALUES (?,?,?,?,?,?,?)", e.Name, e.EnterpriseNumber, e.Address, e.CUIT, e.District, e.PostalCode, e.Phone)
 		if err != nil {
 			fmt.Println("error inserting enterprise")
 			panic(err)

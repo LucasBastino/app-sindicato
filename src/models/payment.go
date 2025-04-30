@@ -33,7 +33,7 @@ func (payment Payment) InsertModel() (Payment, error) {
 		PaymentDate, 
 		Commentary,
 		IdEnterprise)
-		VALUES ('?','?','?','?','?', '?', '?')`,
+		VALUES (?,?,?,?,?, ?, ?)`,
 		payment.Month,
 		payment.Year,
 		payment.Status,
@@ -64,7 +64,7 @@ func (payment Payment) InsertModel() (Payment, error) {
 func (payment Payment) DeleteModel() error {
 	delete, err := database.DB.Query(`
 		DELETE FROM PaymentTable
-		WHERE IdPayment = '?'`, payment.IdPayment)
+		WHERE IdPayment = ?`, payment.IdPayment)
 	if err != nil {
 		er.QueryError.Msg = err.Error()
 		return er.QueryError
@@ -77,13 +77,13 @@ func (payment Payment) UpdateModel() (Payment, error) {
 	update, err := database.DB.Query(`
 		UPDATE PaymentTable 
 		SET 
-		Month = '?', 
-		Year = '?',
-		Status = '?', 
-		Amount = '?', 
-		PaymentDate = '?', 
-		Commentary = '?' 
-		WHERE IdPayment = '?'`,
+		Month = ?, 
+		Year = ?,
+		Status = ?, 
+		Amount = ?, 
+		PaymentDate = ?, 
+		Commentary = ? 
+		WHERE IdPayment = ?`,
 		payment.Month,
 		payment.Year,
 		payment.Status,
@@ -131,7 +131,7 @@ func (payment Payment) SearchOneModelById(c *fiber.Ctx) (Payment, error) {
 		SELECT
 		*
 		FROM PaymentTable
-		WHERE IdPayment = '?'`, IdPayment)
+		WHERE IdPayment = ?`, IdPayment)
 	if err != nil {
 		er.QueryError.Msg = err.Error()
 		return Payment{}, er.QueryError
@@ -155,7 +155,7 @@ func (payment Payment) SearchModels(c *fiber.Ctx, year int) ([]Payment, string, 
 	SELECT
 	*
 	FROM PaymentTable 
-	WHERE Year = '?' AND IdEnterprise = '?'
+	WHERE Year = ? AND IdEnterprise = ?
 	ORDER BY Month ASC
 	`, yearStr, IdEnterprise)
 	if err != nil {
@@ -234,7 +234,7 @@ func (payment Payment) CheckDeleted(idPayment int) (bool, error) {
 	// 	WHERE IdPayment = '%d'`, p.IdPayment))
 	row := database.DB.QueryRow(`
 		SELECT COUNT(*) FROM PaymentTable 
-		WHERE IdPayment = '?'`, idPayment)
+		WHERE IdPayment = ?`, idPayment)
 	// row.Scan copia el numero de fila en la variable count
 	err := row.Scan(&totalRows)
 	if err != nil {

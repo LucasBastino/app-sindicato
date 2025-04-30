@@ -1,7 +1,6 @@
 package controller
 
 import (
-	"fmt"
 	"time"
 
 	"github.com/LucasBastino/app-sindicato/src/database"
@@ -95,7 +94,7 @@ func GetTotalPagesArray(totalPages int) []int {
 
 func getEnterpriseName(idEnterprise int) (string, error) {
 	enterpriseName := ""
-	result, err := database.DB.Query(fmt.Sprintf("SELECT Name FROM EnterpriseTable WHERE IdEnterprise = '%d'", idEnterprise))
+	result, err := database.DB.Query("SELECT Name FROM EnterpriseTable WHERE IdEnterprise = ?", idEnterprise)
 	if err != nil {
 		er.QueryError.Msg = err.Error()
 		return "", er.QueryError
@@ -133,7 +132,7 @@ func RenderElectoralMemberList(c *fiber.Ctx) error {
 func RenderPruebaEmpresas(c *fiber.Ctx) error {
 	var enterprise models.Enterprise
 	var enterprises []models.Enterprise
-	result, err := database.DB.Query("SELECT IdEntesrprise, Name FROM EnterpriseTable ORDER BY Name")
+	result, err := database.DB.Query("SELECT IdEnterprise FROM EnterpriseTable ORDER BY Name")
 	if err != nil {
 		// guardar el err en algun lado
 		er.QueryError.Msg = err.Error()

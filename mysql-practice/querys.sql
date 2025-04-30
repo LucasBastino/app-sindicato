@@ -20,7 +20,7 @@ CREATE TABLE UserTable(
 CREATE TABLE EnterpriseTable(
     IdEnterprise INT PRIMARY KEY AUTO_INCREMENT NOT NULL,
     Name VARCHAR(255),
-    EnterpriseNumber VARCHAR(50),
+    EnterpriseNumber VARCHAR(50) UNIQUE,
     Address VARCHAR(50),
     CUIT VARCHAR(50),
     District VARCHAR(50),

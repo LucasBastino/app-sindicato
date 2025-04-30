@@ -2,7 +2,6 @@ package models
 
 import (
 	"database/sql"
-	"fmt"
 	"time"
 
 	"github.com/LucasBastino/app-sindicato/src/database"
@@ -54,7 +53,7 @@ func (member Member) InsertModel() (Member, error) {
 		IdEnterprise,
 		Category,
 		EntryDate) 
-		VALUES ('?','?','?','?','?','?','?','?','?','?','?','?','?','?','?','?')`,
+		VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`,
 		member.Name,
 		member.LastName,
 		member.DNI,
@@ -93,7 +92,7 @@ func (member Member) InsertModel() (Member, error) {
 func (member Member) DeleteModel() error {
 	delete, err := database.DB.Query(`
 		DELETE FROM MemberTable 
-		WHERE IdMember = '?'`,
+		WHERE IdMember = ?`,
 		member.IdMember)
 	if err != nil {
 		er.QueryError.Msg = err.Error()
@@ -110,23 +109,23 @@ func (member Member) UpdateModel() (Member, error) {
 	update, err := database.DB.Query(`
 		UPDATE MemberTable
 		SET
-		Name = '?',
-		LastName = '?',
-		DNI = '?',
-		Birthday = '?',
-		Gender = '?',
-		MaritalStatus = '?',
-		Phone = '?',
-		Email = '?',
-		Address = '?',
-		PostalCode = '?',
-		District = '?',
+		Name = ?,
+		LastName = ?,
+		DNI = ?,
+		Birthday = ?,
+		Gender = ?,
+		MaritalStatus = ?,
+		Phone = ?,
+		Email = ?,
+		Address = ?,
+		PostalCode = ?,
+		District = ?,
 		MemberNumber = ?,
-		CUIL = '?',
-		IdEnterprise = '?',
-		Category = '?',
-		EntryDate = '?'
-		WHERE IdMember = '?'`,
+		CUIL = ?,
+		IdEnterprise = ?,
+		Category = ?,
+		EntryDate = ?
+		WHERE IdMember = ?`,
 		member.Name,
 		member.LastName,
 		member.DNI,
@@ -186,12 +185,7 @@ func (member Member) SearchOneModelById(c *fiber.Ctx) (Member, error) {
 	if err != nil {
 		return Member{}, err
 	}
-	result, err := database.DB.Query(`
-		SELECT 
-		*
-		FROM MemberTable 
-		WHERE IdMember = '?'`,
-		IdMember)
+	result, err := database.DB.Query("SELECT * FROM MemberTable WHERE IdMember = ?", IdMember)
 	if err != nil {
 		er.QueryError.Msg = err.Error()
 		return Member{}, er.QueryError
@@ -217,7 +211,7 @@ func (member Member) SearchModels(c *fiber.Ctx, offset int) ([]Member, string, e
 		SELECT 
 		*
 		FROM MemberTable WHERE 
-		Name LIKE '%?%' OR LastName LIKE '%?%' OR DNI LIKE '%?%' 
+		Name LIKE concat('%', ?, '%') OR LastName LIKE concat('%', ?, '%') OR DNI LIKE concat('%', ?, '%') 
 		ORDER BY LastName ASC LIMIT 15 OFFSET ?`,
 		searchKey, searchKey, searchKey, offset)
 	if err != nil {
@@ -228,7 +222,6 @@ func (member Member) SearchModels(c *fiber.Ctx, offset int) ([]Member, string, e
 	if err != nil {
 		return nil, "", err
 	}
-	fmt.Println(mm)
 	return mm, searchKey, nil
 }
 
@@ -281,7 +274,7 @@ func (member Member) GetTotalRows(c *fiber.Ctx) (int, error) {
 	// 	OR E.Name LIKE '%%%s%%' OR E.EnterpriseNumber LIKE '%%%s%%'`,
 	// 	searchKey, searchKey, searchKey, searchKey, searchKey))
 	// row.Scan copia el numero de fila en la variable count
-	row := database.DB.QueryRow("SELECT COUNT(*) FROM MemberTable WHERE Name LIKE %?% OR LastName LIKE concat('%', ?, '%') OR DNI LIKE concat('%', ?, '%')", searchKey, searchKey, searchKey)
+	row := database.DB.QueryRow("SELECT COUNT(*) FROM MemberTable WHERE Name LIKE concat('%', ?, '%') OR LastName LIKE concat('%', ?, '%') OR DNI LIKE concat('%', ?, '%')", searchKey, searchKey, searchKey)
 	err := row.Scan(&totalRows)
 	if err != nil {
 		er.ScanError.Msg = err.Error()
@@ -385,7 +378,7 @@ func (member Member) CheckDeleted(idMember int) (bool, error) {
 	var totalRows int
 	row := database.DB.QueryRow(`
 		SELECT COUNT(*) FROM MemberTable 
-		WHERE IdMember = '?'`, idMember)
+		WHERE IdMember = ?`, idMember)
 	// row.Scan copia el numero de fila en la variable count
 	err := row.Scan(&totalRows)
 	if err != nil {

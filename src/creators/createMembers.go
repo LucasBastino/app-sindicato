@@ -70,7 +70,7 @@ func CreateMembers(c *fiber.Ctx) error {
 		if slices.Contains([]int{0, 1, 2}, r) {
 			m.Gender = "Masculino"
 		} else if slices.Contains([]int{3, 4, 5}, r) {
-			m.Gender = "Hombre"
+			m.Gender = "Femenino"
 		} else {
 			m.Gender = "Otro"
 		}
@@ -168,7 +168,7 @@ func CreateMembers(c *fiber.Ctx) error {
 			entryMonthStr = "0" + entryMonthStr
 		}
 		m.EntryDate = fmt.Sprintf("%s/%s/%s", entryYearStr, entryMonthStr, entryDayStr)
-		insert, err := database.DB.Query("INSERT INTO MemberTable (Name, LastName, DNI, Birthday, Gender, MaritalStatus, Phone, Email, Address, PostalCode, District, MemberNumber, CUIL, IdEnterprise, Category, EntryDate) VALUES ('?','?','?','?','?','?','?','?','?','?','?','?','?','?','?','?')", m.Name, m.LastName, m.DNI, m.Birthday, m.Gender, m.MaritalStatus, m.Phone, m.Email, m.Address, m.PostalCode, m.District, m.MemberNumber, m.CUIL, m.IdEnterprise, m.Category, m.EntryDate)
+		insert, err := database.DB.Query("INSERT INTO MemberTable (Name, LastName, DNI, Birthday, Gender, MaritalStatus, Phone, Email, Address, PostalCode, District, MemberNumber, CUIL, IdEnterprise, Category, EntryDate) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)", m.Name, m.LastName, m.DNI, m.Birthday, m.Gender, m.MaritalStatus, m.Phone, m.Email, m.Address, m.PostalCode, m.District, m.MemberNumber, m.CUIL, m.IdEnterprise, m.Category, m.EntryDate)
 		if err != nil {
 			fmt.Println("error inserting member")
 			panic(err)

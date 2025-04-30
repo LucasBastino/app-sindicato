@@ -142,7 +142,6 @@ func RenderMemberTable(c *fiber.Ctx) error {
 			// guardar el error
 			return er.CheckError(c, err)
 		}
-
 		// hago un array para poder recorrerlo y crear botones cuando hay menos de 10 paginas en el template
 		totalPagesArray := GetTotalPagesArray(totalPages)
 
@@ -158,7 +157,6 @@ func RenderMemberTable(c *fiber.Ctx) error {
 		data["mode"] = "table"
 		role := c.Locals("claims").(jwt.MapClaims)["role"]
 		data["role"] = role
-		fmt.Println(members)
 		// renderizo la tabla y le envio el map con las variables
 		return c.Render("memberTable", data)
 	}
@@ -176,10 +174,10 @@ func RenderMemberFile(c *fiber.Ctx) error {
 		// guardar el error
 		return er.CheckError(c, err)
 	}
+
 	enterpriseName, err := getEnterpriseName(m.IdEnterprise)
 	if err != nil {
-		// ver esto
-		c.Status(fiber.StatusNoContent).JSON(fiber.Map{"error": err})
+		return er.CheckError(c, err)
 	}
 	createdAt, updatedAt, err := formatTimeStamps(m.CreatedAt, m.UpdatedAt)
 	if err != nil {

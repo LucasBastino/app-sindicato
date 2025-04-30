@@ -1,6 +1,7 @@
 package controller
 
 import (
+	"fmt"
 	"strconv"
 
 	"github.com/LucasBastino/app-sindicato/src/database"
@@ -206,7 +207,7 @@ func getNumberOfMembers(IdEnterprise int, searchKey string) (int, error) {
 	var totalRows int
 	row := database.DB.QueryRow(`
 		SELECT COUNT(*) FROM MemberTable 
-		WHERE IdEnterprise = ? AND (Name LIKE '%?%' OR LastName LIKE '%?%')`,
+		WHERE IdEnterprise = ? AND (Name LIKE concat('%', ?, '%') OR LastName LIKE concat('%', ?, '%'))`,
 		IdEnterprise, searchKey, searchKey)
 	// row.Scan copia el numero de fila en la variable count
 	err := row.Scan(&totalRows)
@@ -288,6 +289,7 @@ func RenderEnterpriseMembers(c *fiber.Ctx) error {
 			// logear el err
 			return er.CheckError(c, er.QueryError)
 		}
+		fmt.Println("llego aca")
 
 		// hago un array para poder recorrerlo y crear botones cuando hay menos de 10 paginas en el template
 		totalPagesArray := GetTotalPagesArray(totalPages)
@@ -307,14 +309,13 @@ func getEnterpriseMembers(IdEnterprise int, searchKey string, offset int) ([]mod
 	result, err := database.DB.Query(`
 			SELECT * FROM MemberTable 
 			WHERE IdEnterprise = ?
-			AND (Name LIKE '%?%' OR LastName LIKE '%?%') LIMIT 10 OFFSET %d`, IdEnterprise, searchKey, searchKey, offset)
+			AND (Name LIKE concat('%', ?, '%') OR LastName LIKE concat('%', ?, '%')) LIMIT 10 OFFSET ?`, IdEnterprise, searchKey, searchKey, offset)
 	if err != nil {
 		er.QueryError.Msg = err.Error()
 		return nil, er.QueryError
 	}
 	_, members, err := models.Member{}.ScanResult(result, false)
 	if err != nil {
-		// guardar el err
 		return nil, err
 	}
 	return members, nil
@@ -362,12 +363,30 @@ func RenderEnterprisePaymentsTable(c *fiber.Ctx) error {
 	IdEnterprise, err := getIdModelCaller(models.Enterprise{}, c)
 	if err != nil {
 		// guardar el err
+		fmt.Println(err)
 		return er.CheckError(c, err)
+	}
+
+	var totalRows int
+	row := database.DB.QueryRow(`
+		SELECT COUNT(*) FROM PaymentTable 
+		WHERE IdEnterprise = ?`, IdEnterprise)
+	// row.Scan copia el numero de fila en la variable count
+	err = row.Scan(&totalRows)
+	if err != nil {
+		er.ScanError.Msg = err.Error()
+		return er.CheckError(c, er.ScanError)
+	}
+
+	if totalRows == 0 {
+		data := fiber.Map{"idEnterprise": IdEnterprise, "role": role, "mode": "edit", "empty": true}
+		return c.Render("paymentTable", data)
 	}
 	var lastYear int
 	result, err := database.DB.Query("SELECT MAX(Year) FROM PaymentTable WHERE IdEnterprise = ?", IdEnterprise)
 	if err != nil {
 		// logear el err
+		er.QueryError.Msg = err.Error()
 		return er.CheckError(c, er.QueryError)
 	}
 	for result.Next() {
@@ -375,11 +394,14 @@ func RenderEnterprisePaymentsTable(c *fiber.Ctx) error {
 	}
 	if err != nil {
 		// logear el err
+		er.ScanError.Msg = err.Error()
 		return er.CheckError(c, er.ScanError)
 	}
+
 	result2, err := database.DB.Query("SELECT Year FROM PaymentTable WHERE IdEnterprise = ? GROUP BY Year ORDER BY YEAR DESC", IdEnterprise)
 	if err != nil {
 		// logear el err
+		er.QueryError.Msg = err.Error()
 		return er.CheckError(c, er.QueryError)
 	}
 
@@ -389,6 +411,7 @@ func RenderEnterprisePaymentsTable(c *fiber.Ctx) error {
 		err = result2.Scan(&year)
 		if err != nil {
 			// logear el err
+			er.ScanError.Msg = err.Error()
 			return er.CheckError(c, er.ScanError)
 		}
 		years = append(years, year)
@@ -432,7 +455,7 @@ func RenderEnterpriseTableSelect(c *fiber.Ctx) error {
 		*
 		FROM EnterpriseTable 
 		WHERE 
-		Name LIKE '%?%' 
+		Name LIKE concat('%', ?, '%') 
 		ORDER BY Name ASC`,
 			searchKey)
 		if err != nil {
@@ -459,4 +482,13 @@ func GetAllEnterprisesId(c *fiber.Ctx) error {
 		return er.CheckError(c, err)
 	}
 	return c.JSON(enterprisesId)
+}
+
+func GetAllEnterprisesNumber(c *fiber.Ctx) error {
+	enterprisesNumbers, err := models.GetAllEnterprisesNumbersFromDB()
+	if err != nil {
+		// guardar el err
+		return er.CheckError(c, err)
+	}
+	return c.JSON(enterprisesNumbers)
 }

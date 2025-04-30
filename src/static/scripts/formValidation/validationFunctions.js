@@ -187,6 +187,31 @@ function checkIdEnterprise(res, value){
   }
 }
 
+function getAndCheckEnterpriseNumber(value){
+    // esto no devuelve true o false, devuelve una promesa que devuelve true o false
+    return fetch('http://localhost:8085/enterprise/getAllEnterprisesNumber', {
+        method: 'GET',
+        headers: {
+          Accept: 'application/json',
+          'Content-Type': 'application/json'
+        }})
+      .then(res => res.json())
+      .then(res => {return checkEnterpriseNumber(res, value)})
+  
+}
+
+function checkEnterpriseNumber(res, value){
+    errorDiv = Array.from(document.getElementsByClassName("enterprise-number-error")).pop()
+    if (res.includes(value)){
+        errorDiv.innerHTML = 'Numero de empresa ya registrado'
+        errorDiv.style.display = 'inline'
+        return false
+    } else{
+        errorDiv.style.display = 'none'
+        return true
+  }
+}
+
 function validateCategory(value){
     errorDiv = Array.from(document.getElementsByClassName("category-error")).pop()
     categories = ["Nivel 1: Oficial Múltiple", "Nivel 2: Oficial Especializado", "Nivel 3: Oficial General", "Nivel 4: Medio Oficial", "Nivel 5: Ayudante", "Nivel 6: Operario Act. Industrial"]
@@ -228,7 +253,11 @@ function validateEnterpriseNumber(value){
         return false
     }
     
-    return isNotLongerThan(errorDiv, 10, value)
+    if (!isNotLongerThan(errorDiv, 10, value)){
+        return false
+    }
+    
+    return getAndCheckEnterpriseNumber(value)
 
 }
 
@@ -321,8 +350,10 @@ function validateAmount(value){
 
 function validatePaymentDate(value){
     errorDiv = Array.from(document.getElementsByClassName("payment-date-error")).pop()
+    // en este caso, puede estar vacio, por eso el true
     if (!isNotEmpty(errorDiv, value)){
-        return false
+        errorDiv.style.display = 'none'
+        return true
     }
     
     return isValidDate(errorDiv, value, 2000)

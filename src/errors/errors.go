@@ -1,149 +1,104 @@
 package errors
 
 import (
+	"errors"
 	"fmt"
 
 	"github.com/gofiber/fiber/v2"
 )
 
 type CustomError struct {
-	Msg  string
-	Code int
+	Msg string
 }
 
 func (e *CustomError) Error() string {
 	return e.Msg
 }
 
-var QueryError = &CustomError{Code: 1}
-var ScanError = &CustomError{Code: 2}
-var FormatError = &CustomError{Code: 3}
-var ValidationError = &CustomError{Code: 4}
-var UnauthorizedError = &CustomError{Code: 5}
-var InsufficientPermisionsError = &CustomError{Code: 6}
-var InternalServerError = &CustomError{Code: 7}
-var StrConvError = &CustomError{Code: 8}
-var DatabaseConnectionError = &CustomError{Code: 9}
-var ParamsError = &CustomError{Code: 10}
+var QueryError = &CustomError{}
+var ScanError = &CustomError{}
+var FormatError = &CustomError{}
+var ValidationError = &CustomError{}
+var UnauthorizedError = &CustomError{}
+var InsufficientPermisionsError = &CustomError{}
+var InternalServerError = &CustomError{}
+var StrConvError = &CustomError{}
+var DatabaseConnectionError = &CustomError{}
+var ParamsError = &CustomError{}
 
-func CheckError(c *fiber.Ctx, err *CustomError) error {
-	// guardar el error
-	c.Locals("err", err.Code)
-	fmt.Println("hola")
-	fmt.Println(c.Locals("err"))
-	fmt.Println("hola")
-	return c.Status(fiber.StatusAccepted).Render("redirect", fiber.Map{"path": "/error", "error": "internal error"})
+func RenderError(c *fiber.Ctx) error {
+
+	switch c.Cookies("ErrType") {
+	case "Query":
+		return c.Status(fiber.StatusInternalServerError).Render("error", fiber.Map{"error": "internal database error"})
+	case "Scan":
+		return c.Status(fiber.StatusInternalServerError).Render("error", fiber.Map{"error": "internal error"})
+	case "Format":
+		return c.Status(fiber.StatusInternalServerError).Render("error", fiber.Map{"error": "internal error"})
+	case "Validation":
+		return c.Status(fiber.StatusBadRequest).Render("error", fiber.Map{"error": "validation error"})
+	case "Unauthorized":
+		return c.Status(fiber.StatusInternalServerError).Render("error", fiber.Map{"error": "error interno de la base de datos"})
+	case "InsufficientPermisions":
+		return c.Status(fiber.StatusInternalServerError).Render("error", fiber.Map{"error": "error funcional interno de la base de datos"})
+	case "InternalServer":
+		return c.Status(fiber.StatusInternalServerError).Render("error", fiber.Map{"error": "error interno de la base de datos"})
+	case "StrConv":
+		return c.Status(fiber.StatusInternalServerError).Render("error", fiber.Map{"error": "error funcional interno de la base de datos"})
+	case "DatabaseConnection":
+		return c.Status(fiber.StatusInternalServerError).Render("error", fiber.Map{"error": "error interno de la base de datos"})
+	case "Params":
+		return c.Status(fiber.StatusInternalServerError).Render("error", fiber.Map{"error": "error funcional interno de la base de datos"})
+	default:
+		return c.Status(fiber.StatusInternalServerError).Render("error", fiber.Map{"error": "default internal error"})
+	}
 
 }
 
-// func CheckError2(c *fiber.Ctx) error {
-// 	err := c.Locals("err")
+func CheckError(c *fiber.Ctx, err error) error {
+	// faltar guardar el log del error
 
-// 	if errors.Is(err, QueryError) {
-// 		// guardar el log en algun lugar
-// 		// os.Guardar("errors.txt", err)
-// 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": "internal database error"})
-// 	}
-// 	if errors.Is(err, ScanError) {
-// 		// guardar el log en algun lugar
-// 		// os.Guardar("errors.txt", err)
-// 		// SI PONES STATUS INTERNAL SERVER ERROR NO TE DEJA DIRECCIONAR, asi que el status se lo pongo directamente cuando renderizo el error.html
-// 		return c.Status(fiber.StatusInternalServerError).Render("redirect", fiber.Map{"path": "/error", "error": "internal error"})
-// 	}
-// 	if errors.Is(err, FormatError) {
-// 		// guardar el log en algun lugar
-// 		// os.Guardar("errors.txt", err)
-// 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": "internal error"})
-// 	}
-// 	if errors.Is(err, ValidationError) {
-// 		// guardar el log en algun lugar
-// 		// os.Guardar("errors.txt", err)
-// 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "validation error"})
-// 	}
-// 	if errors.Is(err, UnauthorizedError) {
-// 		// guardar el log en algun lugar
-// 		// os.Guardar("errors.txt", err)
-// 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": "error interno de la base de datos"})
-// 	}
-// 	if errors.Is(err, InsufficientPermisionsError) {
-// 		// guardar el log en algun lugar
-// 		// os.Guardar("errors.txt", err)
-// 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": "error funcional interno de la base de datos"})
-// 	}
-// 	if errors.Is(err, InternalServerError) {
-// 		// guardar el log en algun lugar
-// 		// os.Guardar("errors.txt", err)
-// 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": "error interno de la base de datos"})
-// 	}
-// 	if errors.Is(err, StrConvError) {
-// 		// guardar el log en algun lugar
-// 		// os.Guardar("errors.txt", err)
-// 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": "error funcional interno de la base de datos"})
-// 	}
-// 	if errors.Is(err, DatabaseConnectionError) {
-// 		// guardar el log en algun lugar
-// 		// os.Guardar("errors.txt", err)
-// 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": "error interno de la base de datos"})
-// 	}
-// 	if errors.Is(err, ParamsError) {
-// 		// guardar el log en algun lugar
-// 		// os.Guardar("errors.txt", err)
-// 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": "error funcional interno de la base de datos"})
-// 	}
-// 	return err
-// }
-
-// func CheckError(c *fiber.Ctx, err error) error {
-// 	if errors.Is(err, QueryError) {
-// 		// guardar el log en algun lugar
-// 		// os.Guardar("errors.txt", err)
-// 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": "internal database error"})
-// 	}
-// 	if errors.Is(err, ScanError) {
-// 		// guardar el log en algun lugar
-// 		// os.Guardar("errors.txt", err)
-// 		// SI PONES STATUS INTERNAL SERVER ERROR NO TE DEJA DIRECCIONAR, asi que el status se lo pongo directamente cuando renderizo el error.html
-// 		return c.Status(fiber.StatusInternalServerError).Render("redirect", fiber.Map{"path": "/error", "error": "internal error"})
-// 	}
-// 	if errors.Is(err, FormatError) {
-// 		// guardar el log en algun lugar
-// 		// os.Guardar("errors.txt", err)
-// 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": "internal error"})
-// 	}
-// 	if errors.Is(err, ValidationError) {
-// 		// guardar el log en algun lugar
-// 		// os.Guardar("errors.txt", err)
-// 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "validation error"})
-// 	}
-// 	if errors.Is(err, UnauthorizedError) {
-// 		// guardar el log en algun lugar
-// 		// os.Guardar("errors.txt", err)
-// 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": "error interno de la base de datos"})
-// 	}
-// 	if errors.Is(err, InsufficientPermisionsError) {
-// 		// guardar el log en algun lugar
-// 		// os.Guardar("errors.txt", err)
-// 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": "error funcional interno de la base de datos"})
-// 	}
-// 	if errors.Is(err, InternalServerError) {
-// 		// guardar el log en algun lugar
-// 		// os.Guardar("errors.txt", err)
-// 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": "error interno de la base de datos"})
-// 	}
-// 	if errors.Is(err, StrConvError) {
-// 		// guardar el log en algun lugar
-// 		// os.Guardar("errors.txt", err)
-// 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": "error funcional interno de la base de datos"})
-// 	}
-// 	if errors.Is(err, DatabaseConnectionError) {
-// 		// guardar el log en algun lugar
-// 		// os.Guardar("errors.txt", err)
-// 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": "error interno de la base de datos"})
-// 	}
-// 	if errors.Is(err, ParamsError) {
-// 		// guardar el log en algun lugar
-// 		// os.Guardar("errors.txt", err)
-// 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": "error funcional interno de la base de datos"})
-// 	}
-// 	return err
-// }
+	// esto es temporal
+	fmt.Println(err)
+	cookie := fiber.Cookie{
+		Name:        "ErrType",
+		Value:       "",
+		Path:        "/",
+		Secure:      true,
+		HTTPOnly:    true,
+		SameSite:    "Strict",
+		SessionOnly: true,
+	}
+	if errors.Is(err, QueryError) {
+		cookie.Value = "Query"
+	}
+	if errors.Is(err, ScanError) {
+		cookie.Value = "Scan"
+	}
+	if errors.Is(err, FormatError) {
+		cookie.Value = "Format"
+	}
+	if errors.Is(err, ValidationError) {
+		cookie.Value = "Validation"
+	}
+	if errors.Is(err, UnauthorizedError) {
+		cookie.Value = "Unauthorized"
+	}
+	if errors.Is(err, InsufficientPermisionsError) {
+		cookie.Value = "InsufficientPermisions"
+	}
+	if errors.Is(err, InternalServerError) {
+		cookie.Value = "InternalServer"
+	}
+	if errors.Is(err, StrConvError) {
+		cookie.Value = "StrConv"
+	}
+	if errors.Is(err, DatabaseConnectionError) {
+		cookie.Value = "DatabaseConnection"
+	}
+	if errors.Is(err, ParamsError) {
+		cookie.Value = "Params"
+	}
+	c.Cookie(&cookie)
+	return c.Status(fiber.StatusAccepted).Render("redirect", fiber.Map{"path": "/error"})
+}

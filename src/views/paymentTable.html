@@ -1,6 +1,19 @@
 {{$role := .role}}
 {{$idEnterprise := .idEnterprise}}
 
+{{if .empty}}
+<div class="nav-container">
+    <nav class="navbar navbar-file navbar-expand navbar-light bg-light">
+        {{if eq .role "admin"}}
+        <div class="navbar-nav">
+            {{if eq .mode "edit"}}
+            <button class="btn-add" hx-get="/payment/{{.idEnterprise}}/addForm" hx-trigger="click" hx-target="#tableDiv">Agregar un pago</button></a>
+            {{end}}
+        </div>
+        {{end}}
+    </nav>
+</div>
+{{else}}
 <div class="nav-container">
     <nav class="navbar navbar-file navbar-expand navbar-light bg-light">
         {{if eq .role "admin"}}
@@ -58,3 +71,5 @@
     </tr>
     {{end}}
 </table> 
+{{end}}
+

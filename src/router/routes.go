@@ -3,6 +3,7 @@ package router
 import (
 	c "github.com/LucasBastino/app-sindicato/src/controller"
 	creators "github.com/LucasBastino/app-sindicato/src/creators"
+	er "github.com/LucasBastino/app-sindicato/src/errors"
 	l "github.com/LucasBastino/app-sindicato/src/login"
 	"github.com/gofiber/fiber/v2"
 )
@@ -51,15 +52,16 @@ func RegisterRoutes(app *fiber.App) {
 	e.Put("/:IdEnterprise/edit", l.VerifyToken, l.VerifyAdmin, c.EditEnterprise)
 	e.Get("/:IdEnterprise/paymentTable/:Year", l.VerifyToken, l.VerifyAdminOrUser, c.RenderEnterprisePaymentsTable)
 	e.Get("/getAllEnterprisesId", l.VerifyToken, l.VerifyAdminOrUser, c.GetAllEnterprisesId)
+	e.Get("/getAllEnterprisesNumber", l.VerifyToken, l.VerifyAdminOrUser, c.GetAllEnterprisesNumber)
 
 	py.Get("/:IdEnterprise/addForm", l.VerifyToken, l.VerifyAdmin, c.RenderAddPaymentForm)
 	py.Post("/:IdEnterprise/add", l.VerifyToken, l.VerifyAdmin, c.AddPayment)
-	py.Get("/:IdEnterprise/:IdPayment/file", l.VerifyToken, l.VerifyAdmin, c.RenderPaymentFile)
+	py.Get("/:IdEnterprise/:IdPayment/file", l.VerifyToken, l.VerifyAdminOrUser, c.RenderPaymentFile)
 	py.Put("/:IdEnterprise/:IdPayment/edit", l.VerifyToken, l.VerifyAdmin, c.EditPayment)
 	py.Delete("/:IdEnterprise/:IdPayment/delete", l.VerifyToken, l.VerifyAdmin, c.DeletePayment)
 	py.Get("/:IdEnterprise/paymentTable", l.VerifyToken, l.VerifyAdminOrUser, c.RenderEnterprisePaymentsTable)
 
-	// app.Get("/error", er.CheckError)
+	app.Get("/error", er.RenderError)
 
 	app.Get("/test", c.TestNull)
 	app.Get("/createMembers", creators.CreateMembers)

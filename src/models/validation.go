@@ -208,16 +208,37 @@ func GetAllEnterprisesIdFromDB() ([]int, error) {
 	var idEnterprise int
 	result, err := database.DB.Query("SELECT IdEnterprise FROM EnterpriseTable")
 	if err != nil {
-		return nil, fmt.Errorf("internal error")
+		er.QueryError.Msg = "internal error"
+		return nil, er.QueryError
 	}
 	for result.Next() {
 		err = result.Scan(&idEnterprise)
 		if err != nil {
-			return nil, fmt.Errorf("internal error")
+			er.ScanError.Msg = "internal error"
+			return nil, er.ScanError
 		}
 		enterprisesId = append(enterprisesId, idEnterprise)
 	}
 	return enterprisesId, nil
+}
+
+func GetAllEnterprisesNumbersFromDB() ([]string, error) {
+	var ee []string
+	var e string
+	result, err := database.DB.Query("SELECT EnterpriseNumber FROM EnterpriseTable")
+	if err != nil {
+		er.QueryError.Msg = "internal error"
+		return nil, er.QueryError
+	}
+	for result.Next() {
+		err = result.Scan(&e)
+		if err != nil {
+			er.ScanError.Msg = "internal error"
+			return nil, er.ScanError
+		}
+		ee = append(ee, e)
+	}
+	return ee, nil
 }
 
 func ValidateCategory(c *fiber.Ctx) error {
@@ -315,6 +336,10 @@ func validatePaymentAmount(c *fiber.Ctx) error {
 
 func validatePaymentDate(c *fiber.Ctx) error {
 	paymentDate := strings.TrimSpace(c.FormValue("payment-date"))
+	// la fecha de pago puede estar vacia
+	if paymentDate == "" {
+		return nil
+	}
 	return validateDate(paymentDate, "payment-date")
 
 }

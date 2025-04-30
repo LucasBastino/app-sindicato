@@ -48,7 +48,7 @@ func CreatePayments(c *fiber.Ctx) error {
 		Commentary,
 		IdEnterprise
 		)
-		VALUES ('?','?','?','?','?', '?', '?')`,
+		VALUES (?,?,?,?,?, ?, ?)`,
 			p.Month, p.Year, p.Status, p.Amount, p.PaymentDate, p.Commentary, p.IdEnterprise)
 		if err != nil {
 			fmt.Println("error inserting payment in db")

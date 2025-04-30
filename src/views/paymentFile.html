@@ -56,10 +56,10 @@
                             <option value="IMPAGO">IMPAGO</option>
                             {{else if eq $.payment.Status "PAGO"}}
                             <option value="{{$.payment.Status}}">{{$.payment.Status}}</option>
-                            <option value="impago">IMPAGO</option>
+                            <option value="IMPAGO">IMPAGO</option>
                             {{else if eq $.payment.Status "IMPAGO"}}
                             <option value="{{$.payment.Status}}">{{$.payment.Status}}</option>
-                            <option value="pago">PAGO</option>
+                            <option value="PAGO">PAGO</option>
                             {{end}}
                         </select>
                     </div>

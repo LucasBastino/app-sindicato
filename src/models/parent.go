@@ -33,7 +33,7 @@ func (parent Parent) InsertModel() (Parent, error) {
 		Gender,
 		CUIL,
 		IdMember)
-		VALUES ('?','?','?', '?', '?', '?', '?')`,
+		VALUES (?,?,?, ?, ?, ?, ?)`,
 		parent.Name,
 		parent.LastName,
 		parent.Rel,
@@ -63,7 +63,7 @@ func (parent Parent) InsertModel() (Parent, error) {
 func (parent Parent) DeleteModel() error {
 	delete, err := database.DB.Query(`
 		DELETE FROM ParentTable 
-		WHERE IdParent = '?'`,
+		WHERE IdParent = ?`,
 		parent.IdParent)
 	if err != nil {
 		er.QueryError.Msg = err.Error()
@@ -77,14 +77,14 @@ func (parent Parent) UpdateModel() (Parent, error) {
 	parent.Birthday = FormatToYYYYMMDD(parent.Birthday)
 	update, err := database.DB.Query(`
 		UPDATE ParentTable 
-		SET Name = '?',
-		LastName = '?',
-		Rel = '?',
-		Birthday = '?',
-		Gender = '?',
-		CUIL = '?',
-		IdMember = '?'
-		WHERE IdParent = '?'`,
+		SET Name = ?,
+		LastName = ?,
+		Rel = ?,
+		Birthday = ?,
+		Gender = ?,
+		CUIL = ?,
+		IdMember = ?
+		WHERE IdParent = ?`,
 		parent.Name,
 		parent.LastName,
 		parent.Rel,
@@ -99,7 +99,7 @@ func (parent Parent) UpdateModel() (Parent, error) {
 	}
 	update.Close()
 	result, err := database.DB.Query(`
-	SELECT * FROM ParentTable WHERE IdParent = '?'`, parent.IdParent)
+	SELECT * FROM ParentTable WHERE IdParent = ?`, parent.IdParent)
 	if err != nil {
 		er.QueryError.Msg = err.Error()
 		return Parent{}, er.QueryError
@@ -132,7 +132,7 @@ func (parent Parent) SearchOneModelById(c *fiber.Ctx) (Parent, error) {
 		SELECT
 		*
 		FROM ParentTable
-		WHERE IdParent = '?'`, IdParent)
+		WHERE IdParent = ?`, IdParent)
 	if err != nil {
 		er.QueryError.Msg = err.Error()
 		return Parent{}, er.QueryError
@@ -192,7 +192,7 @@ func (parent Parent) GetTotalRows(c *fiber.Ctx) (int, error) {
 	}
 	row := database.DB.QueryRow(`
 		SELECT COUNT(*) FROM ParentTable 
-		WHERE IdMember = '?'`, idMember)
+		WHERE IdMember = ?`, idMember)
 	// row.Scan copia el numero de fila en la variable count
 	err = row.Scan(&totalRows)
 	if err != nil {
@@ -247,7 +247,7 @@ func (parent Parent) CheckDeleted(idParent int) (bool, error) {
 	// 	WHERE IdParent = '%d'`, parent.IdParent))
 	row := database.DB.QueryRow(`
 		SELECT COUNT(*) FROM ParentTable 
-		WHERE IdParent = '?'`, idParent)
+		WHERE IdParent = ?`, idParent)
 	// row.Scan copia el numero de fila en la variable count
 	err := row.Scan(&totalRows)
 	if err != nil {
