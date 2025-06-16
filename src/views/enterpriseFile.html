@@ -10,7 +10,7 @@
                 <nav class="navbar navbar-expand navbar-light bg-light">
                     <a class="navbar-brand" href="/">Sindicato</a>              
                     {{if eq .mode "edit"}}
-                        {{if eq .role "admin"}}
+                        {{if .canWrite}}
                         <a class="nav-item nav-link active py-0" href="/enterprise/addForm" id="add-enterprise-btn"><button class="btn-add">Agregar una empresa</button></a>
                         {{end}}
                     {{end}} 
@@ -38,7 +38,7 @@
                     <input class="form-input field-12" type="text" name="enterprise-number" value="{{$.enterprise.EnterpriseNumber}}" disabled>
                 </div>
                 <div class="hide error-div field-12 enterprise-number-error"></div>
-                
+                <input class="hide" type="text" name="old-enterprise-number" value="{{$.enterprise.EnterpriseNumber}}" disabled>
                 <div class="input-container field-12">
                     <div class="field-tag field-2">CUIT</div>
                     <input class="form-input field-12" type="text" name="cuit" value="{{$.enterprise.CUIT}}" disabled>
@@ -69,6 +69,18 @@
                     <input class="form-input field-12" type="text" name="phone" value="{{$.enterprise.Phone}}" disabled>
                 </div>
                 <div class="hide error-div field-12 phone-error"></div>
+
+                <div class="input-container field-12">
+                    <div class="field-tag field-2">Contacto</div>
+                    <input class="form-input field-12" type="text" name="contact" value="{{$.enterprise.Contact}}" disabled>
+                </div>
+                <div class="hide error-div field-12 phone-error"></div>
+
+                <div class="input-container field-12">
+                        <div class="field-tag field-2">Observaciones</div>
+                        <input class="form-input field-12" type="text" name="observations" value="{{$.enterprise.Observations}}" disabled>
+                </div>
+                <div class="hide error-div field-12 observations-error"></div>
                 
                 {{if eq .mode "add"}}
                 <div class="item-btn btn-submit" onclick="validateEnterprise('create');">Enviar</div>
@@ -87,8 +99,10 @@
             <div class="btn-container">
                 <button class="item-btn" hx-get="/payment/{{$.enterprise.IdEnterprise}}/paymentTable" hx-trigger="click" hx-target="#tableDiv" onclick="hideEnterpriseMemberSearchNav()">Pagos</button>
                 <button class="item-btn" hx-get="/enterprise/{{$.enterprise.IdEnterprise}}/memberTable" hx-trigger="click" hx-target="#tableDiv" onclick="showEnterpriseMemberSearchNav();" hx-headers='{"mode": "edit"}'>Mostrar afiliados ({{.numberOfMembers}})</button>
-                {{if eq .role "admin"}}
+                {{if .canWrite}}
                 <button class="item-btn" onclick="enableInputs(); showConfirmButton('enterprise');">Editar datos</button>
+                {{end}}
+                {{if .canDelete}}
                     {{if eq $.enterprise.IdEnterprise 1}}
                     <!-- si es la empresa 1, es decir SIN EMPRESA, que no aparezca el boton ELIMINAR EMPRESA -->
                     {{else}}

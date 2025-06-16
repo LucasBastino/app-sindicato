@@ -18,16 +18,16 @@ func CreatePayments(c *fiber.Ctx) error {
 		for _, month := range months {
 			p.Month = month
 			p.Year = "2024"
-			p.Commentary = ""
+			p.Observations = ""
 			p.IdEnterprise = i + 1
 			random := rand.IntN(10)
 			if random == 1 {
-				p.Status = "IMPAGO"
+				p.Status = false
 			} else {
-				p.Status = "PAGO"
+				p.Status = true
 			}
 			p.Amount = rand.IntN(50000) + 50000
-			if p.Status == "IMPAGO" {
+			if !p.Status {
 
 				p.PaymentDate = ""
 			} else {
@@ -37,6 +37,8 @@ func CreatePayments(c *fiber.Ctx) error {
 		}
 	}
 
+	p.Observations = fmt.Sprintf("texto aleatorio numero %d", rand.IntN(999))
+
 	for _, p := range pp {
 		insert, err := database.DB.Query(`
 		INSERT INTO PaymentTable(
@@ -45,11 +47,11 @@ func CreatePayments(c *fiber.Ctx) error {
 		Status,
 		Amount,
 		PaymentDate,
-		Commentary,
+		Observations,
 		IdEnterprise
 		)
 		VALUES (?,?,?,?,?, ?, ?)`,
-			p.Month, p.Year, p.Status, p.Amount, p.PaymentDate, p.Commentary, p.IdEnterprise)
+			p.Month, p.Year, p.Status, p.Amount, p.PaymentDate, p.Observations, p.IdEnterprise)
 		if err != nil {
 			fmt.Println("error inserting payment in db")
 			panic(err)

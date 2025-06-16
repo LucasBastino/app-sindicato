@@ -30,7 +30,6 @@ func RenderPaymentFile(c *fiber.Ctx) error {
 		// guardar el error
 		return er.CheckError(c, err)
 	}
-	role := c.Locals("claims").(jwt.MapClaims)["role"]
 	IdEnterprise, err := getIdModelCaller(models.Enterprise{}, c)
 	if err != nil {
 		// guardar el error
@@ -56,7 +55,9 @@ func RenderPaymentFile(c *fiber.Ctx) error {
 		// guardar el error
 		return er.CheckError(c, err)
 	}
-	data := fiber.Map{"payment": p, "role": role, "mode": "edit", "idEnterprise": IdEnterprise, "years": years, "year": p.Year, "createdAt": createdAt, "updatedAt": updatedAt}
+	data := fiber.Map{"payment": p, "mode": "edit", "idEnterprise": IdEnterprise, "years": years, "year": p.Year, "createdAt": createdAt, "updatedAt": updatedAt}
+	data["canDelete"] = c.Locals("claims").(jwt.MapClaims)["deletePayment"]
+	data["canWrite"] = c.Locals("claims").(jwt.MapClaims)["writePayment"]
 	return c.Render("paymentFile", data)
 }
 
@@ -91,9 +92,9 @@ func AddPayment(c *fiber.Ctx) error {
 		// guardar el error
 		return er.CheckError(c, err)
 	}
-
-	role := c.Locals("claims").(jwt.MapClaims)["role"]
-	data := fiber.Map{"payment": p, "mode": "edit", "role": role, "idEnterprise": IdEnterprise, "years": years, "year": p.Year, "createdAt": createdAt, "updatedAt": updatedAt}
+	data := fiber.Map{"payment": p, "mode": "edit", "idEnterprise": IdEnterprise, "years": years, "year": p.Year, "createdAt": createdAt, "updatedAt": updatedAt}
+	data["canDelete"] = c.Locals("claims").(jwt.MapClaims)["deletePayment"]
+	data["canWrite"] = c.Locals("claims").(jwt.MapClaims)["writePayment"]
 	return c.Render("paymentFile", data)
 }
 
@@ -111,7 +112,6 @@ func EditPayment(c *fiber.Ctx) error {
 		// guardar el error
 		return er.CheckError(c, err)
 	}
-	role := c.Locals("claims").(jwt.MapClaims)["role"]
 	IdPayment, err := getIdModelCaller(models.Payment{}, c)
 	if err != nil {
 		// guardar el error
@@ -135,7 +135,9 @@ func EditPayment(c *fiber.Ctx) error {
 		return er.CheckError(c, err)
 	}
 
-	data := fiber.Map{"payment": p, "mode": "edit", "idEnterprise": IdEnterprise, "role": role, "years": years, "year": p.Year, "createdAt": createdAt, "updatedAt": updatedAt}
+	data := fiber.Map{"payment": p, "mode": "edit", "idEnterprise": IdEnterprise, "years": years, "year": p.Year, "createdAt": createdAt, "updatedAt": updatedAt}
+	data["canDelete"] = c.Locals("claims").(jwt.MapClaims)["deletePayment"]
+	data["canWrite"] = c.Locals("claims").(jwt.MapClaims)["writePayment"]
 	return c.Render("paymentFile", data)
 
 }

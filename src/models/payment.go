@@ -14,10 +14,10 @@ type Payment struct {
 	IdPayment    int
 	Month        string
 	Year         string
-	Status       string
+	Status       bool
 	Amount       int
 	PaymentDate  string
-	Commentary   string
+	Observations string
 	IdEnterprise int
 	CreatedAt    time.Time
 	UpdatedAt    time.Time
@@ -31,7 +31,7 @@ func (payment Payment) InsertModel() (Payment, error) {
 		Status, 
 		Amount, 
 		PaymentDate, 
-		Commentary,
+		Observations,
 		IdEnterprise)
 		VALUES (?,?,?,?,?, ?, ?)`,
 		payment.Month,
@@ -39,7 +39,7 @@ func (payment Payment) InsertModel() (Payment, error) {
 		payment.Status,
 		payment.Amount,
 		payment.PaymentDate,
-		payment.Commentary,
+		payment.Observations,
 		payment.IdEnterprise)
 	if err != nil {
 		er.QueryError.Msg = err.Error()
@@ -82,14 +82,14 @@ func (payment Payment) UpdateModel() (Payment, error) {
 		Status = ?, 
 		Amount = ?, 
 		PaymentDate = ?, 
-		Commentary = ? 
+		Observations = ? 
 		WHERE IdPayment = ?`,
 		payment.Month,
 		payment.Year,
 		payment.Status,
 		payment.Amount,
 		payment.PaymentDate,
-		payment.Commentary,
+		payment.Observations,
 		payment.IdPayment)
 	if err != nil {
 		er.QueryError.Msg = err.Error()
@@ -156,7 +156,7 @@ func (payment Payment) SearchModels(c *fiber.Ctx, year int) ([]Payment, string, 
 	*
 	FROM PaymentTable 
 	WHERE Year = ? AND IdEnterprise = ?
-	ORDER BY Month ASC
+	ORDER BY Month DESC
 	`, yearStr, IdEnterprise)
 	if err != nil {
 		er.QueryError.Msg = err.Error()
@@ -171,11 +171,11 @@ func (payment Payment) SearchModels(c *fiber.Ctx, year int) ([]Payment, string, 
 
 func (payment Payment) ValidateFields(c *fiber.Ctx) error {
 	validateFunctions := []func(*fiber.Ctx) error{
-		validatePayment,
-		validateStatus,
-		validatePaymentAmount,
-		validatePaymentDate,
-		validateCommentary,
+		ValidatePayment,
+		ValidateStatus,
+		ValidatePaymentAmount,
+		ValidatePaymentDate,
+		ValidateObservations,
 	}
 	for _, vF := range validateFunctions {
 		if err := vF(c); err != nil {
@@ -210,7 +210,7 @@ func (payment Payment) ScanResult(result *sql.Rows, onlyOne bool) (Payment, []Pa
 			&p.Status,
 			&p.Amount,
 			&p.PaymentDate,
-			&p.Commentary,
+			&p.Observations,
 			&p.IdEnterprise,
 			&p.CreatedAt,
 			&p.UpdatedAt,

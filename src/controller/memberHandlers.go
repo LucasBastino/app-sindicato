@@ -97,7 +97,6 @@ func EditMember(c *fiber.Ctx) error {
 	}
 	m.IdMember = IdMember
 	// necesito poner esta linea ↑ para que se pueda editar 2 veces seguidas
-	role := c.Locals("claims").(jwt.MapClaims)["role"]
 
 	m, err = updateModelCaller(m)
 	if err != nil {
@@ -110,7 +109,9 @@ func EditMember(c *fiber.Ctx) error {
 		return er.CheckError(c, err)
 	}
 	// hacer esto esta bien? estoy mostrando datos del nuevo member, no estan sacados de la database.DB
-	data := fiber.Map{"member": m, "mode": "edit", "role": role, "enterprises": enterprises, "enterpriseName": enterpriseName, "createdAt": createdAt, "updatedAt": updatedAt}
+	data := fiber.Map{"member": m, "mode": "edit", "enterprises": enterprises, "enterpriseName": enterpriseName, "createdAt": createdAt, "updatedAt": updatedAt}
+	data["canDelete"] = c.Locals("claims").(jwt.MapClaims)["deleteMember"]
+	data["canWrite"] = c.Locals("claims").(jwt.MapClaims)["writeMember"]
 	return c.Render("memberFile", data)
 
 }
@@ -155,8 +156,8 @@ func RenderMemberTable(c *fiber.Ctx) error {
 		data := getFiberMapCaller(models.Member{}, members, searchKey, currentPage, someBefore, someAfter, totalPages, totalPagesArray)
 		data["enterprises"] = enterprises
 		data["mode"] = "table"
-		role := c.Locals("claims").(jwt.MapClaims)["role"]
-		data["role"] = role
+		data["canDelete"] = c.Locals("claims").(jwt.MapClaims)["deleteMember"]
+		data["canWrite"] = c.Locals("claims").(jwt.MapClaims)["writeMember"]
 		// renderizo la tabla y le envio el map con las variables
 		return c.Render("memberTable", data)
 	}
@@ -184,8 +185,9 @@ func RenderMemberFile(c *fiber.Ctx) error {
 		// guardar el error
 		return er.CheckError(c, err)
 	}
-	role := c.Locals("claims").(jwt.MapClaims)["role"]
-	data := fiber.Map{"member": m, "mode": "edit", "role": role, "enterprises": enterprises, "enterpriseName": enterpriseName, "createdAt": createdAt, "updatedAt": updatedAt}
+	data := fiber.Map{"member": m, "mode": "edit", "enterprises": enterprises, "enterpriseName": enterpriseName, "createdAt": createdAt, "updatedAt": updatedAt}
+	data["canDelete"] = c.Locals("claims").(jwt.MapClaims)["deleteMember"]
+	data["canWrite"] = c.Locals("claims").(jwt.MapClaims)["writeMember"]
 	return c.Render("memberFile", data)
 }
 
@@ -201,8 +203,9 @@ func RenderAddMemberForm(c *fiber.Ctx) error {
 }
 
 func RenderParentTable(c *fiber.Ctx) error {
+	canDelete := c.Locals("claims").(jwt.MapClaims)["deleteParent"]
+	canWrite := c.Locals("claims").(jwt.MapClaims)["writeParent"]
 	// calculo la cantidad de resultados
-	role := c.Locals("claims").(jwt.MapClaims)["role"]
 	totalRows, err := getTotalRowsCaller(models.Parent{}, c)
 	if err != nil {
 		// guardar el error
@@ -215,7 +218,7 @@ func RenderParentTable(c *fiber.Ctx) error {
 	}
 	if totalRows == 0 {
 		// si no hay resultados renderizar esto
-		return c.Render("noResultsParents", fiber.Map{"idMember": IdMember, "role": role})
+		return c.Render("noResultsParents", fiber.Map{"idMember": IdMember, "canDelete": canDelete, "canWrite": canWrite})
 	} else {
 		// Busco los parents asociados a ese member
 		parents, _, err := searchModelsCaller(models.Parent{}, c, 0)
@@ -223,7 +226,7 @@ func RenderParentTable(c *fiber.Ctx) error {
 			// guardar el error
 			return er.CheckError(c, err)
 		}
-		data := fiber.Map{"idMember": IdMember, "role": role, "parents": parents, "mode": "edit"}
+		data := fiber.Map{"idMember": IdMember, "canDelete": canDelete, "canWrite": canWrite, "parents": parents, "mode": "edit"}
 		return c.Render("parentTable", data)
 	}
 }

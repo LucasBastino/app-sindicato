@@ -22,9 +22,11 @@
                 </div>
         
                 <!-- buttons -->
-                {{if eq .role "admin"}}
-                <a class="nav-item nav-link active py-0" href="/member/addForm" id="add-member-btn"><button class="btn-add">Agregar un afiliado</button> 
+                {{if eq true .canWriteEnterprise .withEnterpriseTable}}
                 <a class="nav-item nav-link active py-0 hide" href="/enterprise/addForm" id="add-enterprise-btn"><button class="btn-add">Agregar una empresa</button> 
+                {{end}}
+                {{if eq true .canWriteMember .withMemberTable}}
+                <a class="nav-item nav-link active py-0 hide" href="/member/addForm" id="add-member-btn"><button class="btn-add">Agregar un afiliado</button> 
                 {{end}}
                 <a href="/renderElectoralMemberList"><div class="nav-item-right"><div class="btn-other">Padrón</div></div></a>
                 <a href="/backupDB"><div class="nav-item-right"><div class="btn-other">Backup</div></div></a>

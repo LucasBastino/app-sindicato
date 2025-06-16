@@ -14,8 +14,34 @@ import (
 // ------------------------------------
 
 func RenderIndex(c *fiber.Ctx) error {
-	role := c.Locals("claims").(jwt.MapClaims)["role"]
-	return c.Render("index", fiber.Map{"role": role})
+	return c.Render("index", fiber.Map{})
+}
+
+func RenderMemberList(c *fiber.Ctx) error {
+	data := fiber.Map{"withMemberTable": true, "withEnterpriseTable": false}
+	data["canWriteMember"] = c.Locals("claims").(jwt.MapClaims)["writeMember"]
+	data["canDeleteMember"] = c.Locals("claims").(jwt.MapClaims)["deleteMember"]
+	data["canWriteEnterprise"] = c.Locals("claims").(jwt.MapClaims)["writeEnterprise"]
+	data["canDeleteEnterprise"] = c.Locals("claims").(jwt.MapClaims)["deleteEnterprise"]
+	return c.Render("tablePage", data)
+	// tmpl := template.Must(template.ParseFiles("src/views/index.html"))
+	// return tmpl.Execute(c, nil)
+}
+
+func RenderEnterpriseList(c *fiber.Ctx) error {
+	data := fiber.Map{"withEnterpriseTable": true, "withMemberTable": false}
+	data["canWriteMember"] = c.Locals("claims").(jwt.MapClaims)["writeMember"]
+	data["canDeleteMember"] = c.Locals("claims").(jwt.MapClaims)["deleteMember"]
+	data["canWriteEnterprise"] = c.Locals("claims").(jwt.MapClaims)["writeEnterprise"]
+	data["canDeleteEnterprise"] = c.Locals("claims").(jwt.MapClaims)["deleteEnterprise"]
+	return c.Render("tablePage", data)
+}
+
+func RenderTablePage(c *fiber.Ctx) error {
+	data := fiber.Map{}
+	data["canDeleteMember"] = c.Locals("claims").(jwt.MapClaims)["deleteMember"]
+	data["canDeleteEnterprise"] = c.Locals("claims").(jwt.MapClaims)["deleteEnterprise"]
+	return c.Render("tablePage", data)
 	// tmpl := template.Must(template.ParseFiles("src/views/index.html"))
 	// return tmpl.Execute(c, nil)
 }
@@ -112,7 +138,7 @@ func getEnterpriseName(idEnterprise int) (string, error) {
 func RenderElectoralMemberList(c *fiber.Ctx) error {
 	var m models.MemberWithEnterpriseName
 	var mm []models.MemberWithEnterpriseName
-	result, err := database.DB.Query("SELECT M.MemberNumber, M.LastName, M.Name, M.DNI, E.Name from MemberTable M INNER JOIN EnterpriseTable E ON M.IdEnterprise = E.IdEnterprise WHERE M.IdEnterprise != '1' ORDER BY LastName ASC")
+	result, err := database.DB.Query("SELECT M.MemberNumber, M.LastName, M.Name, M.DNI, E.Name from MemberTable M INNER JOIN EnterpriseTable E ON M.IdEnterprise = E.IdEnterprise WHERE M.IdEnterprise != '1' AND M.Affiliated = true ORDER BY LastName ASC")
 	if err != nil {
 		// guardar el err en algun lado
 		return er.CheckError(c, er.QueryError)
@@ -165,5 +191,8 @@ func formatTimeStamps(cA, uA time.Time) (string, string, error) {
 }
 
 func RenderRegisterUserForm(c *fiber.Ctx) error {
-	return c.Render("register", fiber.Map{})
+	// admin := c.Locals("claims").(jwt.MapClaims)["admin"]
+	// return c.Render("register", fiber.Map{"admin": admin})
+	// borrar el de abajo despues ↓
+	return c.Render("register", fiber.Map{"admin": true})
 }

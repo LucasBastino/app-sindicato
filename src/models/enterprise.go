@@ -18,6 +18,8 @@ type Enterprise struct {
 	District         string
 	PostalCode       string
 	Phone            string
+	Contact          string
+	Observations     string
 	CreatedAt        time.Time
 	UpdatedAt        time.Time
 }
@@ -28,18 +30,22 @@ func (enterprise Enterprise) InsertModel() (Enterprise, error) {
 		(Name,
 		EnterpriseNumber,
 		Address, 
-		CUIT, 
+		CUIT,
 		District, 
 		PostalCode, 
-		Phone)
-		VALUES (?, ?, ?, ?, ?, ?, ?)`,
+		Phone,
+		Contact,
+		Observations)
+		VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
 		enterprise.Name,
 		enterprise.EnterpriseNumber,
 		enterprise.Address,
 		enterprise.CUIT,
 		enterprise.District,
 		enterprise.PostalCode,
-		enterprise.Phone)
+		enterprise.Phone,
+		enterprise.Contact,
+		enterprise.Observations)
 	if err != nil {
 		er.QueryError.Msg = err.Error()
 		return Enterprise{}, er.QueryError
@@ -88,7 +94,9 @@ func (enterprise Enterprise) UpdateModel() (Enterprise, error) {
 		CUIT = ?, 
 		District = ?, 
 		PostalCode = ?, 
-		Phone = ? 
+		Phone = ?,
+		Contact = ?,
+		Observations = ?
 		WHERE IdEnterprise = ?`,
 		enterprise.Name,
 		enterprise.EnterpriseNumber,
@@ -97,6 +105,8 @@ func (enterprise Enterprise) UpdateModel() (Enterprise, error) {
 		enterprise.District,
 		enterprise.PostalCode,
 		enterprise.Phone,
+		enterprise.Contact,
+		enterprise.Observations,
 		enterprise.IdEnterprise)
 	if err != nil {
 		er.QueryError.Msg = err.Error()
@@ -221,6 +231,8 @@ func (enterprise Enterprise) ValidateFields(c *fiber.Ctx) error {
 		ValidateDistrict,
 		ValidatePostalCode,
 		ValidatePhone,
+		ValidateContact,
+		ValidateObservations,
 	}
 
 	for _, vF := range validateFunctions {
@@ -300,10 +312,12 @@ func (enterprise Enterprise) ScanResult(result *sql.Rows, onlyOne bool) (Enterpr
 			&e.Name,
 			&e.EnterpriseNumber,
 			&e.Address,
+			&e.Contact,
 			&e.CUIT,
 			&e.District,
 			&e.PostalCode,
 			&e.Phone,
+			&e.Observations,
 			&e.CreatedAt,
 			&e.UpdatedAt,
 		)

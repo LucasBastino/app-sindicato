@@ -26,7 +26,6 @@ func AddEnterprise(c *fiber.Ctx) error {
 		// guardar el err
 		return er.CheckError(c, err)
 	}
-	role := c.Locals("claims").(jwt.MapClaims)["role"]
 	createdAt, updatedAt, err := formatTimeStamps(e.CreatedAt, e.UpdatedAt)
 	if err != nil {
 		// guardar el err
@@ -37,7 +36,9 @@ func AddEnterprise(c *fiber.Ctx) error {
 		// guardar el err
 		return er.CheckError(c, err)
 	}
-	data := fiber.Map{"enterprise": e, "numberOfMembers": 0, "role": role, "mode": "edit", "years": years, "createdAt": createdAt, "updatedAt": updatedAt}
+	data := fiber.Map{"enterprise": e, "numberOfMembers": 0, "mode": "edit", "years": years, "createdAt": createdAt, "updatedAt": updatedAt}
+	data["canDelete"] = c.Locals("claims").(jwt.MapClaims)["deleteEnterprise"]
+	data["canWrite"] = c.Locals("claims").(jwt.MapClaims)["writeEnterprise"]
 	return c.Render("enterpriseFile", data)
 
 }
@@ -72,7 +73,7 @@ func DeleteEnterprise(c *fiber.Ctx) error {
 	case "table":
 		return RenderEnterpriseTable(c)
 	case "edit":
-		return c.Render("index", fiber.Map{"withEnterpriseTable": true})
+		return c.Render("tablePage", fiber.Map{"withEnterpriseTable": true})
 	default:
 		// log error with deleting mode
 		return er.CheckError(c, er.InternalServerError)
@@ -100,7 +101,6 @@ func EditEnterprise(c *fiber.Ctx) error {
 		// logearlo
 		return er.CheckError(c, err)
 	}
-	role := c.Locals("claims").(jwt.MapClaims)["role"]
 	e, err = updateModelCaller(e)
 	if err != nil {
 		// guardar el err
@@ -116,7 +116,9 @@ func EditEnterprise(c *fiber.Ctx) error {
 		// logearlo en algun lado
 		return er.CheckError(c, err)
 	}
-	data := fiber.Map{"enterprise": e, "numberOfMembers": numberOfMembers, "role": role, "mode": "edit", "years": years, "createdAt": createdAt, "updatedAt": updatedAt}
+	data := fiber.Map{"enterprise": e, "numberOfMembers": numberOfMembers, "mode": "edit", "years": years, "createdAt": createdAt, "updatedAt": updatedAt}
+	data["canDelete"] = c.Locals("claims").(jwt.MapClaims)["deleteEnterprise"]
+	data["canWrite"] = c.Locals("claims").(jwt.MapClaims)["writeEnterprise"]
 	return c.Render("enterpriseFile", data)
 }
 
@@ -170,8 +172,8 @@ func RenderEnterpriseTable(c *fiber.Ctx) error {
 
 		// creo un map con todas las variables
 		data := getFiberMapCaller(models.Enterprise{}, enterprises, searchKey, currentPage, someBefore, someAfter, totalPages, totalPagesArray)
-		role := c.Locals("claims").(jwt.MapClaims)["role"]
-		data["role"] = role
+		data["canDelete"] = c.Locals("claims").(jwt.MapClaims)["deleteEnterprise"]
+		data["canWrite"] = c.Locals("claims").(jwt.MapClaims)["writeEnterprise"]
 		// renderizo la tabla y le envio el map con las variables
 		return c.Render("enterpriseTable", data)
 	}
@@ -188,9 +190,10 @@ func RenderEnterpriseFile(c *fiber.Ctx) error {
 		// logear el err
 		return er.CheckError(c, err)
 	}
-	role := c.Locals("claims").(jwt.MapClaims)["role"]
+	canDelete := c.Locals("claims").(jwt.MapClaims)["deleteEnterprise"]
+	canWrite := c.Locals("claims").(jwt.MapClaims)["writeEnterprise"]
 	if e.IdEnterprise == 1 {
-		data := fiber.Map{"enterprise": e, "role": role, "numberOfMembers": numberOfMembers, "mode": "edit"}
+		data := fiber.Map{"enterprise": e, "canDelete": canDelete, "canWrite": canWrite, "numberOfMembers": numberOfMembers, "mode": "edit"}
 		return c.Render("withoutEnterprise", data)
 	} else {
 		createdAt, updatedAt, err := formatTimeStamps(e.CreatedAt, e.UpdatedAt)
@@ -198,7 +201,7 @@ func RenderEnterpriseFile(c *fiber.Ctx) error {
 			// logear el err
 			return er.CheckError(c, err)
 		}
-		data := fiber.Map{"enterprise": e, "role": role, "numberOfMembers": numberOfMembers, "mode": "edit", "withPaymentTable": false, "createdAt": createdAt, "updatedAt": updatedAt}
+		data := fiber.Map{"enterprise": e, "canDelete": canDelete, "canWrite": canWrite, "numberOfMembers": numberOfMembers, "mode": "edit", "withPaymentTable": false, "createdAt": createdAt, "updatedAt": updatedAt}
 		return c.Render("enterpriseFile", data)
 	}
 }
@@ -298,8 +301,8 @@ func RenderEnterpriseMembers(c *fiber.Ctx) error {
 		data := getFiberMapCaller(models.Member{}, members, searchKey, currentPage, someBefore, someAfter, totalPages, totalPagesArray)
 		data["mode"] = "enterpriseMemberTable"
 		data["IdEnterprise"] = IdEnterprise
-		role := c.Locals("claims").(jwt.MapClaims)["role"]
-		data["role"] = role
+		data["canDelete"] = c.Locals("claims").(jwt.MapClaims)["deleteEnterprise"]
+		data["canWrite"] = c.Locals("claims").(jwt.MapClaims)["writeEnterprise"]
 		// renderizo la tabla y le envio el map con las variables
 		return c.Render("memberTable", data)
 	}
@@ -359,7 +362,8 @@ func RenderEnterprisePaymentsTable(c *fiber.Ctx) error {
 		Year int `params:"year"`
 	}{}
 	c.ParamsParser(&params)
-	role := c.Locals("claims").(jwt.MapClaims)["role"]
+	canDelete := c.Locals("claims").(jwt.MapClaims)["deleteEnterprise"]
+	canWrite := c.Locals("claims").(jwt.MapClaims)["writeEnterprise"]
 	IdEnterprise, err := getIdModelCaller(models.Enterprise{}, c)
 	if err != nil {
 		// guardar el err
@@ -379,7 +383,7 @@ func RenderEnterprisePaymentsTable(c *fiber.Ctx) error {
 	}
 
 	if totalRows == 0 {
-		data := fiber.Map{"idEnterprise": IdEnterprise, "role": role, "mode": "edit", "empty": true}
+		data := fiber.Map{"idEnterprise": IdEnterprise, "canDelete": canDelete, "canWrite": canWrite, "mode": "edit", "empty": true}
 		return c.Render("paymentTable", data)
 	}
 	var lastYear int
@@ -423,7 +427,7 @@ func RenderEnterprisePaymentsTable(c *fiber.Ctx) error {
 			// guardar el err
 			return er.CheckError(c, err)
 		}
-		data := fiber.Map{"payments": payments, "idEnterprise": IdEnterprise, "role": role, "mode": "edit", "years": years, "year": lastYear}
+		data := fiber.Map{"payments": payments, "idEnterprise": IdEnterprise, "canDelete": canDelete, "canWrite": canWrite, "mode": "edit", "years": years, "year": lastYear}
 		return c.Render("paymentTable", data)
 	} else {
 		payments, _, err := searchModelsCaller(models.Payment{}, c, params.Year)
@@ -431,7 +435,7 @@ func RenderEnterprisePaymentsTable(c *fiber.Ctx) error {
 			// guardar el err
 			return er.CheckError(c, err)
 		}
-		data := fiber.Map{"payments": payments, "idEnterprise": IdEnterprise, "role": role, "mode": "edit", "years": years, "year": yearInt}
+		data := fiber.Map{"payments": payments, "idEnterprise": IdEnterprise, "canDelete": canDelete, "canWrite": canWrite, "mode": "edit", "years": years, "year": yearInt}
 		return c.Render("paymentTable", data)
 	}
 }
@@ -469,9 +473,10 @@ func RenderEnterpriseTableSelect(c *fiber.Ctx) error {
 		}
 
 		// creo un map con todas las variables
-		role := c.Locals("claims").(jwt.MapClaims)["role"]
+		canDelete := c.Locals("claims").(jwt.MapClaims)["deleteEnterprise"]
+		canWrite := c.Locals("claims").(jwt.MapClaims)["writeEnterprise"]
 		// renderizo la tabla y le envio el map con las variables
-		return c.Render("enterpriseTableSelect", fiber.Map{"enterprises": enterprises, "role": role})
+		return c.Render("enterpriseTableSelect", fiber.Map{"enterprises": enterprises, "canDelete": canDelete, "canWrite": canWrite})
 	}
 }
 

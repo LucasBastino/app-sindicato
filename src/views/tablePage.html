@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+    {{template "Head"}}
+    <body>
+        <div class="container" id="main-container">
+            {{template "Header" .}}
+            {{if .withEnterpriseTable}}
+            <div id="tableDiv" hx-get="/enterprise/renderTable" hx-trigger="load"></div>
+            {{else if .withMemberTable}}
+            <div id="tableDiv" hx-get="/member/renderTable" hx-trigger="load"></div>
+            {{else}}
+            {{end}}
+        </div>
+        {{template "Scripts"}}
+    </body>
+</html>
+
+
+
+
+
+

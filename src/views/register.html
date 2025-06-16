@@ -1,9 +1,10 @@
+{{if .admin}}
 {{template "Head"}}
 <body>
     <div class="form-container">
         <form class="login-form" hx-post="/register" hx-target="body">
             <div class="page-title form-title">Registrar usuario</div>
-            <div class="form-body">
+            <div class="form__section">
                 <input class="form-input login-form-input" type="text" name="user" placeholder="Usuario"></input>
                 <br>
                
@@ -13,15 +14,81 @@
                 
                 <input class="form-input login-form-input" type="password" name="password" placeholder="Contraseña"></input>
                 <br>
-                
-                <select name="role" id="">
-                    <option value="admin">Admin</option>
-                    <option value="user">User</option>
-                </select>
 
+                <table class="table">
+                    <tr>
+                        <th>Permiso</th>
+                        <th>Agregar/editar</th>
+                        <th>Eliminar</th>
+                    </tr>
+
+                    <tr>
+                        <td>Afiliados</td>
+                        <td>
+                            <select name="write-member" id="">
+                                <option value="true">SI</option>
+                                <option value="false">NO</option>
+                            </select>
+                        </td>
+                        <td>
+                            <select name="delete-member" id="">
+                                <option value="true">SI</option>
+                                <option value="false">NO</option>
+                            </select>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Empresas</td>
+                        <td>
+                            <select name="write-enterprise" id="">
+                                <option value="true">SI</option>
+                                <option value="false">NO</option>
+                            </select>
+                        </td>
+                        <td>
+                            <select name="delete-enterprise" id="">
+                                <option value="true">SI</option>
+                                <option value="false">NO</option>
+                            </select>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Familiares</td>
+                        <td>
+                            <select name="write-parent" id="">
+                            <option value="true">SI</option>
+                            <option value="false">NO</option>
+                        </select>
+                        </td>
+                        <td>
+                            <select name="delete-parent" id="">
+                                <option value="true">SI</option>
+                                <option value="false">NO</option>
+                            </select>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Pagos</td>
+                        <td>
+                            <select name="write-payment" id="">
+                                <option value="true">SI</option>
+                                <option value="false">NO</option>
+                            </select>
+                        </td>
+                        <td>
+                            <select name="delete-payment" id="">
+                                <option value="true">SI</option>
+                                <option value="false">NO</option>
+                            </select>
+                        </td>
+                    </tr>
+
+                </table>
+                
                 <button class="login-submit" type="submit">REGISTRAR</button>
             </div>
             </form>
         </div>
     <script src="https://unpkg.com/htmx.org@1.9.12" integrity="sha384-ujb1lZYygJmzgSwoxRggbCHcjc0rB2XoQrxeTUQyRjrOnlCoYta87iKBWq3EsdM2" crossorigin="anonymous"></script>
 </body>
+{{end}}

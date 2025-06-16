@@ -1,11 +1,11 @@
-{{$role := .role}}
+{{$canDelete := .canDelete}}
 <table class="table table-striped w-90 ">
     <tr>
         <th>Empresa</th>
         <th>N° Empresa</th>
         <th>Direccion</th>
         <th> </th>
-        {{if eq $role "admin"}}
+        {{if .canDelete}}
         <th> </th>
         {{end}}
     </tr>
@@ -24,7 +24,7 @@
                 <i class="bi bi-file-earmark-text"></i>
                     </button>
                 </a>
-            {{if eq $role "admin"}}
+            {{if $canDelete}}
                 <td>
                     <button class="btn-delete" hx-delete="/enterprise/{{$e.IdEnterprise}}/delete" hx-headers='{"mode":"table"}' hx-confirm="¿Estás seguro que deseas eliminar el afiliado?" hx-target="#tableDiv">
                         <i class="bi bi-x-square"></i>

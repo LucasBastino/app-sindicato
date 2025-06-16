@@ -5,7 +5,7 @@
 <body>
     <div class="nav-container">
         <nav class="navbar navbar-file navbar-expand navbar-light bg-light">
-            {{if eq .role "admin"}}
+            {{if .canWrite}}
             <div class="navbar-nav">
                 {{if eq .mode "edit"}}
                 <div class="dropdown">
@@ -51,15 +51,12 @@
                     <div class="input-container field-12">
                         <div class="field-tag field-2">Estado</div>
                         <select class="form-input field-12" name="status" id="status" disabled>
-                            {{if eq $.payment.Status ""}}
-                            <option value="PAGO">PAGO</option>
-                            <option value="IMPAGO">IMPAGO</option>
-                            {{else if eq $.payment.Status "PAGO"}}
-                            <option value="{{$.payment.Status}}">{{$.payment.Status}}</option>
-                            <option value="IMPAGO">IMPAGO</option>
-                            {{else if eq $.payment.Status "IMPAGO"}}
-                            <option value="{{$.payment.Status}}">{{$.payment.Status}}</option>
-                            <option value="PAGO">PAGO</option>
+                            {{if $.payment.Status}}
+                            <option value="true">Pago</option>
+                            <option value="false">Impago</option>
+                            {{else}}
+                            <option value="false">Impago</option>
+                            <option value="true">Pago</option>
                             {{end}}
                         </select>
                     </div>
@@ -84,10 +81,10 @@
                     <div class="hide error-div field-12 payment-date-error"></div>
 
                     <div class="input-container field-12">
-                        <div class="field-tag field-2">Comentarios</div>
-                        <input class="form-input field-12" type="text" name="commentary" value="{{$.payment.Commentary}}" disabled>
+                        <div class="field-tag field-2">Observaciones</div>
+                        <input class="form-input field-12" type="text" name="observations" value="{{$.payment.Observations}}" disabled>
                     </div>
-                    <div class="hide error-div field-12 commentary-error"></div>
+                    <div class="hide error-div field-12 observations-error"></div>
                     
                     <input class="hide" type="text" name="id-enterprise" value="{{$.payment.IdEnterprise}}">
 
@@ -106,8 +103,10 @@
             </form>
             {{if eq .mode "edit"}}
             <div class="btn-container">
-                {{if eq .role "admin"}}
+                {{if .canWrite}}
                 <div class="item-btn" onclick="enableInputs(); enableSelects(); showConfirmButton('payment');">Editar</div>
+                {{end}}
+                {{if .canDelete}}
                 <button class="item-btn btn-delete-file" hx-delete="/payment/{{$.payment.IdEnterprise}}/{{$.payment.IdPayment}}/delete" hx-trigger="click" hx-confirm="¿Estás seguro que deseas eliminar el pago?" hx-target="#tableDiv">Eliminar pago</button>
                 {{end}}
             </div>

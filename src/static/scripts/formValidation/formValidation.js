@@ -1,4 +1,4 @@
-function validateMember(action){
+async function validateMember(action){
     
     var validationFields = {
         name: validateName(getInputValue('name')),
@@ -14,9 +14,10 @@ function validateMember(action){
         district: validateDistrict(getInputValue('district')),
         memberNumber: validateMemberNumber(getInputValue('member-number')),
         cuil: validateCUIL(getInputValue('cuil')),
-        idEnterprise: validateIdEnterprise(getInputValue('id-enterprise')),
+        // idEnterprise: await validateIdEnterprise(getInputValue('id-enterprise')),
         category: validateCategory(getInputValue('category')),
         entryDate: validateEntryDate(getInputValue('entry-date')),
+        observations: validateObservations(getInputValue('observations')),
     }
     
     if (checkValidationFields(validationFields)){
@@ -33,7 +34,7 @@ function validatePayment(action){
         status: validateStatus(getInputValue('status')),
         amount: validateAmount(getInputValue('amount')),
         paymentDate: validatePaymentDate(getInputValue('payment-date')),
-        commentary: validateCommentary(getInputValue('commentary')),
+        observations: validateObservations(getInputValue('observations')),
     }
     
     if (checkValidationFields(validationFields)){
@@ -42,18 +43,19 @@ function validatePayment(action){
 }
 
 
-function validateEnterprise(action){
+async function validateEnterprise(action){
     
     var validationFields = {
         name: validateEnterpriseName(getInputValue('name')),
-        number: validateEnterpriseNumber(getInputValue('enterprise-number')),
+        number: await validateEnterpriseNumber(getInputValue('enterprise-number')),
         address: validateAddress(getInputValue('address')),
         cuit: validateCUIT(getInputValue('cuit')),
         district: validateDistrict(getInputValue('district')),
         postalCode: validatePostalCode(getInputValue('postal-code')),
         phone: validatePhone(getInputValue('phone')),
+        contact: validateContact(getInputValue('contact')),
+        observations: validateObservations(getInputValue('observations')),
     }
-    
     if (checkValidationFields(validationFields)){
         postForm("enterprise", action)
     }

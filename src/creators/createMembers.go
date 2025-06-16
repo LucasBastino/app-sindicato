@@ -125,6 +125,12 @@ func CreateMembers(c *fiber.Ctx) error {
 		m.Address = fmt.Sprintf("%s %d", jsonData.Streets[rand.IntN(len(jsonData.Streets))].Name, rand.IntN(9999))
 		m.District = jsonData.Streets[rand.IntN(len(jsonData.Streets))].Name
 		m.MemberNumber = strconv.Itoa(rand.IntN(9999999999))
+		random := rand.IntN(10)
+		if random == 1 {
+			m.Affiliated = false
+		} else {
+			m.Affiliated = true
+		}
 		m.CUIL = fmt.Sprintf("%d-%s-%d", rand.IntN(9)+20, m.DNI, rand.IntN(8)+1)
 		m.IdEnterprise = rand.IntN(49) + 1
 
@@ -168,7 +174,9 @@ func CreateMembers(c *fiber.Ctx) error {
 			entryMonthStr = "0" + entryMonthStr
 		}
 		m.EntryDate = fmt.Sprintf("%s/%s/%s", entryYearStr, entryMonthStr, entryDayStr)
-		insert, err := database.DB.Query("INSERT INTO MemberTable (Name, LastName, DNI, Birthday, Gender, MaritalStatus, Phone, Email, Address, PostalCode, District, MemberNumber, CUIL, IdEnterprise, Category, EntryDate) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)", m.Name, m.LastName, m.DNI, m.Birthday, m.Gender, m.MaritalStatus, m.Phone, m.Email, m.Address, m.PostalCode, m.District, m.MemberNumber, m.CUIL, m.IdEnterprise, m.Category, m.EntryDate)
+		m.Observations = fmt.Sprintf("texto aleatorio numero %d", rand.IntN(999))
+
+		insert, err := database.DB.Query("INSERT INTO MemberTable (Name, LastName, DNI, Birthday, Gender, MaritalStatus, Phone, Email, Address, PostalCode, District, MemberNumber, Affiliated, CUIL, IdEnterprise, Category, EntryDate, Observations) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)", m.Name, m.LastName, m.DNI, m.Birthday, m.Gender, m.MaritalStatus, m.Phone, m.Email, m.Address, m.PostalCode, m.District, m.MemberNumber, m.Affiliated, m.CUIL, m.IdEnterprise, m.Category, m.EntryDate, m.Observations)
 		if err != nil {
 			fmt.Println("error inserting member")
 			panic(err)

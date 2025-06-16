@@ -113,6 +113,14 @@ func ValidateEmail(c *fiber.Ctx) error {
 	return nil
 }
 
+func ValidateContact(c *fiber.Ctx) error {
+	if len(c.FormValue("contact")) > 200 {
+		er.ValidationError.Msg = "field 'contact' can't have more than 200 characters"
+		return er.ValidationError
+	}
+	return nil
+}
+
 func ValidateAddress(c *fiber.Ctx) error {
 	address := strings.TrimSpace(c.FormValue("address"))
 	if address == "" {
@@ -155,11 +163,38 @@ func ValidateMemberNumber(c *fiber.Ctx) error {
 
 func ValidateEnterpriseNumber(c *fiber.Ctx) error {
 	enterpriseNumber := strings.TrimSpace(c.FormValue("enterprise-number"))
+	oldEnterpriseNumber := strings.TrimSpace(c.FormValue("old-enterprise-number"))
 	if enterpriseNumber == "" {
 		er.ValidationError.Msg = "field 'enterprise-number' can't be empty"
 		return er.ValidationError
 	}
+	if oldEnterpriseNumber == enterpriseNumber {
+		return nil
+	}
+	enterprisesNumbers, err := GetAllEnterprisesNumbersFromDB()
+	if err != nil {
+		return err
+	}
+	if slices.Contains(enterprisesNumbers, enterpriseNumber) {
+		er.ValidationError.Msg = "enterprise number already exists"
+		return er.ValidationError
+	}
+
 	return isNumber(enterpriseNumber, "enterprise-number", "")
+}
+
+func ValidateAffiliated(c *fiber.Ctx) error {
+	affiliated, err := strconv.ParseBool(c.FormValue("affiliated"))
+	if err != nil {
+		er.InternalServerError.Msg = err.Error()
+		return er.CheckError(c, er.InternalServerError)
+	}
+	if affiliated || !affiliated {
+		return nil
+	} else {
+		er.ValidationError.Msg = "field affiliated not contains true or false"
+		return er.ValidationError
+	}
 }
 
 func ValidateCUIL(c *fiber.Ctx) error {
@@ -308,7 +343,7 @@ func validateDate(date, field string) error {
 	return nil
 }
 
-func validatePayment(c *fiber.Ctx) error {
+func ValidatePayment(c *fiber.Ctx) error {
 	month := c.FormValue("month")
 	year := c.FormValue("year")
 
@@ -316,16 +351,21 @@ func validatePayment(c *fiber.Ctx) error {
 	return validateDate(payment, "payment")
 }
 
-func validateStatus(c *fiber.Ctx) error {
-	status := c.FormValue("status")
-	if status == "PAGO" || status == "IMPAGO" {
-		return nil
+func ValidateStatus(c *fiber.Ctx) error {
+	status, err := strconv.ParseBool(c.FormValue("status"))
+	if err != nil {
+		er.InternalServerError.Msg = err.Error()
+		return er.CheckError(c, er.InternalServerError)
 	}
-	er.ValidationError.Msg = "field 'status' is invalid"
-	return er.ValidationError
+	if status == true || status == false {
+		return nil
+	} else {
+		er.ValidationError.Msg = "field status not contains any boolean value"
+		return er.ValidationError
+	}
 }
 
-func validatePaymentAmount(c *fiber.Ctx) error {
+func ValidatePaymentAmount(c *fiber.Ctx) error {
 	amount := c.FormValue("amount")
 	if amount == "" {
 		er.ValidationError.Msg = "field 'amount' can't be empty"
@@ -334,7 +374,7 @@ func validatePaymentAmount(c *fiber.Ctx) error {
 	return isNumber(amount, "amount", "")
 }
 
-func validatePaymentDate(c *fiber.Ctx) error {
+func ValidatePaymentDate(c *fiber.Ctx) error {
 	paymentDate := strings.TrimSpace(c.FormValue("payment-date"))
 	// la fecha de pago puede estar vacia
 	if paymentDate == "" {
@@ -344,9 +384,9 @@ func validatePaymentDate(c *fiber.Ctx) error {
 
 }
 
-func validateCommentary(c *fiber.Ctx) error {
-	if len(c.FormValue("commentary")) > 400 {
-		er.ValidationError.Msg = "field 'commentary' can't have more than 400 characters"
+func ValidateObservations(c *fiber.Ctx) error {
+	if len(c.FormValue("observations")) > 1000 {
+		er.ValidationError.Msg = "field 'observations' can't have more than 1000 characters"
 		return er.ValidationError
 	}
 	return nil

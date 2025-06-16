@@ -29,6 +29,12 @@ func (parser MemberParser) ParseModel(c *fiber.Ctx) (models.Member, error) {
 	m.PostalCode = c.FormValue("postal-code")
 	m.District = c.FormValue("district")
 	m.MemberNumber = c.FormValue("member-number")
+	affiliated, err := strconv.ParseBool(c.FormValue("affiliated"))
+	if err != nil {
+		er.InternalServerError.Msg = err.Error()
+		return models.Member{}, er.CheckError(c, er.InternalServerError)
+	}
+	m.Affiliated = affiliated
 	m.CUIL = c.FormValue("cuil")
 	IdEnterpriseStr := c.FormValue("id-enterprise")
 	if IdEnterpriseStr == "" {
@@ -45,6 +51,7 @@ func (parser MemberParser) ParseModel(c *fiber.Ctx) (models.Member, error) {
 	}
 	m.Category = c.FormValue("category")
 	m.EntryDate = c.FormValue("entry-date")
+	m.Observations = c.FormValue("observations")
 	return m, nil
 }
 
@@ -80,6 +87,8 @@ func (parser EnterpriseParser) ParseModel(c *fiber.Ctx) (models.Enterprise, erro
 	e.District = c.FormValue("district")
 	e.PostalCode = c.FormValue("postal-code")
 	e.Phone = c.FormValue("phone")
+	e.Contact = c.FormValue("contact")
+	e.Observations = c.FormValue("observations")
 	return e, nil
 }
 
@@ -89,7 +98,12 @@ func (parser PaymentParser) ParseModel(c *fiber.Ctx) (models.Payment, error) {
 	p := models.Payment{}
 	p.Month = c.FormValue("month")
 	p.Year = c.FormValue("year")
-	p.Status = c.FormValue("status")
+	status, err := strconv.ParseBool(c.FormValue("status"))
+	if err != nil {
+		er.InternalServerError.Msg = err.Error()
+		return models.Payment{}, er.CheckError(c, er.InternalServerError)
+	}
+	p.Status = status
 	AmountStr := c.FormValue("amount")
 	if AmountStr != "" {
 		Amount, err := strconv.Atoi(AmountStr)
@@ -100,7 +114,7 @@ func (parser PaymentParser) ParseModel(c *fiber.Ctx) (models.Payment, error) {
 		p.Amount = Amount
 	}
 	p.PaymentDate = c.FormValue("payment-date")
-	p.Commentary = c.FormValue("commentary")
+	p.Observations = c.FormValue("observations")
 	IdEnterpriseStr := c.FormValue("id-enterprise")
 	IdEnterprise, err := strconv.Atoi(IdEnterpriseStr)
 	if err != nil {

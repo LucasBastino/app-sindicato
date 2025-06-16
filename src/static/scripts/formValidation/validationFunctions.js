@@ -150,6 +150,25 @@ function validateMemberNumber(value){
     return isNotLongerThan(errorDiv, 20, value)
 }
 
+function validatAffiliated(value){
+    errorDiv = Array.from(document.getElementsByClassName("affiliated-error")).pop()
+    if (!isNotEmpty(errorDiv, value)){
+        return false
+    }
+    return isBoolean(value)
+}
+
+function isBoolean(value){
+    if (value == true || value == false){
+        errorDiv.style.display = 'none'
+        return true
+    } else {
+        errorDiv.innerHTML = 'El campo no contiene un valor válido'
+        errorDiv.style.display = 'inline'
+        return false
+    }
+}
+
 function validateCUIL(value){
     errorDiv = Array.from(document.getElementsByClassName("cuil-error")).pop()
     if (!isNotEmpty(errorDiv, value)){
@@ -161,56 +180,7 @@ function validateCUIL(value){
     return isNotLongerThan(errorDiv, 20, value)
 }
 
-function validateIdEnterprise(value){
-    // esto no devuelve true o false, devuelve una promesa que devuelve true o false
-        return fetch('http://localhost:8085/enterprise/getAllEnterprisesId', {
-            method: 'GET',
-            headers: {
-              Accept: 'application/json',
-              'Content-Type': 'application/json'
-            }})
-          .then(res => res.json())
-          .then(res => {return checkIdEnterprise(res, value)})
-      
-}
 
-function checkIdEnterprise(res, value){
-    value = parseInt(value)
-    errorDiv = Array.from(document.getElementsByClassName("enterprise-error")).pop()
-    if (res.includes(value)){
-        errorDiv.style.display = 'none'
-        return true
-  } else{
-        errorDiv.style.display = 'inline'
-        errorDiv.innerHTML = 'Empresa no válida'
-        return false
-  }
-}
-
-function getAndCheckEnterpriseNumber(value){
-    // esto no devuelve true o false, devuelve una promesa que devuelve true o false
-    return fetch('http://localhost:8085/enterprise/getAllEnterprisesNumber', {
-        method: 'GET',
-        headers: {
-          Accept: 'application/json',
-          'Content-Type': 'application/json'
-        }})
-      .then(res => res.json())
-      .then(res => {return checkEnterpriseNumber(res, value)})
-  
-}
-
-function checkEnterpriseNumber(res, value){
-    errorDiv = Array.from(document.getElementsByClassName("enterprise-number-error")).pop()
-    if (res.includes(value)){
-        errorDiv.innerHTML = 'Numero de empresa ya registrado'
-        errorDiv.style.display = 'inline'
-        return false
-    } else{
-        errorDiv.style.display = 'none'
-        return true
-  }
-}
 
 function validateCategory(value){
     errorDiv = Array.from(document.getElementsByClassName("category-error")).pop()
@@ -243,7 +213,11 @@ function validateEnterpriseName(value){
     return isNotLongerThan(errorDiv, 150, value)
 }
 
-function validateEnterpriseNumber(value){
+function validateContact(value){
+    return isNotLongerThan(errorDiv, 200, value)
+}
+
+async function validateEnterpriseNumber(value){
     errorDiv = Array.from(document.getElementsByClassName("enterprise-number-error")).pop()
     if (!isNotEmpty(errorDiv, value)){
         return false
@@ -256,9 +230,7 @@ function validateEnterpriseNumber(value){
     if (!isNotLongerThan(errorDiv, 10, value)){
         return false
     }
-    
-    return getAndCheckEnterpriseNumber(value)
-
+    return await checkEnterpriseNumber(value)
 }
 
 
@@ -272,6 +244,24 @@ function validateCUIT(value){
     }
     return isNotLongerThan(errorDiv, 20, value)
 }
+
+async function validateIdEnterprise(value){
+    errorDiv = Array.from(document.getElementsByClassName("enterprise-error")).pop()
+    if (!isNotEmpty(errorDiv, value)){
+        return false
+    }
+    
+    if (!isNumeric(errorDiv, "", value)){
+        return false
+    }
+    
+    if (!isNotLongerThan(errorDiv, 10, value)){
+        return false
+    }
+
+    return await checkIdEnterprise(errorDiv, value)
+}
+
 
 // PAYMENT INFO
 function validateMonth(value){
@@ -323,14 +313,7 @@ function validateStatus(value){
     if (!isNotEmpty(errorDiv, value)){
         return false
     }
-    if (!(value == "PAGO" || value == "IMPAGO")){
-        errorDiv.style.display = 'inline'
-        errorDiv.innerHTML = "Estado de pago erróneo."
-        return false
-    } else{
-        errorDiv.style.display = 'none'
-        return true
-    }
+    return isBoolean(value)
 
 }
 
@@ -361,9 +344,9 @@ function validatePaymentDate(value){
     // devuelvo true o false dependiendo de la validacion
 }
 
-function validateCommentary(value){
-    errorDiv = Array.from(document.getElementsByClassName("commentary-error")).pop()
-    return isNotLongerThan(errorDiv, 400, value)
+function validateObservations(value){
+    errorDiv = Array.from(document.getElementsByClassName("observations-error")).pop()
+    return isNotLongerThan(errorDiv, 1000, value)
 }
 
 function validateRelationship(value){
@@ -376,4 +359,72 @@ function validateRelationship(value){
         return false
     }
     return isNotLongerThan(errorDiv, 20, value)
+}
+
+// other functions
+
+// function getEnterprisesId(){ 
+//     // esto no devuelve true o false, devuelve una promesa que devuelve true o false
+//         return fetch('http://localhost:8080/enterprise/getAllEnterprisesId', {
+//             method: 'GET',
+//             headers: {
+//               Accept: 'application/json',
+//               'Content-Type': 'application/json'
+//             }})
+//           .then(res => res.json())      
+// }
+
+// async function checkIdEnterprise(errorDiv, value){
+//     try {
+//         enterprisesId = await getEnterprisesId()
+//         value = parseInt(value)
+//         if (enterprisesId.includes(value)){
+//             errorDiv.style.display = 'none'
+//             return true
+//         } else{
+//             errorDiv.style.display = 'inline'
+//             errorDiv.innerHTML = 'Empresa no válida'
+//             return false
+//   }
+//     } catch (error) {
+//         console.log(error)
+//     }
+   
+// }
+
+
+ function getEnterpriseNumbers(){
+    // esto no devuelve true o false, devuelve una promesa que devuelve true o false
+    return fetch('http://localhost:8080/enterprise/getAllEnterprisesNumber', {
+        method: 'GET',
+        headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json'
+        }})
+        .then(res => res.json())
+}
+
+async function checkEnterpriseNumber(value){
+    try {
+        let enterprisesNumbers = await getEnterpriseNumbers()
+        // para poder editar sin cambiar el number enterprise, sino te tira que ya existe
+        oldValue = Array.from(document.getElementsByName("old-enterprise-number")).pop().value
+        console.log("old", oldValue)
+        console.log("value", value)
+        if (oldValue == value) {
+            console.log("iguales")
+            errorDiv.style.display = 'none'
+            return true
+        } else if (enterprisesNumbers.includes(value)){
+            errorDiv.innerHTML = 'Numero de empresa ya registrado'
+            errorDiv.style.display = 'inline'
+            return false
+        } else{
+            errorDiv.style.display = 'none'
+            return true
+    }
+        } catch (error) {
+            console.log(err)
+        }
+    
 }

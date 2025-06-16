@@ -4,6 +4,8 @@ import (
 	"os"
 	"time"
 
+	er "github.com/LucasBastino/app-sindicato/src/errors"
+	pe "github.com/LucasBastino/app-sindicato/src/permissions"
 	"github.com/gofiber/fiber/v2"
 	"github.com/golang-jwt/jwt/v5"
 )
@@ -11,9 +13,7 @@ import (
 func LoginUser(c *fiber.Ctx) error {
 
 	user, password := getUserAndPassword(c)
-
-	hash, role, checkedUser := checkUser(user)
-
+	hash, checkedUser := checkUser(user)
 	if !checkedUser {
 		return c.Render("login", fiber.Map{"user": user, "password": password, "userError": "Usuario no existente"})
 	}
@@ -22,10 +22,20 @@ func LoginUser(c *fiber.Ctx) error {
 	if err != nil {
 		return c.Render("login", fiber.Map{"user": user, "password": password, "passwordError": "Contraseña incorrecta"})
 	}
-
-	claims := createJwtMapClaims(user, role, 90)
+	admin, err := pe.GetAdmin(user)
+	if err != nil {
+		return er.CheckError(c, err)
+	}
+	permissions, err := pe.GetPermissions(user)
+	if err != nil {
+		return er.CheckError(c, err)
+	}
+	claims := createJwtMapClaims(user, admin, permissions, 90)
 	token := createToken(claims)
-	signedToken := signToken(token)
+	signedToken, err := signToken(token)
+	if err != nil {
+		return er.CheckError(c, err)
+	}
 	cookie := createCookie(signedToken)
 	c.Cookie(&cookie)
 
@@ -51,23 +61,6 @@ func VerifyToken(c *fiber.Ctx) error {
 	claims := token.Claims.(jwt.MapClaims)
 	c.Locals("claims", claims)
 	return c.Next()
-}
-
-func VerifyAdmin(c *fiber.Ctx) error {
-	role := c.Locals("claims").(jwt.MapClaims)["role"]
-	if role == "admin" {
-		return c.Next()
-	} else {
-		return c.Redirect("/insufficientPermissions")
-	}
-}
-
-func VerifyAdminOrUser(c *fiber.Ctx) error {
-	role := c.Locals("claims").(jwt.MapClaims)["role"]
-	if role == "admin" || role == "user" {
-		return c.Next()
-	}
-	return c.Redirect("/insufficientPermissions")
 }
 
 func LogoutUser(c *fiber.Ctx) error {

@@ -39,7 +39,8 @@ func main() {
 	godotenv.Load()
 
 	// Listen
-	log.Fatal(app.Listen(":8085"))
+	// cambiar el port este por uno mas profesional ↓
+	log.Fatal(app.Listen(":8080"))
 
 	// muxer := http.NewServeMux()
 	// svr := &http.Server{

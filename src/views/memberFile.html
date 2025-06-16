@@ -9,7 +9,7 @@
                 <nav class="navbar navbar-expand navbar-light bg-light">
                     <a class="navbar-brand" href="/">Sindicato</a>
                     {{if eq .mode "edit"}}
-                        {{if eq .role "admin"}}
+                        {{if .canWrite}}
                         <a class="nav-item nav-link active py-0" href="/member/addForm" id="add-member-btn"><button class="btn-add">Agregar un afiliado</button></a>
                         {{end}}
                     {{end}}
@@ -90,9 +90,10 @@
                         <div class="hide error-div field-12 phone-error"></div>
 
                         <div class="input-container field-12">
-                            <div class="field-tag field-2">Email</div>
+                            <div class="field-tag field-2"><a href="mailto:{{$.member.Email}}" target="_blank"><div class="btn btn-link">Email <i class="bi bi-envelope-at"></i> </div></a></div>                            
                             <input class="form-input field-100" name="email" type="text" value="{{$.member.Email}}" disabled></input>
                         </div>
+                        <!-- <a href="mailto:{{$.member.Email}}" target="_blank"><div class="small-link-btn"><i class="bi bi-file-earmark-text"></i></div></a> -->
                         <div class="hide error-div field-12 email-error"></div>
 
                         
@@ -126,6 +127,20 @@
                         <div class="hide error-div field-12 member-number-error"></div>
 
                         <div class="input-container field-12">
+                            <div class="field-tag field-2">Situacion afiliatoria</div>
+                            <select class="form-input field-100" name="affiliated" id="affiliated" disabled>
+                                {{if $.member.Affiliated}}
+                                <option value="true">Afiliado</option>
+                                <option value="false">Desafiliado</option>
+                                {{else}}
+                                <option value="false">Desafiliado</option>
+                                <option value="true">Afiliado</option>
+                                {{end}}
+                            </select>
+                        </div>
+                        <div class="hide error-div field-12 affiliated-error"></div>
+
+                        <div class="input-container field-12">
                             <div class="field-tag field-2">CUIL</div>
                             <input class="form-input field-100" type="text" name="cuil" value="{{$.member.CUIL}}" disabled>
                         </div>
@@ -133,7 +148,7 @@
 
 
                         <div class="input-container field-12">
-                            <div class="field-tag field-2">Empresa</div>
+                            <div class="field-tag field-2"><a href="/enterprise/{{$.member.IdEnterprise}}/file"><div class="btn btn-link">Empresa <i class="bi bi-file-earmark-text"></i> </div></a></div>
                             
                                 {{if eq $.member.IdEnterprise 0}}
                                 <!-- si estoy en modo add desde cero que aparezca el search box -->
@@ -150,13 +165,13 @@
                                         <input class="form-control static-input search-input" placeholder="Buscar empresa" name="search-key" type="search" aria-label="Search" 
                                         hx-get="/enterprise/renderTableSelect" hx-trigger="keyup" hx-target="#optionsTable">
                                     </div>
+                                    <!-- lista de empresas -->
+                                    <div class="options" id="optionsTable"></div>
                                 </div>
 
                                 {{else}}
                                 <!-- si tiene una empresa mostrarla en el input -->
                                 <input class="form-input field-100 no-transform" type="text" id="name-enterprise-input" value="{{$.enterpriseName}}" disabled>
-                                <!-- file icon -->
-                                <a href="/enterprise/{{$.member.IdEnterprise}}/file"><div id="enterprise-btn-file"><i class="bi bi-file-earmark-text"></i></div></a>
                                 <!-- icono X escondido hasta que se aprete el boton Editar -->
                                 <div class="hide" id="x-enterprise" onclick="searchEnterpriseAgain();"><i class="bi bi-x-square x-icon"></i></div> 
 
@@ -167,6 +182,8 @@
                                         <input class="form-control static-input search-input" placeholder="Buscar empresa" name="search-key" type="search" aria-label="Search" 
                                         hx-get="/enterprise/renderTableSelect" hx-trigger="keyup" hx-target="#optionsTable">
                                     </div>
+                                    <!-- lista de empresas -->
+                                    <div class="options" id="optionsTable"></div>
                                 </div>
 
                                 {{end}}
@@ -174,8 +191,6 @@
 
                             <!-- input id-enterprise escondido -->
                             <input class="hide" id="id-enterprise-input" type="text" value="{{$.member.IdEnterprise}}" name="id-enterprise">
-                            <!-- lista de empresas -->
-                            <div class="options" id="optionsTable"></div>
                         </div>
                         <div class="hide error-div field-12 enterprise-error"></div>
                         
@@ -203,6 +218,12 @@
                             <input class="form-input field-100" type="text" name="entry-date" id="entry-date" value="{{$.member.EntryDate}}" placeholder="DD/MM/AAAA" disabled>
                         </div>
                         <div class="hide error-div field-12 entry-date-error"></div>
+
+                        <div class="input-container field-12">
+                        <div class="field-tag field-2">Observaciones</div>
+                        <input class="form-input field-100" type="text" name="observations" value="{{$.member.Observations}}" disabled>
+                    </div>
+                    <div class="hide error-div field-12 observations-error"></div>
                         
                     {{if eq .mode "add"}}
                     <div class="item-btn btn-submit" onclick="validateMember('create')">Enviar</div>
@@ -223,8 +244,10 @@
     {{if eq .mode "edit"}}
         <div class="btn-container">
             <button class="item-btn" type="submit" hx-get="/member/{{$.member.IdMember}}/parentTable" hx-trigger="click" hx-target="#tableDiv" onclick="showAddParentButton();">Familiares</button>
-            {{if eq .role "admin"}}
+            {{if .canWrite}}
             <button class="item-btn" onclick="enableInputs(); showConfirmButton('member'); enableSelects(); showXEnterprise(); hideEnterpriseFile();">Editar datos</button>
+            {{end}}
+            {{if .canDelete}}
             <button class="btn-delete-file item-btn" hx-delete="/member/{{$.member.IdMember}}/delete" hx-headers='{"mode": "edit"}' hx-confirm="¿Estás seguro que deseas eliminar el afiliado?" hx-target="#targetDiv">Eliminar afiliado</button>
             {{end}}
         </div>

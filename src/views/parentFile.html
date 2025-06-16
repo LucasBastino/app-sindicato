@@ -4,7 +4,7 @@
 <body>
     <div class="nav-container">
         <nav class="navbar navbar-file navbar-expand navbar-light bg-light">
-            {{if eq .role "admin"}}
+            {{if .canWrite}}
             <div class="navbar-nav">
                 {{if eq .mode "edit"}}
                 <button hx-get="/parent/{{$.parent.IdMember}}/addForm" hx-trigger="click" hx-target="#tableDiv">Agregar otro familiar</button></a>
@@ -17,7 +17,7 @@
             {{if eq .mode "add" }}
             <form hx-post="/parent/{{$.parent.IdMember}}/add" hx-target="#tableDiv">
                 <div class="form__section" id="form-section">
-                    {{if eq .role "admin"}}
+                    {{if .canWrite}}
                     <div class="page-title">Agregar nuevo familiar</div>
                     {{end}}
             {{else if eq .mode "edit"}}
@@ -91,10 +91,12 @@
 
     {{if eq .mode "edit"}}
     <div class="btn-container">
-        {{if eq .role "admin"}}
+        {{if .canWrite}}
         <button class="item-btn" onclick="enableInputs(); enableSelects(); showConfirmButton('parent');">Editar datos</button>
+        {{end}}
+        {{if .canDelete}}
         <button class="btn-delete-file item-btn" hx-delete="/parent/{{$.parent.IdMember}}/{{$.parent.IdParent}}/delete" hx-confirm="¿Estás seguro que deseas eliminar el familiar?" hx-target="#tableDiv">Eliminar</button>
-         {{end}}
+        {{end}}
     </div>
     {{else if eq .mode "add"}}
     <script type="text/javascript">

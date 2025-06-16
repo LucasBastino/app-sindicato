@@ -3,17 +3,21 @@
     {{template "Head"}}
     <body>
         <div class="container" id="main-container">
-            {{template "Header" .}}
-            {{if .withEnterpriseTable}}
-            <div id="tableDiv" hx-get="/enterprise/renderTable" hx-trigger="load"></div>
-            {{else}}
-            <div id="tableDiv" hx-get="/member/renderTable" hx-trigger="load"></div>
-            {{end}}
+            <div class="index-btn-container">
+
+                <div class="index-btn">
+                    <i class="bi bi-person"></i>
+                    <a href="/member/list">Afiliados</a>
+                </div>
+                <div class="index-btn">
+                    <i class="bi bi-building"></i>
+                    <a href="/enterprise/list">Empresas</a>
+                </div>
+            </div>
         </div>
         {{template "Scripts"}}
     </body>
 </html>
-
 
 
 

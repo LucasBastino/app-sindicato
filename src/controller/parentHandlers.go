@@ -17,7 +17,6 @@ func AddParent(c *fiber.Ctx) error {
 		// guardar el error
 		return er.CheckError(c, err)
 	}
-	role := c.Locals("claims").(jwt.MapClaims)["role"]
 
 	p, err = insertModelCaller(p)
 	if err != nil {
@@ -29,7 +28,9 @@ func AddParent(c *fiber.Ctx) error {
 		// guardar el error
 		return er.CheckError(c, err)
 	}
-	data := fiber.Map{"parent": p, "mode": "edit", "role": role, "createdAt": createdAt, "updatedAt": updatedAt}
+	data := fiber.Map{"parent": p, "mode": "edit", "createdAt": createdAt, "updatedAt": updatedAt}
+	data["canDelete"] = c.Locals("claims").(jwt.MapClaims)["deleteParent"]
+	data["canWrite"] = c.Locals("claims").(jwt.MapClaims)["writeParent"]
 	return c.Render("parentFile", data)
 
 }
@@ -59,7 +60,6 @@ func EditParent(c *fiber.Ctx) error {
 		return er.CheckError(c, err)
 	}
 	p.IdParent = IdParent
-	role := c.Locals("claims").(jwt.MapClaims)["role"]
 	p, err = updateModelCaller(p)
 	if err != nil {
 		// guardar el error
@@ -70,7 +70,9 @@ func EditParent(c *fiber.Ctx) error {
 		// guardar el error
 		return er.CheckError(c, err)
 	}
-	data := fiber.Map{"parent": p, "mode": "edit", "role": role, "createdAt": createdAt, "updatedAt": updatedAt}
+	data := fiber.Map{"parent": p, "mode": "edit", "createdAt": createdAt, "updatedAt": updatedAt}
+	data["canDelete"] = c.Locals("claims").(jwt.MapClaims)["deleteParent"]
+	data["canWrite"] = c.Locals("claims").(jwt.MapClaims)["writeParent"]
 	return c.Render("parentFile", data)
 
 }
@@ -81,13 +83,14 @@ func RenderParentFile(c *fiber.Ctx) error {
 		// guardar el error
 		return er.CheckError(c, err)
 	}
-	role := c.Locals("claims").(jwt.MapClaims)["role"]
 	createdAt, updatedAt, err := formatTimeStamps(p.CreatedAt, p.UpdatedAt)
 	if err != nil {
 		// guardar el error
 		return er.CheckError(c, err)
 	}
-	data := fiber.Map{"parent": p, "mode": "edit", "role": role, "createdAt": createdAt, "updatedAt": updatedAt}
+	data := fiber.Map{"parent": p, "mode": "edit", "createdAt": createdAt, "updatedAt": updatedAt}
+	data["canDelete"] = c.Locals("claims").(jwt.MapClaims)["deleteParent"]
+	data["canWrite"] = c.Locals("claims").(jwt.MapClaims)["writeParent"]
 	return c.Render("parentFile", data)
 }
 
@@ -99,7 +102,8 @@ func RenderAddParentForm(c *fiber.Ctx) error {
 	}
 	// creo un parent nuevo para que el form aparezca con campos vacios
 	p := models.Parent{IdMember: IdMember}
-	role := c.Locals("claims").(jwt.MapClaims)["role"]
-	data := fiber.Map{"parent": p, "mode": "add", "role": role}
+	data := fiber.Map{"parent": p, "mode": "add"}
+	data["canDelete"] = c.Locals("claims").(jwt.MapClaims)["deleteParent"]
+	data["canWrite"] = c.Locals("claims").(jwt.MapClaims)["writeParent"]
 	return c.Render("parentFile", data)
 }

@@ -47,7 +47,7 @@ func CreateEnterprises(c *fiber.Ctx) error {
 
 	var e models.Enterprise
 
-	insert, err := database.DB.Query("INSERT INTO EnterpriseTable (Name, EnterpriseNumber, Address, CUIT, District, PostalCode, Phone) VALUES ('SIN EMPRESA', 'POR DEFECTO', 'POR DEFECTO', 'POR DEFECTO', 'POR DEFECTO', '0000', 'POR DEFECTO')")
+	insert, err := database.DB.Query("INSERT INTO EnterpriseTable (Name, EnterpriseNumber, Address, Contact, CUIT, District, PostalCode, Phone, Observations) VALUES ('SIN EMPRESA', 'POR DEFECTO', 'POR DEFECTO', 'POR DEFECTO', 'POR DEFECTO', 'POR DEFECTO', '0000', 'POR DEFECTO', 'POR DEFECTO')")
 	if err != nil {
 		fmt.Println("error inserting enterprise")
 		panic(err)
@@ -62,8 +62,10 @@ func CreateEnterprises(c *fiber.Ctx) error {
 		e.District = jsonData.Streets[rand.IntN(len(jsonData.Streets))].Name
 		e.PostalCode = strconv.Itoa(rand.IntN(8000) + 1000)
 		e.Phone = fmt.Sprintf("156%d", rand.IntN(9999999))
+		e.Contact = fmt.Sprintf("156%d", rand.IntN(9999999))
+		e.Observations = fmt.Sprintf("texto aleatorio numero %d", rand.IntN(999))
 
-		insert, err := database.DB.Query("INSERT INTO EnterpriseTable (Name, EnterpriseNumber, Address, CUIT, District, PostalCode, Phone) VALUES (?,?,?,?,?,?,?)", e.Name, e.EnterpriseNumber, e.Address, e.CUIT, e.District, e.PostalCode, e.Phone)
+		insert, err := database.DB.Query("INSERT INTO EnterpriseTable (Name, EnterpriseNumber, Address, CUIT, District, PostalCode, Phone, Contact, Observations) VALUES (?,?,?,?,?,?,?,?,?)", e.Name, e.EnterpriseNumber, e.Address, e.CUIT, e.District, e.PostalCode, e.Phone, e.Contact, e.Observations)
 		if err != nil {
 			fmt.Println("error inserting enterprise")
 			panic(err)

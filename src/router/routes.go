@@ -5,6 +5,7 @@ import (
 	creators "github.com/LucasBastino/app-sindicato/src/creators"
 	er "github.com/LucasBastino/app-sindicato/src/errors"
 	l "github.com/LucasBastino/app-sindicato/src/login"
+	pe "github.com/LucasBastino/app-sindicato/src/permissions"
 	"github.com/gofiber/fiber/v2"
 )
 
@@ -13,6 +14,8 @@ func RegisterRoutes(app *fiber.App) {
 	app.Get("/", l.VerifyToken, c.RenderIndex)
 	// borrar esto despues ↓ --------------------
 	app.Get("/register", c.RenderRegisterUserForm)
+	// app.Get("/register", l.VerifyToken, pe.VerifyAdmin, c.RenderRegisterUserForm)
+	// app.Post("/register", l.VerifyToken, pe.VerifyAdmin, l.RegisterUser)
 	app.Post("/register", l.RegisterUser)
 	// --------------------------
 	app.Get("/login", c.RenderLogin)
@@ -26,40 +29,42 @@ func RegisterRoutes(app *fiber.App) {
 	e := app.Group("/enterprise")
 	py := app.Group("/payment")
 
-	m.Get("/renderTable", l.VerifyToken, l.VerifyAdminOrUser, c.RenderMemberTable)
-	m.Get("/renderTable/:Page", l.VerifyToken, l.VerifyAdminOrUser, c.RenderMemberTable)
-	m.Get("/addForm", l.VerifyToken, l.VerifyAdmin, c.RenderAddMemberForm)
-	m.Post("/add", l.VerifyToken, l.VerifyAdmin, c.AddMember)
-	m.Get("/:IdMember/file", l.VerifyToken, l.VerifyAdminOrUser, c.RenderMemberFile)
-	m.Get("/:IdMember/parentTable", l.VerifyToken, l.VerifyAdminOrUser, c.RenderParentTable)
-	m.Put("/:IdMember/edit", l.VerifyToken, l.VerifyAdmin, c.EditMember)
-	m.Delete("/:IdMember/delete", l.VerifyToken, l.VerifyAdmin, c.DeleteMember)
+	m.Get("/list", l.VerifyToken, c.RenderMemberList)
+	m.Get("/renderTable", l.VerifyToken, c.RenderMemberTable)
+	m.Get("/renderTable/:Page", l.VerifyToken, c.RenderMemberTable)
+	m.Get("/addForm", l.VerifyToken, pe.VerifyWriteMember, c.RenderAddMemberForm)
+	m.Post("/add", l.VerifyToken, pe.VerifyWriteMember, c.AddMember)
+	m.Get("/:IdMember/file", l.VerifyToken, c.RenderMemberFile)
+	m.Get("/:IdMember/parentTable", l.VerifyToken, c.RenderParentTable)
+	m.Put("/:IdMember/edit", l.VerifyToken, pe.VerifyWriteMember, c.EditMember)
+	m.Delete("/:IdMember/delete", l.VerifyToken, pe.VerifyDeleteMember, c.DeleteMember)
 
-	p.Get("/:IdMember/addForm", l.VerifyToken, l.VerifyAdmin, c.RenderAddParentForm)
-	p.Post("/:IdMember/add", l.VerifyToken, l.VerifyAdmin, c.AddParent)
-	p.Get("/:IdMember/:IdParent/file", l.VerifyToken, l.VerifyAdminOrUser, c.RenderParentFile)
-	p.Delete("/:IdMember/:IdParent/delete", l.VerifyToken, l.VerifyAdmin, c.DeleteParent)
-	p.Put("/:IdMember/:IdParent/edit", l.VerifyToken, l.VerifyAdmin, c.EditParent)
+	p.Get("/:IdMember/addForm", l.VerifyToken, pe.VerifyWriteParent, c.RenderAddParentForm)
+	p.Post("/:IdMember/add", l.VerifyToken, pe.VerifyWriteParent, c.AddParent)
+	p.Get("/:IdMember/:IdParent/file", l.VerifyToken, c.RenderParentFile)
+	p.Put("/:IdMember/:IdParent/edit", l.VerifyToken, pe.VerifyWriteParent, c.EditParent)
+	p.Delete("/:IdMember/:IdParent/delete", l.VerifyToken, pe.VerifyDeleteParent, c.DeleteParent)
 
-	e.Get("/renderTable", l.VerifyToken, l.VerifyAdminOrUser, c.RenderEnterpriseTable)
-	e.Get("/renderTable/:Page", l.VerifyToken, l.VerifyAdminOrUser, c.RenderEnterpriseTable)
-	e.Get("/renderTableSelect", l.VerifyToken, l.VerifyAdminOrUser, c.RenderEnterpriseTableSelect)
-	e.Get("/addForm", l.VerifyToken, l.VerifyAdmin, c.RenderAddEnterpriseForm)
-	e.Post("/add", l.VerifyToken, l.VerifyAdmin, c.AddEnterprise)
-	e.Get("/:IdEnterprise/file", l.VerifyToken, l.VerifyAdminOrUser, c.RenderEnterpriseFile)
-	e.Get("/:IdEnterprise/memberTable", l.VerifyToken, l.VerifyAdminOrUser, c.RenderEnterpriseMembers)
-	e.Delete("/:IdEnterprise/delete", l.VerifyToken, l.VerifyAdmin, c.DeleteEnterprise)
-	e.Put("/:IdEnterprise/edit", l.VerifyToken, l.VerifyAdmin, c.EditEnterprise)
-	e.Get("/:IdEnterprise/paymentTable/:Year", l.VerifyToken, l.VerifyAdminOrUser, c.RenderEnterprisePaymentsTable)
-	e.Get("/getAllEnterprisesId", l.VerifyToken, l.VerifyAdminOrUser, c.GetAllEnterprisesId)
-	e.Get("/getAllEnterprisesNumber", l.VerifyToken, l.VerifyAdminOrUser, c.GetAllEnterprisesNumber)
+	e.Get("/list", l.VerifyToken, c.RenderEnterpriseList)
+	e.Get("/renderTable", l.VerifyToken, c.RenderEnterpriseTable)
+	e.Get("/renderTable/:Page", l.VerifyToken, c.RenderEnterpriseTable)
+	e.Get("/renderTableSelect", l.VerifyToken, c.RenderEnterpriseTableSelect)
+	e.Get("/addForm", l.VerifyToken, pe.VerifyWriteEnterprise, c.RenderAddEnterpriseForm)
+	e.Post("/add", l.VerifyToken, pe.VerifyWriteEnterprise, c.AddEnterprise)
+	e.Get("/:IdEnterprise/file", l.VerifyToken, c.RenderEnterpriseFile)
+	e.Get("/:IdEnterprise/memberTable", l.VerifyToken, c.RenderEnterpriseMembers)
+	e.Delete("/:IdEnterprise/delete", l.VerifyToken, pe.VerifyDeleteEnterprise, c.DeleteEnterprise)
+	e.Put("/:IdEnterprise/edit", l.VerifyToken, pe.VerifyWriteEnterprise, c.EditEnterprise)
+	e.Get("/:IdEnterprise/paymentTable/:Year", l.VerifyToken, c.RenderEnterprisePaymentsTable)
+	e.Get("/getAllEnterprisesId", l.VerifyToken, c.GetAllEnterprisesId)
+	e.Get("/getAllEnterprisesNumber", l.VerifyToken, c.GetAllEnterprisesNumber)
 
-	py.Get("/:IdEnterprise/addForm", l.VerifyToken, l.VerifyAdmin, c.RenderAddPaymentForm)
-	py.Post("/:IdEnterprise/add", l.VerifyToken, l.VerifyAdmin, c.AddPayment)
-	py.Get("/:IdEnterprise/:IdPayment/file", l.VerifyToken, l.VerifyAdminOrUser, c.RenderPaymentFile)
-	py.Put("/:IdEnterprise/:IdPayment/edit", l.VerifyToken, l.VerifyAdmin, c.EditPayment)
-	py.Delete("/:IdEnterprise/:IdPayment/delete", l.VerifyToken, l.VerifyAdmin, c.DeletePayment)
-	py.Get("/:IdEnterprise/paymentTable", l.VerifyToken, l.VerifyAdminOrUser, c.RenderEnterprisePaymentsTable)
+	py.Get("/:IdEnterprise/addForm", l.VerifyToken, pe.VerifyWritePayment, c.RenderAddPaymentForm)
+	py.Post("/:IdEnterprise/add", l.VerifyToken, pe.VerifyWritePayment, c.AddPayment)
+	py.Get("/:IdEnterprise/:IdPayment/file", l.VerifyToken, c.RenderPaymentFile)
+	py.Put("/:IdEnterprise/:IdPayment/edit", l.VerifyToken, pe.VerifyWritePayment, c.EditPayment)
+	py.Delete("/:IdEnterprise/:IdPayment/delete", l.VerifyToken, pe.VerifyDeletePayment, c.DeletePayment)
+	py.Get("/:IdEnterprise/paymentTable", l.VerifyToken, c.RenderEnterprisePaymentsTable)
 
 	app.Get("/error", er.RenderError)
 
@@ -70,5 +75,5 @@ func RegisterRoutes(app *fiber.App) {
 	app.Get("/createPayments", creators.CreatePayments)
 	app.Get("/renderElectoralMemberList", l.VerifyToken, c.RenderElectoralMemberList)
 	app.Get("/pruebaEmpresas", c.RenderPruebaEmpresas)
-	app.Get("/backupDB", l.VerifyToken, l.VerifyAdmin, c.BackupDB)
+	app.Get("/backupDB", l.VerifyToken, c.BackupDB)
 }

@@ -6,15 +6,25 @@ DROP TABLE ParentTable
 
 DROP TABLE PaymentTable
 
-DROP TABLE Users
+DROP TABLE UserTable
 
 SELECT * FROM UserTable
+
+DELETE FROM UserTable WHERE `Username` = "ali";
 
 CREATE TABLE UserTable(
     IdUser INT PRIMARY KEY AUTO_INCREMENT NOT NULL,
     Username VARCHAR(20),
     Hash VARCHAR(100),
-    Role VARCHAR(20)
+    Admin BOOLEAN,
+    WriteMember BOOLEAN,
+    DeleteMember BOOLEAN,
+    WriteEnterprise BOOLEAN,
+    DeleteEnterprise BOOLEAN,
+    WriteParent BOOLEAN,
+    DeleteParent BOOLEAN,
+    WritePayment BOOLEAN,
+    DeletePayment BOOLEAN
 )
 
 CREATE TABLE EnterpriseTable(
@@ -22,10 +32,12 @@ CREATE TABLE EnterpriseTable(
     Name VARCHAR(255),
     EnterpriseNumber VARCHAR(50) UNIQUE,
     Address VARCHAR(50),
+    Contact VARCHAR(200),
     CUIT VARCHAR(50),
     District VARCHAR(50),
     PostalCode VARCHAR(10),
     Phone VARCHAR(50),
+    Observations VARCHAR(1000),
     Created_At TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     Updated_At TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 )
@@ -44,11 +56,13 @@ CREATE TABLE MemberTable(
     PostalCode VARCHAR(10) NOT NULL,
     District VARCHAR(50) NOT NULL,
     MemberNumber VARCHAR(50) NOT NULL,
+    Affiliated BOOLEAN NOT NULL DEFAULT true,
     CUIL VARCHAR(50) NOT NULL,
     IdEnterprise INT,
     -- aca va sin NOT NULL, por si borras la empresa
     Category VARCHAR(100) NOT NULL,
     EntryDate VARCHAR(50) NOT NULL,
+    Observations VARCHAR(1000),
     CreatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     UpdatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     FOREIGN KEY (IdEnterprise) REFERENCES EnterpriseTable(IdEnterprise) ON DELETE SET NULL
@@ -75,10 +89,10 @@ CREATE TABLE PaymentTable(
     IdPayment INT PRIMARY KEY AUTO_INCREMENT NOT NULL,
     Month VARCHAR(2) NOT NULL,
     Year VARCHAR(4) NOT NULL,
-    Status VARCHAR(6) NOT NULL,
+    Status BOOLEAN NOT NULL DEFAULT true,
     Amount INT,
     PaymentDate VARCHAR(20),
-    Commentary VARCHAR(400),
+    Observations VARCHAR(1000),
     IdEnterprise INT NOT NULL,
     CreatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     UpdatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
@@ -96,7 +110,7 @@ SELECT * FROM PaymentTable
 
 
 
-UPDATE EnterpriseTable SET IdEnterprise = 0, Name = "SIN EMPRESA", Address = "POR DEFECTO" WHERE IdEnterprise = 149
+UPDATE EnterpriseTable SET Contact = "POR DEFECTO", Observations = "POR DEFECTO" WHERE IdEnterprise = 1
 
 
 INSERT INTO ParentTable (Name, Rel, IdMember) VALUES ('familiar3', 'PRIMssO', 1)

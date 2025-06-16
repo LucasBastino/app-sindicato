@@ -1,10 +1,11 @@
-{{$role := .role}}
+{{$canWrite := .canWrite}}
+{{$canDelete := .canDelete}}
 {{$idEnterprise := .idEnterprise}}
 
 {{if .empty}}
 <div class="nav-container">
     <nav class="navbar navbar-file navbar-expand navbar-light bg-light">
-        {{if eq .role "admin"}}
+        {{if $canWrite}}
         <div class="navbar-nav">
             {{if eq .mode "edit"}}
             <button class="btn-add" hx-get="/payment/{{.idEnterprise}}/addForm" hx-trigger="click" hx-target="#tableDiv">Agregar un pago</button></a>
@@ -16,7 +17,7 @@
 {{else}}
 <div class="nav-container">
     <nav class="navbar navbar-file navbar-expand navbar-light bg-light">
-        {{if eq .role "admin"}}
+        {{if $canWrite}}
         <div class="navbar-nav">
             {{if eq .mode "edit"}}
             <div class="dropdown">
@@ -44,9 +45,11 @@
         <th>Monto</th>
         <th>Fecha de pago</th>
         <th></th>
-        <th></th>
+        {{if $canDelete}}
+            <th></th>  
+        {{end}}
     </tr>
-    {{ range $_, $p := .payments}}
+    {{range $_, $p := .payments}}
     <tr>
         <td>{{$p.Month}}</td>
         <td>{{$p.Year}}</td>
@@ -54,14 +57,11 @@
         <td>{{$p.Amount}}</td>
         <td>{{$p.PaymentDate}}</td>
         <td>
-
-            
-                <button class="btn-file" hx-get="/payment/{{$p.IdEnterprise}}/{{$p.IdPayment}}/file" hx-trigger="click" hx-target="#tableDiv">
-                    <i class="bi bi-file-earmark-text"></i>
-                </button>
-            
+            <button class="btn-file" hx-get="/payment/{{$p.IdEnterprise}}/{{$p.IdPayment}}/file" hx-trigger="click" hx-target="#tableDiv">
+                <i class="bi bi-file-earmark-text"></i>
+            </button>
         </td>
-        {{if eq $role "admin"}}
+        {{if $canDelete}}
         <td>
             <button class="btn-delete" hx-delete="/payment/{{$p.IdEnterprise}}/{{$p.IdPayment}}/delete" hx-confirm="¿Estás seguro que deseas eliminar el pago?" hx-target="#tableDiv">
                 <i class="bi bi-x-square"></i>

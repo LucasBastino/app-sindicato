@@ -2,6 +2,7 @@ package models
 
 import (
 	"database/sql"
+	"fmt"
 	"time"
 
 	"github.com/LucasBastino/app-sindicato/src/database"
@@ -23,10 +24,12 @@ type Member struct {
 	PostalCode    string
 	District      string
 	MemberNumber  string
+	Affiliated    bool
 	CUIL          string
 	IdEnterprise  int
 	Category      string
 	EntryDate     string
+	Observations  string
 	CreatedAt     time.Time
 	UpdatedAt     time.Time
 }
@@ -49,11 +52,13 @@ func (member Member) InsertModel() (Member, error) {
 		PostalCode,
 		District,
 		MemberNumber,
+		Affiliated,
 		CUIL,
 		IdEnterprise,
 		Category,
-		EntryDate) 
-		VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`,
+		EntryDate,
+		Observations) 
+		VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`,
 		member.Name,
 		member.LastName,
 		member.DNI,
@@ -66,10 +71,12 @@ func (member Member) InsertModel() (Member, error) {
 		member.PostalCode,
 		member.District,
 		member.MemberNumber,
+		member.Affiliated,
 		member.CUIL,
 		member.IdEnterprise,
 		member.Category,
-		member.EntryDate)
+		member.EntryDate,
+		member.Observations)
 	if err != nil {
 		er.QueryError.Msg = err.Error()
 		return Member{}, er.QueryError
@@ -121,10 +128,12 @@ func (member Member) UpdateModel() (Member, error) {
 		PostalCode = ?,
 		District = ?,
 		MemberNumber = ?,
+		Affiliated = ?,
 		CUIL = ?,
 		IdEnterprise = ?,
 		Category = ?,
-		EntryDate = ?
+		EntryDate = ?,
+		Observations = ?
 		WHERE IdMember = ?`,
 		member.Name,
 		member.LastName,
@@ -138,12 +147,15 @@ func (member Member) UpdateModel() (Member, error) {
 		member.PostalCode,
 		member.District,
 		member.MemberNumber,
+		member.Affiliated,
 		member.CUIL,
 		member.IdEnterprise,
 		member.Category,
 		member.EntryDate,
+		member.Observations,
 		member.IdMember)
 	if err != nil {
+		fmt.Println("error updateando member")
 		er.QueryError.Msg = err.Error()
 		return Member{}, er.QueryError
 	}
@@ -239,10 +251,12 @@ func (member Member) ValidateFields(c *fiber.Ctx) error {
 		ValidatePostalCode,
 		ValidateDistrict,
 		ValidateMemberNumber,
+		ValidateAffiliated,
 		ValidateCUIL,
 		ValidateIdEnterprise,
 		ValidateCategory,
 		ValidateEntryDate,
+		ValidateObservations,
 	}
 
 	for _, vF := range validateFunctions {
@@ -350,11 +364,13 @@ func (member Member) ScanResult(result *sql.Rows, onlyOne bool) (Member, []Membe
 			&m.PostalCode,
 			&m.District,
 			&m.MemberNumber,
+			&m.Affiliated,
 			&m.CUIL,
 			// &tempIdEnterprise,
 			&m.IdEnterprise,
 			&m.Category,
 			&m.EntryDate,
+			&m.Observations,
 			&m.CreatedAt,
 			&m.UpdatedAt,
 		)
