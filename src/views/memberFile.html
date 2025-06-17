@@ -90,7 +90,8 @@
                         <div class="hide error-div field-12 phone-error"></div>
 
                         <div class="input-container field-12">
-                            <div class="field-tag field-2"><a href="mailto:{{$.member.Email}}" target="_blank"><div class="btn btn-link">Email <i class="bi bi-envelope-at"></i> </div></a></div>                            
+                            <div class="field-tag field-2 print hide">Email</div>
+                            <div class="field-tag field-2 no-print"><a href="mailto:{{$.member.Email}}" target="_blank"><div class="btn btn-link">Email <i class="bi bi-envelope-at"></i> </div></a></div>                            
                             <input class="form-input field-100" name="email" type="text" value="{{$.member.Email}}" disabled></input>
                         </div>
                         <!-- <a href="mailto:{{$.member.Email}}" target="_blank"><div class="small-link-btn"><i class="bi bi-file-earmark-text"></i></div></a> -->
@@ -148,7 +149,8 @@
 
 
                         <div class="input-container field-12">
-                            <div class="field-tag field-2"><a href="/enterprise/{{$.member.IdEnterprise}}/file"><div class="btn btn-link">Empresa <i class="bi bi-file-earmark-text"></i> </div></a></div>
+                            <div class="field-tag field-2 print hide">Empresa</div>
+                            <div class="field-tag field-2 no-print"><a href="/enterprise/{{$.member.IdEnterprise}}/file"><div class="btn btn-link">Empresa <i class="bi bi-file-earmark-text"></i> </div></a></div>
                             
                                 {{if eq $.member.IdEnterprise 0}}
                                 <!-- si estoy en modo add desde cero que aparezca el search box -->
@@ -243,7 +245,7 @@
     {{template "ValidationScripts"}}
     {{if eq .mode "edit"}}
         <div class="btn-container">
-            <button class="item-btn" type="submit" hx-get="/member/{{$.member.IdMember}}/parentTable" hx-trigger="click" hx-target="#tableDiv" onclick="showAddParentButton();">Familiares</button>
+            <button class="item-btn" onclick="showParentTable();">Familiares</button>
             {{if .canWrite}}
             <button class="item-btn" onclick="enableInputs(); showConfirmButton('member'); enableSelects(); showXEnterprise(); hideEnterpriseFile();">Editar datos</button>
             {{end}}
@@ -252,7 +254,7 @@
             {{end}}
         </div>
     {{end}}
-        <div id="tableDiv"></div>
+        <div class="hide" hx-get="/member/{{$.member.IdMember}}/parentTable" hx-trigger="load" id="tableDiv"></div>
     </div>
 </div>
 {{if eq .mode "add"}}

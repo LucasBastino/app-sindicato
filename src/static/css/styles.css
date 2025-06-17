@@ -502,18 +502,53 @@ div.no-result{
   background-color: #ffea95;
 }
 
-.index-btn{
-  height: 10em;
-  width: 10em;
+.index-btn-container a{
+  height: 50%;
+  width: 50%;
   border: 2px solid #999;
-  border-radius: 10px;
-  padding: 10em;
-  margin: 10em
+  /* border-radius: 10px; */
+  padding: 3em 1em 
+}
+
+/* .index-btn-left{
+  margin: 10em 5em 10em 10em;
+}
+
+.index-btn-right{
+  margin: 10em 10em 10em 5em;
+} */
+
+.index-btn i{
+  font-size: 8em;
+}
+
+.index-btn p{
+  display: block;
+  font-size: 2em;
+  font-weight: 500;
 }
 
 .index-btn-container{
 text-align: center;
 display: flex;
+}
+
+
+
+@media print{
+  header, .btn-container, .timestamps, .no-print{
+    display: none;
+  }
+  .page-title{
+    font-size: 50px;
+  }
+  .print, #tableDiv{
+    display: inline;
+  }
+  .form-input{
+    border-bottom: 1px solid black;
+  }
+
 }
 
 #member-search-input{

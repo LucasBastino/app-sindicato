@@ -111,6 +111,10 @@ function showXEnterprise(){
     document.getElementById('x-enterprise').style.display = 'inline'
 }
 
+function showParentTable(){
+    document.getElementById('tableDiv').style.display = 'inline'
+}
+
 
 function searchEnterpriseAgain(){
     document.getElementById('x-enterprise').style.display = 'none'

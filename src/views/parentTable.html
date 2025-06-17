@@ -1,21 +1,23 @@
 {{$canDelete := .canDelete}}
 {{$canWrite := .canWrite}}
-<div class="nav-container">
-    <nav class="navbar navbar-file navbar-expand navbar-light bg-light">
-        {{if $canWrite}}
+    <div class="nav-container">
+        <nav class="navbar navbar-file navbar-expand navbar-light bg-light">
+            {{if $canWrite}}
         <div class="navbar-nav">
             <button hx-get="/parent/{{.idMember}}/addForm" hx-trigger="click" hx-target="#tableDiv">Agregar familiar</button></a>
         </div>
         {{end}}
-    </nav>
-</div>
+        </nav>
+    </div>
 <table class="table table-striped w-90 sub-table">
-        <tr>
+    <tr>
             <th>Nombre</th>
             <th>Parentesco</th>
-            <th> </th>
+            <th class="print">CUIL</th>
+            <th class="print">Fecha de Nac.</th>
+            <th class="no-print"> </th>
             {{if $canDelete}}
-            <th> </th>
+            <th class="no-print"> </th>
             {{end}}
         </tr>
 
@@ -23,14 +25,16 @@
         <tr>
             <td>{{$p.Name}} </td>
             <td>{{$p.Rel}} </td>
-            <td>
+            <td class="print">{{$p.CUIL}}</td>
+            <td class="print">{{$p.Birthday}}</td>
+            <td class="no-print">
                 <button class="btn-file" hx-get="/parent/{{$p.IdMember}}/{{$p.IdParent}}/file" hx-trigger="click" hx-target="#tableDiv">
                 <i class="bi bi-file-earmark-text"></i>
-                </button>
+            </button>
                 </a>
             </td>
             {{if $canDelete}}
-            <td>
+            <td class="no-print">
                 <button class="btn-delete" hx-delete="/parent/{{$p.IdMember}}/{{$p.IdParent}}/delete" hx-confirm="¿Estás seguro que deseas eliminar el familiar?" hx-target="#tableDiv">
                     <i class="bi bi-x-square"></i>
                 </button>
@@ -39,3 +43,4 @@
         </tr>
         {{end}}
     </table>    
+    
