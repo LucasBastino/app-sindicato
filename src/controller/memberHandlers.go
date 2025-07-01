@@ -130,7 +130,7 @@ func RenderMemberTable(c *fiber.Ctx) error {
 	}
 	if totalRows == 0 {
 		// si no hay resultados renderizar esto
-		return c.SendString(`<div class="no-result">No se encontraron afiliados</div>`)
+		return c.SendString(`<div class="no-result">No se encontraron afiliados<a href="/member/addForm"><button class="add-btn-table">Agregar</button></a></div> `)
 	} else {
 		// si hay resultados...
 

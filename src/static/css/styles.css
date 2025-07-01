@@ -228,8 +228,8 @@ select:disabled {
 
 
 .spacer{
-  width: 7em;
-  margin-left: 16em;
+  width: 5em;
+  margin-right: 20em;
 }
 
 form {
@@ -416,8 +416,8 @@ th.no-result {
   margin-right: 1em;
 }
 
-div.no-result{
-  margin: 1em
+.no-result{
+  margin: 1em;
 }
 
 .login-form-container{
@@ -580,9 +580,9 @@ text-align: center;
 display: flex;
 }
 
-/* .add-btn{
-  min-width: 10em
-} */
+  /* .add-btn{
+    font-size: 10px;
+  } */
 
 .success-unsuccess-form-container{
   width: 45%;
@@ -607,20 +607,41 @@ display: flex;
   margin-top: 10em;
 }
 
-.add-table-btn{
+/* .add-btn-table{
   display: inline;
-  width: 25px;
-  height: 25px;
-  padding: 10px 5px;
+  align-self: center;
+  line-height: 15px;  
+  padding-left: 10px;
+  padding-right: 10px;
+  padding-bottom: 4px;
   font-size: 20px;
+  font-weight: 700;
   background-color: #dd2222;
-  color: white
+  color: white;
+  border: 2px solid black;
+  border-radius: 5px;
+  margin: 0 10px;
+  box-shadow: 1px 1px black
+} */
+
+.add-btn-table{
+  margin-left: 0;
+  margin-right: 1em;
+  color: white;
+  background-color: #dd2222;
+  font-weight: 700;
+  font-size: 0.9em;
+  border-radius: 5px;
 }
 
 th{
-  font-size: 20px;
+  font-size: 1em;
+  align-items: center;
 }
 
+.no-result a button{
+  margin-left: 0.7em
+}
 
 @media print{
   header, .btn-container, .timestamps, .no-print, .nav-container{
