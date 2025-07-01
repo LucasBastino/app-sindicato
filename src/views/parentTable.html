@@ -13,8 +13,8 @@
     <tr>
             <th>Nombre</th>
             <th>Parentesco</th>
-            <th class="print">CUIL</th>
-            <th class="print">Fecha de Nac.</th>
+            <th>CUIL</th>
+            <th>Fecha de Nac.</th>
             <th class="no-print"> </th>
             {{if $canDelete}}
             <th class="no-print"> </th>
@@ -23,10 +23,10 @@
 
         {{range $_, $p := .parents}}
         <tr>
-            <td>{{$p.Name}} </td>
+            <td>{{$p.LastName}}, {{$p.Name}} </td>
             <td>{{$p.Rel}} </td>
-            <td class="print">{{$p.CUIL}}</td>
-            <td class="print">{{$p.Birthday}}</td>
+            <td>{{$p.CUIL}}</td>
+            <td>{{$p.Birthday}}</td>
             <td class="no-print">
                 <button class="btn-file" hx-get="/parent/{{$p.IdMember}}/{{$p.IdParent}}/file" hx-trigger="click" hx-target="#tableDiv">
                 <i class="bi bi-file-earmark-text"></i>

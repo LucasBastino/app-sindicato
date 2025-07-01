@@ -2,20 +2,22 @@
 <html lang="en">
     {{template "Head"}}
     <body>
-        <div class="container" id="main-container">
-            <div class="index-btn-container">
-                    <a href="/member/list">
-                        <div class="btn index-btn index-btn-left">
-                            <i class="bi bi-person"></i>
-                            <p>Afiliados</p>
-                        </div>
-                    </a>    
-                    <a href="/enterprise/list">
-                        <div class="btn index-btn index-btn-right">
-                            <i class="bi bi-building"></i>
-                            <p>Empresas</p>
-                        </div>
-                    </a>
+        <div class="index-container">
+            <div class="container" id="main-container">
+                <div class="index-btn-container">
+                        <a class="index-btn-left" href="/member/list">
+                            <div class="btn index-btn">
+                                <i class="bi bi-person"></i>
+                                <p>Afiliados</p>
+                            </div>
+                        </a>    
+                        <a class="index-btn-right" href="/enterprise/list">
+                            <div class="btn index-btn ">
+                                <i class="bi bi-building"></i>
+                                <p>Empresas</p>
+                            </div>
+                        </a>
+                </div>
             </div>
         </div>
         {{template "Scripts"}}

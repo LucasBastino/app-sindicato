@@ -2,11 +2,11 @@
     <header>
         <div class="nav-container">
             <nav class="navbar navbar-expand navbar-light bg-light">
-                <a class="navbar-brand" href="#" onclick="showAddMemberBtn(); hideAddEnterpriseBtn();" hx-get="/member/renderTable" hx-trigger="click" hx-target="#tableDiv">Sindicato</a>
+                <a class="navbar-brand" href="/">Sindicato</a>
                 <div class="navbar-nav">
                     <!-- navbar links -->
-                        <a class="nav-item nav-link active" href="#" hx-get="/member/renderTable" hx-trigger="click" hx-target="#tableDiv">Afiliados</a>
-                        <a class="nav-item nav-link active" href="#" hx-get="/enterprise/renderTable" hx-trigger="click" hx-target="#tableDiv">Empresas</a>
+                        <a class="nav-item nav-link active" href="#" hx-get="/member/renderTable" onclick="showAddMemberBtn(); hideAddEnterpriseBtn();" hx-trigger="click" hx-target="#tableDiv">Afiliados</a>
+                        <a class="nav-item nav-link active" href="#" hx-get="/enterprise/renderTable" onclick="hideAddMemberBtn(); showAddEnterpriseBtn();" hx-trigger="click" hx-target="#tableDiv">Empresas</a>
                     <!-- 4 search inputs -->
                     <div class="inner-addon right-addon" id="member-search-input">
                     <i class="bi bi-search input-icon"></i>
@@ -22,16 +22,20 @@
                 </div>
         
                 <!-- buttons -->
-                {{if eq true .canWriteEnterprise .withEnterpriseTable}}
-                <a class="nav-item nav-link active py-0 hide" href="/enterprise/addForm" id="add-enterprise-btn"><button class="btn-add">Agregar una empresa</button> 
-                {{end}}
-                {{if eq true .canWriteMember .withMemberTable}}
-                <a class="nav-item nav-link active py-0 hide" href="/member/addForm" id="add-member-btn"><button class="btn-add">Agregar un afiliado</button> 
-                {{end}}
-                <a href="/renderElectoralMemberList"><div class="nav-item-right"><div class="btn-other">Padrón</div></div></a>
-                <a href="/backupDB"><div class="nav-item-right"><div class="btn-other">Backup</div></div></a>
-                <!-- <button class="nav-item-right" onclick="makeBackup();">Backup</button> -->
-                <a class="nav-item-right" href="/logout">Salir</a>
+                
+                <a class="nav-item nav-link active add-btn hide {{if .withMemberTable}}show{{end}}" href="/member/addForm" id="add-member-btn">Agregar afiliado</a>
+                <a class="nav-item nav-link active add-btn hide {{if .withEnterpriseTable}}show{{end}}" href="/enterprise/addForm" id="add-enterprise-btn">Agregar empresa</a>
+                <div class="spacer"></div>
+                <div class="nav-items-container-right">
+
+                    <a href="/renderElectoralMemberList"><div class="nav-item-right">Padrón</div></a>
+                    <a href="/backupDB"><div class="nav-item-right">Backup</div></a>
+                    <!-- <button class="nav-item-right" onclick="makeBackup();">Backup</button> -->
+                     {{if .admin}}
+                    <a class="nav-item-right" href="/register">Registrar</a>
+                    {{end}}
+                    <a class="nav-item-right" href="/logout">Salir</a>
+                </div>
             </nav>
         </div>
     </header>    

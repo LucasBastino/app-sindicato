@@ -38,7 +38,7 @@ func checkHashAndPassword(hash, password []byte) error {
 	return bcrypt.CompareHashAndPassword(hash, password)
 }
 
-func createJwtMapClaims(user string, admin bool, p pe.Permissions, minutes int) jwt.MapClaims {
+func createJwtMapClaims(user string, admin bool, p pe.Permissions, hours int) jwt.MapClaims {
 	return jwt.MapClaims{
 		"user":             user,
 		"admin":            admin,
@@ -50,7 +50,7 @@ func createJwtMapClaims(user string, admin bool, p pe.Permissions, minutes int) 
 		"deleteParent":     p.DeleteParent,
 		"writePayment":     p.WritePayment,
 		"deletePayment":    p.DeletePayment,
-		"exp":              time.Now().Add(time.Minute * time.Duration(minutes)).Unix(),
+		"exp":              time.Now().Add(time.Hour * time.Duration(hours)).Unix(),
 	}
 }
 

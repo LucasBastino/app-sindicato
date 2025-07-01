@@ -1,6 +1,7 @@
 package controller
 
 import (
+	"fmt"
 	"time"
 
 	"github.com/LucasBastino/app-sindicato/src/database"
@@ -19,10 +20,12 @@ func RenderIndex(c *fiber.Ctx) error {
 
 func RenderMemberList(c *fiber.Ctx) error {
 	data := fiber.Map{"withMemberTable": true, "withEnterpriseTable": false}
+	data["admin"] = c.Locals("claims").(jwt.MapClaims)["admin"]
 	data["canWriteMember"] = c.Locals("claims").(jwt.MapClaims)["writeMember"]
 	data["canDeleteMember"] = c.Locals("claims").(jwt.MapClaims)["deleteMember"]
 	data["canWriteEnterprise"] = c.Locals("claims").(jwt.MapClaims)["writeEnterprise"]
 	data["canDeleteEnterprise"] = c.Locals("claims").(jwt.MapClaims)["deleteEnterprise"]
+	fmt.Println(data)
 	return c.Render("tablePage", data)
 	// tmpl := template.Must(template.ParseFiles("src/views/index.html"))
 	// return tmpl.Execute(c, nil)
@@ -30,10 +33,12 @@ func RenderMemberList(c *fiber.Ctx) error {
 
 func RenderEnterpriseList(c *fiber.Ctx) error {
 	data := fiber.Map{"withEnterpriseTable": true, "withMemberTable": false}
+	data["admin"] = c.Locals("claims").(jwt.MapClaims)["admin"]
 	data["canWriteMember"] = c.Locals("claims").(jwt.MapClaims)["writeMember"]
 	data["canDeleteMember"] = c.Locals("claims").(jwt.MapClaims)["deleteMember"]
 	data["canWriteEnterprise"] = c.Locals("claims").(jwt.MapClaims)["writeEnterprise"]
 	data["canDeleteEnterprise"] = c.Locals("claims").(jwt.MapClaims)["deleteEnterprise"]
+	fmt.Println(data)
 	return c.Render("tablePage", data)
 }
 

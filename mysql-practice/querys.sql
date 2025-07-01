@@ -10,6 +10,8 @@ DROP TABLE UserTable
 
 SELECT * FROM UserTable
 
+UPDATE `UserTable` SET `Admin` = 1 WHERE `IdUser` = 1
+
 DELETE FROM UserTable WHERE `Username` = "ali";
 
 CREATE TABLE UserTable(

@@ -30,7 +30,7 @@ func LoginUser(c *fiber.Ctx) error {
 	if err != nil {
 		return er.CheckError(c, err)
 	}
-	claims := createJwtMapClaims(user, admin, permissions, 90)
+	claims := createJwtMapClaims(user, admin, permissions, 8)
 	token := createToken(claims)
 	signedToken, err := signToken(token)
 	if err != nil {
