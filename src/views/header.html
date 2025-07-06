@@ -3,15 +3,17 @@
         <div class="nav-container">
             <nav class="navbar navbar-expand navbar-light bg-light">
                 <a class="navbar-brand" href="/">Sindicato</a>
-                <div class="navbar-nav">
+                
                     <!-- navbar links -->
-                        <a class="nav-item nav-link active" href="#" hx-get="/member/renderTable" onclick="showAddMemberBtn(); hideAddEnterpriseBtn();" hx-trigger="click" hx-target="#tableDiv">Afiliados</a>
-                        <a class="nav-item nav-link active" href="#" hx-get="/enterprise/renderTable" onclick="hideAddMemberBtn(); showAddEnterpriseBtn();" hx-trigger="click" hx-target="#tableDiv">Empresas</a>
+                     <div class="header-icon-container">
+                        <a class="nav-item nav-link active" href="#" hx-get="/member/renderTable" onclick="showAddMemberBtn(); hideAddEnterpriseBtn();" hx-trigger="click" hx-target="#tableDiv"><i class="bi bi-person"></i></a>
+                        <a class="nav-item nav-link active" href="#" hx-get="/enterprise/renderTable" onclick="hideAddMemberBtn(); showAddEnterpriseBtn();" hx-trigger="click" hx-target="#tableDiv"><i class="bi bi-buildings"></i></a>
+                    </div>
                     <!-- 4 search inputs -->
                     <div class="inner-addon right-addon" id="member-search-input">
                     <i class="bi bi-search input-icon"></i>
                     <!-- <input class="form-control mr-sm-2 input-field search-input" name="search-key" type="search" aria-label="Search"  -->
-                    <input class="form-control static-input search-input" name="search-key" id="search-input" type="search" aria-label="Search" 
+                    <input class="form-control static-input input-field search-input" name="search-key" type="search" aria-label="Search" 
                     hx-get="/member/renderTable" hx-trigger="keyup" hx-target="#tableDiv">
                     </div> 
                     <div class="inner-addon right-addon hide" id="enterprise-search-input">
@@ -19,21 +21,19 @@
                     <input class="form-control static-input input-field search-input" name="search-key" type="search" aria-label="Search" 
                     hx-get="/enterprise/renderTable" hx-trigger="keyup" hx-target="#tableDiv">
                     </div> 
-                </div>
+                
         
                 <!-- buttons -->
-                
-                
-                <div class="spacer"></div>
-                <div class="nav-items-container-right">
-
-                    <a href="/renderElectoralMemberList"><div class="nav-item-right">Padrón</div></a>
-                    <a href="/backupDB"><div class="nav-item-right">Backup</div></a>
-                    <!-- <button class="nav-item-right" onclick="makeBackup();">Backup</button> -->
-                     {{if .admin}}
-                    <a class="nav-item-right" href="/register">Registrar</a>
-                    {{end}}
-                    <a class="nav-item-right" href="/logout">Salir</a>
+                 <div class="dropdown">
+                    <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false"></button>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" href="/renderElectoralMemberList">Padrón</a></li>
+                        <li><a class="dropdown-item" href="/backupDB">Backup</a></li>
+                        {{if .admin}}
+                        <li><a class="dropdown-item" href="/register">Registrar</a></li>
+                        {{end}}
+                        <li><a class="dropdown-item" href="logout">Salir</a></li>
+                    </ul>
                 </div>
             </nav>
         </div>

@@ -210,6 +210,10 @@ select:disabled {
   border: none
 }
 
+.dropdown{
+  margin-left: 1em;
+}
+
 .nav-items-container-right{
   display: flex;
   justify-items: end;
@@ -218,8 +222,26 @@ select:disabled {
   margin-right: 0
 }
 
-.nav-item, .nav-item:hover{
-  color:black
+.nav-item, .nav-item:hover, .nav-link, .nav-link:hover{
+  color:black;
+  margin: 0px;
+  padding: 0.3em
+}
+
+.bi-person, .bi-buildings{
+  color:black;
+  font-size: 30px;
+  margin: 0;
+  display: inline
+}
+
+.navbar-brand{
+  margin-right: 0px;
+}
+
+.header-icon-container{
+  margin: 0 1em;
+  display: flex;
 }
 
 .show{
@@ -228,8 +250,8 @@ select:disabled {
 
 
 .spacer{
-  width: 5em;
-  margin-right: 20em;
+  width: 25em;
+  margin-right: 18em;
 }
 
 form {
@@ -340,6 +362,7 @@ form {
 }
 
 .navbar {
+  display: flex;
   background-color: #eeeeee !important;
   border-top-left-radius: 20px;
   border-top-right-radius: 20px;
@@ -659,9 +682,10 @@ th{
 
 }
 
-#member-search-input{
+#member-search-input, #enterprise-search-input{
   margin:0px
 }
+
 
 #electoral-member-list-table{
   background-color: white;
