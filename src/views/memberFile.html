@@ -10,7 +10,8 @@
                     <a class="navbar-brand" href="/">Sindicato</a>
                     {{if eq .mode "edit"}}
                         {{if .canWrite}}
-                        <a class="nav-item nav-link active py-0" href="/member/addForm" id="add-member-btn"><button class="btn-add">Agregar un afiliado</button></a>
+                        <!-- <a class="nav-item nav-link active py-0" href="/member/addForm" id="add-member-btn"><button class="btn-add">Agregar un afiliado</button></a> -->
+                         <a href="/member/addForm"><button class="add-btn-table">Agregar afiliado</button></a>
                         {{end}}
                     {{end}}
                 </nav>

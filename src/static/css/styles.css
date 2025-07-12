@@ -65,7 +65,7 @@ select {
   position: absolute;
   /* bottom 0 para alinearlo mas arriba */
   bottom: 0%;
-  padding: 10px;
+  padding: 7px 10px;
   pointer-events: none;
 }
 
@@ -228,8 +228,8 @@ select:disabled {
   padding: 0.3em
 }
 
-.bi-person, .bi-buildings{
-  color:black;
+.bi-person-fill, .bi-building-fill{
+  color: #444444;
   font-size: 30px;
   margin: 0;
   display: inline
@@ -439,6 +439,10 @@ th.no-result {
   margin-right: 1em;
 }
 
+.dropdown-toggle{
+  background-color: #444444;
+}
+
 .no-result{
   margin: 1em;
 }
@@ -451,7 +455,7 @@ th.no-result {
   /* align-items: center; */
   text-align: center;
   align-self: center;
-  margin-top: 10em;
+  margin-top: 5em;
 }
 
 
@@ -512,6 +516,10 @@ th.no-result {
 
 .icon-container{
   margin-top: 5em;
+}
+
+.icon-container-backup{
+  margin-top:3em;
 }
 
 .check-icon{
@@ -607,9 +615,21 @@ display: flex;
     font-size: 10px;
   } */
 
+
+.backup-form-container{
+  width: 55%;
+  height: 75%;
+  display:flex;
+  justify-content: center;            
+  /* align-items: center; */
+  text-align: center;
+  align-self: center;
+  margin-top: 10em;
+}
+
 .success-unsuccess-form-container{
-  width: 45%;
-  height: 55%;
+  width: 55%;
+  height: 60%;
   display:flex;
   justify-content: center;            
   /* align-items: center; */
@@ -648,10 +668,10 @@ display: flex;
 } */
 
 .add-btn-table{
-  margin-left: 0;
+  margin-left: 1em;
   margin-right: 1em;
   color: white;
-  background-color: #dd2222;
+  background-color: #555555;
   font-weight: 700;
   font-size: 0.9em;
   border-radius: 5px;

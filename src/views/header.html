@@ -6,8 +6,8 @@
                 
                     <!-- navbar links -->
                      <div class="header-icon-container">
-                        <a class="nav-item nav-link active" href="#" hx-get="/member/renderTable" onclick="showAddMemberBtn(); hideAddEnterpriseBtn();" hx-trigger="click" hx-target="#tableDiv"><i class="bi bi-person"></i></a>
-                        <a class="nav-item nav-link active" href="#" hx-get="/enterprise/renderTable" onclick="hideAddMemberBtn(); showAddEnterpriseBtn();" hx-trigger="click" hx-target="#tableDiv"><i class="bi bi-buildings"></i></a>
+                        <a class="nav-item nav-link active show" href="#" hx-get="/member/renderTable" onclick="showAddMemberBtn(); hideAddEnterpriseBtn();" hx-trigger="click" hx-target="#tableDiv"><i class="bi bi-person-fill"></i></a>
+                        <a class="nav-item nav-link active show" href="#" hx-get="/enterprise/renderTable" onclick="hideAddMemberBtn(); showAddEnterpriseBtn();" hx-trigger="click" hx-target="#tableDiv"><i class="bi bi-building-fill"></i></a>
                     </div>
                     <!-- 4 search inputs -->
                     <div class="inner-addon right-addon" id="member-search-input">
@@ -32,7 +32,7 @@
                         {{if .admin}}
                         <li><a class="dropdown-item" href="/register">Registrar</a></li>
                         {{end}}
-                        <li><a class="dropdown-item" href="logout">Salir</a></li>
+                        <li><a class="dropdown-item" href="/logout">Salir</a></li>
                     </ul>
                 </div>
             </nav>
