@@ -39,8 +39,10 @@ function isValidCharacter(errorDiv, validCharacters, value){
         if (validCharacters.includes(value[i])){
             continue
         } else {
-            errorDiv.style.display = 'inline'
             errorDiv.innerHTML = "Caracter inválido."
+            errorDiv.style.display = 'inline'
+            console.log("caracter invalido")
+            console.log(errorDiv)
             return false
         }
     }

@@ -1,4 +1,5 @@
 {{$enterprises := .enterprises}}
+{{$enterpriseId := .enterpriseId}}
 {{$searchKey := .searchKey}}
 {{$mode := .mode}}
 {{$canDelete := .canDelete}}
@@ -6,7 +7,12 @@
 <table class="table table-striped w-90 ">
     <tr>
         <!-- <th><i class="bi bi-plus-square-fill add-btn-table"></i>Afiliado</th> -->
-        <th><a href="/member/addForm"><button class="add-btn-table"><i class="bi bi-plus-lg"></i></button></a>Afiliado</th>
+         {{if .fromEnterprise}}
+         <!-- <th><a href="/member/addForm"><button class="add-btn-table"><i class="bi bi-plus-lg"></i></button></a>Afiliado</th> -->
+          <th><button class="add-btn-table" hx-get="/member/addForm" hx-headers='{"fromEnterprise": "true", "enterpriseId": "{{$enterpriseId}}"}' hx-target="body" hx-trigger="click"><i class="bi bi-plus-lg"></i></button></a>Afiliado</th>
+         {{else}}
+         <th><a href="/member/addForm"><button class="add-btn-table"><i class="bi bi-plus-lg"></i></button></a>Afiliado</th>
+         {{end}}
         <!-- <th><button class="btn-file"><i class="bi bi-plus-square"></i></button>Afiliado</th> -->
         <th>DNI</th>
         {{if eq $mode "table"}}

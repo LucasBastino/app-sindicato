@@ -27,6 +27,7 @@ var InfoDB = DBInfo{
 	DBName:   "sindicatoDB_settingcry",
 }
 
+
 func CreateConnection() {
 	// Host:     os.Getenv("HOST"),
 	// User:     os.Getenv("USER"),
@@ -40,17 +41,20 @@ func CreateConnection() {
 	if err != nil {
 		er.DatabaseConnectionError.Msg = err.Error()
 		// logearlo
-		panic(err)
+		// hacer algo aca, capaz cambiar la forma en que se loggea, que primero entre al index, nose. Es para despues
+		// panic(err)
+		fmt.Println("error ingresando a la database")
 	}
 
 	err = db.Ping()
 	if err != nil {
 		er.DatabaseConnectionError.Msg = err.Error()
 		// logearlo
-		panic(err)
+		// hacer algo aca
+		// panic(err)
+		fmt.Println("error pingeando a la database")
 	}
 
 	fmt.Println("Succesfully connected to database")
 	DB = db
-
 }

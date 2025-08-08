@@ -259,6 +259,8 @@ func (member Member) ValidateFields(c *fiber.Ctx) error {
 		ValidateObservations,
 	}
 
+	
+
 	for _, vF := range validateFunctions {
 		if err := vF(c); err != nil {
 			return err

@@ -1,7 +1,6 @@
 package controller
 
 import (
-	"fmt"
 	"strconv"
 
 	"github.com/LucasBastino/app-sindicato/src/database"
@@ -279,7 +278,7 @@ func RenderEnterpriseMembers(c *fiber.Ctx) error {
 
 	if totalRows == 0 {
 		// si no hay resultados renderizar esto
-		return c.SendString(`<div class="no-result">No se encontraron afiliados</div>`)
+		return c.SendString(`<div class="no-result-file">No se encontraron afiliados</div>`)
 	} else {
 		// si hay resultados...
 
@@ -292,15 +291,17 @@ func RenderEnterpriseMembers(c *fiber.Ctx) error {
 			// logear el err
 			return er.CheckError(c, er.QueryError)
 		}
-		fmt.Println("llego aca")
 
 		// hago un array para poder recorrerlo y crear botones cuando hay menos de 10 paginas en el template
 		totalPagesArray := GetTotalPagesArray(totalPages)
 
+		enterpriseId := c.Get("enterpriseId")
 		// creo un map con todas las variables
 		data := getFiberMapCaller(models.Member{}, members, searchKey, currentPage, someBefore, someAfter, totalPages, totalPagesArray)
 		data["mode"] = "enterpriseMemberTable"
 		data["IdEnterprise"] = IdEnterprise
+		data["fromEnterprise"] = true
+		data["enterpriseId"] = enterpriseId
 		data["canDelete"] = c.Locals("claims").(jwt.MapClaims)["deleteEnterprise"]
 		data["canWrite"] = c.Locals("claims").(jwt.MapClaims)["writeEnterprise"]
 		// renderizo la tabla y le envio el map con las variables
@@ -339,11 +340,6 @@ func getAllEnterpriseMembers(IdEnterprise int) ([]models.Member, error) {
 }
 
 func setIdEnterpriseToOne(members []models.Member) error {
-	// query, err := database.DB.Query("SET GLOBAL FOREIGN_KEY_CHECKS = 0")
-	// if err!=nil{
-	// 	fmt.Println("error setting foreing keys to 1")
-	// 	panic(err)
-	// }
 	for _, m := range members {
 		update, err := database.DB.Query(`
 		UPDATE MemberTable SET IdEnterprise = '1' WHERE IdMember = ?`, m.IdMember)
@@ -357,88 +353,6 @@ func setIdEnterpriseToOne(members []models.Member) error {
 	return nil
 }
 
-func RenderEnterprisePaymentsTable(c *fiber.Ctx) error {
-	params := struct {
-		Year int `params:"year"`
-	}{}
-	c.ParamsParser(&params)
-	canDelete := c.Locals("claims").(jwt.MapClaims)["deleteEnterprise"]
-	canWrite := c.Locals("claims").(jwt.MapClaims)["writeEnterprise"]
-	IdEnterprise, err := getIdModelCaller(models.Enterprise{}, c)
-	if err != nil {
-		// guardar el err
-		fmt.Println(err)
-		return er.CheckError(c, err)
-	}
-
-	var totalRows int
-	row := database.DB.QueryRow(`
-		SELECT COUNT(*) FROM PaymentTable 
-		WHERE IdEnterprise = ?`, IdEnterprise)
-	// row.Scan copia el numero de fila en la variable count
-	err = row.Scan(&totalRows)
-	if err != nil {
-		er.ScanError.Msg = err.Error()
-		return er.CheckError(c, er.ScanError)
-	}
-
-	if totalRows == 0 {
-		data := fiber.Map{"idEnterprise": IdEnterprise, "canDelete": canDelete, "canWrite": canWrite, "mode": "edit", "empty": true}
-		return c.Render("paymentTable", data)
-	}
-	var lastYear int
-	result, err := database.DB.Query("SELECT MAX(Year) FROM PaymentTable WHERE IdEnterprise = ?", IdEnterprise)
-	if err != nil {
-		// logear el err
-		er.QueryError.Msg = err.Error()
-		return er.CheckError(c, er.QueryError)
-	}
-	for result.Next() {
-		err = result.Scan(&lastYear)
-	}
-	if err != nil {
-		// logear el err
-		er.ScanError.Msg = err.Error()
-		return er.CheckError(c, er.ScanError)
-	}
-
-	result2, err := database.DB.Query("SELECT Year FROM PaymentTable WHERE IdEnterprise = ? GROUP BY Year ORDER BY YEAR DESC", IdEnterprise)
-	if err != nil {
-		// logear el err
-		er.QueryError.Msg = err.Error()
-		return er.CheckError(c, er.QueryError)
-	}
-
-	var years []string
-	var year string
-	for result2.Next() {
-		err = result2.Scan(&year)
-		if err != nil {
-			// logear el err
-			er.ScanError.Msg = err.Error()
-			return er.CheckError(c, er.ScanError)
-		}
-		years = append(years, year)
-	}
-	yearInt := params.Year
-	if params.Year == 0 {
-		payments, _, err := searchModelsCaller(models.Payment{}, c, lastYear)
-		if err != nil {
-			// guardar el err
-			return er.CheckError(c, err)
-		}
-		data := fiber.Map{"payments": payments, "idEnterprise": IdEnterprise, "canDelete": canDelete, "canWrite": canWrite, "mode": "edit", "years": years, "year": lastYear}
-		return c.Render("paymentTable", data)
-	} else {
-		payments, _, err := searchModelsCaller(models.Payment{}, c, params.Year)
-		if err != nil {
-			// guardar el err
-			return er.CheckError(c, err)
-		}
-		data := fiber.Map{"payments": payments, "idEnterprise": IdEnterprise, "canDelete": canDelete, "canWrite": canWrite, "mode": "edit", "years": years, "year": yearInt}
-		return c.Render("paymentTable", data)
-	}
-}
 
 func RenderEnterpriseTableSelect(c *fiber.Ctx) error {
 	// calculo la cantidad de resultados

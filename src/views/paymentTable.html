@@ -1,20 +1,41 @@
 {{$canWrite := .canWrite}}
 {{$canDelete := .canDelete}}
 {{$idEnterprise := .idEnterprise}}
-
+<!DOCTYPE html>
+<html lang="en">
+    {{template "Head"}}
+<body>
+<div id="targetDiv">
+    <div class="container" id="main-container">
+        <header>
+            <div class="nav-container">
+                <nav class="navbar navbar-expand navbar-light bg-light">
+                    <a class="navbar-brand" href="/">Sindicato</a>  
+                    <div class="header-icon-container">
+                        <a class="nav-item nav-link active show" href="/member/list"><i class="bi bi-person-fill"></i></a>
+                        <a class="nav-item nav-link active show" href="/enterprise/list"><i class="bi bi-building-fill"></i></a>
+                    </div>            
+                    <a href="/enterprise/{{$idEnterprise}}/file"><button class="add-btn-table">Volver a la empresa</button></a>
+                   
+                     
+                </nav>
+            </div>
+        </header>
 {{if .empty}}
+<div class="field-12 enterprise-title">{{.enterpriseName}}</div>
 <div class="nav-container">
     <nav class="navbar navbar-file navbar-expand navbar-light bg-light">
         {{if $canWrite}}
         <div class="navbar-nav">
             {{if eq .mode "edit"}}
-            <button class="btn-add" hx-get="/payment/{{.idEnterprise}}/addForm" hx-trigger="click" hx-target="#tableDiv">Agregar un pago</button></a>
+            <button class="btn-add" hx-get="/payment/{{.idEnterprise}}/addForm" hx-trigger="click" hx-target="body">Agregar un pago</button></a>
             {{end}}
         </div>
         {{end}}
     </nav>
 </div>
 {{else}}
+<div class="field-12 enterprise-title">{{.enterpriseName}}</div>
 <div class="nav-container">
     <nav class="navbar navbar-file navbar-expand navbar-light bg-light">
         {{if $canWrite}}
@@ -26,50 +47,68 @@
                     </button>
                     <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
                         {{range $_, $y := .years}}
-                        <li><button class="dropdown-item" type="button" hx-get="/enterprise/{{$idEnterprise}}/paymentTable/{{$y}}" hx-target="#tableDiv" hx-trigger="click">{{$y}}</button></li>
+                        <li><button class="dropdown-item" type="button" hx-get="/enterprise/{{$idEnterprise}}/paymentTable/{{$y}}" hx-target="body" hx-trigger="click">{{$y}}</button></li>
                         {{end}}
                     </ul>
                   </div>
-            <button class="btn-add" hx-get="/payment/{{.idEnterprise}}/addForm" hx-trigger="click" hx-target="#tableDiv">Agregar otro pago</button></a>
+            <button class="btn-add" hx-get="/payment/{{.idEnterprise}}/addForm" hx-trigger="click" hx-target="body">Agregar otro pago</button></a>
             {{end}}
         </div>
         {{end}}
     </nav>
 </div>
 
-<table class="table table-striped w-90">
-    <tr>
-        <th>Mes</th>
-        <th>Año</th>
-        <th>Pagó?</th>
-        <th>Monto</th>
-        <th>Fecha de pago</th>
-        <th></th>
-        {{if $canDelete}}
-            <th></th>  
+<div id="paymentDiv">
+
+    <table class="table table-striped w-90">
+        <tr>
+            <th>Mes</th>
+            <th>Año</th>
+            <th>Pagó?</th>
+            <th>Monto</th>
+            <th>Fecha de pago</th>
+            <th class="no-print"></th>
+            {{if $canDelete}}
+                <th class="no-print"></th>  
+            {{end}}
+        </tr>
+        {{range $_, $p := .payments}}
+        
+        {{if $p.Status}}
+        <tr>
+        {{else}}
+        <tr class="tr-red">
         {{end}}
-    </tr>
-    {{range $_, $p := .payments}}
-    <tr>
-        <td>{{$p.Month}}</td>
-        <td>{{$p.Year}}</td>
-        <td>{{$p.Status}}</td>
-        <td>{{$p.Amount}}</td>
-        <td>{{$p.PaymentDate}}</td>
-        <td>
-            <button class="btn-file" hx-get="/payment/{{$p.IdEnterprise}}/{{$p.IdPayment}}/file" hx-trigger="click" hx-target="#tableDiv">
-                <i class="bi bi-file-earmark-text"></i>
-            </button>
-        </td>
-        {{if $canDelete}}
-        <td>
-            <button class="btn-delete" hx-delete="/payment/{{$p.IdEnterprise}}/{{$p.IdPayment}}/delete" hx-confirm="¿Estás seguro que deseas eliminar el pago?" hx-target="#tableDiv">
-                <i class="bi bi-x-square"></i>
-            </button>
-        </td>  
+            <td>{{$p.Month}}</td>
+            <td>{{$p.Year}}</td>
+            <td>{{if $p.Status}}
+                Pago
+                {{else}}
+                Impago
+                {{end}}
+            </td>
+            <td>{{$p.Amount}}</td>
+            <td>{{$p.PaymentDate}}</td>
+            <td class="no-print">
+                <button class="btn-file" hx-get="/payment/{{$p.IdEnterprise}}/{{$p.IdPayment}}/file" hx-trigger="click" hx-target="body">
+                    <i class="bi bi-file-earmark-text"></i>
+                </button>
+            </td>
+            {{if $canDelete}}
+            <td class="no-print">
+                <button class="btn-delete" hx-delete="/payment/{{$p.IdEnterprise}}/{{$p.IdPayment}}/delete" hx-confirm="¿Estás seguro que deseas eliminar el pago?" hx-target="body">
+                    <i class="bi bi-x-square"></i>
+                </button>
+            </td>  
+            {{end}}
+        </tr>
         {{end}}
-    </tr>
+    </table> 
     {{end}}
-</table> 
-{{end}}
+</div>
+    </div>
+</div>
+{{template "Scripts"}}
+</body>
+</html>
 

@@ -78,3 +78,5 @@ func LogoutUser(c *fiber.Ctx) error {
 	return c.Render("login", fiber.Map{})
 
 }
+
+

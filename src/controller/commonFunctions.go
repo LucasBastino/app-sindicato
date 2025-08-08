@@ -1,7 +1,6 @@
 package controller
 
 import (
-	"fmt"
 	"time"
 
 	"github.com/LucasBastino/app-sindicato/src/database"
@@ -15,8 +14,9 @@ import (
 // ------------------------------------
 
 func RenderIndex(c *fiber.Ctx) error {
-	return c.Render("index", fiber.Map{})
+		return c.Render("index", fiber.Map{})
 }
+
 
 func RenderMemberList(c *fiber.Ctx) error {
 	data := fiber.Map{"withMemberTable": true, "withEnterpriseTable": false}
@@ -25,7 +25,6 @@ func RenderMemberList(c *fiber.Ctx) error {
 	data["canDeleteMember"] = c.Locals("claims").(jwt.MapClaims)["deleteMember"]
 	data["canWriteEnterprise"] = c.Locals("claims").(jwt.MapClaims)["writeEnterprise"]
 	data["canDeleteEnterprise"] = c.Locals("claims").(jwt.MapClaims)["deleteEnterprise"]
-	fmt.Println(data)
 	return c.Render("tablePage", data)
 	// tmpl := template.Must(template.ParseFiles("src/views/index.html"))
 	// return tmpl.Execute(c, nil)
@@ -38,7 +37,6 @@ func RenderEnterpriseList(c *fiber.Ctx) error {
 	data["canDeleteMember"] = c.Locals("claims").(jwt.MapClaims)["deleteMember"]
 	data["canWriteEnterprise"] = c.Locals("claims").(jwt.MapClaims)["writeEnterprise"]
 	data["canDeleteEnterprise"] = c.Locals("claims").(jwt.MapClaims)["deleteEnterprise"]
-	fmt.Println(data)
 	return c.Render("tablePage", data)
 }
 

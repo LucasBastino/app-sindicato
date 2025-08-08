@@ -1,6 +1,8 @@
 package permissions
 
 import (
+	"fmt"
+
 	"github.com/LucasBastino/app-sindicato/src/database"
 	er "github.com/LucasBastino/app-sindicato/src/errors"
 	"github.com/gofiber/fiber/v2"
@@ -17,6 +19,18 @@ type Permissions struct {
 	WritePayment     bool
 	DeletePayment    bool
 }
+
+var Authorized bool
+
+func VerifyAuth(c* fiber.Ctx) error{
+	if !Authorized{
+			fmt.Println("paso por el middleware, es false")
+			return c.Render("failAuth", fiber.Map{})
+		} 
+		fmt.Println("paso por el middleware, es true")
+		return c.Next()
+	}
+
 
 func GetAdmin(user string) (bool, error) {
 	row := database.DB.QueryRow("SELECT Admin FROM UserTable WHERE Username = ?", user)

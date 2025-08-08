@@ -2,6 +2,7 @@ package controller
 
 import (
 	"fmt"
+	"strconv"
 
 	er "github.com/LucasBastino/app-sindicato/src/errors"
 	i "github.com/LucasBastino/app-sindicato/src/interfaces"
@@ -19,6 +20,12 @@ func AddMember(c *fiber.Ctx) error {
 	// Creo un mapa con los errores de validacion y verifico si tiene errores
 	if err := validateFieldsCaller(models.Member{}, c); err != nil {
 		return er.CheckError(c, err)
+	}
+	if !m.Affiliated{
+		m.IdEnterprise = 1
+	}
+	if m.IdEnterprise == 1{
+		m.Affiliated = false
 	}
 	// Si no tiene errores inserto el member en la DB y renderizo el su archivo
 	m, err = insertModelCaller(m)
@@ -60,7 +67,7 @@ func DeleteMember(c *fiber.Ctx) error {
 		case "table":
 			return RenderMemberTable(c)
 		case "edit":
-			return c.Render("redirect", fiber.Map{"path": "/"})
+			return c.Render("redirect", fiber.Map{"path": "/member/list"})
 		case "enterpriseMemberTable":
 			return RenderEnterpriseMembers(c)
 		default:
@@ -85,11 +92,6 @@ func EditMember(c *fiber.Ctx) error {
 		// guardar el error
 		return er.CheckError(c, err)
 	}
-	enterpriseName, err := getEnterpriseName(m.IdEnterprise)
-	if err != nil {
-		// guardar el error
-		return er.CheckError(c, err)
-	}
 	IdMember, err := getIdModelCaller(m, c)
 	if err != nil {
 		// guardar el error
@@ -97,8 +99,19 @@ func EditMember(c *fiber.Ctx) error {
 	}
 	m.IdMember = IdMember
 	// necesito poner esta linea ↑ para que se pueda editar 2 veces seguidas
-
+	
+	if !m.Affiliated{
+		m.IdEnterprise = 1
+	}
+	if m.IdEnterprise == 1{
+		m.Affiliated = false
+	}
 	m, err = updateModelCaller(m)
+	if err != nil {
+		// guardar el error
+		return er.CheckError(c, err)
+	}
+	enterpriseName, err := getEnterpriseName(m.IdEnterprise)
 	if err != nil {
 		// guardar el error
 		return er.CheckError(c, err)
@@ -198,7 +211,27 @@ func RenderAddMemberForm(c *fiber.Ctx) error {
 		// guardar el error
 		return er.CheckError(c, err)
 	}
-	data := fiber.Map{"member": models.Member{}, "mode": "add", "enterprises": enterprises}
+
+	fromEnterprise := c.Get("fromEnterprise")
+	enterpriseId := 0
+	enterpriseName := ""
+	if fromEnterprise == "true" {
+
+		enterpriseIdStr := c.Get("enterpriseId")
+		if enterpriseIdStr != "" {
+			enterpriseId, err = strconv.Atoi(enterpriseIdStr)
+			if err != nil {
+				er.InternalServerError.Msg = err.Error()
+				return er.CheckError(c, er.InternalServerError)
+			}
+		}
+		enterpriseName, err = getEnterpriseName(enterpriseId)
+		if err != nil {
+			// guardar el error
+			return er.CheckError(c, err)
+		}
+	}
+	data := fiber.Map{"member": models.Member{IdEnterprise: enterpriseId}, "mode": "add", "enterprises": enterprises, "enterpriseName": enterpriseName}
 	return c.Render("memberFile", data)
 }
 

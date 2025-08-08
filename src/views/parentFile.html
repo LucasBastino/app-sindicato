@@ -1,19 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
-{{template "Head"}}
-<body>
-    <div class="nav-container">
-        <nav class="navbar navbar-file navbar-expand navbar-light bg-light">
-            {{if .canWrite}}
-            <div class="navbar-nav">
-                {{if eq .mode "edit"}}
-                <button hx-get="/parent/{{$.parent.IdMember}}/addForm" hx-trigger="click" hx-target="#tableDiv">Agregar otro familiar</button></a>
-                {{end}}
-            </div>
-            {{end}}
-        </nav>
-    </div>
-        <div class="container" id="parent-container">
+    <div class="container" id="parent-container">
+           
             {{if eq .mode "add" }}
             <form hx-post="/parent/{{$.parent.IdMember}}/add" hx-target="#tableDiv">
                 <div class="form__section" id="form-section">
@@ -106,5 +94,4 @@
     {{end}}
     </div>
 
-</body>
 </html>

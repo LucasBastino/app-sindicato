@@ -8,7 +8,11 @@
         <header>
             <div class="nav-container">
                 <nav class="navbar navbar-expand navbar-light bg-light">
-                    <a class="navbar-brand" href="/">Sindicato</a>              
+                    <a class="navbar-brand" href="/">Sindicato</a>  
+                    <div class="header-icon-container">
+                        <a class="nav-item nav-link active show" href="/member/list"><i class="bi bi-person-fill"></i></a>
+                        <a class="nav-item nav-link active show" href="/enterprise/list"><i class="bi bi-building-fill"></i></a>
+                    </div>            
                     {{if eq .mode "edit"}}
                         {{if .canWrite}}
                         <!-- <a class="nav-item nav-link active py-0" href="/enterprise/addForm" id="add-enterprise-btn"><button class="btn-add">Agregar una empresa</button></a> -->
@@ -75,7 +79,7 @@
                     <div class="field-tag field-2">Contacto</div>
                     <input class="form-input field-12" type="text" name="contact" value="{{$.enterprise.Contact}}" disabled>
                 </div>
-                <div class="hide error-div field-12 phone-error"></div>
+                <div class="hide error-div field-12 contact-error"></div>
 
                 <div class="input-container field-12">
                         <div class="field-tag field-2">Observaciones</div>
@@ -98,8 +102,9 @@
         </form>
         {{if eq .mode "edit"}}
             <div class="btn-container">
-                <button class="item-btn" hx-get="/payment/{{$.enterprise.IdEnterprise}}/paymentTable" hx-trigger="click" hx-target="#tableDiv" onclick="hideEnterpriseMemberSearchNav()">Pagos</button>
-                <button class="item-btn" hx-get="/enterprise/{{$.enterprise.IdEnterprise}}/memberTable" hx-trigger="click" hx-target="#tableDiv" onclick="showEnterpriseMemberSearchNav();" hx-headers='{"mode": "edit"}'>Mostrar afiliados ({{.numberOfMembers}})</button>
+                <a href="/payment/{{$.enterprise.IdEnterprise}}/paymentTable"><button class="item-btn">Pagos</button></a>
+                <button class="item-btn" hx-get="/enterprise/{{$.enterprise.IdEnterprise}}/memberTable" hx-trigger="click" hx-target="#tableDiv"
+                 onclick="showEnterpriseMemberSearchNav();" hx-headers='{"mode": "edit", "enterpriseId": "{{$.enterprise.IdEnterprise}}"}'>Mostrar afiliados ({{.numberOfMembers}})</button>
                 {{if .canWrite}}
                 <button class="item-btn" onclick="enableInputs(); showConfirmButton('enterprise');">Editar datos</button>
                 {{end}}
@@ -111,24 +116,21 @@
                     {{end}}
                 {{end}}
             </div>
-                <div class="nav-container hide">
+                <div class="nav-container hide d-none">
                     <nav class="navbar navbar-file navbar-expand navbar-light bg-light hide" id="nav-enterprise-member-search">
                         <div class="navbar-nav">
                             <div class="inner-addon right-addon" id="enterprise-member-search-input">
                             <i class="bi bi-search input-icon"></i>
                             <input class="form-control static-input input-field search-input" name="search-key" type="search" aria-label="Search" 
                             hx-get="/enterprise/{{$.enterprise.IdEnterprise}}/memberTable" hx-trigger="keyup" hx-headers='{"mode": "edit"}' hx-target="#tableDiv"></input>
-                            </div> 
+                            </div>
                         </div>
                     </nav>
                 </div>
-                <div id="tableDiv"></div> 
+                <div id="tableDiv"></div>
         {{end}}
     </div>
 </div>
-{{if .withPaymentTable}}
-<div hx-get="/enterprise/{{$IdEnterprise}}/paymentTable/{{.year}}" hx-trigger="load" hx-target="#tableDiv"></div>
-{{end}}
 
 {{template "Scripts"}}
 {{template "ValidationScripts"}}

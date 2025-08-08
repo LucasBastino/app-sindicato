@@ -60,11 +60,6 @@ func RegisterUser(c *fiber.Ctx) error {
 		return er.CheckError(c, er.InternalServerError)
 	}
 
-	fmt.Println("user:", user)
-	fmt.Println("password:", password)
-	// fmt.Println("admin:", admin)
-	fmt.Println("write member:", writeMember)
-	fmt.Println("delete member:", deleteMember)
 	row := database.DB.QueryRow("SELECT IdUser FROM UserTable WHERE Username = ?", user)
 	var idUser int
 	err = row.Scan(&idUser)
@@ -76,11 +71,10 @@ func RegisterUser(c *fiber.Ctx) error {
 	byteHash, err := bcrypt.GenerateFromPassword([]byte(password), 14)
 	if err != nil {
 		fmt.Println("error generating hash from password")
-		panic(err)
+		// panic(err)
 	}
 
 	strHash := string(byteHash)
-	fmt.Println(strHash)
 
 	insert, err := database.DB.Query(`
 	INSERT INTO UserTable 

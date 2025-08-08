@@ -17,16 +17,19 @@ function enableSelects(){
     selects.forEach(select => {
         select.disabled = false
     }); 
+     if (document.getElementById('name-enterprise-input')){
+        document.getElementById('name-enterprise-input').disabled = true
+     }
 }
 
 function blankSearchInput(){
-    console.log("blankl ")
     document.getElementById("search-input").value = ""
 }
 
 function showConfirmButton(model){
     document.getElementById(`btn-${model}-confirm`).style.display = 'inline'
 }
+
 
 
 function showAddMemberBtn(){
@@ -82,6 +85,15 @@ function hideParentSearchInput(){
     document.getElementById('parent-search-input').style.display = 'none'
 }
 
+
+function showParentFile(){
+    document.getElementById('tableDiv').style.display = 'inline'
+}
+
+function hideParentFile(){
+    document.getElementById('tableDiv').style.display = 'none'
+}
+
 function showAddParentButton(){
     document.getElementById('add-parent-button').style.display = 'inline'
 }
@@ -90,6 +102,17 @@ function hideAddParentButton(){
     document.getElementById('add-parent-button').style.display = 'none'
 }
 
+function showParentTable(){
+    document.getElementById('tableDiv').style.display = 'inline'
+}
+
+function loadParentTable(){
+    document.getElementById('parent-button').click()
+}
+
+function hideParentTable(){
+    document.getElementById('parentTable').style.display = 'none'
+}
 
 function showEnterpriseButton(){
     document.getElementById('enterprise-button').style.display = 'inline'
@@ -111,10 +134,6 @@ function showXEnterprise(){
     document.getElementById('x-enterprise').style.display = 'inline'
 }
 
-function showParentTable(){
-    document.getElementById('tableDiv').style.display = 'inline'
-}
-
 
 function searchEnterpriseAgain(){
     document.getElementById('x-enterprise').style.display = 'none'
@@ -131,6 +150,13 @@ function selectEnterprise(IdEnterprise, EnterpriseName){
     document.getElementById('x-enterprise').style.display = 'inline'
 }
 
+function disableEnterpriseInput(){
+    document.getElementById('name-enterprise-input').disabled = true
+}
+
+function reloadWeb(){
+    location.reload();
+}
 
 // function makeBackup(){
 //     console.log("asdadss")

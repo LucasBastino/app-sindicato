@@ -1,39 +1,33 @@
 <!DOCTYPE html>
 <html lang="en">
     {{template "Head"}}
-    {{$idEnterprise := .idEnterprise}}
 <body>
-    <div class="nav-container">
-        <nav class="navbar navbar-file navbar-expand navbar-light bg-light">
-            {{if .canWrite}}
-            <div class="navbar-nav">
-                {{if eq .mode "edit"}}
-                <div class="dropdown">
-                    <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
-                        {{$.payment.Year}}
-                    </button>
-                    <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
-                        {{range $_, $y := .years}}
-                        <li><button class="dropdown-item" type="button" hx-get="/enterprise/{{$idEnterprise}}/paymentTable/{{$y}}" hx-target="#tableDiv" hx-trigger="click">{{$y}}</button></li>
-                        {{end}}
-                    </ul>
-                  </div>
-                <button class="btn-add" hx-get="/payment/{{$.payment.IdEnterprise}}/addForm" hx-trigger="click" hx-target="#tableDiv">Agregar otro pago</button></a>
-                {{end}}
+<div id="targetDiv">
+    <div class="container" id="main-container">
+        <header>
+            <div class="nav-container">
+                <nav class="navbar navbar-expand navbar-light bg-light">
+                    <a class="navbar-brand" href="/">Sindicato</a>  
+                    <div class="header-icon-container">
+                        <a class="nav-item nav-link active show" href="/member/list"><i class="bi bi-person-fill"></i></a>
+                        <a class="nav-item nav-link active show" href="/enterprise/list"><i class="bi bi-building-fill"></i></a>
+                    </div>            
+                    
+                         <a href="/enterprise/{{$.payment.IdEnterprise}}/file"><button class="add-btn-table">Volver a la empresa</button></a>
+                         <a href="/payment/{{$.payment.IdEnterprise}}/paymentTable"><button class="add-btn-table">Volver a pagos</button></a>
+                      
+                </nav>
             </div>
-            {{end}}
-        </nav>
-    </div>
+        </header>
     <div id="targetDiv">
+        <div class="field-12 enterprise-title">{{.enterpriseName}}</div>
         <div class="container" id="payment-container">
         {{if eq .mode "add"}}
-            <form hx-post="/payment/{{$.payment.IdEnterprise}}/add" hx-target="#tableDiv" id="paymentForm">
+            <form hx-post="/payment/{{$.payment.IdEnterprise}}/add" hx-target="body" id="paymentForm">
                 <div class="form__section">
-                    <div class="page-title">Agregar nuevo pago</div>             
         {{else if eq .mode "edit"}}
-            <form hx-put="/payment/{{$.payment.IdEnterprise}}/{{$.payment.IdPayment}}/edit" hx-target="#tableDiv" id="paymentForm">
+            <form hx-put="/payment/{{$.payment.IdEnterprise}}/{{$.payment.IdPayment}}/edit" hx-target="#paymentDiv" id="paymentForm">
                 <div class="form__section">
-                    <div class="page-title">Pago</div>
         {{end}}
                
                     <div class="input-container field-12">
@@ -107,7 +101,7 @@
                 <div class="item-btn" onclick="enableInputs(); enableSelects(); showConfirmButton('payment');">Editar</div>
                 {{end}}
                 {{if .canDelete}}
-                <button class="item-btn btn-delete-file" hx-delete="/payment/{{$.payment.IdEnterprise}}/{{$.payment.IdPayment}}/delete" hx-trigger="click" hx-confirm="¿Estás seguro que deseas eliminar el pago?" hx-target="#tableDiv">Eliminar pago</button>
+                <button class="item-btn btn-delete-file" hx-delete="/payment/{{$.payment.IdEnterprise}}/{{$.payment.IdPayment}}/delete" hx-trigger="click" hx-confirm="¿Estás seguro que deseas eliminar el pago?" hx-target="body">Eliminar pago</button>
                 {{end}}
             </div>
             {{end}}
@@ -126,6 +120,8 @@
             showAddPaymentBtn();
         </script>
     {{end}}
+    </div>
+    </div>
 </body>
 
     

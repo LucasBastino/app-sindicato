@@ -8,11 +8,23 @@ DROP TABLE PaymentTable
 
 DROP TABLE UserTable
 
-SELECT * FROM UserTable
+SELECT * FROM `ClientTable`
 
 UPDATE `UserTable` SET `Admin` = 1 WHERE `IdUser` = 1
 
 DELETE FROM UserTable WHERE `Username` = "ali";
+
+CREATE TABLE ClientTable(
+    IdClient INT PRIMARY KEY AUTO_INCREMENT NOT NULL,
+    Name VARCHAR(50) NOT NULL,
+    Authorized BOOLEAN NOT NULL
+)
+
+INSERT INTO `ClientTable` (Name, `Authorized`) VALUES ('Sindicato', true)
+
+UPDATE `ClientTable` SET `Authorized` = true WHERE `IdClient` = 1
+
+UPDATE `ClientTable` SET `Authorized` = false WHERE `IdClient` = 1
 
 CREATE TABLE UserTable(
     IdUser INT PRIMARY KEY AUTO_INCREMENT NOT NULL,
@@ -114,6 +126,7 @@ SELECT * FROM PaymentTable
 
 UPDATE EnterpriseTable SET Contact = "POR DEFECTO", Observations = "POR DEFECTO" WHERE IdEnterprise = 1
 
+UPDATE UserTable SET Admin = true WHERE IdUser = 1
 
 INSERT INTO ParentTable (Name, Rel, IdMember) VALUES ('familiar3', 'PRIMssO', 1)
 

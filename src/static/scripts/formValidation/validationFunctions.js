@@ -150,16 +150,23 @@ function validateMemberNumber(value){
     return isNotLongerThan(errorDiv, 20, value)
 }
 
-function validatAffiliated(value){
+function validateAffiliated(value){
     errorDiv = Array.from(document.getElementsByClassName("affiliated-error")).pop()
     if (!isNotEmpty(errorDiv, value)){
+        return false
+    }
+    
+    if (value == "true" && Array.from(document.getElementsByName("id-enterprise")).pop().value == "1"){
+        return false
+    }
+    if (value == "false" && Array.from(document.getElementsByName("id-enterprise")).pop().value != "1"){
         return false
     }
     return isBoolean(value)
 }
 
 function isBoolean(value){
-    if (value == true || value == false){
+    if (value == true || value == false || value == "true" || value =="false"){
         errorDiv.style.display = 'none'
         return true
     } else {
@@ -214,6 +221,7 @@ function validateEnterpriseName(value){
 }
 
 function validateContact(value){
+    errorDiv = Array.from(document.getElementsByClassName("contact-error")).pop()
     return isNotLongerThan(errorDiv, 200, value)
 }
 
@@ -245,7 +253,12 @@ function validateCUIT(value){
     return isNotLongerThan(errorDiv, 20, value)
 }
 
-async function validateIdEnterprise(value){
+function validateIdEnterprise(value){
+    console.log("entro a validate")
+    console.log(value)
+    console.log(typeof value)
+    console.log(Array.from(document.getElementsByName("affiliated")).pop().value)
+    console.log(typeof Array.from(document.getElementsByName("affiliated")).pop().value)
     errorDiv = Array.from(document.getElementsByClassName("enterprise-error")).pop()
     if (!isNotEmpty(errorDiv, value)){
         return false
@@ -259,7 +272,24 @@ async function validateIdEnterprise(value){
         return false
     }
 
-    return await checkIdEnterprise(errorDiv, value)
+    if (value == "0"){
+        errorDiv.innerHTML = "Empresa no válida."
+        errorDiv.style.display = 'inline'
+        return false
+    }
+
+    if (value == "1" && Array.from(document.getElementsByName("affiliated")).pop().value == "true"){
+        errorDiv.innerHTML = "Si está afiliado debe pertenecer a una empresa."
+        errorDiv.style.display = 'inline'
+        return false
+    }
+    if (value != "1" && Array.from(document.getElementsByName("affiliated")).pop().value == "false"){
+        errorDiv.innerHTML = "Si no está afiliado no puede pertenecer a una empresa."
+        errorDiv.style.display = 'inline'
+        return false
+    }
+
+    return true
 }
 
 
@@ -409,10 +439,7 @@ async function checkEnterpriseNumber(value){
         let enterprisesNumbers = await getEnterpriseNumbers()
         // para poder editar sin cambiar el number enterprise, sino te tira que ya existe
         oldValue = Array.from(document.getElementsByName("old-enterprise-number")).pop().value
-        console.log("old", oldValue)
-        console.log("value", value)
         if (oldValue == value) {
-            console.log("iguales")
             errorDiv.style.display = 'none'
             return true
         } else if (enterprisesNumbers.includes(value)){

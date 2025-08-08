@@ -4,7 +4,7 @@
     </tr>
     {{range $_, $e := .enterprises}}
     <tr>
-        <td onclick="selectEnterprise('{{$e.IdEnterprise}}','{{$e.Name}}');">{{$e.Name}}</td>
+        <td onclick="selectEnterprise('{{$e.IdEnterprise}}','{{$e.Name}}'); disableEnterpriseInput();">{{$e.Name}}</td>
     </tr>
     {{end}}
 </table>

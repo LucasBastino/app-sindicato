@@ -18,8 +18,12 @@ func RenderAddPaymentForm(c *fiber.Ctx) error {
 		// guardar el error
 		return er.CheckError(c, err)
 	}
+	enterpriseName, err := getEnterpriseName(IdEnterprise)
+	if err!=nil{
+		return er.CheckError(c, err)
+	}
 	p := models.Payment{IdEnterprise: IdEnterprise}
-	data := fiber.Map{"payment": p, "mode": "add"}
+	data := fiber.Map{"payment": p, "mode": "add", "enterpriseName": enterpriseName}
 	return c.Render("paymentFile", data)
 }
 
@@ -55,10 +59,101 @@ func RenderPaymentFile(c *fiber.Ctx) error {
 		// guardar el error
 		return er.CheckError(c, err)
 	}
-	data := fiber.Map{"payment": p, "mode": "edit", "idEnterprise": IdEnterprise, "years": years, "year": p.Year, "createdAt": createdAt, "updatedAt": updatedAt}
+	enterpriseName, err := getEnterpriseName(IdEnterprise)
+	if err!=nil{
+		return er.CheckError(c, err)
+	}
+	data := fiber.Map{"payment": p, "mode": "edit", "idEnterprise": IdEnterprise, "years": years, "year": p.Year, "createdAt": createdAt, "updatedAt": updatedAt, "enterpriseName": enterpriseName}
 	data["canDelete"] = c.Locals("claims").(jwt.MapClaims)["deletePayment"]
 	data["canWrite"] = c.Locals("claims").(jwt.MapClaims)["writePayment"]
 	return c.Render("paymentFile", data)
+}
+
+func RenderPaymentTable(c *fiber.Ctx) error {
+	params := struct {
+		Year int `params:"year"`
+	}{}
+	c.ParamsParser(&params)
+	canDelete := c.Locals("claims").(jwt.MapClaims)["deleteEnterprise"]
+	canWrite := c.Locals("claims").(jwt.MapClaims)["writeEnterprise"]
+	IdEnterprise, err := getIdModelCaller(models.Enterprise{}, c)
+	if err != nil {
+		// guardar el err
+		return er.CheckError(c, err)
+	}
+	enterpriseName, err := getEnterpriseName(IdEnterprise)
+	if err!=nil{
+		return er.CheckError(c, err)
+	}
+
+	var totalRows int
+	row := database.DB.QueryRow(`
+		SELECT COUNT(*) FROM PaymentTable 
+		WHERE IdEnterprise = ?`, IdEnterprise)
+	// row.Scan copia el numero de fila en la variable count
+	err = row.Scan(&totalRows)
+	if err != nil {
+		er.ScanError.Msg = err.Error()
+		return er.CheckError(c, er.ScanError)
+	}
+
+	if totalRows == 0 {
+		data := fiber.Map{"idEnterprise": IdEnterprise, "canDelete": canDelete, "canWrite": canWrite, "mode": "edit", "empty": true, "enterpriseName": enterpriseName}
+		return c.Render("paymentTable", data)
+	}
+	var lastYear int
+	result, err := database.DB.Query("SELECT MAX(Year) FROM PaymentTable WHERE IdEnterprise = ?", IdEnterprise)
+	if err != nil {
+		// logear el err
+		er.QueryError.Msg = err.Error()
+		return er.CheckError(c, er.QueryError)
+	}
+	for result.Next() {
+		err = result.Scan(&lastYear)
+	}
+	if err != nil {
+		// logear el err
+		er.ScanError.Msg = err.Error()
+		return er.CheckError(c, er.ScanError)
+	}
+
+	result2, err := database.DB.Query("SELECT Year FROM PaymentTable WHERE IdEnterprise = ? GROUP BY Year ORDER BY YEAR DESC", IdEnterprise)
+	if err != nil {
+		// logear el err
+		er.QueryError.Msg = err.Error()
+		return er.CheckError(c, er.QueryError)
+	}
+
+	var years []string
+	var year string
+	for result2.Next() {
+		err = result2.Scan(&year)
+		if err != nil {
+			// logear el err
+			er.ScanError.Msg = err.Error()
+			return er.CheckError(c, er.ScanError)
+		}
+		years = append(years, year)
+	}
+	yearInt := params.Year
+	if params.Year == 0 {
+		payments, _, err := searchModelsCaller(models.Payment{}, c, lastYear)
+		if err != nil {
+			// guardar el err
+			return er.CheckError(c, err)
+		}
+		data := fiber.Map{"payments": payments, "idEnterprise": IdEnterprise, "canDelete": canDelete, "canWrite": canWrite, "mode": "edit", "years": years, "year": lastYear, "enterpriseName": enterpriseName}
+		return c.Render("paymentTable", data)
+	} else {
+		payments, _, err := searchModelsCaller(models.Payment{}, c, params.Year)
+		if err != nil {
+			// guardar el err
+			return er.CheckError(c, err)
+		}
+	
+	data := fiber.Map{"payments": payments, "idEnterprise": IdEnterprise, "canDelete": canDelete, "canWrite": canWrite, "mode": "edit", "years": years, "year": yearInt, "enterpriseName": enterpriseName}
+	return c.Render("paymentTable", data)
+	}
 }
 
 func AddPayment(c *fiber.Ctx) error {
@@ -92,7 +187,11 @@ func AddPayment(c *fiber.Ctx) error {
 		// guardar el error
 		return er.CheckError(c, err)
 	}
-	data := fiber.Map{"payment": p, "mode": "edit", "idEnterprise": IdEnterprise, "years": years, "year": p.Year, "createdAt": createdAt, "updatedAt": updatedAt}
+	enterpriseName, err := getEnterpriseName(IdEnterprise)
+	if err!=nil{
+		return er.CheckError(c, err)
+	}
+	data := fiber.Map{"payment": p, "mode": "edit", "idEnterprise": IdEnterprise, "years": years, "year": p.Year, "createdAt": createdAt, "updatedAt": updatedAt, "enterpriseName": enterpriseName}
 	data["canDelete"] = c.Locals("claims").(jwt.MapClaims)["deletePayment"]
 	data["canWrite"] = c.Locals("claims").(jwt.MapClaims)["writePayment"]
 	return c.Render("paymentFile", data)
@@ -134,8 +233,12 @@ func EditPayment(c *fiber.Ctx) error {
 		// guardar el error
 		return er.CheckError(c, err)
 	}
+	enterpriseName, err := getEnterpriseName(IdEnterprise)
+	if err!=nil{
+		return er.CheckError(c, err)
+	}
 
-	data := fiber.Map{"payment": p, "mode": "edit", "idEnterprise": IdEnterprise, "years": years, "year": p.Year, "createdAt": createdAt, "updatedAt": updatedAt}
+	data := fiber.Map{"payment": p, "mode": "edit", "idEnterprise": IdEnterprise, "years": years, "year": p.Year, "createdAt": createdAt, "updatedAt": updatedAt, "enterpriseName": enterpriseName}
 	data["canDelete"] = c.Locals("claims").(jwt.MapClaims)["deletePayment"]
 	data["canWrite"] = c.Locals("claims").(jwt.MapClaims)["writePayment"]
 	return c.Render("paymentFile", data)
@@ -150,7 +253,7 @@ func DeletePayment(c *fiber.Ctx) error {
 	}
 	p := models.Payment{IdPayment: IdPayment}
 	deleteModelCaller(p)
-	return RenderEnterprisePaymentsTable(c)
+	return RenderPaymentTable(c)
 }
 
 func getPaymentYearsFromDB(idEnterprise int) ([]string, error) {
