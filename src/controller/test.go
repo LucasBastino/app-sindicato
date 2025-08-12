@@ -5,5 +5,5 @@ import (
 )
 
 func TestNull(c *fiber.Ctx) error {
-	return c.Render("test", fiber.Map{"variable": 1})
+	return c.Render("test", fiber.Map{})
 }

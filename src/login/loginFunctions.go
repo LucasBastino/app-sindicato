@@ -72,9 +72,12 @@ func createCookie(signedToken string) fiber.Cookie {
 		Name:        "Authorization",
 		Value:       signedToken,
 		Path:        "/",
-		Secure:      true,
 		HTTPOnly:    true,
-		SameSite:    "Strict",
+		Secure: 	false,
+		SameSite:    "Lax",
 		SessionOnly: true,
+		// para subir a un dominio
+		// Secure:   true,
+		// SameSite: "None",
 	}
 }

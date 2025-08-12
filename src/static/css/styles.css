@@ -581,6 +581,15 @@ th.no-result {
   display: block;
 }
 
+.timestamps:last-child{
+   margin-bottom: 1em;
+}
+
+.reload-web{
+  display: inline;
+  padding-bottom: 2em
+}
+
 .tr-red{
   background-color: #ff9090;
 }
@@ -729,17 +738,36 @@ th{
 
 }
 
+.backup-form-container{
+    width: 35%;
+    height: 35%;
+   }
+
+   .success-unsuccess-form-container{
+    width: 35%;
+    height: 25%;
+  }
+
+  .login-form-container{
+    width: 40%;
+    height: 58%;
+  }
+
+  .register-form-container{
+    width: 40%;
+    height: 65%;
+}
 
 @media screen and (max-width: 2560px) {
 
    .backup-form-container{
     width: 35%;
-    height: 45%;
+    height: 65%;
    }
 
    .success-unsuccess-form-container{
     width: 35%;
-    height: 30%;
+    height: 45%;
   }
 
   .login-form-container{
@@ -758,12 +786,12 @@ th{
 
    .backup-form-container{
     width: 40%;
-    height: 60%;
+    height: 70%;
    }
 
    .success-unsuccess-form-container{
     width: 40%;
-    height: 45%;
+    height: 55%;
   }
 
   .login-form-container{
@@ -781,14 +809,16 @@ th{
 
 @media screen and (max-width: 1366px) {
 
+
+
    .backup-form-container{
     width: 50%;
-    height: 65%;
+    height: 75%;
    }
 
    .success-unsuccess-form-container{
     width: 55%;
-    height: 50%;
+    height: 65%;
   }
 
   .login-form-container{

@@ -8,7 +8,7 @@ DROP TABLE PaymentTable
 
 DROP TABLE UserTable
 
-SELECT * FROM `ClientTable`
+SELECT * FROM `UserTable`
 
 UPDATE `UserTable` SET `Admin` = 1 WHERE `IdUser` = 1
 

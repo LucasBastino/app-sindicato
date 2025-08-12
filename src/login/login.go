@@ -1,6 +1,7 @@
 package login
 
 import (
+	"fmt"
 	"os"
 	"time"
 
@@ -56,6 +57,7 @@ func VerifyToken(c *fiber.Ctx) error {
 		return []byte(os.Getenv("JWT_SECRET")), nil
 	})
 	if err != nil {
+		fmt.Println(err)
 		return c.Render("redirect", fiber.Map{"path": "/expiredSession"})
 	}
 	claims := token.Claims.(jwt.MapClaims)
@@ -70,7 +72,11 @@ func LogoutUser(c *fiber.Ctx) error {
 		Value:    "",
 		Expires:  time.Now().Add(-time.Hour), // Expired 1 hour ago
 		HTTPOnly: true,
-		Secure:   true,
+		Secure:   false,
+		SameSite: "Lax",
+		// para subir a un dominio
+		// Secure:   true,
+		// SameSite: "None",
 	}
 
 	c.Cookie(&cookie)

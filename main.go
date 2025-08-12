@@ -1,8 +1,11 @@
 package main
 
 import (
+	"embed"
 	"fmt"
+	"io/fs"
 	"log"
+	"net/http"
 	"time"
 
 	"github.com/LucasBastino/app-sindicato/src/database"
@@ -10,38 +13,33 @@ import (
 	"github.com/LucasBastino/app-sindicato/src/router"
 	"github.com/Masterminds/sprig"
 	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v2/middleware/adaptor"
 	"github.com/gofiber/fiber/v2/middleware/logger"
 	"github.com/gofiber/template/html/v2"
 	"github.com/joho/godotenv"
 )
 
+//go:embed src/views/*
+var viewFiles embed.FS
+
+//go:embed src/static/*
+var staticFiles embed.FS
+
+func embedfsSub(fsys embed.FS, dir string) fs.FS {
+    sub, err := fs.Sub(fsys, dir)
+    if err != nil {
+        panic(err)
+    }
+    return sub
+}
+
 func main() {
 
-	// KeyAuthApp.Api(
-	// 	"appsindicato", // App name
-	// 	"qPDHOjEGZl",   // Account ID
-	// 	"1.0",          // Application version. Used for automatic downloads see video here https://www.youtube.com/watch?v=kW195PLCBKs
-	// 	"",             // Token Path (PUT "null" OR LEAVE BLANK IF YOU DO NOT WANT TO USE THE TOKEN VALIDATION SYSTEM! MUST DISABLE VIA APP SETTINGS)
-	// )
-
-	// KeyAuthApp.Login("sindicato", "Contraparasindicato123,,")
-	// // fmt.Println(KeyAuthApp.Var("pago"))
-	// // if KeyAuthApp.Var("pago") == "no" {
-	// // 	fmt.Println("no permitido")
-	// // }
-
-	// ticker := time.NewTicker(5 * time.Second)
-
-	// go func() {
-	// 	for t := range ticker.C {
-	// 		log.Printf("Tick at: %v\n", t.UTC())
-	// 		// do something
-	// 		fmt.Println(KeyAuthApp.Var("pago"))
-	// 	}
-	// }()
-
 	// engine config
-	engine := html.New("./src/views", ".html")
+	// engine := html.New("./src/views", ".html")
+	// engine := html.NewFileSystem(http.FS(viewFiles), ".html")
+	engine := html.NewFileSystem(http.FS(embedfsSub(viewFiles, "src/views")), ".html")
+
 	// sprig es un paquete con funciones para el template
 	engine.AddFuncMap(sprig.FuncMap())
 
@@ -60,24 +58,12 @@ func main() {
 	database.CreateConnection()
 
 	// Serve static files
-	app.Static("/static", "./src/static")
+	// app.Static("/static", "./src/static")
+	// app.StaticFS("/static", http.FS(staticFiles))
+	app.Use("/static", adaptor.HTTPHandler(http.StripPrefix("/static", http.FileServer(http.FS(embedfsSub(staticFiles, "src/static"))))))
 
 	// Loading .env file
 	godotenv.Load()
-
-	// go func(){
-	// 	for {
-	// 		fmt.Println("go routina ejecutandose")
-	// 		resp, err := http.Get("http://localhost:8080/validateAuth")
-	// 		if err!=nil{
-	// 			fmt.Println("error")
-	// 		}
-	// 		fmt.Println(resp.Body)
-	// 		time.Sleep(5*time.Second)
-	// 		defer resp.Body.Close()
-	// 	}
-	// }()
-
 
 
 	go func(){
@@ -97,10 +83,8 @@ func main() {
 			time.Sleep(5*time.Hour)
 		}	
 	}()
-
-
-	
+// 192.168.100.2
 	// Listen
 	// cambiar el port este por uno mas profesional ↓
-	log.Fatal(app.Listen(":8080"))
+	log.Fatal(app.Listen("0.0.0.0:8080"))
 }
