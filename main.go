@@ -26,11 +26,11 @@ var viewFiles embed.FS
 var staticFiles embed.FS
 
 func embedfsSub(fsys embed.FS, dir string) fs.FS {
-    sub, err := fs.Sub(fsys, dir)
-    if err != nil {
-        panic(err)
-    }
-    return sub
+	sub, err := fs.Sub(fsys, dir)
+	if err != nil {
+		panic(err)
+	}
+	return sub
 }
 
 func main() {
@@ -65,25 +65,24 @@ func main() {
 	// Loading .env file
 	godotenv.Load()
 
-
-	go func(){
-		for{
-			result, err := database.DB.Query("SELECT Authorized FROM ClientTable WHERE Name ='Sindicato'")
-			if err!=nil{
+	go func() {
+		for {
+			result, err := database.AuthDB.Query("SELECT Authorized FROM ClientTable WHERE Name ='Sindicato'")
+			if err != nil {
 				pe.Authorized = false
 			}
-			for result.Next(){
+			for result.Next() {
 				err = result.Scan(&pe.Authorized)
-				if err!=nil{
+				if err != nil {
 					pe.Authorized = false
 				}
 			}
 			result.Close()
 			fmt.Println(pe.Authorized)
-			time.Sleep(5*time.Hour)
-		}	
+			time.Sleep(5 * time.Hour)
+		}
 	}()
-// 192.168.100.2
+	// 192.168.100.2
 	// Listen
 	// cambiar el port este por uno mas profesional ↓
 	log.Fatal(app.Listen("0.0.0.0:8080"))

@@ -10,6 +10,7 @@ import (
 )
 
 var DB *sql.DB
+var AuthDB *sql.DB
 
 type DBInfo struct {
 	Host     string
@@ -27,6 +28,13 @@ var InfoDB = DBInfo{
 	DBName:   "sindicatoDB_settingcry",
 }
 
+var InfoAuthDB = DBInfo{
+	Host:     "jee2iw.h.filess.io",
+	User:     "authsindicato_spentclear",
+	Password: "2b2248e87783e410a977375914b1ab38f17e5db0",
+	Port:     "3307",
+	DBName:   "authsindicato_spentclear",
+}
 
 func CreateConnection() {
 	// Host:     os.Getenv("HOST"),
@@ -55,6 +63,26 @@ func CreateConnection() {
 		fmt.Println("error pingeando a la database")
 	}
 
+	authConnString := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?parseTime=true", InfoAuthDB.User, InfoAuthDB.Password, InfoAuthDB.Host, InfoAuthDB.Port, InfoAuthDB.DBName)
+	authDB, err := sql.Open("mysql", authConnString)
+	if err != nil {
+		er.DatabaseConnectionError.Msg = err.Error()
+		// logearlo
+		// hacer algo aca, capaz cambiar la forma en que se loggea, que primero entre al index, nose. Es para despues
+		// panic(err)
+		fmt.Println("error ingresando a la auth database")
+	}
+
+	err = db.Ping()
+	if err != nil {
+		er.DatabaseConnectionError.Msg = err.Error()
+		// logearlo
+		// hacer algo aca
+		// panic(err)
+		fmt.Println("error pingeando a la auth database")
+	}
+
 	fmt.Println("Succesfully connected to database")
 	DB = db
+	AuthDB = authDB
 }
