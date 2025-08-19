@@ -28,6 +28,14 @@ var InfoDB = DBInfo{
 	DBName:   "sindicatoDB_settingcry",
 }
 
+// var InfoDB = DBInfo{
+// 	Host:     "192.168.100.2",
+// 	User:     "rootdos",
+// 	Password: "panyquesoprueba",
+// 	Port:     "3306",
+// 	DBName:   "dbprueba",
+// }
+
 var InfoAuthDB = DBInfo{
 	Host:     "jee2iw.h.filess.io",
 	User:     "authsindicato_spentclear",
@@ -73,7 +81,7 @@ func CreateConnection() {
 		fmt.Println("error ingresando a la auth database")
 	}
 
-	err = db.Ping()
+	err = authDB.Ping()
 	if err != nil {
 		er.DatabaseConnectionError.Msg = err.Error()
 		// logearlo
@@ -82,7 +90,6 @@ func CreateConnection() {
 		fmt.Println("error pingeando a la auth database")
 	}
 
-	fmt.Println("Succesfully connected to database")
 	DB = db
 	AuthDB = authDB
 }

@@ -423,35 +423,36 @@ function validateRelationship(value){
 // }
 
 
- function getEnterpriseNumbers(){
-    // esto no devuelve true o false, devuelve una promesa que devuelve true o false
-    return fetch('http://localhost:8080/enterprise/getAllEnterprisesNumber', {
-        method: 'GET',
-        headers: {
-            Accept: 'application/json',
-            'Content-Type': 'application/json'
-        }})
-        .then(res => res.json())
-}
+//  function getEnterpriseNumbers(){
+//     // esto no devuelve true o false, devuelve una promesa que devuelve true o false
+//     return fetch('http://192.168.100.2:8080/enterprise/getAllEnterprisesNumber', {
+//         method: 'GET',
+//         headers: {
+//             Accept: 'application/json',
+//             'Content-Type': 'application/json'
+//         }})
+//         .then(res => res.json())
+// }
 
-async function checkEnterpriseNumber(value){
-    try {
-        let enterprisesNumbers = await getEnterpriseNumbers()
-        // para poder editar sin cambiar el number enterprise, sino te tira que ya existe
-        oldValue = Array.from(document.getElementsByName("old-enterprise-number")).pop().value
-        if (oldValue == value) {
-            errorDiv.style.display = 'none'
-            return true
-        } else if (enterprisesNumbers.includes(value)){
-            errorDiv.innerHTML = 'Numero de empresa ya registrado'
-            errorDiv.style.display = 'inline'
-            return false
-        } else{
-            errorDiv.style.display = 'none'
-            return true
-    }
-        } catch (error) {
-            console.log(err)
-        }
+// async function checkEnterpriseNumber(value){
+//     try {
+//         let enterprisesNumbers = await getEnterpriseNumbers()
+//         // para poder editar sin cambiar el number enterprise, sino te tira que ya existe
+//         console.log(enterprisesNumbers)
+//         oldValue = Array.from(document.getElementsByName("old-enterprise-number")).pop().value
+//         if (oldValue == value) {
+//             errorDiv.style.display = 'none'
+//             return true
+//         } else if (enterprisesNumbers.includes(value)){
+//             errorDiv.innerHTML = 'Numero de empresa ya registrado'
+//             errorDiv.style.display = 'inline'
+//             return false
+//         } else{
+//             errorDiv.style.display = 'none'
+//             return true
+//     }
+//         } catch (error) {
+//             console.log(err)
+//         }
     
-}
+// }

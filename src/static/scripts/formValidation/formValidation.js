@@ -48,7 +48,7 @@ async function validateEnterprise(action){
     
     var validationFields = {
         name: validateEnterpriseName(getInputValue('name')),
-        number: await validateEnterpriseNumber(getInputValue('enterprise-number')),
+        // number: await validateEnterpriseNumber(getInputValue('enterprise-number')),
         address: validateAddress(getInputValue('address')),
         cuit: validateCUIT(getInputValue('cuit')),
         district: validateDistrict(getInputValue('district')),

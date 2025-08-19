@@ -173,7 +173,9 @@ func (enterprise Enterprise) SearchModels(c *fiber.Ctx, offset int) ([]Enterpris
 		*
 		FROM EnterpriseTable 
 		WHERE 
-		Name LIKE concat('%', ?, '%') OR Address LIKE concat('%', ?, '%') 
+		IdEnterprise != '1'
+		AND
+		Name LIKE concat('%', ?, '%') OR Address LIKE concat('%', ?, '%')
 		ORDER BY Name ASC
 		LIMIT 15 OFFSET ?`,
 		searchKey, searchKey, offset)
@@ -250,7 +252,7 @@ func (enterprise Enterprise) GetTotalRows(c *fiber.Ctx) (int, error) {
 	searchKey := c.FormValue("search-key")
 	row := database.DB.QueryRow(`
 		SELECT COUNT(*) FROM EnterpriseTable 
-		WHERE Name LIKE concat('%', ?, '%')`, searchKey)
+		WHERE Name LIKE concat('%', ?, '%') AND IdEnterprise != '1'`, searchKey)
 	// row.Scan copia el numero de fila en la variable count
 	err := row.Scan(&totalRows)
 	if err != nil {
