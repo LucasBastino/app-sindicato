@@ -21,20 +21,12 @@ type DBInfo struct {
 }
 
 var InfoDB = DBInfo{
-	Host:     "ndk.h.filess.io",
-	User:     "sindicatoDB_settingcry",
-	Password: "databasefilessio",
-	Port:     "3307",
-	DBName:   "sindicatoDB_settingcry",
+	Host:     "192.168.100.2",
+	User:     "rootdos",
+	Password: "panyquesoprueba",
+	Port:     "3306",
+	DBName:   "dbprueba",
 }
-
-// var InfoDB = DBInfo{
-// 	Host:     "192.168.100.2",
-// 	User:     "rootdos",
-// 	Password: "panyquesoprueba",
-// 	Port:     "3306",
-// 	DBName:   "dbprueba",
-// }
 
 var InfoAuthDB = DBInfo{
 	Host:     "jee2iw.h.filess.io",
@@ -45,11 +37,7 @@ var InfoAuthDB = DBInfo{
 }
 
 func CreateConnection() {
-	// Host:     os.Getenv("HOST"),
-	// User:     os.Getenv("USER"),
-	// Password: os.Getenv("PASSWORD"),
-	// Port:     os.Getenv("PORT"),
-	// DBName:   os.Getenv("DB_NAME"),
+
 
 	// alguien tiene acceso a esto? preguntar
 	connString := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?parseTime=true", InfoDB.User, InfoDB.Password, InfoDB.Host, InfoDB.Port, InfoDB.DBName)

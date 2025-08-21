@@ -2,7 +2,6 @@ package router
 
 import (
 	c "github.com/LucasBastino/app-sindicato/src/controller"
-	creators "github.com/LucasBastino/app-sindicato/src/creators"
 	er "github.com/LucasBastino/app-sindicato/src/errors"
 	l "github.com/LucasBastino/app-sindicato/src/login"
 	pe "github.com/LucasBastino/app-sindicato/src/permissions"
@@ -67,13 +66,6 @@ func RegisterRoutes(app *fiber.App) {
 	py.Get("/:IdEnterprise/paymentTable",pe.VerifyAuth, l.VerifyToken, c.RenderPaymentTable)
 
 	app.Get("/error", er.RenderError)
-
-	app.Get("/test", c.TestNull)
-	app.Get("/createMembers", creators.CreateMembers)
-	app.Get("/createParents", creators.CreateParents)
-	app.Get("/createEnterprises", creators.CreateEnterprises)
-	app.Get("/createPayments", creators.CreatePayments)
 	app.Get("/renderElectoralMemberList",pe.VerifyAuth, l.VerifyToken, c.RenderElectoralMemberList)
-	app.Get("/pruebaEmpresas", c.RenderPruebaEmpresas)
 	app.Get("/backupDB",pe.VerifyAuth, l.VerifyToken, pe.VerifyAdmin, c.BackupDB)
 }
