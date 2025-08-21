@@ -10,16 +10,16 @@ import (
 )
 
 type Parent struct {
-	IdParent  int
-	Name      string
-	LastName  string
-	Rel       string
-	Birthday  string
-	Gender    string
-	CUIL      string
-	IdMember  int
-	CreatedAt time.Time
-	UpdatedAt time.Time
+	IdParent  int		`json:"idparent"`
+	Name      string	`json:"name"`
+	LastName  string	`json:"lastname"`
+	Rel       string	`json:"rel"`
+	Birthday  string	`json:"birthday"`
+	Gender    string	`json:"gender"`
+	CUIL      string	`json:"cuil"`
+	IdMember  int		`json:"idmember"`
+	CreatedAt time.Time	`json:"createdat"`
+	UpdatedAt time.Time	`json:"updatedat"`
 }
 
 func (parent Parent) InsertModel() (Parent, error) {

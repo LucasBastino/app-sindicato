@@ -44,11 +44,11 @@ func LoginUser(c *fiber.Ctx) error {
 }
 
 func RenderInsufficientPermissions(c *fiber.Ctx) error {
-	return c.Render("insufficientPermissions", fiber.Map{})
+	return c.Status(fiber.StatusUnauthorized).Render("insufficientPermissions", fiber.Map{})
 }
 
 func RenderExpiredSession(c *fiber.Ctx) error {
-	return c.Render("expiredSession", fiber.Map{})
+	return c.Status(fiber.StatusUnauthorized).Render("expiredSession", fiber.Map{})
 }
 
 func VerifyToken(c *fiber.Ctx) error {

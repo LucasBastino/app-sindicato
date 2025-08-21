@@ -38,7 +38,7 @@ func AddEnterprise(c *fiber.Ctx) error {
 	data := fiber.Map{"enterprise": e, "numberOfMembers": 0, "mode": "edit", "years": years, "createdAt": createdAt, "updatedAt": updatedAt}
 	data["canDelete"] = c.Locals("claims").(jwt.MapClaims)["deleteEnterprise"]
 	data["canWrite"] = c.Locals("claims").(jwt.MapClaims)["writeEnterprise"]
-	return c.Render("enterpriseFile", data)
+	return c.Status(fiber.StatusCreated).Render("enterpriseFile", data)
 
 }
 

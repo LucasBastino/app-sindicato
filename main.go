@@ -2,19 +2,18 @@ package main
 
 import (
 	"embed"
-	"fmt"
 	"io/fs"
-	"log"
 	"net/http"
 	"time"
 
+	"github.com/LucasBastino/app-sindicato/src/config/logger"
 	"github.com/LucasBastino/app-sindicato/src/database"
 	pe "github.com/LucasBastino/app-sindicato/src/permissions"
 	"github.com/LucasBastino/app-sindicato/src/router"
 	"github.com/Masterminds/sprig"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/adaptor"
-	"github.com/gofiber/fiber/v2/middleware/logger"
+	reqLogger "github.com/gofiber/fiber/v2/middleware/logger"
 	"github.com/gofiber/template/html/v2"
 	"github.com/joho/godotenv"
 )
@@ -35,6 +34,8 @@ func embedfsSub(fsys embed.FS, dir string) fs.FS {
 
 func main() {
 
+	logger.ConfigLogger() 
+
 	// engine config
 	// engine := html.New("./src/views", ".html")
 	// engine := html.NewFileSystem(http.FS(viewFiles), ".html")
@@ -49,7 +50,7 @@ func main() {
 	})
 
 	// Middlewares
-	app.Use(logger.New())
+	app.Use(reqLogger.New())
 
 	// Routes
 	router.RegisterRoutes(app)
@@ -78,12 +79,12 @@ func main() {
 				}
 			}
 			result.Close()
-			fmt.Println(pe.Authorized)
+			logger.Log.Info("Succesfully authorized")
 			time.Sleep(5 * time.Hour)
 		}
 	}()
 	// 192.168.100.2
 	// Listen
 	// cambiar el port este por uno mas profesional ↓
-	log.Fatal(app.Listen("0.0.0.0:8080"))
+	logger.Log.Fatal(app.Listen("0.0.0.0:8080"))
 }

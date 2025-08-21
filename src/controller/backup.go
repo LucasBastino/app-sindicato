@@ -5,6 +5,7 @@ import (
 
 	"github.com/JamesStewy/go-mysqldump"
 	"github.com/LucasBastino/app-sindicato/src/database"
+	er "github.com/LucasBastino/app-sindicato/src/errors"
 	"github.com/gofiber/fiber/v2"
 )
 
@@ -18,14 +19,14 @@ func BackupDB(c *fiber.Ctx) error {
 	dumper, err := mysqldump.Register(DB, dumpDir, dumpFilenameFormat)
 	if err != nil {
 		fmt.Println("Error registering database:", err)
-		return c.Render("backup", fiber.Map{"done": false, "error": err})
+		return er.CheckError(c, err)
 	}
 
 	// Dump database to file.
 	resultFilename, err := dumper.Dump()
 	if err != nil {
 		fmt.Println("Error dumping:", err)
-		return c.Render("backup", fiber.Map{"done": false, "error": err})
+		return er.CheckError(c, err)
 	}
 
 	fmt.Printf("File is saved to %s", resultFilename)

@@ -31,7 +31,7 @@ func AddParent(c *fiber.Ctx) error {
 	data := fiber.Map{"parent": p, "mode": "edit", "createdAt": createdAt, "updatedAt": updatedAt}
 	data["canDelete"] = c.Locals("claims").(jwt.MapClaims)["deleteParent"]
 	data["canWrite"] = c.Locals("claims").(jwt.MapClaims)["writeParent"]
-	return c.Render("parentFile", data)
+	return c.Status(fiber.StatusCreated).Render("parentFile", data)
 
 }
 

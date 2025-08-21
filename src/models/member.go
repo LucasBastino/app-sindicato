@@ -11,27 +11,27 @@ import (
 )
 
 type Member struct {
-	IdMember      int
-	Name          string
-	LastName      string
-	DNI           string
-	Birthday      string
-	Gender        string
-	MaritalStatus string
-	Phone         string
-	Email         string
-	Address       string
-	PostalCode    string
-	District      string
-	MemberNumber  string
-	Affiliated    bool
-	CUIL          string
-	IdEnterprise  int
-	Category      string
-	EntryDate     string
-	Observations  string
-	CreatedAt     time.Time
-	UpdatedAt     time.Time
+	IdMember      int		`json:"idmember"`
+	Name          string	`json:"name"`
+	LastName      string	`json:"lastname"`
+	DNI           string	`json:"dni"`
+	Birthday      string	`json:"birthday"`
+	Gender        string	`json:"gender"`
+	MaritalStatus string	`json:"maritalstatus"`
+	Phone         string	`json:"phone"`
+	Email         string	`json:"email"`
+	Address       string	`json:"address"`
+	PostalCode    string	`json:"postalcode"`
+	District      string	`json:"district"`
+	MemberNumber  string	`json:"membernumber"`
+	Affiliated    bool		`json:"affiliated"`
+	CUIL          string	`json:"cuil"`
+	IdEnterprise  int		`json:"identerprise"`
+	Category      string	`json:"category"`
+	EntryDate     string	`json:"entrydate"`
+	Observations  string	`json:"observations"`
+	CreatedAt     time.Time	`json:"createdat"`
+	UpdatedAt     time.Time	`json:"updatedat"`
 }
 
 func (member Member) InsertModel() (Member, error) {

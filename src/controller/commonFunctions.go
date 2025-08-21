@@ -176,11 +176,12 @@ func RenderPruebaEmpresas(c *fiber.Ctx) error {
 		}
 		enterprises = append(enterprises, enterprise)
 	}
+	result.Close()
 	return c.Render("pruebaEmpresas", fiber.Map{"enterprises": enterprises})
 }
 
-func RenderLogin(ctx *fiber.Ctx) error {
-	return ctx.Render("login", fiber.Map{})
+func RenderLogin(c *fiber.Ctx) error {
+	return c.Render("login", fiber.Map{})
 }
 
 func formatTimeStamps(cA, uA time.Time) (string, string, error) {

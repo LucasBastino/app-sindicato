@@ -194,7 +194,7 @@ func AddPayment(c *fiber.Ctx) error {
 	data := fiber.Map{"payment": p, "mode": "edit", "idEnterprise": IdEnterprise, "years": years, "year": p.Year, "createdAt": createdAt, "updatedAt": updatedAt, "enterpriseName": enterpriseName}
 	data["canDelete"] = c.Locals("claims").(jwt.MapClaims)["deletePayment"]
 	data["canWrite"] = c.Locals("claims").(jwt.MapClaims)["writePayment"]
-	return c.Render("paymentFile", data)
+	return c.Status(fiber.StatusCreated).Render("paymentFile", data)
 }
 
 func EditPayment(c *fiber.Ctx) error {

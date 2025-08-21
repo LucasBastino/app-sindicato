@@ -26,6 +26,9 @@ var StrConvError = &CustomError{}
 var DatabaseConnectionError = &CustomError{}
 var ParamsError = &CustomError{}
 
+
+// hacer esto con una variable global?
+
 func RenderError(c *fiber.Ctx) error {
 
 	switch c.Cookies("ErrType") {

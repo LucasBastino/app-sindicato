@@ -10,18 +10,18 @@ import (
 )
 
 type Enterprise struct {
-	IdEnterprise     int
-	Name             string
-	EnterpriseNumber string
-	Address          string
-	CUIT             string
-	District         string
-	PostalCode       string
-	Phone            string
-	Contact          string
-	Observations     string
-	CreatedAt        time.Time
-	UpdatedAt        time.Time
+	IdEnterprise     int	`json:"identerprise"`
+	Name             string	`json:"name"`
+	EnterpriseNumber string	`json:"enterprisenumber"`
+	Address          string	`json:"address"`
+	CUIT             string	`json:"cuit"`
+	District         string	`json:"district"`
+	PostalCode       string	`json:"postalcode"`
+	Phone            string	`json:"phone"`
+	Contact          string	`json:"contact"`
+	Observations     string	`json:"observations"`
+	CreatedAt        time.Time `json:"createdat"`
+	UpdatedAt        time.Time`json:"updatedat"`
 }
 
 func (enterprise Enterprise) InsertModel() (Enterprise, error) {

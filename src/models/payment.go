@@ -11,16 +11,16 @@ import (
 )
 
 type Payment struct {
-	IdPayment    int
-	Month        string
-	Year         string
-	Status       bool
-	Amount       int
-	PaymentDate  string
-	Observations string
-	IdEnterprise int
-	CreatedAt    time.Time
-	UpdatedAt    time.Time
+	IdPayment    int		`json:"idpayment"`
+	Month        string		`json:"month"`
+	Year         string		`json:"year"`
+	Status       bool		`json:"status"`
+	Amount       int		`json:"amount"`
+	PaymentDate  string		`json:"paymentdate"`
+	Observations string		`json:"observations"`
+	IdEnterprise int		`json:"identerprise"`
+	CreatedAt    time.Time	`json:"createdat"`
+	UpdatedAt    time.Time	`json:"updatedat"`
 }
 
 func (payment Payment) InsertModel() (Payment, error) {
