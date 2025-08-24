@@ -3,7 +3,7 @@ package router
 import (
 	c "github.com/LucasBastino/app-sindicato/src/controller"
 	creators "github.com/LucasBastino/app-sindicato/src/creators"
-	er "github.com/LucasBastino/app-sindicato/src/errors"
+	er "github.com/LucasBastino/app-sindicato/src/errors/errorHandler"
 	l "github.com/LucasBastino/app-sindicato/src/login"
 	pe "github.com/LucasBastino/app-sindicato/src/permissions"
 	"github.com/gofiber/fiber/v2"

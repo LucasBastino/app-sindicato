@@ -4,7 +4,7 @@ import (
 	"fmt"
 
 	"github.com/LucasBastino/app-sindicato/src/database"
-	er "github.com/LucasBastino/app-sindicato/src/errors"
+	"github.com/LucasBastino/app-sindicato/src/errors/customError"
 	"github.com/gofiber/fiber/v2"
 	"github.com/golang-jwt/jwt/v5"
 )
@@ -32,28 +32,28 @@ func VerifyAuth(c* fiber.Ctx) error{
 	}
 
 
-func GetAdmin(user string) (bool, error) {
+func GetAdmin(user string) (bool, *customError.CustomError) {
 	row := database.DB.QueryRow("SELECT Admin FROM UserTable WHERE Username = ?", user)
 	var admin bool
 	err := row.Scan(&admin)
 	if err != nil {
-		er.ScanError.Msg = err.Error()
-		return false, er.ScanError
+		customError.ScanError.Msg = err.Error()
+		return false, &customError.ScanError
 	}
-	return admin, nil
+	return admin, &customError.CustomError{}
 }
 
-func GetPermissions(user string) (Permissions, error) {
+func GetPermissions(user string) (Permissions, *customError.CustomError) {
 	row := database.DB.QueryRow("SELECT WriteMember, DeleteMember, WriteEnterprise, DeleteEnterprise, WriteParent, DeleteParent, WritePayment, DeletePayment FROM UserTable WHERE Username = ?", user)
 	p := Permissions{}
 
 	err := row.Scan(&p.WriteMember, &p.DeleteMember, &p.WriteEnterprise, &p.DeleteEnterprise, &p.WriteParent, &p.DeleteParent, &p.WritePayment, &p.DeletePayment)
 	if err != nil {
-		er.ScanError.Msg = err.Error()
-		return Permissions{}, er.ScanError
+		customError.ScanError.Msg = err.Error()
+		return Permissions{}, &customError.ScanError
 	}
 
-	return p, nil
+	return p, &customError.CustomError{}
 
 }
 

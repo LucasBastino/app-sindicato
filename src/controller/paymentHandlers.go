@@ -4,7 +4,8 @@ import (
 	"time"
 
 	"github.com/LucasBastino/app-sindicato/src/database"
-	er "github.com/LucasBastino/app-sindicato/src/errors"
+	"github.com/LucasBastino/app-sindicato/src/errors/customError"
+	"github.com/LucasBastino/app-sindicato/src/errors/errorHandler"
 	i "github.com/LucasBastino/app-sindicato/src/interfaces"
 	"github.com/LucasBastino/app-sindicato/src/models"
 	"github.com/gofiber/fiber/v2"
@@ -13,14 +14,14 @@ import (
 
 func RenderAddPaymentForm(c *fiber.Ctx) error {
 	// se manda un payment vacio para que esten todos los input en blanco
-	IdEnterprise, err := getIdModelCaller(models.Enterprise{}, c)
-	if err != nil {
+	IdEnterprise, customErr := getIdModelCaller(models.Enterprise{}, c)
+	if (customErr != customError.CustomError{}){
 		// guardar el error
-		return er.CheckError(c, err)
+		return errorHandler.HandleError(c, &customErr)
 	}
-	enterpriseName, err := getEnterpriseName(IdEnterprise)
-	if err!=nil{
-		return er.CheckError(c, err)
+	enterpriseName, customErr := getEnterpriseName(IdEnterprise)
+	if (customErr != customError.CustomError{}){
+		return errorHandler.HandleError(c, &customErr)
 	}
 	p := models.Payment{IdEnterprise: IdEnterprise}
 	data := fiber.Map{"payment": p, "mode": "add", "enterpriseName": enterpriseName}
@@ -28,23 +29,23 @@ func RenderAddPaymentForm(c *fiber.Ctx) error {
 }
 
 func RenderPaymentFile(c *fiber.Ctx) error {
-	p, err := searchOneModelByIdCaller(models.Payment{}, c)
+	p, customErr := searchOneModelByIdCaller(models.Payment{}, c)
 
-	if err != nil {
+	if (customErr != customError.CustomError{}){
 		// guardar el error
-		return er.CheckError(c, err)
+		return errorHandler.HandleError(c, &customErr)
 	}
-	IdEnterprise, err := getIdModelCaller(models.Enterprise{}, c)
-	if err != nil {
+	IdEnterprise, customErr := getIdModelCaller(models.Enterprise{}, c)
+	if (customErr != customError.CustomError{}){
 		// guardar el error
-		return er.CheckError(c, err)
+		return errorHandler.HandleError(c, &customErr)
 	}
 
 	result2, err := database.DB.Query("SELECT Year FROM PaymentTable WHERE IdEnterprise = ? GROUP BY Year ORDER BY YEAR DESC", IdEnterprise)
-	if err != nil {
+	if err != nil{
 		// guardar el error
-		er.QueryError.Msg = err.Error()
-		return er.CheckError(c, er.QueryError)
+		customError.QueryError.Msg = err.Error()
+		return errorHandler.HandleError(c, &customError.QueryError)
 	}
 
 	var years []string
@@ -54,14 +55,14 @@ func RenderPaymentFile(c *fiber.Ctx) error {
 		years = append(years, year)
 	}
 
-	createdAt, updatedAt, err := formatTimeStamps(p.CreatedAt, p.UpdatedAt)
-	if err != nil {
+	createdAt, updatedAt, customErr := formatTimeStamps(p.CreatedAt, p.UpdatedAt)
+	if (customErr != customError.CustomError{}){
 		// guardar el error
-		return er.CheckError(c, err)
+		return errorHandler.HandleError(c, &customErr)
 	}
-	enterpriseName, err := getEnterpriseName(IdEnterprise)
-	if err!=nil{
-		return er.CheckError(c, err)
+	enterpriseName, customErr := getEnterpriseName(IdEnterprise)
+	if (customErr != customError.CustomError{}){
+		return errorHandler.HandleError(c, &customErr)
 	}
 	data := fiber.Map{"payment": p, "mode": "edit", "idEnterprise": IdEnterprise, "years": years, "year": p.Year, "createdAt": createdAt, "updatedAt": updatedAt, "enterpriseName": enterpriseName}
 	data["canDelete"] = c.Locals("claims").(jwt.MapClaims)["deletePayment"]
@@ -76,14 +77,14 @@ func RenderPaymentTable(c *fiber.Ctx) error {
 	c.ParamsParser(&params)
 	canDelete := c.Locals("claims").(jwt.MapClaims)["deleteEnterprise"]
 	canWrite := c.Locals("claims").(jwt.MapClaims)["writeEnterprise"]
-	IdEnterprise, err := getIdModelCaller(models.Enterprise{}, c)
-	if err != nil {
+	IdEnterprise, customErr := getIdModelCaller(models.Enterprise{}, c)
+	if (customErr != customError.CustomError{}){
 		// guardar el err
-		return er.CheckError(c, err)
+		return errorHandler.HandleError(c, &customErr)
 	}
-	enterpriseName, err := getEnterpriseName(IdEnterprise)
-	if err!=nil{
-		return er.CheckError(c, err)
+	enterpriseName, customErr := getEnterpriseName(IdEnterprise)
+	if (customErr != customError.CustomError{}){
+		return errorHandler.HandleError(c, &customErr)
 	}
 
 	var totalRows int
@@ -91,10 +92,10 @@ func RenderPaymentTable(c *fiber.Ctx) error {
 		SELECT COUNT(*) FROM PaymentTable 
 		WHERE IdEnterprise = ?`, IdEnterprise)
 	// row.Scan copia el numero de fila en la variable count
-	err = row.Scan(&totalRows)
+	err := row.Scan(&totalRows)
 	if err != nil {
-		er.ScanError.Msg = err.Error()
-		return er.CheckError(c, er.ScanError)
+		customError.ScanError.Msg = err.Error()
+		return errorHandler.HandleError(c, &customError.ScanError)
 	}
 
 	if totalRows == 0 {
@@ -105,23 +106,23 @@ func RenderPaymentTable(c *fiber.Ctx) error {
 	result, err := database.DB.Query("SELECT MAX(Year) FROM PaymentTable WHERE IdEnterprise = ?", IdEnterprise)
 	if err != nil {
 		// logear el err
-		er.QueryError.Msg = err.Error()
-		return er.CheckError(c, er.QueryError)
+		customError.QueryError.Msg = err.Error()
+		return errorHandler.HandleError(c, &customError.QueryError)
 	}
 	for result.Next() {
 		err = result.Scan(&lastYear)
 	}
 	if err != nil {
 		// logear el err
-		er.ScanError.Msg = err.Error()
-		return er.CheckError(c, er.ScanError)
+		customError.ScanError.Msg = err.Error()
+		return errorHandler.HandleError(c, &customError.ScanError)
 	}
 
 	result2, err := database.DB.Query("SELECT Year FROM PaymentTable WHERE IdEnterprise = ? GROUP BY Year ORDER BY YEAR DESC", IdEnterprise)
 	if err != nil {
 		// logear el err
-		er.QueryError.Msg = err.Error()
-		return er.CheckError(c, er.QueryError)
+		customError.QueryError.Msg = err.Error()
+		return errorHandler.HandleError(c, &customError.QueryError)
 	}
 
 	var years []string
@@ -130,25 +131,25 @@ func RenderPaymentTable(c *fiber.Ctx) error {
 		err = result2.Scan(&year)
 		if err != nil {
 			// logear el err
-			er.ScanError.Msg = err.Error()
-			return er.CheckError(c, er.ScanError)
+			customError.ScanError.Msg = err.Error()
+			return errorHandler.HandleError(c, &customError.ScanError)
 		}
 		years = append(years, year)
 	}
 	yearInt := params.Year
 	if params.Year == 0 {
-		payments, _, err := searchModelsCaller(models.Payment{}, c, lastYear)
-		if err != nil {
+		payments, _, customErr := searchModelsCaller(models.Payment{}, c, lastYear)
+		if (customErr != customError.CustomError{}){
 			// guardar el err
-			return er.CheckError(c, err)
+			return errorHandler.HandleError(c, &customErr)
 		}
 		data := fiber.Map{"payments": payments, "idEnterprise": IdEnterprise, "canDelete": canDelete, "canWrite": canWrite, "mode": "edit", "years": years, "year": lastYear, "enterpriseName": enterpriseName}
 		return c.Render("paymentTable", data)
 	} else {
-		payments, _, err := searchModelsCaller(models.Payment{}, c, params.Year)
-		if err != nil {
+		payments, _, customErr := searchModelsCaller(models.Payment{}, c, params.Year)
+		if (customErr != customError.CustomError{}){
 			// guardar el err
-			return er.CheckError(c, err)
+			return errorHandler.HandleError(c, &customErr)
 		}
 	
 	data := fiber.Map{"payments": payments, "idEnterprise": IdEnterprise, "canDelete": canDelete, "canWrite": canWrite, "mode": "edit", "years": years, "year": yearInt, "enterpriseName": enterpriseName}
@@ -157,39 +158,39 @@ func RenderPaymentTable(c *fiber.Ctx) error {
 }
 
 func AddPayment(c *fiber.Ctx) error {
-	if err := validateFieldsCaller(models.Payment{}, c); err != nil {
-		return er.CheckError(c, err)
+	if customErr := validateFieldsCaller(models.Payment{}, c); (customErr != customError.CustomError{}) {
+		return errorHandler.HandleError(c, &customErr)
 	}
-	p, err := parserCaller(i.PaymentParser{}, c)
-	if err != nil {
+	p, customErr := parserCaller(i.PaymentParser{}, c)
+	if (customErr != customError.CustomError{}){
 		// guardar el error
-		return er.CheckError(c, err)
+		return errorHandler.HandleError(c, &customErr)
 	}
 
-	IdEnterprise, err := getIdModelCaller(models.Enterprise{}, c)
-	if err != nil {
+	IdEnterprise, customErr := getIdModelCaller(models.Enterprise{}, c)
+	if (customErr != customError.CustomError{}){
 		// guardar el error
-		return er.CheckError(c, err)
+		return errorHandler.HandleError(c, &customErr)
 	}
 
-	p, err = insertModelCaller(p)
-	if err != nil {
+	p, customErr = insertModelCaller(p)
+	if (customErr != customError.CustomError{}){
 		// guardar el error
-		return er.CheckError(c, err)
+		return errorHandler.HandleError(c, &customErr)
 	}
-	years, err := getPaymentYearsFromDB(IdEnterprise)
-	if err != nil {
+	years, customErr := getPaymentYearsFromDB(IdEnterprise)
+	if (customErr != customError.CustomError{}){
 		// guardar el error
-		return er.CheckError(c, err)
+		return errorHandler.HandleError(c, &customErr)
 	}
-	createdAt, updatedAt, err := getPaymentTimestampsFromDB(p.IdPayment)
-	if err != nil {
+	createdAt, updatedAt, customErr := getPaymentTimestampsFromDB(p.IdPayment)
+	if (customErr != customError.CustomError{}){
 		// guardar el error
-		return er.CheckError(c, err)
+		return errorHandler.HandleError(c, &customErr)
 	}
-	enterpriseName, err := getEnterpriseName(IdEnterprise)
-	if err!=nil{
-		return er.CheckError(c, err)
+	enterpriseName, customErr := getEnterpriseName(IdEnterprise)
+	if (customErr != customError.CustomError{}){
+		return errorHandler.HandleError(c, &customErr)
 	}
 	data := fiber.Map{"payment": p, "mode": "edit", "idEnterprise": IdEnterprise, "years": years, "year": p.Year, "createdAt": createdAt, "updatedAt": updatedAt, "enterpriseName": enterpriseName}
 	data["canDelete"] = c.Locals("claims").(jwt.MapClaims)["deletePayment"]
@@ -198,44 +199,44 @@ func AddPayment(c *fiber.Ctx) error {
 }
 
 func EditPayment(c *fiber.Ctx) error {
-	if err := validateFieldsCaller(models.Payment{}, c); err != nil {
-		return er.CheckError(c, err)
+	if customErr := validateFieldsCaller(models.Payment{}, c); (customErr != customError.CustomError{}){
+		return errorHandler.HandleError(c, &customErr)
 	}
-	p, err := parserCaller(i.PaymentParser{}, c)
-	if err != nil {
+	p, customErr := parserCaller(i.PaymentParser{}, c)
+	if (customErr != customError.CustomError{}){
 		// guardar el error
-		return er.CheckError(c, err)
+		return errorHandler.HandleError(c, &customErr)
 	}
-	IdEnterprise, err := getIdModelCaller(models.Enterprise{}, c)
-	if err != nil {
+	IdEnterprise, customErr := getIdModelCaller(models.Enterprise{}, c)
+	if (customErr != customError.CustomError{}){
 		// guardar el error
-		return er.CheckError(c, err)
+		return errorHandler.HandleError(c, &customErr)
 	}
-	IdPayment, err := getIdModelCaller(models.Payment{}, c)
-	if err != nil {
+	IdPayment, customErr := getIdModelCaller(models.Payment{}, c)
+	if (customErr != customError.CustomError{}){
 		// guardar el error
-		return er.CheckError(c, err)
+		return errorHandler.HandleError(c, &customErr)
 	}
 	p.IdPayment = IdPayment
 
-	p, err = updateModelCaller(p)
-	if err != nil {
+	p, customErr = updateModelCaller(p)
+	if (customErr != customError.CustomError{}){
 		// guardar el error
-		return er.CheckError(c, err)
+		return errorHandler.HandleError(c, &customErr)
 	}
-	years, err := getPaymentYearsFromDB(IdEnterprise)
-	if err != nil {
+	years, customErr := getPaymentYearsFromDB(IdEnterprise)
+	if (customErr != customError.CustomError{}){
 		// guardar el error
-		return er.CheckError(c, err)
+		return errorHandler.HandleError(c, &customErr)
 	}
-	createdAt, updatedAt, err := getPaymentTimestampsFromDB(p.IdPayment)
-	if err != nil {
+	createdAt, updatedAt, customErr := getPaymentTimestampsFromDB(p.IdPayment)
+	if (customErr != customError.CustomError{}){
 		// guardar el error
-		return er.CheckError(c, err)
+		return errorHandler.HandleError(c, &customErr)
 	}
-	enterpriseName, err := getEnterpriseName(IdEnterprise)
-	if err!=nil{
-		return er.CheckError(c, err)
+	enterpriseName, customErr := getEnterpriseName(IdEnterprise)
+	if (customErr != customError.CustomError{}){
+		return errorHandler.HandleError(c, &customErr)
 	}
 
 	data := fiber.Map{"payment": p, "mode": "edit", "idEnterprise": IdEnterprise, "years": years, "year": p.Year, "createdAt": createdAt, "updatedAt": updatedAt, "enterpriseName": enterpriseName}
@@ -246,21 +247,21 @@ func EditPayment(c *fiber.Ctx) error {
 }
 
 func DeletePayment(c *fiber.Ctx) error {
-	IdPayment, err := getIdModelCaller(models.Payment{}, c)
-	if err != nil {
+	IdPayment, customErr := getIdModelCaller(models.Payment{}, c)
+	if (customErr != customError.CustomError{}){
 		// guardar el error
-		return er.CheckError(c, err)
+		return errorHandler.HandleError(c, &customErr)
 	}
 	p := models.Payment{IdPayment: IdPayment}
 	deleteModelCaller(p)
 	return RenderPaymentTable(c)
 }
 
-func getPaymentYearsFromDB(idEnterprise int) ([]string, error) {
+func getPaymentYearsFromDB(idEnterprise int) ([]string, customError.CustomError) {
 	result, err := database.DB.Query("SELECT Year FROM PaymentTable WHERE IdEnterprise = ? GROUP BY Year ORDER BY YEAR DESC", idEnterprise)
 	if err != nil {
-		er.QueryError.Msg = err.Error()
-		return nil, er.QueryError
+		customError.QueryError.Msg = err.Error()
+		return nil, customError.QueryError
 	}
 
 	var years []string
@@ -268,26 +269,26 @@ func getPaymentYearsFromDB(idEnterprise int) ([]string, error) {
 	for result.Next() {
 		err = result.Scan(&year)
 		if err != nil {
-			er.ScanError.Msg = err.Error()
-			return nil, er.ScanError
+			customError.ScanError.Msg = err.Error()
+			return nil, customError.ScanError
 		}
 		years = append(years, year)
 	}
-	return years, nil
+	return years, customError.CustomError{}
 }
 
-func getPaymentTimestampsFromDB(idPayment int) (string, string, error) {
+func getPaymentTimestampsFromDB(idPayment int) (string, string, customError.CustomError) {
 	result, err := database.DB.Query("SELECT CreatedAt, UpdatedAt FROM PaymentTable WHERE IdPayment = ?", idPayment)
 	if err != nil {
-		er.QueryError.Msg = err.Error()
-		return "", "", er.QueryError
+		customError.QueryError.Msg = err.Error()
+		return "", "", customError.QueryError
 	}
 	var createdAtUnformatted, updatedAtUnformatted time.Time
 	for result.Next() {
 		err = result.Scan(&createdAtUnformatted, &updatedAtUnformatted)
 		if err != nil {
-			er.ScanError.Msg = err.Error()
-			return "", "", er.ScanError
+			customError.ScanError.Msg = err.Error()
+			return "", "", customError.ScanError
 		}
 	}
 	return formatTimeStamps(createdAtUnformatted, updatedAtUnformatted)

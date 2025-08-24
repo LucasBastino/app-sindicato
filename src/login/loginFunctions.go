@@ -7,7 +7,7 @@ import (
 	"time"
 
 	"github.com/LucasBastino/app-sindicato/src/database"
-	er "github.com/LucasBastino/app-sindicato/src/errors"
+	"github.com/LucasBastino/app-sindicato/src/errors/customError"
 	pe "github.com/LucasBastino/app-sindicato/src/permissions"
 	"github.com/gofiber/fiber/v2"
 	"github.com/golang-jwt/jwt/v5"
@@ -58,11 +58,11 @@ func createToken(claims jwt.MapClaims) *jwt.Token {
 	return jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 }
 
-func signToken(token *jwt.Token) (string, error) {
+func signToken(token *jwt.Token) (string, *customError.CustomError) {
 	signedToken, err := token.SignedString([]byte(os.Getenv("JWT_SECRET")))
 	if err != nil {
-		er.InternalServerError.Msg = err.Error()
-		return "", er.InternalServerError
+		customError.InternalServerError.Msg = err.Error()
+		return "", &customError.InternalServerError
 	}
 	return signedToken, nil
 }

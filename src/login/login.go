@@ -1,11 +1,11 @@
 package login
 
 import (
-	"fmt"
 	"os"
 	"time"
 
-	er "github.com/LucasBastino/app-sindicato/src/errors"
+	"github.com/LucasBastino/app-sindicato/src/config/logger"
+	"github.com/LucasBastino/app-sindicato/src/errors/errorHandler"
 	pe "github.com/LucasBastino/app-sindicato/src/permissions"
 	"github.com/gofiber/fiber/v2"
 	"github.com/golang-jwt/jwt/v5"
@@ -19,23 +19,23 @@ func LoginUser(c *fiber.Ctx) error {
 		return c.Render("login", fiber.Map{"user": user, "password": password, "userError": "Usuario no existente"})
 	}
 
-	err := checkHashAndPassword([]byte(hash), []byte(password))
-	if err != nil {
+	checkErr := checkHashAndPassword([]byte(hash), []byte(password))
+	if checkErr != nil {
 		return c.Render("login", fiber.Map{"user": user, "password": password, "passwordError": "Contraseña incorrecta"})
 	}
 	admin, err := pe.GetAdmin(user)
 	if err != nil {
-		return er.CheckError(c, err)
+		return errorHandler.HandleError(c, err)
 	}
 	permissions, err := pe.GetPermissions(user)
 	if err != nil {
-		return er.CheckError(c, err)
+		return errorHandler.HandleError(c, err)
 	}
 	claims := createJwtMapClaims(user, admin, permissions, 8)
 	token := createToken(claims)
 	signedToken, err := signToken(token)
 	if err != nil {
-		return er.CheckError(c, err)
+		return errorHandler.HandleError(c, err)
 	}
 	cookie := createCookie(signedToken)
 	c.Cookie(&cookie)
@@ -57,7 +57,7 @@ func VerifyToken(c *fiber.Ctx) error {
 		return []byte(os.Getenv("JWT_SECRET")), nil
 	})
 	if err != nil {
-		fmt.Println(err)
+		logger.Log.Warn("invalid session")
 		return c.Render("redirect", fiber.Map{"path": "/expiredSession"})
 	}
 	claims := token.Claims.(jwt.MapClaims)

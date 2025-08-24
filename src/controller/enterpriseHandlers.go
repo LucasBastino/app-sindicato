@@ -4,7 +4,8 @@ import (
 	"strconv"
 
 	"github.com/LucasBastino/app-sindicato/src/database"
-	er "github.com/LucasBastino/app-sindicato/src/errors"
+	"github.com/LucasBastino/app-sindicato/src/errors/customError"
+	"github.com/LucasBastino/app-sindicato/src/errors/errorHandler"
 	i "github.com/LucasBastino/app-sindicato/src/interfaces"
 	"github.com/LucasBastino/app-sindicato/src/models"
 	"github.com/gofiber/fiber/v2"
@@ -12,28 +13,28 @@ import (
 )
 
 func AddEnterprise(c *fiber.Ctx) error {
-	if err := validateFieldsCaller(models.Enterprise{}, c); err != nil {
-		return er.CheckError(c, err)
+	if customErr := validateFieldsCaller(models.Enterprise{}, c); (customErr != customError.CustomError{}) {
+		return errorHandler.HandleError(c, &customErr)
 	}
-	e, err := parserCaller(i.EnterpriseParser{}, c)
-	if err != nil {
+	e, customErr := parserCaller(i.EnterpriseParser{}, c)
+	if (customErr != customError.CustomError{}) {
 		// guardar el error
-		return er.CheckError(c, err)
+		return errorHandler.HandleError(c, &customErr)
 	}
-	e, err = insertModelCaller(e)
-	if err != nil {
+	e, customErr = insertModelCaller(e)
+	if (customErr != customError.CustomError{}) {
 		// guardar el err
-		return er.CheckError(c, err)
+		return errorHandler.HandleError(c, &customErr)
 	}
-	createdAt, updatedAt, err := formatTimeStamps(e.CreatedAt, e.UpdatedAt)
-	if err != nil {
+	createdAt, updatedAt, customErr := formatTimeStamps(e.CreatedAt, e.UpdatedAt)
+	if (customErr != customError.CustomError{}) {
 		// guardar el err
-		return er.CheckError(c, err)
+		return errorHandler.HandleError(c, &customErr)
 	}
-	years, err := getPaymentYears(e.IdEnterprise)
-	if err != nil {
+	years, customErr := getPaymentYears(e.IdEnterprise)
+	if (customErr != customError.CustomError{}) {
 		// guardar el err
-		return er.CheckError(c, err)
+		return errorHandler.HandleError(c, &customErr)
 	}
 	data := fiber.Map{"enterprise": e, "numberOfMembers": 0, "mode": "edit", "years": years, "createdAt": createdAt, "updatedAt": updatedAt}
 	data["canDelete"] = c.Locals("claims").(jwt.MapClaims)["deleteEnterprise"]
@@ -43,30 +44,30 @@ func AddEnterprise(c *fiber.Ctx) error {
 }
 
 func DeleteEnterprise(c *fiber.Ctx) error {
-	IdEnterprise, err := getIdModelCaller(models.Enterprise{}, c)
-	if err != nil {
+	IdEnterprise, customErr := getIdModelCaller(models.Enterprise{}, c)
+	if (customErr != customError.CustomError{}) {
 		// guardar el err
-		return er.CheckError(c, err)
+		return errorHandler.HandleError(c, &customErr)
 	}
 	if IdEnterprise == 1 {
 		// logear "error": "cannot delete enterprise 1"
-		return er.CheckError(c, er.InsufficientPermisionsError)
+		return errorHandler.HandleError(c, &customErr)
 	}
 	e := models.Enterprise{IdEnterprise: IdEnterprise}
-	members, err := getAllEnterpriseMembers(IdEnterprise)
-	if err != nil {
+	members, customErr := getAllEnterpriseMembers(IdEnterprise)
+	if (customErr != customError.CustomError{}) {
 		// logear el error
-		return er.CheckError(c, err)
+		return errorHandler.HandleError(c, &customErr)
 	}
-	err = deleteModelCaller(e)
-	if err != nil {
+	customErr = deleteModelCaller(e)
+	if (customErr != customError.CustomError{}) {
 		// guardar el err
-		return er.CheckError(c, err)
+		return errorHandler.HandleError(c, &customErr)
 	}
-	err = setIdEnterpriseToOne(members)
-	if err != nil {
+	customErr = setIdEnterpriseToOne(members)
+	if (customErr != customError.CustomError{}) {
 		// logear el error
-		return er.CheckError(c, err)
+		return errorHandler.HandleError(c, &customErr)
 	}
 	switch c.Get("mode") {
 	case "table":
@@ -75,45 +76,45 @@ func DeleteEnterprise(c *fiber.Ctx) error {
 		return c.Render("tablePage", fiber.Map{"withEnterpriseTable": true})
 	default:
 		// log error with deleting mode
-		return er.CheckError(c, er.InternalServerError)
+		return errorHandler.HandleError(c, &customErr)
 	}
 
 }
 
 func EditEnterprise(c *fiber.Ctx) error {
-	if err := validateFieldsCaller(models.Enterprise{}, c); err != nil {
-		return er.CheckError(c, err)
+	if customErr := validateFieldsCaller(models.Enterprise{}, c); (customErr != customError.CustomError{}) {
+		return errorHandler.HandleError(c, &customErr)
 	}
-	e, err := parserCaller(i.EnterpriseParser{}, c)
-	if err != nil {
+	e, customErr := parserCaller(i.EnterpriseParser{}, c)
+	if (customErr != customError.CustomError{}) {
 		// guardar el error
-		return er.CheckError(c, err)
+		return errorHandler.HandleError(c, &customErr)
 	}
-	IdEnterprise, err := getIdModelCaller(e, c)
-	if err != nil {
+	IdEnterprise, customErr := getIdModelCaller(e, c)
+	if (customErr != customError.CustomError{}) {
 		// guardar el err
-		return er.CheckError(c, err)
+		return errorHandler.HandleError(c, &customErr)
 	}
 	e.IdEnterprise = IdEnterprise
-	years, err := getPaymentYears(e.IdEnterprise)
-	if err != nil {
+	years, customErr := getPaymentYears(e.IdEnterprise)
+	if (customErr != customError.CustomError{}) {
 		// logearlo
-		return er.CheckError(c, err)
+		return errorHandler.HandleError(c, &customErr)
 	}
-	e, err = updateModelCaller(e)
-	if err != nil {
+	e, customErr = updateModelCaller(e)
+	if (customErr != customError.CustomError{}) {
 		// guardar el err
-		return er.CheckError(c, err)
+		return errorHandler.HandleError(c, &customErr)
 	}
-	numberOfMembers, err := getNumberOfMembers(e.IdEnterprise, "")
-	if err != nil {
+	numberOfMembers, customErr := getNumberOfMembers(e.IdEnterprise, "")
+	if (customErr != customError.CustomError{}) {
 		// logearlo
-		return er.CheckError(c, err)
+		return errorHandler.HandleError(c, &customErr)
 	}
-	createdAt, updatedAt, err := formatTimeStamps(e.CreatedAt, e.UpdatedAt)
-	if err != nil {
+	createdAt, updatedAt, customErr := formatTimeStamps(e.CreatedAt, e.UpdatedAt)
+	if (customErr != customError.CustomError{}) {
 		// logearlo en algun lado
-		return er.CheckError(c, err)
+		return errorHandler.HandleError(c, &customErr)
 	}
 	data := fiber.Map{"enterprise": e, "numberOfMembers": numberOfMembers, "mode": "edit", "years": years, "createdAt": createdAt, "updatedAt": updatedAt}
 	data["canDelete"] = c.Locals("claims").(jwt.MapClaims)["deleteEnterprise"]
@@ -121,11 +122,11 @@ func EditEnterprise(c *fiber.Ctx) error {
 	return c.Render("enterpriseFile", data)
 }
 
-func getPaymentYears(idEnterprise int) ([]string, error) {
+func getPaymentYears(idEnterprise int) ([]string, customError.CustomError) {
 	result, err := database.DB.Query("SELECT Year FROM PaymentTable WHERE IdEnterprise = ? GROUP BY Year ORDER BY YEAR DESC", idEnterprise)
 	if err != nil {
-		er.QueryError.Msg = err.Error()
-		return nil, er.QueryError
+		customError.QueryError.Msg = err.Error()
+		return nil, customError.QueryError
 	}
 
 	var years []string
@@ -133,22 +134,22 @@ func getPaymentYears(idEnterprise int) ([]string, error) {
 	for result.Next() {
 		err = result.Scan(&year)
 		if err != nil {
-			er.ScanError.Msg = err.Error()
-			return nil, er.ScanError
+			customError.ScanError.Msg = err.Error()
+			return nil, customError.ScanError
 		}
 		years = append(years, year)
 	}
-	return years, nil
+	return years, customError.CustomError{}
 }
 
 func RenderEnterpriseTable(c *fiber.Ctx) error {
 	// obtengo la currentPage del path
 	currentPage := GetPageFromPath(c)
 	// calculo la cantidad de resultados
-	totalRows, err := getTotalRowsCaller(models.Enterprise{}, c)
-	if err != nil {
+	totalRows, customErr := getTotalRowsCaller(models.Enterprise{}, c)
+	if (customErr != customError.CustomError{}) {
 		// guardar el err
-		return er.CheckError(c, err)
+		return errorHandler.HandleError(c, &customErr)
 	}
 	if totalRows == 0 {
 		// si no hay resultados renderizar esto
@@ -160,10 +161,10 @@ func RenderEnterpriseTable(c *fiber.Ctx) error {
 		totalPages, offset, someBefore, someAfter := GetPaginationData(currentPage, totalRows)
 
 		// busco los miembros y devuelvo el searchKey para usarlo nuevamente en la paginacion
-		enterprises, searchKey, err := searchModelsCaller(models.Enterprise{}, c, offset)
-		if err != nil {
+		enterprises, searchKey, customErr := searchModelsCaller(models.Enterprise{}, c, offset)
+		if (customErr != customError.CustomError{}) {
 			// guardar el err
-			return er.CheckError(c, err)
+			return errorHandler.HandleError(c, &customErr)
 		}
 
 		// hago un array para poder recorrerlo y crear botones cuando hay menos de 10 paginas en el template
@@ -179,15 +180,15 @@ func RenderEnterpriseTable(c *fiber.Ctx) error {
 }
 
 func RenderEnterpriseFile(c *fiber.Ctx) error {
-	e, err := searchOneModelByIdCaller(models.Enterprise{}, c)
-	if err != nil {
+	e, customErr := searchOneModelByIdCaller(models.Enterprise{}, c)
+	if (customErr != customError.CustomError{}) {
 		// guardar el err
-		return er.CheckError(c, err)
+		return errorHandler.HandleError(c, &customErr)
 	}
-	numberOfMembers, err := getNumberOfMembers(e.IdEnterprise, "")
-	if err != nil {
+	numberOfMembers, customErr := getNumberOfMembers(e.IdEnterprise, "")
+	if (customErr != customError.CustomError{}) {
 		// logear el err
-		return er.CheckError(c, err)
+		return errorHandler.HandleError(c, &customErr)
 	}
 	canDelete := c.Locals("claims").(jwt.MapClaims)["deleteEnterprise"]
 	canWrite := c.Locals("claims").(jwt.MapClaims)["writeEnterprise"]
@@ -195,17 +196,17 @@ func RenderEnterpriseFile(c *fiber.Ctx) error {
 		data := fiber.Map{"enterprise": e, "canDelete": canDelete, "canWrite": canWrite, "numberOfMembers": numberOfMembers, "mode": "edit"}
 		return c.Render("withoutEnterprise", data)
 	} else {
-		createdAt, updatedAt, err := formatTimeStamps(e.CreatedAt, e.UpdatedAt)
-		if err != nil {
+		createdAt, updatedAt, customErr := formatTimeStamps(e.CreatedAt, e.UpdatedAt)
+		if (customErr != customError.CustomError{}) {
 			// logear el err
-			return er.CheckError(c, err)
+			return errorHandler.HandleError(c, &customErr)
 		}
 		data := fiber.Map{"enterprise": e, "canDelete": canDelete, "canWrite": canWrite, "numberOfMembers": numberOfMembers, "mode": "edit", "withPaymentTable": false, "createdAt": createdAt, "updatedAt": updatedAt}
 		return c.Render("enterpriseFile", data)
 	}
 }
 
-func getNumberOfMembers(IdEnterprise int, searchKey string) (int, error) {
+func getNumberOfMembers(IdEnterprise int, searchKey string) (int, customError.CustomError) {
 	var totalRows int
 	row := database.DB.QueryRow(`
 		SELECT COUNT(*) FROM MemberTable 
@@ -214,10 +215,10 @@ func getNumberOfMembers(IdEnterprise int, searchKey string) (int, error) {
 	// row.Scan copia el numero de fila en la variable count
 	err := row.Scan(&totalRows)
 	if err != nil {
-		er.ScanError.Msg = err.Error()
-		return 0, er.ScanError
+		customError.ScanError.Msg = err.Error()
+		return 0, customError.ScanError
 	}
-	return totalRows, nil
+	return totalRows, customError.CustomError{}
 }
 
 func RenderAddEnterpriseForm(c *fiber.Ctx) error {
@@ -232,30 +233,30 @@ func RenderEnterpriseMembers(c *fiber.Ctx) error {
 	// obtengo la currentPage del path
 	currentPage := GetPageFromPath(c)
 
-	IdEnterprise, err := func() (int, error) {
+	IdEnterprise, customErr := func() (int, customError.CustomError) {
 		// c.Get devuelve un valor del header
 		if c.Get("mode") == "edit" {
-			if IdEnterprise, err := getIdModelCaller(models.Enterprise{}, c); err != nil {
+			if IdEnterprise, customErr := getIdModelCaller(models.Enterprise{}, c); (customErr != customError.CustomError{}) {
 				// guardar el err
-				return 0, err
+				return 0, customErr
 			} else {
-				return IdEnterprise, nil
+				return IdEnterprise, customError.CustomError{}
 			}
 		} else if c.Get("mode") == "enterpriseMemberTable" {
 			IdEnterpriseStr := c.Get("idEnterprise")
 			IdEnterprise, err := strconv.Atoi(IdEnterpriseStr)
 			if err != nil {
-				er.StrConvError.Msg = err.Error()
-				return 0, er.StrConvError
+				customError.StrConvError.Msg = err.Error()
+				return 0, customError.StrConvError
 			}
-			return IdEnterprise, nil
+			return IdEnterprise, customError.CustomError{}
 		} else {
-			return 0, nil
+			return 0, customError.CustomError{}
 		}
 	}()
-	if err != nil {
+	if (customErr != customError.CustomError{}) {
 		// logear el error
-		return er.CheckError(c, err)
+		return errorHandler.HandleError(c, &customErr)
 	}
 
 	var searchKey string
@@ -270,10 +271,10 @@ func RenderEnterpriseMembers(c *fiber.Ctx) error {
 	}
 
 	// calculo la cantidad de resultados
-	totalRows, err := getNumberOfMembers(IdEnterprise, searchKey)
-	if err != nil {
+	totalRows, customErr := getNumberOfMembers(IdEnterprise, searchKey)
+	if (customErr != customError.CustomError{}) {
 		// logear el err
-		return er.CheckError(c, er.ScanError)
+		return errorHandler.HandleError(c, &customErr)
 	}
 
 	if totalRows == 0 {
@@ -286,10 +287,10 @@ func RenderEnterpriseMembers(c *fiber.Ctx) error {
 		totalPages, offset, someBefore, someAfter := GetPaginationData(currentPage, totalRows)
 
 		// busco los miembros y devuelvo el searchKey para usarlo nuevamente en la paginacion
-		members, err := getEnterpriseMembers(IdEnterprise, searchKey, offset)
-		if err != nil {
+		members, customErr := getEnterpriseMembers(IdEnterprise, searchKey, offset)
+		if (customErr != customError.CustomError{}) {
 			// logear el err
-			return er.CheckError(c, er.QueryError)
+			return errorHandler.HandleError(c, &customErr)
 		}
 
 		// hago un array para poder recorrerlo y crear botones cuando hay menos de 10 paginas en el template
@@ -309,57 +310,57 @@ func RenderEnterpriseMembers(c *fiber.Ctx) error {
 	}
 }
 
-func getEnterpriseMembers(IdEnterprise int, searchKey string, offset int) ([]models.Member, error) {
+func getEnterpriseMembers(IdEnterprise int, searchKey string, offset int) ([]models.Member, customError.CustomError) {
 	result, err := database.DB.Query(`
 			SELECT * FROM MemberTable 
 			WHERE IdEnterprise = ?
 			AND (Name LIKE concat('%', ?, '%') OR LastName LIKE concat('%', ?, '%')) LIMIT 10 OFFSET ?`, IdEnterprise, searchKey, searchKey, offset)
 	if err != nil {
-		er.QueryError.Msg = err.Error()
-		return nil, er.QueryError
+		customError.QueryError.Msg = err.Error()
+		return nil, customError.QueryError
 	}
-	_, members, err := models.Member{}.ScanResult(result, false)
-	if err != nil {
-		return nil, err
+	_, members, customErr := models.Member{}.ScanResult(result, false)
+	if (customErr != customError.CustomError{}) {
+		return nil, customErr
 	}
-	return members, nil
+	return members, customError.CustomError{}
 }
 
-func getAllEnterpriseMembers(IdEnterprise int) ([]models.Member, error) {
+func getAllEnterpriseMembers(IdEnterprise int) ([]models.Member, customError.CustomError) {
 	result, err := database.DB.Query(`
 			SELECT * FROM MemberTable WHERE IdEnterprise = ?`, IdEnterprise)
 	if err != nil {
-		er.QueryError.Msg = err.Error()
-		return nil, er.QueryError
+		customError.QueryError.Msg = err.Error()
+		return nil, customError.QueryError
 	}
-	_, members, err := models.Member{}.ScanResult(result, false)
-	if err != nil {
-		return nil, err
+	_, members, customErr := models.Member{}.ScanResult(result, false)
+	if (customErr != customError.CustomError{}) {
+		return nil, customError.CustomError{}
 	}
-	return members, nil
+	return members, customError.CustomError{}
 }
 
-func setIdEnterpriseToOne(members []models.Member) error {
+func setIdEnterpriseToOne(members []models.Member) customError.CustomError {
 	for _, m := range members {
 		update, err := database.DB.Query(`
 		UPDATE MemberTable SET IdEnterprise = '1' WHERE IdMember = ?`, m.IdMember)
 		if err != nil {
-			er.QueryError.Msg = err.Error()
-			return er.QueryError
+			customError.QueryError.Msg = err.Error()
+			return customError.QueryError
 		}
 		update.Close()
 		// query.Close()
 	}
-	return nil
+	return customError.CustomError{}
 }
 
 
 func RenderEnterpriseTableSelect(c *fiber.Ctx) error {
 	// calculo la cantidad de resultados
-	totalRows, err := getTotalRowsCaller(models.Enterprise{}, c)
-	if err != nil {
+	totalRows, customErr := getTotalRowsCaller(models.Enterprise{}, c)
+	if (customErr != customError.CustomError{}) {
 		// guardar el err
-		return er.CheckError(c, err)
+		return errorHandler.HandleError(c, &customErr)
 	}
 	if totalRows == 0 {
 		// si no hay resultados renderizar esto
@@ -378,12 +379,13 @@ func RenderEnterpriseTableSelect(c *fiber.Ctx) error {
 			searchKey)
 		if err != nil {
 			// logear el err
-			return er.CheckError(c, er.QueryError)
+			customError.QueryError.Msg = err.Error()
+			return errorHandler.HandleError(c, &customError.QueryError)
 		}
-		_, enterprises, err := models.Enterprise{}.ScanResult(result, false)
-		if err != nil {
+		_, enterprises, customErr := models.Enterprise{}.ScanResult(result, false)
+		if (customErr != customError.CustomError{}) {
 			// guardar el err
-			return er.CheckError(c, err)
+			return errorHandler.HandleError(c, &customErr)
 		}
 
 		// creo un map con todas las variables
@@ -395,19 +397,19 @@ func RenderEnterpriseTableSelect(c *fiber.Ctx) error {
 }
 
 func GetAllEnterprisesId(c *fiber.Ctx) error {
-	enterprisesId, err := models.GetAllEnterprisesIdFromDB()
-	if err != nil {
+	enterprisesId, customErr := models.GetAllEnterprisesIdFromDB()
+	if (customErr != customError.CustomError{}) {
 		// guardar el err
-		return er.CheckError(c, err)
+		return errorHandler.HandleError(c, &customErr)
 	}
 	return c.JSON(enterprisesId)
 }
 
 func GetAllEnterprisesNumber(c *fiber.Ctx) error {
-	enterprisesNumbers, err := models.GetAllEnterprisesNumbersFromDB()
-	if err != nil {
+	enterprisesNumbers, customErr := models.GetAllEnterprisesNumbersFromDB()
+	if (customErr != customError.CustomError{}) {
 		// guardar el err
-		return er.CheckError(c, err)
+		return errorHandler.HandleError(c, &customErr)
 	}
 	return c.JSON(enterprisesNumbers)
 }

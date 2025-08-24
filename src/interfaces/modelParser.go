@@ -3,19 +3,18 @@ package interfaces
 import (
 	"strconv"
 
-	er "github.com/LucasBastino/app-sindicato/src/errors"
-
+	"github.com/LucasBastino/app-sindicato/src/errors/customError"
 	"github.com/LucasBastino/app-sindicato/src/models"
 	"github.com/gofiber/fiber/v2"
 )
 
 type ModelParser[M models.TypeModel] interface {
-	ParseModel(*fiber.Ctx) (M, error)
+	ParseModel(*fiber.Ctx) (M, customError.CustomError)
 }
 
 type MemberParser struct{}
 
-func (parser MemberParser) ParseModel(c *fiber.Ctx) (models.Member, error) {
+func (parser MemberParser) ParseModel(c *fiber.Ctx) (models.Member, customError.CustomError) {
 	m := models.Member{}
 	m.Name = c.FormValue("name")
 	m.LastName = c.FormValue("last-name")
@@ -31,8 +30,8 @@ func (parser MemberParser) ParseModel(c *fiber.Ctx) (models.Member, error) {
 	m.MemberNumber = c.FormValue("member-number")
 	affiliated, err := strconv.ParseBool(c.FormValue("affiliated"))
 	if err != nil {
-		er.InternalServerError.Msg = err.Error()
-		return models.Member{}, er.CheckError(c, er.InternalServerError)
+		customError.StrConvError.Msg = err.Error()
+		return models.Member{}, customError.StrConvError
 	}
 	m.Affiliated = affiliated
 	m.CUIL = c.FormValue("cuil")
@@ -44,20 +43,20 @@ func (parser MemberParser) ParseModel(c *fiber.Ctx) (models.Member, error) {
 	} else {
 		IdEnterprise, err := strconv.Atoi(IdEnterpriseStr)
 		if err != nil {
-			er.StrConvError.Msg = err.Error()
-			return models.Member{}, er.StrConvError
+			customError.StrConvError.Msg = err.Error()
+			return models.Member{},  customError.StrConvError
 		}
 		m.IdEnterprise = IdEnterprise
 	}
 	m.Category = c.FormValue("category")
 	m.EntryDate = c.FormValue("entry-date")
 	m.Observations = c.FormValue("observations")
-	return m, nil
+	return m, customError.CustomError{}
 }
 
 type ParentParser struct{}
 
-func (parser ParentParser) ParseModel(c *fiber.Ctx) (models.Parent, error) {
+func (parser ParentParser) ParseModel(c *fiber.Ctx) (models.Parent, customError.CustomError) {
 	p := models.Parent{}
 	p.Name = c.FormValue("name")
 	p.LastName = c.FormValue("last-name")
@@ -68,17 +67,17 @@ func (parser ParentParser) ParseModel(c *fiber.Ctx) (models.Parent, error) {
 	IdMemberStr := c.FormValue("id-member")
 	IdMember, err := strconv.Atoi(IdMemberStr)
 	if err != nil {
-		er.StrConvError.Msg = err.Error()
-		return models.Parent{}, er.StrConvError
+		customError.StrConvError.Msg = err.Error()
+		return models.Parent{}, customError.StrConvError
 	}
 	p.IdMember = IdMember
 
-	return p, nil
+	return p, customError.CustomError{}
 }
 
 type EnterpriseParser struct{}
 
-func (parser EnterpriseParser) ParseModel(c *fiber.Ctx) (models.Enterprise, error) {
+func (parser EnterpriseParser) ParseModel(c *fiber.Ctx) (models.Enterprise, customError.CustomError) {
 	e := models.Enterprise{}
 	e.Name = c.FormValue("name")
 	e.EnterpriseNumber = c.FormValue("enterprise-number")
@@ -89,27 +88,27 @@ func (parser EnterpriseParser) ParseModel(c *fiber.Ctx) (models.Enterprise, erro
 	e.Phone = c.FormValue("phone")
 	e.Contact = c.FormValue("contact")
 	e.Observations = c.FormValue("observations")
-	return e, nil
+	return e, customError.CustomError{}
 }
 
 type PaymentParser struct{}
 
-func (parser PaymentParser) ParseModel(c *fiber.Ctx) (models.Payment, error) {
+func (parser PaymentParser) ParseModel(c *fiber.Ctx) (models.Payment, customError.CustomError) {
 	p := models.Payment{}
 	p.Month = c.FormValue("month")
 	p.Year = c.FormValue("year")
 	status, err := strconv.ParseBool(c.FormValue("status"))
 	if err != nil {
-		er.InternalServerError.Msg = err.Error()
-		return models.Payment{}, er.CheckError(c, er.InternalServerError)
+		customError.InternalServerError.Msg = err.Error()
+		return models.Payment{}, customError.InternalServerError
 	}
 	p.Status = status
 	AmountStr := c.FormValue("amount")
 	if AmountStr != "" {
 		Amount, err := strconv.Atoi(AmountStr)
 		if err != nil {
-			er.StrConvError.Msg = err.Error()
-			return models.Payment{}, er.StrConvError
+			customError.StrConvError.Msg = err.Error()
+			return models.Payment{}, customError.StrConvError
 		}
 		p.Amount = Amount
 	}
@@ -118,10 +117,10 @@ func (parser PaymentParser) ParseModel(c *fiber.Ctx) (models.Payment, error) {
 	IdEnterpriseStr := c.FormValue("id-enterprise")
 	IdEnterprise, err := strconv.Atoi(IdEnterpriseStr)
 	if err != nil {
-		er.StrConvError.Msg = err.Error()
-		return models.Payment{}, err
+		customError.StrConvError.Msg = err.Error()
+		return models.Payment{}, customError.StrConvError
 	}
 	p.IdEnterprise = IdEnterprise
 
-	return p, nil
+	return p, customError.CustomError{}
 }

@@ -5,7 +5,7 @@ import (
 	"time"
 
 	"github.com/LucasBastino/app-sindicato/src/database"
-	er "github.com/LucasBastino/app-sindicato/src/errors"
+	"github.com/LucasBastino/app-sindicato/src/errors/customError"
 	"github.com/gofiber/fiber/v2"
 )
 
@@ -22,7 +22,7 @@ type Parent struct {
 	UpdatedAt time.Time	`json:"updatedat"`
 }
 
-func (parent Parent) InsertModel() (Parent, error) {
+func (parent Parent) InsertModel() (Parent, customError.CustomError) {
 	parent.Birthday = FormatToYYYYMMDD(parent.Birthday)
 	insert, err := database.DB.Query(`
 		INSERT INTO ParentTable 
@@ -42,38 +42,38 @@ func (parent Parent) InsertModel() (Parent, error) {
 		parent.CUIL,
 		parent.IdMember)
 	if err != nil {
-		er.QueryError.Msg = err.Error()
-		return Parent{}, er.QueryError
+		customError.QueryError.Msg = err.Error()
+		return Parent{}, customError.QueryError
 	}
 	insert.Close()
 	result, err := database.DB.Query(`
 		SELECT * FROM ParentTable 
 		WHERE IdParent = (SELECT LAST_INSERT_ID())`)
 	if err != nil {
-		er.QueryError.Msg = err.Error()
-		return Parent{}, er.QueryError
+		customError.QueryError.Msg = err.Error()
+		return Parent{}, customError.QueryError
 	}
-	p, _, err := parent.ScanResult(result, true)
-	if err != nil {
-		return Parent{}, err
+	p, _, customErr := parent.ScanResult(result, true)
+	if (customErr != customError.CustomError{}) {
+		return Parent{}, customErr
 	}
-	return p, nil
+	return p, customError.CustomError{}
 }
 
-func (parent Parent) DeleteModel() error {
+func (parent Parent) DeleteModel() customError.CustomError {
 	delete, err := database.DB.Query(`
 		DELETE FROM ParentTable 
 		WHERE IdParent = ?`,
 		parent.IdParent)
 	if err != nil {
-		er.QueryError.Msg = err.Error()
-		return er.QueryError
+		customError.QueryError.Msg = err.Error()
+		return customError.QueryError
 	}
 	defer delete.Close()
-	return nil
+	return customError.CustomError{}
 }
 
-func (parent Parent) UpdateModel() (Parent, error) {
+func (parent Parent) UpdateModel() (Parent, customError.CustomError) {
 	parent.Birthday = FormatToYYYYMMDD(parent.Birthday)
 	update, err := database.DB.Query(`
 		UPDATE ParentTable 
@@ -94,39 +94,39 @@ func (parent Parent) UpdateModel() (Parent, error) {
 		parent.IdMember,
 		parent.IdParent)
 	if err != nil {
-		er.QueryError.Msg = err.Error()
-		return Parent{}, er.QueryError
+		customError.QueryError.Msg = err.Error()
+		return Parent{}, customError.QueryError
 	}
 	update.Close()
 	result, err := database.DB.Query(`
 	SELECT * FROM ParentTable WHERE IdParent = ?`, parent.IdParent)
 	if err != nil {
-		er.QueryError.Msg = err.Error()
-		return Parent{}, er.QueryError
+		customError.QueryError.Msg = err.Error()
+		return Parent{}, customError.QueryError
 	}
-	p, _, err := parent.ScanResult(result, true)
-	if err != nil {
-		return Parent{}, err
+	p, _, customErr := parent.ScanResult(result, true)
+	if (err != customError.CustomError{}) {
+		return Parent{}, customErr
 	}
-	return p, nil
+	return p, customError.CustomError{}
 }
 
-func (parent Parent) GetIdModel(c *fiber.Ctx) (int, error) {
+func (parent Parent) GetIdModel(c *fiber.Ctx) (int, customError.CustomError) {
 	params := struct {
 		IdParent int `params:"IdParent"`
 	}{}
 	err := c.ParamsParser(&params)
 	if err != nil {
-		er.ParamsError.Msg = err.Error()
-		return 0, er.ParamsError
+		customError.ParamsError.Msg = err.Error()
+		return 0, customError.ParamsError
 	}
-	return params.IdParent, nil
+	return params.IdParent, customError.CustomError{}
 }
 
-func (parent Parent) SearchOneModelById(c *fiber.Ctx) (Parent, error) {
-	IdParent, err := parent.GetIdModel(c)
-	if err != nil {
-		return Parent{}, err
+func (parent Parent) SearchOneModelById(c *fiber.Ctx) (Parent, customError.CustomError) {
+	IdParent, customErr := parent.GetIdModel(c)
+	if (customErr != customError.CustomError{}) {
+		return Parent{}, customErr
 	}
 	result, err := database.DB.Query(`
 		SELECT
@@ -134,20 +134,20 @@ func (parent Parent) SearchOneModelById(c *fiber.Ctx) (Parent, error) {
 		FROM ParentTable
 		WHERE IdParent = ?`, IdParent)
 	if err != nil {
-		er.QueryError.Msg = err.Error()
-		return Parent{}, er.QueryError
+		customError.QueryError.Msg = err.Error()
+		return Parent{}, customError.QueryError
 	}
-	p, _, err := parent.ScanResult(result, true)
-	if err != nil {
-		return Parent{}, err
+	p, _, customErr := parent.ScanResult(result, true)
+	if (customErr != customError.CustomError{}) {
+		return Parent{}, customErr
 	}
-	return p, nil
+	return p, customError.CustomError{}
 }
 
-func (parent Parent) SearchModels(c *fiber.Ctx, offset int) ([]Parent, string, error) {
-	idMember, err := Member{}.GetIdModel(c)
-	if err != nil {
-		return nil, "", err
+func (parent Parent) SearchModels(c *fiber.Ctx, offset int) ([]Parent, string, customError.CustomError) {
+	idMember, customErr := Member{}.GetIdModel(c)
+	if (customErr != customError.CustomError{}) {
+		return nil, "", customErr
 	}
 	result, err := database.DB.Query(`
 		SELECT
@@ -155,17 +155,17 @@ func (parent Parent) SearchModels(c *fiber.Ctx, offset int) ([]Parent, string, e
 		FROM ParentTable 
 		WHERE IdMember = ?`, idMember)
 	if err != nil {
-		er.QueryError.Msg = err.Error()
-		return nil, "", er.QueryError
+		customError.QueryError.Msg = err.Error()
+		return nil, "", customError.QueryError
 	}
-	_, pp, err := parent.ScanResult(result, false)
-	if err != nil {
-		return nil, "", err
+	_, pp, customErr := parent.ScanResult(result, false)
+	if (customErr != customError.CustomError{}) {
+		return nil, "", customErr
 	}
-	return pp, "", nil
+	return pp, "", customError.CustomError{}
 }
 
-func (parent Parent) ValidateFields(c *fiber.Ctx) error {
+func (parent Parent) ValidateFields(c *fiber.Ctx) customError.CustomError {
 	validateFunctions := []func(*fiber.Ctx) error{
 		ValidateName,
 		ValidateLastName,
@@ -176,41 +176,42 @@ func (parent Parent) ValidateFields(c *fiber.Ctx) error {
 	}
 	for _, vF := range validateFunctions {
 		if err := vF(c); err != nil {
-			return err
+			customError.ValidationError.Msg = err.Error()
+			return customError.ValidationError
 		} else {
 			continue
 		}
 	}
-	return nil
+	return customError.CustomError{}
 }
 
-func (parent Parent) GetTotalRows(c *fiber.Ctx) (int, error) {
+func (parent Parent) GetTotalRows(c *fiber.Ctx) (int, customError.CustomError) {
 	var totalRows int
-	idMember, err := Member{}.GetIdModel(c)
-	if err != nil {
-		return 0, err
+	idMember, customErr := Member{}.GetIdModel(c)
+	if (customErr != customError.CustomError{}) {
+		return 0, customErr
 	}
 	row := database.DB.QueryRow(`
 		SELECT COUNT(*) FROM ParentTable 
 		WHERE IdMember = ?`, idMember)
 	// row.Scan copia el numero de fila en la variable count
-	err = row.Scan(&totalRows)
+	err := row.Scan(&totalRows)
 	if err != nil {
-		er.ScanError.Msg = err.Error()
-		return 0, er.ScanError
+		customError.ScanError.Msg = err.Error()
+		return 0, customError.ScanError
 	}
-	return totalRows, nil
+	return totalRows, customError.CustomError{}
 }
 
 func (parent Parent) GetFiberMap(parents []Parent, searchKey string, currentPage, someBefore, someAfter, totalPages int, totalPagesArray []int) fiber.Map {
 	return nil
 }
 
-func (parent Parent) GetAllModels() ([]Parent, error) {
-	return nil, nil
+func (parent Parent) GetAllModels() ([]Parent, customError.CustomError) {
+	return nil, customError.CustomError{}
 }
 
-func (parent Parent) ScanResult(result *sql.Rows, onlyOne bool) (Parent, []Parent, error) {
+func (parent Parent) ScanResult(result *sql.Rows, onlyOne bool) (Parent, []Parent, customError.CustomError) {
 	var p Parent
 	var pp []Parent
 	for result.Next() {
@@ -229,18 +230,18 @@ func (parent Parent) ScanResult(result *sql.Rows, onlyOne bool) (Parent, []Paren
 		// formateo las fechas en formato argentino
 		p.Birthday = FormatToDDMMYYYY(p.Birthday)
 		if err != nil {
-			er.ScanError.Msg = err.Error()
-			return Parent{}, nil, er.ScanError
+			customError.ScanError.Msg = err.Error()
+			return Parent{}, nil, customError.ScanError
 		}
 		if !onlyOne {
 			pp = append(pp, p)
 		}
 	}
 	result.Close()
-	return p, pp, nil
+	return p, pp, customError.CustomError{}
 }
 
-func (parent Parent) CheckDeleted(idParent int) (bool, error) {
+func (parent Parent) CheckDeleted(idParent int) (bool, customError.CustomError) {
 	var totalRows int
 	// row := database.DB.QueryRow(fmt.Sprintf(`
 	// 	SELECT COUNT(*) FROM ParentTable
@@ -251,12 +252,12 @@ func (parent Parent) CheckDeleted(idParent int) (bool, error) {
 	// row.Scan copia el numero de fila en la variable count
 	err := row.Scan(&totalRows)
 	if err != nil {
-		er.ScanError.Msg = err.Error()
-		return false, er.ScanError
+		customError.ScanError.Msg = err.Error()
+		return false, customError.ScanError
 	}
 	if totalRows == 0 {
-		return true, nil
+		return true, customError.CustomError{}
 	} else {
-		return false, nil
+		return false, customError.CustomError{}
 	}
 }

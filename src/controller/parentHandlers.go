@@ -1,7 +1,8 @@
 package controller
 
 import (
-	er "github.com/LucasBastino/app-sindicato/src/errors"
+	"github.com/LucasBastino/app-sindicato/src/errors/customError"
+	"github.com/LucasBastino/app-sindicato/src/errors/errorHandler"
 	i "github.com/LucasBastino/app-sindicato/src/interfaces"
 	"github.com/LucasBastino/app-sindicato/src/models"
 	"github.com/gofiber/fiber/v2"
@@ -9,24 +10,24 @@ import (
 )
 
 func AddParent(c *fiber.Ctx) error {
-	if err := validateFieldsCaller(models.Parent{}, c); err != nil {
-		return er.CheckError(c, err)
+	if customErr := validateFieldsCaller(models.Parent{}, c); (customErr != customError.CustomError{}) {
+		return errorHandler.HandleError(c, &customErr)
 	}
-	p, err := parserCaller(i.ParentParser{}, c)
-	if err != nil {
+	p, customErr := parserCaller(i.ParentParser{}, c)
+	if (customErr != customError.CustomError{}) {
 		// guardar el error
-		return er.CheckError(c, err)
+		return errorHandler.HandleError(c, &customErr)
 	}
 
-	p, err = insertModelCaller(p)
-	if err != nil {
+	p, customErr = insertModelCaller(p)
+	if (customErr != customError.CustomError{}) {
 		// guardar el error
-		return er.CheckError(c, err)
+		return errorHandler.HandleError(c, &customErr)
 	}
-	createdAt, updatedAt, err := formatTimeStamps(p.CreatedAt, p.UpdatedAt)
-	if err != nil {
+	createdAt, updatedAt, customErr := formatTimeStamps(p.CreatedAt, p.UpdatedAt)
+	if (customErr != customError.CustomError{}) {
 		// guardar el error
-		return er.CheckError(c, err)
+		return errorHandler.HandleError(c, &customErr)
 	}
 	data := fiber.Map{"parent": p, "mode": "edit", "createdAt": createdAt, "updatedAt": updatedAt}
 	data["canDelete"] = c.Locals("claims").(jwt.MapClaims)["deleteParent"]
@@ -36,39 +37,39 @@ func AddParent(c *fiber.Ctx) error {
 }
 
 func DeleteParent(c *fiber.Ctx) error {
-	p, err := searchOneModelByIdCaller(models.Parent{}, c)
-	if err != nil {
+	p, customErr := searchOneModelByIdCaller(models.Parent{}, c)
+	if (customErr != customError.CustomError{}) {
 		// guardar el error
-		return er.CheckError(c, err)
+		return errorHandler.HandleError(c, &customErr)
 	}
 	deleteModelCaller(p)
 	return RenderParentTable(c)
 }
 
 func EditParent(c *fiber.Ctx) error {
-	if err := validateFieldsCaller(models.Parent{}, c); err != nil {
-		return er.CheckError(c, err)
+	if customErr := validateFieldsCaller(models.Parent{}, c); (customErr != customError.CustomError{}) {
+		return errorHandler.HandleError(c, &customErr)
 	}
-	p, err := parserCaller(i.ParentParser{}, c)
-	if err != nil {
+	p, customErr := parserCaller(i.ParentParser{}, c)
+	if (customErr != customError.CustomError{}) {
 		// guardar el error
-		return er.CheckError(c, err)
+		return errorHandler.HandleError(c, &customErr)
 	}
-	IdParent, err := getIdModelCaller(p, c)
-	if err != nil {
+	IdParent, customErr := getIdModelCaller(p, c)
+	if (customErr != customError.CustomError{}) {
 		// guardar el error
-		return er.CheckError(c, err)
+		return errorHandler.HandleError(c, &customErr)
 	}
 	p.IdParent = IdParent
-	p, err = updateModelCaller(p)
-	if err != nil {
+	p, customErr = updateModelCaller(p)
+	if (customErr != customError.CustomError{}) {
 		// guardar el error
-		return er.CheckError(c, err)
+		return errorHandler.HandleError(c, &customErr)
 	}
-	createdAt, updatedAt, err := formatTimeStamps(p.CreatedAt, p.UpdatedAt)
-	if err != nil {
+	createdAt, updatedAt, customErr := formatTimeStamps(p.CreatedAt, p.UpdatedAt)
+	if (customErr != customError.CustomError{}) {
 		// guardar el error
-		return er.CheckError(c, err)
+		return errorHandler.HandleError(c, &customErr)
 	}
 	data := fiber.Map{"parent": p, "mode": "edit", "createdAt": createdAt, "updatedAt": updatedAt}
 	data["canDelete"] = c.Locals("claims").(jwt.MapClaims)["deleteParent"]
@@ -78,15 +79,15 @@ func EditParent(c *fiber.Ctx) error {
 }
 
 func RenderParentFile(c *fiber.Ctx) error {
-	p, err := searchOneModelByIdCaller(models.Parent{}, c)
-	if err != nil {
+	p, customErr := searchOneModelByIdCaller(models.Parent{}, c)
+	if (customErr != customError.CustomError{}) {
 		// guardar el error
-		return er.CheckError(c, err)
+		return errorHandler.HandleError(c, &customErr)
 	}
-	createdAt, updatedAt, err := formatTimeStamps(p.CreatedAt, p.UpdatedAt)
-	if err != nil {
+	createdAt, updatedAt, customErr := formatTimeStamps(p.CreatedAt, p.UpdatedAt)
+	if (customErr != customError.CustomError{}) {
 		// guardar el error
-		return er.CheckError(c, err)
+		return errorHandler.HandleError(c, &customErr)
 	}
 	data := fiber.Map{"parent": p, "mode": "edit", "createdAt": createdAt, "updatedAt": updatedAt}
 	data["canDelete"] = c.Locals("claims").(jwt.MapClaims)["deleteParent"]
@@ -95,10 +96,10 @@ func RenderParentFile(c *fiber.Ctx) error {
 }
 
 func RenderAddParentForm(c *fiber.Ctx) error {
-	IdMember, err := getIdModelCaller(models.Member{}, c)
-	if err != nil {
+	IdMember, customErr := getIdModelCaller(models.Member{}, c)
+	if (customErr != customError.CustomError{}) {
 		// guardar el error
-		return er.CheckError(c, err)
+		return errorHandler.HandleError(c, &customErr)
 	}
 	// creo un parent nuevo para que el form aparezca con campos vacios
 	p := models.Parent{IdMember: IdMember}

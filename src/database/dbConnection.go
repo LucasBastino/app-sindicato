@@ -4,8 +4,7 @@ import (
 	"database/sql"
 	"fmt"
 
-	er "github.com/LucasBastino/app-sindicato/src/errors"
-
+	"github.com/LucasBastino/app-sindicato/src/errors/customError"
 	_ "github.com/go-sql-driver/mysql"
 )
 
@@ -55,7 +54,7 @@ func CreateConnection() {
 	connString := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?parseTime=true", InfoDB.User, InfoDB.Password, InfoDB.Host, InfoDB.Port, InfoDB.DBName)
 	db, err := sql.Open("mysql", connString)
 	if err != nil {
-		er.DatabaseConnectionError.Msg = err.Error()
+		customError.DatabaseError.Msg = err.Error()
 		// logearlo
 		// hacer algo aca, capaz cambiar la forma en que se loggea, que primero entre al index, nose. Es para despues
 		// panic(err)
@@ -64,7 +63,7 @@ func CreateConnection() {
 
 	err = db.Ping()
 	if err != nil {
-		er.DatabaseConnectionError.Msg = err.Error()
+		customError.DatabaseError.Msg = err.Error()
 		// logearlo
 		// hacer algo aca
 		// panic(err)
@@ -74,7 +73,7 @@ func CreateConnection() {
 	authConnString := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?parseTime=true", InfoAuthDB.User, InfoAuthDB.Password, InfoAuthDB.Host, InfoAuthDB.Port, InfoAuthDB.DBName)
 	authDB, err := sql.Open("mysql", authConnString)
 	if err != nil {
-		er.DatabaseConnectionError.Msg = err.Error()
+		customError.DatabaseError.Msg = err.Error()
 		// logearlo
 		// hacer algo aca, capaz cambiar la forma en que se loggea, que primero entre al index, nose. Es para despues
 		// panic(err)
@@ -83,7 +82,7 @@ func CreateConnection() {
 
 	err = authDB.Ping()
 	if err != nil {
-		er.DatabaseConnectionError.Msg = err.Error()
+		customError.DatabaseError.Msg = err.Error()
 		// logearlo
 		// hacer algo aca
 		// panic(err)

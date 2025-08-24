@@ -4,7 +4,8 @@ import (
 	"fmt"
 	"strconv"
 
-	er "github.com/LucasBastino/app-sindicato/src/errors"
+	"github.com/LucasBastino/app-sindicato/src/errors/customError"
+	"github.com/LucasBastino/app-sindicato/src/errors/errorHandler"
 	i "github.com/LucasBastino/app-sindicato/src/interfaces"
 	"github.com/LucasBastino/app-sindicato/src/models"
 	"github.com/gofiber/fiber/v2"
@@ -12,14 +13,14 @@ import (
 )
 
 func AddMember(c *fiber.Ctx) error {
-	m, err := parserCaller(i.MemberParser{}, c)
-	if err != nil {
+	m, customErr := parserCaller(i.MemberParser{}, c)
+	if (customErr != customError.CustomError{}) {
 		// guardar el error
-		return er.CheckError(c, err)
+		return errorHandler.HandleError(c, &customErr)
 	}
 	// Creo un mapa con los errores de validacion y verifico si tiene errores
-	if err := validateFieldsCaller(models.Member{}, c); err != nil {
-		return er.CheckError(c, err)
+	if customErr := validateFieldsCaller(models.Member{}, c); (customErr != customError.CustomError{}) {
+		return errorHandler.HandleError(c, &customErr)
 	}
 	if !m.Affiliated{
 		m.IdEnterprise = 1
@@ -28,10 +29,10 @@ func AddMember(c *fiber.Ctx) error {
 		m.Affiliated = false
 	}
 	// Si no tiene errores inserto el member en la DB y renderizo el su archivo
-	m, err = insertModelCaller(m)
-	if err != nil {
+	m, customErr = insertModelCaller(m)
+	if (customErr != customError.CustomError{}) {
 		// guardar el error
-		return er.CheckError(c, err)
+		return errorHandler.HandleError(c, &customErr)
 	}
 	path := fmt.Sprintf("/member/%d/file", m.IdMember)
 	return c.Status(fiber.StatusCreated).Render("redirect", fiber.Map{"path": path})
@@ -40,24 +41,24 @@ func AddMember(c *fiber.Ctx) error {
 
 func DeleteMember(c *fiber.Ctx) error {
 	// Obtengo el ID desde el path y lo elimino
-	IdMember, err := getIdModelCaller(models.Member{}, c)
-	if err != nil {
+	IdMember, customErr := getIdModelCaller(models.Member{}, c)
+	if (customErr != customError.CustomError{}) {
 		// guardar el error
-		return er.CheckError(c, err)
+		return errorHandler.HandleError(c, &customErr)
 	}
 	m := models.Member{IdMember: IdMember}
-	err = deleteModelCaller(m)
-	if err != nil {
+	customErr = deleteModelCaller(m)
+	if (customErr != customError.CustomError{}) {
 		// guardar el error
-		return er.CheckError(c, err)
+		return errorHandler.HandleError(c, &customErr)
 	}
 
 	// check if the member was deleted
 
-	checkDeleted, err := checkDeletedCaller(models.Member{}, IdMember)
-	if err != nil {
+	checkDeleted, customErr := checkDeletedCaller(models.Member{}, IdMember)
+	if (customErr != customError.CustomError{}) {
 		// guardar el error
-		return er.CheckError(c, err)
+		return errorHandler.HandleError(c, &customErr)
 	}
 	if !checkDeleted {
 		return c.Render("deleteUnsuccesfull", fiber.Map{"error": "error eliminando afiliado"})
@@ -78,24 +79,24 @@ func DeleteMember(c *fiber.Ctx) error {
 }
 
 func EditMember(c *fiber.Ctx) error {
-	enterprises, err := getAllModelsCaller(models.Enterprise{})
-	if err != nil {
+	enterprises, customErr := getAllModelsCaller(models.Enterprise{})
+	if (customErr != customError.CustomError{}) {
 		// guardar el error
-		return er.CheckError(c, err)
+		return errorHandler.HandleError(c, &customErr)
 	}
-	if err := validateFieldsCaller(models.Member{}, c); err != nil {
-		return er.CheckError(c, err)
+	if customErr := validateFieldsCaller(models.Member{}, c); (customErr != customError.CustomError{}) {
+		return errorHandler.HandleError(c, &customErr)
 	}
 	// Parseo los datos obtenidos del form
-	m, err := parserCaller(i.MemberParser{}, c)
-	if err != nil {
+	m, customErr := parserCaller(i.MemberParser{}, c)
+	if (customErr != customError.CustomError{}) {
 		// guardar el error
-		return er.CheckError(c, err)
+		return errorHandler.HandleError(c, &customErr)
 	}
-	IdMember, err := getIdModelCaller(m, c)
-	if err != nil {
+	IdMember, customErr := getIdModelCaller(m, c)
+	if (customErr != customError.CustomError{}) {
 		// guardar el error
-		return er.CheckError(c, err)
+		return errorHandler.HandleError(c, &customErr)
 	}
 	m.IdMember = IdMember
 	// necesito poner esta linea ↑ para que se pueda editar 2 veces seguidas
@@ -106,20 +107,20 @@ func EditMember(c *fiber.Ctx) error {
 	if m.IdEnterprise == 1{
 		m.Affiliated = false
 	}
-	m, err = updateModelCaller(m)
-	if err != nil {
+	m, customErr = updateModelCaller(m)
+	if (customErr != customError.CustomError{}) {
 		// guardar el error
-		return er.CheckError(c, err)
+		return errorHandler.HandleError(c, &customErr)
 	}
-	enterpriseName, err := getEnterpriseName(m.IdEnterprise)
-	if err != nil {
+	enterpriseName, customErr := getEnterpriseName(m.IdEnterprise)
+	if (customErr != customError.CustomError{}) {
 		// guardar el error
-		return er.CheckError(c, err)
+		return errorHandler.HandleError(c, &customErr)
 	}
-	createdAt, updatedAt, err := formatTimeStamps(m.CreatedAt, m.UpdatedAt)
-	if err != nil {
+	createdAt, updatedAt, customErr := formatTimeStamps(m.CreatedAt, m.UpdatedAt)
+	if (customErr != customError.CustomError{}) {
 		// guardar el error
-		return er.CheckError(c, err)
+		return errorHandler.HandleError(c, &customErr)
 	}
 	// hacer esto esta bien? estoy mostrando datos del nuevo member, no estan sacados de la database.DB
 	data := fiber.Map{"member": m, "mode": "edit", "enterprises": enterprises, "enterpriseName": enterpriseName, "createdAt": createdAt, "updatedAt": updatedAt}
@@ -136,10 +137,10 @@ func RenderMemberTable(c *fiber.Ctx) error {
 	currentPage := GetPageFromPath(c)
 
 	// calculo la cantidad de resultados
-	totalRows, err := getTotalRowsCaller(models.Member{}, c)
-	if err != nil {
+	totalRows, customErr := getTotalRowsCaller(models.Member{}, c)
+	if (customErr != customError.CustomError{}) {
 		// guardar el error
-		return er.CheckError(c, err)
+		return errorHandler.HandleError(c, &customErr)
 	}
 	if totalRows == 0 {
 		// si no hay resultados renderizar esto
@@ -151,18 +152,18 @@ func RenderMemberTable(c *fiber.Ctx) error {
 		totalPages, offset, someBefore, someAfter := GetPaginationData(currentPage, totalRows)
 
 		// busco los miembros y devuelvo el searchKey para usarlo nuevamente en la paginacion
-		members, searchKey, err := searchModelsCaller(models.Member{}, c, offset)
-		if err != nil {
+		members, searchKey, customErr := searchModelsCaller(models.Member{}, c, offset)
+		if (customErr != customError.CustomError{}) {
 			// guardar el error
-			return er.CheckError(c, err)
+			return errorHandler.HandleError(c, &customErr)
 		}
 		// hago un array para poder recorrerlo y crear botones cuando hay menos de 10 paginas en el template
 		totalPagesArray := GetTotalPagesArray(totalPages)
 
-		enterprises, err := getAllModelsCaller(models.Enterprise{})
-		if err != nil {
+		enterprises, customErr := getAllModelsCaller(models.Enterprise{})
+		if (customErr != customError.CustomError{}) {
 			// guardar el error
-			return er.CheckError(c, err)
+			return errorHandler.HandleError(c, &customErr)
 		}
 
 		// creo un map con todas las variables
@@ -178,25 +179,25 @@ func RenderMemberTable(c *fiber.Ctx) error {
 
 func RenderMemberFile(c *fiber.Ctx) error {
 	// Busco el miembro por ID y renderizo su archivo
-	enterprises, err := getAllModelsCaller(models.Enterprise{})
-	if err != nil {
+	enterprises, customErr := getAllModelsCaller(models.Enterprise{})
+	if (customErr != customError.CustomError{}) {
 		// guardar el error
-		return er.CheckError(c, err)
+		return errorHandler.HandleError(c, &customErr)
 	}
-	m, err := searchOneModelByIdCaller(models.Member{}, c)
-	if err != nil {
+	m, customErr := searchOneModelByIdCaller(models.Member{}, c)
+	if (customErr != customError.CustomError{}) {
 		// guardar el error
-		return er.CheckError(c, err)
+		return errorHandler.HandleError(c, &customErr)
 	}
 
-	enterpriseName, err := getEnterpriseName(m.IdEnterprise)
-	if err != nil {
-		return er.CheckError(c, err)
+	enterpriseName, customErr := getEnterpriseName(m.IdEnterprise)
+	if (customErr != customError.CustomError{}) {
+		return errorHandler.HandleError(c, &customErr)
 	}
-	createdAt, updatedAt, err := formatTimeStamps(m.CreatedAt, m.UpdatedAt)
-	if err != nil {
+	createdAt, updatedAt, customErr := formatTimeStamps(m.CreatedAt, m.UpdatedAt)
+	if (customErr != customError.CustomError{}) {
 		// guardar el error
-		return er.CheckError(c, err)
+		return errorHandler.HandleError(c, &customErr)
 	}
 	data := fiber.Map{"member": m, "mode": "edit", "enterprises": enterprises, "enterpriseName": enterpriseName, "createdAt": createdAt, "updatedAt": updatedAt}
 	data["canDelete"] = c.Locals("claims").(jwt.MapClaims)["deleteMember"]
@@ -206,10 +207,10 @@ func RenderMemberFile(c *fiber.Ctx) error {
 
 func RenderAddMemberForm(c *fiber.Ctx) error {
 	// le paso un member vacio para que los campos del form aparezcan vacios
-	enterprises, err := getAllModelsCaller(models.Enterprise{})
-	if err != nil {
+	enterprises, customErr := getAllModelsCaller(models.Enterprise{})
+	if (customErr != customError.CustomError{}) {
 		// guardar el error
-		return er.CheckError(c, err)
+		return errorHandler.HandleError(c, &customErr)
 	}
 
 	fromEnterprise := c.Get("fromEnterprise")
@@ -219,16 +220,17 @@ func RenderAddMemberForm(c *fiber.Ctx) error {
 
 		enterpriseIdStr := c.Get("enterpriseId")
 		if enterpriseIdStr != "" {
-			enterpriseId, err = strconv.Atoi(enterpriseIdStr)
+			enterpriseId2, err := strconv.Atoi(enterpriseIdStr)
 			if err != nil {
-				er.InternalServerError.Msg = err.Error()
-				return er.CheckError(c, er.InternalServerError)
+				customError.StrConvError.Msg = err.Error()
+				return errorHandler.HandleError(c, &customError.StrConvError)
 			}
+			enterpriseId = enterpriseId2
 		}
-		enterpriseName, err = getEnterpriseName(enterpriseId)
-		if err != nil {
+		enterpriseName, customErr = getEnterpriseName(enterpriseId)
+		if (customErr != customError.CustomError{}) {
 			// guardar el error
-			return er.CheckError(c, err)
+			return errorHandler.HandleError(c, &customErr)
 		}
 	}
 	data := fiber.Map{"member": models.Member{IdEnterprise: enterpriseId}, "mode": "add", "enterprises": enterprises, "enterpriseName": enterpriseName}
@@ -239,25 +241,25 @@ func RenderParentTable(c *fiber.Ctx) error {
 	canDelete := c.Locals("claims").(jwt.MapClaims)["deleteParent"]
 	canWrite := c.Locals("claims").(jwt.MapClaims)["writeParent"]
 	// calculo la cantidad de resultados
-	totalRows, err := getTotalRowsCaller(models.Parent{}, c)
-	if err != nil {
+	totalRows, customErr := getTotalRowsCaller(models.Parent{}, c)
+	if (customErr != customError.CustomError{}) {
 		// guardar el error
-		return er.CheckError(c, err)
+		return errorHandler.HandleError(c, &customErr)
 	}
-	IdMember, err := getIdModelCaller(models.Member{}, c)
-	if err != nil {
+	IdMember, customErr := getIdModelCaller(models.Member{}, c)
+	if (customErr != customError.CustomError{}) {
 		// guardar el error
-		return er.CheckError(c, err)
+		return errorHandler.HandleError(c, &customErr)
 	}
 	if totalRows == 0 {
 		// si no hay resultados renderizar esto
 		return c.Render("noResultsParents", fiber.Map{"idMember": IdMember, "canDelete": canDelete, "canWrite": canWrite})
 	} else {
 		// Busco los parents asociados a ese member
-		parents, _, err := searchModelsCaller(models.Parent{}, c, 0)
-		if err != nil {
+		parents, _, customErr := searchModelsCaller(models.Parent{}, c, 0)
+		if (customErr != customError.CustomError{}) {
 			// guardar el error
-			return er.CheckError(c, err)
+			return errorHandler.HandleError(c, &customErr)
 		}
 		data := fiber.Map{"idMember": IdMember, "canDelete": canDelete, "canWrite": canWrite, "parents": parents, "mode": "edit"}
 		return c.Render("parentTable", data)

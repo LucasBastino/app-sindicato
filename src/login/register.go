@@ -6,7 +6,8 @@ import (
 	"strconv"
 
 	"github.com/LucasBastino/app-sindicato/src/database"
-	er "github.com/LucasBastino/app-sindicato/src/errors"
+	"github.com/LucasBastino/app-sindicato/src/errors/customError"
+	"github.com/LucasBastino/app-sindicato/src/errors/errorHandler"
 	"github.com/gofiber/fiber/v2"
 	"golang.org/x/crypto/bcrypt"
 )
@@ -16,48 +17,48 @@ func RegisterUser(c *fiber.Ctx) error {
 	password := c.FormValue("password")
 	// admin, err := strconv.ParseBool(c.FormValue("admin"))
 	// if err != nil {
-	// 	er.InternalServerError.Msg = err.Error()
-	// 	return er.CheckError(c, er.InternalServerError)
+	// 	customError.InternalServerError.Msg = err.Error()
+	// 	return errorHandler.HandleError(c, &customError.InternalServerError)
 	// }
 	writeMember, err := strconv.ParseBool(c.FormValue("write-member"))
 	if err != nil {
-		er.InternalServerError.Msg = err.Error()
-		return er.CheckError(c, er.InternalServerError)
+		customError.InternalServerError.Msg = err.Error()
+		return errorHandler.HandleError(c, &customError.InternalServerError)
 	}
 	deleteMember, err := strconv.ParseBool(c.FormValue("delete-member"))
 	if err != nil {
-		er.InternalServerError.Msg = err.Error()
-		return er.CheckError(c, er.InternalServerError)
+		customError.InternalServerError.Msg = err.Error()
+		return errorHandler.HandleError(c, &customError.InternalServerError)
 	}
 	writeEnterprise, err := strconv.ParseBool(c.FormValue("write-enterprise"))
 	if err != nil {
-		er.InternalServerError.Msg = err.Error()
-		return er.CheckError(c, er.InternalServerError)
+		customError.InternalServerError.Msg = err.Error()
+		return errorHandler.HandleError(c, &customError.InternalServerError)
 	}
 	deleteEnterprise, err := strconv.ParseBool(c.FormValue("delete-enterprise"))
 	if err != nil {
-		er.InternalServerError.Msg = err.Error()
-		return er.CheckError(c, er.InternalServerError)
+		customError.InternalServerError.Msg = err.Error()
+		return errorHandler.HandleError(c, &customError.InternalServerError)
 	}
 	writeParent, err := strconv.ParseBool(c.FormValue("write-parent"))
 	if err != nil {
-		er.InternalServerError.Msg = err.Error()
-		return er.CheckError(c, er.InternalServerError)
+		customError.InternalServerError.Msg = err.Error()
+		return errorHandler.HandleError(c, &customError.InternalServerError)
 	}
 	deleteParent, err := strconv.ParseBool(c.FormValue("delete-parent"))
 	if err != nil {
-		er.InternalServerError.Msg = err.Error()
-		return er.CheckError(c, er.InternalServerError)
+		customError.InternalServerError.Msg = err.Error()
+		return errorHandler.HandleError(c, &customError.InternalServerError)
 	}
 	writePayment, err := strconv.ParseBool(c.FormValue("write-payment"))
 	if err != nil {
-		er.InternalServerError.Msg = err.Error()
-		return er.CheckError(c, er.InternalServerError)
+		customError.InternalServerError.Msg = err.Error()
+		return errorHandler.HandleError(c, &customError.InternalServerError)
 	}
 	deletePayment, err := strconv.ParseBool(c.FormValue("delete-payment"))
 	if err != nil {
-		er.InternalServerError.Msg = err.Error()
-		return er.CheckError(c, er.InternalServerError)
+		customError.InternalServerError.Msg = err.Error()
+		return errorHandler.HandleError(c, &customError.InternalServerError)
 	}
 
 	row := database.DB.QueryRow("SELECT IdUser FROM UserTable WHERE Username = ?", user)
@@ -83,8 +84,8 @@ func RegisterUser(c *fiber.Ctx) error {
 	(?, ?, 0, ?, ?, ?, ?, ?, ?, ?, ?)`, user, strHash, writeMember, deleteMember, writeEnterprise, deleteEnterprise, writeParent, deleteParent, writePayment, deletePayment)
 	// (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`, user, strHash, admin, writeMember, deleteMember, writeEnterprise, deleteEnterprise, writeParent, deleteParent, writePayment, deletePayment)
 	if err != nil {
-		er.QueryError.Msg = err.Error()
-		return er.CheckError(c, er.QueryError)
+		customError.QueryError.Msg = err.Error()
+		return errorHandler.HandleError(c, &customError.QueryError)
 	}
 	insert.Close()
 	return c.Render("login", fiber.Map{})

@@ -5,7 +5,7 @@ import (
 	"time"
 
 	"github.com/LucasBastino/app-sindicato/src/database"
-	er "github.com/LucasBastino/app-sindicato/src/errors"
+	"github.com/LucasBastino/app-sindicato/src/errors/customError"
 	"github.com/gofiber/fiber/v2"
 )
 
@@ -24,7 +24,7 @@ type Enterprise struct {
 	UpdatedAt        time.Time`json:"updatedat"`
 }
 
-func (enterprise Enterprise) InsertModel() (Enterprise, error) {
+func (enterprise Enterprise) InsertModel() (Enterprise, customError.CustomError) {
 	insert, err := database.DB.Query(`
 		INSERT INTO EnterpriseTable 
 		(Name,
@@ -47,8 +47,8 @@ func (enterprise Enterprise) InsertModel() (Enterprise, error) {
 		enterprise.Contact,
 		enterprise.Observations)
 	if err != nil {
-		er.QueryError.Msg = err.Error()
-		return Enterprise{}, er.QueryError
+		customError.QueryError.Msg = err.Error()
+		return Enterprise{}, customError.QueryError
 	}
 	insert.Close()
 	result, err := database.DB.Query(`
@@ -57,34 +57,34 @@ func (enterprise Enterprise) InsertModel() (Enterprise, error) {
 		FROM EnterpriseTable
 		WHERE IdEnterprise = (SELECT LAST_INSERT_ID())`)
 	if err != nil {
-		er.QueryError.Msg = err.Error()
-		return Enterprise{}, er.QueryError
+		customError.QueryError.Msg = err.Error()
+		return Enterprise{}, customError.QueryError
 	}
-	e, _, err := enterprise.ScanResult(result, true)
-	if err != nil {
-		return Enterprise{}, err
+	e, _, customErr := enterprise.ScanResult(result, true)
+	if (customErr != customError.CustomError{}) {
+		return Enterprise{}, customErr
 	}
-	return e, nil
+	return e, customError.CustomError{}
 }
 
-func (enterprise Enterprise) DeleteModel() error {
+func (enterprise Enterprise) DeleteModel() customError.CustomError {
 	if enterprise.IdEnterprise == 1 {
 		// cambiar este log
-		er.InsufficientPermisionsError.Msg = "permisos insuficientes"
-		return er.InsufficientPermisionsError
+		customError.InsufficientPermisionsError.Msg = "permisos insuficientes"
+		return customError.InsufficientPermisionsError
 	}
 	delete, err := database.DB.Query(`
 		DELETE FROM EnterpriseTable
 		WHERE IdEnterprise = ?`, enterprise.IdEnterprise)
 	if err != nil {
-		er.QueryError.Msg = err.Error()
-		return er.QueryError
+		customError.QueryError.Msg = err.Error()
+		return customError.QueryError
 	}
 	defer delete.Close()
-	return nil
+	return customError.CustomError{}
 }
 
-func (enterprise Enterprise) UpdateModel() (Enterprise, error) {
+func (enterprise Enterprise) UpdateModel() (Enterprise, customError.CustomError) {
 	update, err := database.DB.Query(`
 		UPDATE EnterpriseTable 
 		SET 
@@ -109,8 +109,8 @@ func (enterprise Enterprise) UpdateModel() (Enterprise, error) {
 		enterprise.Observations,
 		enterprise.IdEnterprise)
 	if err != nil {
-		er.QueryError.Msg = err.Error()
-		return Enterprise{}, er.QueryError
+		customError.QueryError.Msg = err.Error()
+		return Enterprise{}, customError.QueryError
 	}
 	update.Close()
 	result, err := database.DB.Query(`
@@ -119,34 +119,34 @@ func (enterprise Enterprise) UpdateModel() (Enterprise, error) {
 		FROM EnterpriseTable
 		WHERE IdEnterprise = ?`, enterprise.IdEnterprise)
 	if err != nil {
-		er.QueryError.Msg = err.Error()
-		return Enterprise{}, er.QueryError
+		customError.QueryError.Msg = err.Error()
+		return Enterprise{}, customError.QueryError
 	}
-	e, _, err := enterprise.ScanResult(result, true)
-	if err != nil {
-		return Enterprise{}, err
+	e, _, customErr := enterprise.ScanResult(result, true)
+	if (customErr != customError.CustomError{}) {
+		return Enterprise{}, customErr
 	}
-	return e, nil
+	return e, customError.CustomError{}
 }
 
-func (enterprise Enterprise) GetIdModel(c *fiber.Ctx) (int, error) {
+func (enterprise Enterprise) GetIdModel(c *fiber.Ctx) (int, customError.CustomError) {
 	params := struct {
 		IdEnterprise int `params:"IdEnterprise"`
 	}{}
 
 	err := c.ParamsParser(&params)
 	if err != nil {
-		er.ParamsError.Msg = err.Error()
-		return 0, er.ParamsError
+		customError.ParamsError.Msg = err.Error()
+		return 0, customError.ParamsError
 	}
 
-	return params.IdEnterprise, nil
+	return params.IdEnterprise, customError.CustomError{}
 }
 
-func (enterprise Enterprise) SearchOneModelById(c *fiber.Ctx) (Enterprise, error) {
-	IdEnterprise, err := enterprise.GetIdModel(c)
-	if err != nil {
-		return Enterprise{}, err
+func (enterprise Enterprise) SearchOneModelById(c *fiber.Ctx) (Enterprise, customError.CustomError) {
+	IdEnterprise, customErr := enterprise.GetIdModel(c)
+	if (customErr != customError.CustomError{}) {
+		return Enterprise{}, customErr
 	}
 	result, err := database.DB.Query(`
 		SELECT
@@ -154,19 +154,19 @@ func (enterprise Enterprise) SearchOneModelById(c *fiber.Ctx) (Enterprise, error
 		FROM EnterpriseTable 
 		WHERE IdEnterprise = ?`, IdEnterprise)
 	if err != nil {
-		er.QueryError.Msg = err.Error()
-		return Enterprise{}, er.QueryError
+		customError.QueryError.Msg = err.Error()
+		return Enterprise{}, customError.QueryError
 	}
 
-	e, _, err := enterprise.ScanResult(result, true)
-	if err != nil {
-		return Enterprise{}, err
+	e, _, customErr := enterprise.ScanResult(result, true)
+	if (customErr != customError.CustomError{}) {
+		return Enterprise{}, customErr
 	}
-	return e, nil
+	return e, customError.CustomError{}
 
 }
 
-func (enterprise Enterprise) SearchModels(c *fiber.Ctx, offset int) ([]Enterprise, string, error) {
+func (enterprise Enterprise) SearchModels(c *fiber.Ctx, offset int) ([]Enterprise, string, customError.CustomError) {
 	searchKey := c.FormValue("search-key")
 	result, err := database.DB.Query(`
 		SELECT
@@ -180,14 +180,14 @@ func (enterprise Enterprise) SearchModels(c *fiber.Ctx, offset int) ([]Enterpris
 		LIMIT 15 OFFSET ?`,
 		searchKey, searchKey, offset)
 	if err != nil {
-		er.QueryError.Msg = err.Error()
-		return nil, "", er.QueryError
+		customError.QueryError.Msg = err.Error()
+		return nil, "", customError.QueryError
 	}
-	_, ee, err := enterprise.ScanResult(result, false)
-	if err != nil {
-		return nil, "", err
+	_, ee, customErr := enterprise.ScanResult(result, false)
+	if (customErr != customError.CustomError{}) {
+		return nil, "", customErr
 	}
-	return ee, searchKey, nil
+	return ee, searchKey, customError.CustomError{}
 }
 
 // v1
@@ -218,13 +218,13 @@ func (enterprise Enterprise) SearchModels(c *fiber.Ctx, offset int) ([]Enterpris
 	}
 	if len(errorMap) > 1 {
 
-		return errorMap, er.ValidationError
+		return errorMap, ValidationError
 	}
 	return errorMap, nil
 } */
 
 // v2
-func (enterprise Enterprise) ValidateFields(c *fiber.Ctx) error {
+func (enterprise Enterprise) ValidateFields(c *fiber.Ctx) customError.CustomError {
 	validateFunctions := []func(*fiber.Ctx) error{
 		ValidateEnterpriseName,
 		ValidateEnterpriseNumber,
@@ -239,15 +239,16 @@ func (enterprise Enterprise) ValidateFields(c *fiber.Ctx) error {
 
 	for _, vF := range validateFunctions {
 		if err := vF(c); err != nil {
-			return err
+			customError.ValidationError.Msg = err.Error()
+			return customError.ValidationError
 		} else {
 			continue
 		}
 	}
-	return nil
+	return customError.CustomError{}
 }
 
-func (enterprise Enterprise) GetTotalRows(c *fiber.Ctx) (int, error) {
+func (enterprise Enterprise) GetTotalRows(c *fiber.Ctx) (int, customError.CustomError) {
 	var totalRows int
 	searchKey := c.FormValue("search-key")
 	row := database.DB.QueryRow(`
@@ -256,10 +257,10 @@ func (enterprise Enterprise) GetTotalRows(c *fiber.Ctx) (int, error) {
 	// row.Scan copia el numero de fila en la variable count
 	err := row.Scan(&totalRows)
 	if err != nil {
-		er.ScanError.Msg = err.Error()
-		return 0, er.ScanError
+		customError.ScanError.Msg = err.Error()
+		return 0, customError.ScanError
 	}
-	return totalRows, nil
+	return totalRows, customError.CustomError{}
 }
 
 func (enterprise Enterprise) GetFiberMap(enterprises []Enterprise, searchKey string, currentPage, someBefore, someAfter, totalPages int, totalPagesArray []int) fiber.Map {
@@ -289,23 +290,23 @@ func (enterprise Enterprise) GetFiberMap(enterprises []Enterprise, searchKey str
 	}
 }
 
-func (enterprise Enterprise) GetAllModels() ([]Enterprise, error) {
+func (enterprise Enterprise) GetAllModels() ([]Enterprise, customError.CustomError) {
 	result, err := database.DB.Query(`
 		SELECT 
 		*
 		FROM EnterpriseTable`)
 	if err != nil {
-		er.QueryError.Msg = err.Error()
-		return nil, er.QueryError
+		customError.QueryError.Msg = err.Error()
+		return nil, customError.QueryError
 	}
-	_, ee, err := enterprise.ScanResult(result, false)
-	if err != nil {
-		return nil, err
+	_, ee, customErr := enterprise.ScanResult(result, false)
+	if (customErr != customError.CustomError{}) {
+		return nil, customErr
 	}
-	return ee, nil
+	return ee, customError.CustomError{}
 }
 
-func (enterprise Enterprise) ScanResult(result *sql.Rows, onlyOne bool) (Enterprise, []Enterprise, error) {
+func (enterprise Enterprise) ScanResult(result *sql.Rows, onlyOne bool) (Enterprise, []Enterprise, customError.CustomError) {
 	var e Enterprise
 	var ee []Enterprise
 	for result.Next() {
@@ -324,18 +325,18 @@ func (enterprise Enterprise) ScanResult(result *sql.Rows, onlyOne bool) (Enterpr
 			&e.UpdatedAt,
 		)
 		if err != nil {
-			er.ScanError.Msg = err.Error()
-			return Enterprise{}, nil, er.ScanError
+			customError.ScanError.Msg = err.Error()
+			return Enterprise{}, nil, customError.ScanError
 		}
 		if !onlyOne {
 			ee = append(ee, e)
 		}
 	}
 	result.Close()
-	return e, ee, nil
+	return e, ee, customError.CustomError{}
 }
 
-func (enterprise Enterprise) CheckDeleted(idEnterprise int) (bool, error) {
+func (enterprise Enterprise) CheckDeleted(idEnterprise int) (bool, customError.CustomError) {
 	var totalRows int
 	// row := database.DB.QueryRow(fmt.Sprintf(`
 	// 	SELECT COUNT(*) FROM EnterpriseTable
@@ -346,12 +347,12 @@ func (enterprise Enterprise) CheckDeleted(idEnterprise int) (bool, error) {
 	// row.Scan copia el numero de fila en la variable count
 	err := row.Scan(&totalRows)
 	if err != nil {
-		er.ScanError.Msg = err.Error()
-		return false, er.ScanError
+		customError.ScanError.Msg = err.Error()
+		return false, customError.ScanError
 	}
 	if totalRows == 0 {
-		return true, nil
+		return true, customError.CustomError{}
 	} else {
-		return false, nil
+		return false, customError.CustomError{}
 	}
 }

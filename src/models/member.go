@@ -6,7 +6,7 @@ import (
 	"time"
 
 	"github.com/LucasBastino/app-sindicato/src/database"
-	er "github.com/LucasBastino/app-sindicato/src/errors"
+	"github.com/LucasBastino/app-sindicato/src/errors/customError"
 	"github.com/gofiber/fiber/v2"
 )
 
@@ -34,7 +34,7 @@ type Member struct {
 	UpdatedAt     time.Time	`json:"updatedat"`
 }
 
-func (member Member) InsertModel() (Member, error) {
+func (member Member) InsertModel() (Member, customError.CustomError) {
 	// formateo la fecha nac para que empiece con el año
 	member.Birthday = FormatToYYYYMMDD(member.Birthday)
 	member.EntryDate = FormatToYYYYMMDD(member.EntryDate)
@@ -78,38 +78,38 @@ func (member Member) InsertModel() (Member, error) {
 		member.EntryDate,
 		member.Observations)
 	if err != nil {
-		er.QueryError.Msg = err.Error()
-		return Member{}, er.QueryError
+		customError.QueryError.Msg = err.Error()
+		return Member{}, customError.QueryError
 	}
 	insert.Close()
 	result, err := database.DB.Query(`
 		SELECT * FROM MemberTable 
 		WHERE IdMember = (SELECT LAST_INSERT_ID())`)
 	if err != nil {
-		er.QueryError.Msg = err.Error()
-		return Member{}, er.QueryError
+		customError.QueryError.Msg = err.Error()
+		return Member{}, customError.QueryError
 	}
-	m, _, err := member.ScanResult(result, true)
+	m, _, customErr := member.ScanResult(result, true)
 	if err != nil {
-		return Member{}, err
+		return Member{}, customErr
 	}
-	return m, nil
+	return m, customError.CustomError{}
 }
 
-func (member Member) DeleteModel() error {
+func (member Member) DeleteModel() customError.CustomError {
 	delete, err := database.DB.Query(`
 		DELETE FROM MemberTable 
 		WHERE IdMember = ?`,
 		member.IdMember)
 	if err != nil {
-		er.QueryError.Msg = err.Error()
-		return er.QueryError
+		customError.QueryError.Msg = err.Error()
+		return customError.QueryError
 	}
 	defer delete.Close()
-	return nil
+	return customError.CustomError{}
 }
 
-func (member Member) UpdateModel() (Member, error) {
+func (member Member) UpdateModel() (Member, customError.CustomError) {
 	// formateo la fecha nac para que empiece con el año
 	member.Birthday = FormatToYYYYMMDD(member.Birthday)
 	member.EntryDate = FormatToYYYYMMDD(member.EntryDate)
@@ -156,8 +156,8 @@ func (member Member) UpdateModel() (Member, error) {
 		member.IdMember)
 	if err != nil {
 		fmt.Println("error updateando member")
-		er.QueryError.Msg = err.Error()
-		return Member{}, er.QueryError
+		customError.QueryError.Msg = err.Error()
+		return Member{}, customError.QueryError
 	}
 	update.Close()
 	result, err := database.DB.Query(`
@@ -165,17 +165,17 @@ func (member Member) UpdateModel() (Member, error) {
 		WHERE IdMember = ?`, member.IdMember)
 
 	if err != nil {
-		er.QueryError.Msg = err.Error()
-		return Member{}, er.QueryError
+		customError.QueryError.Msg = err.Error()
+		return Member{}, customError.QueryError
 	}
-	m, _, err := member.ScanResult(result, true)
-	if err != nil {
-		return Member{}, err
+	m, _, customErr := member.ScanResult(result, true)
+	if (customErr != customError.CustomError{}) {
+		return Member{}, customErr
 	}
-	return m, nil
+	return m, customError.CustomError{}
 }
 
-func (member Member) GetIdModel(c *fiber.Ctx) (int, error) {
+func (member Member) GetIdModel(c *fiber.Ctx) (int, customError.CustomError) {
 	// params := struct {
 	// 	IdMember int `params:"IdMember"`
 	// }{}
@@ -186,30 +186,30 @@ func (member Member) GetIdModel(c *fiber.Ctx) (int, error) {
 	// hacerlos asi a partir de ahora
 	idMember, err := c.ParamsInt("IdMember")
 	if err != nil {
-		er.ParamsError.Msg = err.Error()
-		return 0, er.ParamsError
+		customError.ParamsError.Msg = err.Error()
+		return 0, customError.ParamsError
 	}
-	return idMember, nil
+	return idMember, customError.CustomError{}
 }
 
-func (member Member) SearchOneModelById(c *fiber.Ctx) (Member, error) {
-	IdMember, err := member.GetIdModel(c)
-	if err != nil {
-		return Member{}, err
+func (member Member) SearchOneModelById(c *fiber.Ctx) (Member, customError.CustomError) {
+	IdMember, customErr := member.GetIdModel(c)
+	if (customErr != customError.CustomError{}) {
+		return Member{}, customErr
 	}
 	result, err := database.DB.Query("SELECT * FROM MemberTable WHERE IdMember = ?", IdMember)
 	if err != nil {
-		er.QueryError.Msg = err.Error()
-		return Member{}, er.QueryError
+		customError.QueryError.Msg = err.Error()
+		return Member{}, customError.QueryError
 	}
-	m, _, err := member.ScanResult(result, true)
-	if err != nil {
-		return Member{}, err
+	m, _, customErr := member.ScanResult(result, true)
+	if (customErr != customError.CustomError{}) {
+		return Member{}, customErr
 	}
-	return m, nil
+	return m, customError.CustomError{}
 }
 
-func (member Member) SearchModels(c *fiber.Ctx, offset int) ([]Member, string, error) {
+func (member Member) SearchModels(c *fiber.Ctx, offset int) ([]Member, string, customError.CustomError) {
 	var searchKey string
 	// si estamos en deleteMode que el searchKey lo saque del header, ya que no se lo voy a mandar por el form
 	// asi cuando elimino un miembro se quedan los miembros que busque antes menos el que elimine
@@ -227,17 +227,17 @@ func (member Member) SearchModels(c *fiber.Ctx, offset int) ([]Member, string, e
 		ORDER BY LastName ASC LIMIT 15 OFFSET ?`,
 		searchKey, searchKey, searchKey, offset)
 	if err != nil {
-		er.QueryError.Msg = err.Error()
-		return nil, "", er.QueryError
+		customError.QueryError.Msg = err.Error()
+		return nil, "", customError.QueryError
 	}
-	_, mm, err := member.ScanResult(result, false)
+	_, mm, customErr := member.ScanResult(result, false)
 	if err != nil {
-		return nil, "", err
+		return nil, "", customErr
 	}
-	return mm, searchKey, nil
+	return mm, searchKey, customError.CustomError{}
 }
 
-func (member Member) ValidateFields(c *fiber.Ctx) error {
+func (member Member) ValidateFields(c *fiber.Ctx) customError.CustomError {
 	validateFunctions := []func(*fiber.Ctx) error{
 		ValidateName,
 		ValidateLastName,
@@ -263,15 +263,16 @@ func (member Member) ValidateFields(c *fiber.Ctx) error {
 
 	for _, vF := range validateFunctions {
 		if err := vF(c); err != nil {
-			return err
+			customError.ValidationError.Msg = err.Error()
+			return customError.ValidationError
 		} else {
 			continue
 		}
 	}
-	return nil
+	return customError.CustomError{}
 }
 
-func (member Member) GetTotalRows(c *fiber.Ctx) (int, error) {
+func (member Member) GetTotalRows(c *fiber.Ctx) (int, customError.CustomError) {
 	var totalRows int
 	var searchKey string
 	// si estamos en deleteMode que el searchKey lo saque del header, ya que no se lo voy a mandar por el form
@@ -293,10 +294,10 @@ func (member Member) GetTotalRows(c *fiber.Ctx) (int, error) {
 	row := database.DB.QueryRow("SELECT COUNT(*) FROM MemberTable WHERE Name LIKE concat('%', ?, '%') OR LastName LIKE concat('%', ?, '%') OR DNI LIKE concat('%', ?, '%')", searchKey, searchKey, searchKey)
 	err := row.Scan(&totalRows)
 	if err != nil {
-		er.ScanError.Msg = err.Error()
-		return 0, er.ScanError
+		customError.ScanError.Msg = err.Error()
+		return 0, customError.ScanError
 	}
-	return totalRows, nil
+	return totalRows, customError.CustomError{}
 }
 
 func (m Member) GetFiberMap(members []Member, searchKey string, currentPage, someBefore, someAfter, totalPages int, totalPagesArray []int) fiber.Map {
@@ -326,17 +327,17 @@ func (m Member) GetFiberMap(members []Member, searchKey string, currentPage, som
 	}
 }
 
-func (member Member) GetAllModels() ([]Member, error) {
+func (member Member) GetAllModels() ([]Member, customError.CustomError) {
 	result, err := database.DB.Query("SELECT * FROM MemberTable")
 	if err != nil {
-		er.QueryError.Msg = err.Error()
-		return nil, er.QueryError
+		customError.QueryError.Msg = err.Error()
+		return nil, customError.QueryError
 	}
-	_, mm, err := member.ScanResult(result, false)
-	if err != nil {
-		return nil, err
+	_, mm, customErr := member.ScanResult(result, false)
+	if (customErr != customError.CustomError{}) {
+		return nil, customErr
 	}
-	return mm, nil
+	return mm, customError.CustomError{}
 }
 
 // func CheckIdEnterprise(tempIdEnterprise sql.NullInt16) int {
@@ -347,7 +348,7 @@ func (member Member) GetAllModels() ([]Member, error) {
 // 	}
 // }
 
-func (member Member) ScanResult(result *sql.Rows, onlyOne bool) (Member, []Member, error) {
+func (member Member) ScanResult(result *sql.Rows, onlyOne bool) (Member, []Member, customError.CustomError) {
 	var m Member
 	var mm []Member
 	// var tempIdEnterprise sql.NullInt16
@@ -377,8 +378,8 @@ func (member Member) ScanResult(result *sql.Rows, onlyOne bool) (Member, []Membe
 			&m.UpdatedAt,
 		)
 		if err != nil {
-			er.ScanError.Msg = err.Error()
-			return Member{}, nil, er.ScanError
+			customError.ScanError.Msg = err.Error()
+			return Member{}, nil, customError.ScanError
 		}
 		// formateo las fechas en formato argentino
 		m.Birthday = FormatToDDMMYYYY(m.Birthday)
@@ -389,10 +390,10 @@ func (member Member) ScanResult(result *sql.Rows, onlyOne bool) (Member, []Membe
 		}
 	}
 	result.Close()
-	return m, mm, nil
+	return m, mm, customError.CustomError{}
 }
 
-func (member Member) CheckDeleted(idMember int) (bool, error) {
+func (member Member) CheckDeleted(idMember int) (bool, customError.CustomError) {
 	var totalRows int
 	row := database.DB.QueryRow(`
 		SELECT COUNT(*) FROM MemberTable 
@@ -400,12 +401,12 @@ func (member Member) CheckDeleted(idMember int) (bool, error) {
 	// row.Scan copia el numero de fila en la variable count
 	err := row.Scan(&totalRows)
 	if err != nil {
-		er.ScanError.Msg = err.Error()
-		return false, er.ScanError
+		customError.ScanError.Msg = err.Error()
+		return false, customError.ScanError
 	}
 	if totalRows == 0 {
-		return true, nil
+		return true, customError.CustomError{}
 	} else {
-		return false, nil
+		return false, customError.CustomError{}
 	}
 }
